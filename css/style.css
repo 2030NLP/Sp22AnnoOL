@@ -136,8 +136,8 @@
       background: #e9ecef;  /*#f8f9fa;*/
       border-radius: 8px;
     }
-    #page-main-editor--main {
-      min-height: 30vh;
+    #page-main-editor--container {
+      min-height: 20vh;
     }
     #page-main-editor p {
       margin-top: 0.25rem;

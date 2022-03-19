@@ -112,12 +112,24 @@ class BackEndUsage {
     };
   }
 
+  async begin() {
+    await this.connect();
+    this.data.ctrl.currentPage = 'anno';
+    let lastEID = this?.data?.newThings?.lastEID ?? null;
+    let btn = this.data.tasks.find(btn => btn.eId == lastEID);
+    if (btn) {
+      await this.goIdx(btn.idx);
+      return;
+    }
+    await this.goIdx(0);
+  }
+
   async connect() {
     // this.pushAlert("connect 开始", 'secondary');
     console.log(this);
     try {
       console.log(this);
-      let resp = await this.backEnd.getUser(null, this.data.ctrl.currentWorker, this.data.ctrl.currentWorkerSecret);
+      let resp = await this.backEnd.getUser();
       if (resp?.data?.err?.length) {
         this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
         return;
@@ -171,7 +183,7 @@ class BackEndUsage {
     // this.pushAlert("updateTaskList 开始");
     try {
       let aa = this.pushAlert("正在获取任务列表，请稍等……", "info", 99999999);
-      let resp = await this.backEnd.getWorkList(this.data.ctrl.currentWorkerId, this.data.ctrl.currentWorkerSecret);
+      let resp = await this.backEnd.getWorkList();
       this.removeAlert(aa);
       if (resp?.data?.err?.length) {
         this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
@@ -185,14 +197,14 @@ class BackEndUsage {
         let anno = work?.annotation;
         let task_btn = {
           id: task.id,
-          eId: task.eId,
+          eId: task.entry,
           valid: anno && !anno?.dropped && !anno?.skipped ? true : false,
           dropped: anno?.dropped ? true : false,
           skipped: anno?.skipped ? true : false,
         };
         task_btn_list.push(task_btn);
       };
-      task_btn_list = task_btn_list.sort((a,b)=> +a.eId-b.eId);
+      // task_btn_list = task_btn_list.sort((a,b)=> +a.eId-b.eId);
       for (let idx in task_btn_list) {
         task_btn_list[idx].idx = idx;
       };
@@ -211,15 +223,15 @@ class BackEndUsage {
     let it = {
       worker: user.name,
       workerId: user.id,
-      secret: user.password,
-      target: user.task.length,
-      taskCount: user.task.length,
+      secret: user.token,
+      target: user.task?.length,
+      taskCount: user.task?.length,
     };
     this.data.ctrl.currentWorker = user.name;
     this.data.ctrl.currentWorkerId = user.id;
-    this.data.ctrl.currentWorkerSecret = user.password;
-    this.data.ctrl.currentWorkerTarget = user.task.length;
-    this.data.ctrl.currentWorkerTaskCount = user.task.length;
+    this.data.ctrl.currentWorkerSecret = user.token;
+    this.data.ctrl.currentWorkerTarget = user.task?.length;
+    this.data.ctrl.currentWorkerTaskCount = user.task?.length;
     this.data.newThings.theUser = user;
 
     this.storeTool.set(`${this.appName}:it`, it);

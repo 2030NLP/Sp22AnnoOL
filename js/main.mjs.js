@@ -3,17 +3,18 @@
 
 import {
   reactive,
-  readonly,
-  ref,
-  toRef,
+  // readonly,
+  // ref,
+  // toRef,
   toRefs,
-  computed,
+  // computed,
   onMounted,
-  onUpdated,
-  createApp as Vue_createApp
+  // onUpdated,
+  createApp as Vue_createApp,
+  watch
 } from './modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
-import { timeString, foolCopy } from './util.mjs.js';
+// import { timeString, foolCopy } from './util.mjs.js';
 import BaseSaver from './modules/BaseSaver.mjs.js';
 import TheReader from './modules/TheReader.mjs.js';
 import AlertBox from './modules/AlertBox.mjs.js';
@@ -36,11 +37,10 @@ const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
 // 开发环境 和 生产环境 的 控制变量
-const DEVELOPING = 1;
+const DEVELOPING = 0;
 const DEVELOPING_LOCAL = 0;
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
-const API_BASE_DEV = "http://192.168.124.28:8888/";
-// const API_BASE_DEV = "http://10.1.25.237:8888/";
+const API_BASE_DEV = "http://192.168.124.28:8888/";  //"http://10.1.25.237:8888";
 const API_BASE_PROD = "http://101.43.244.203";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 
@@ -103,14 +103,6 @@ const RootComponent = {
       hasDown: false,
     });
     const tokenSelector = new TokenSelector(selection);
-
-    // 初始化 后端 API
-    const theApi = axios.create({
-      baseURL: `${API_BASE}/api/`,
-      timeout: 30000,
-      headers: {'Catch-Cotrol': 'no-cache'},
-    });
-    const theBackEnd = new BackEnd(theApi, alertBox_pushAlert);
 
 
     // 初始化 标注工具当下正在标注的语料 数据
@@ -196,7 +188,11 @@ const RootComponent = {
       version: "00",
     });
 
+    const theBackEnd = new BackEnd(appData.ctrl.currentWorkerSecret, `${API_BASE}/api/`, alertBox_pushAlert);
 
+    watch(()=>appData.ctrl.currentWorkerSecret, () => {
+      theBackEnd.token = appData.ctrl.currentWorkerSecret
+    })
 
     const appPack = {
       reactive_data: appData,
@@ -275,6 +271,13 @@ const RootComponent = {
     stepCtrl.saveStore = () => { bEU.saveStore(); };
 
 
+    // onMounted(async () => {
+    //   if (appData?.ctrl?.currentWorkerSecret?.length) {
+    //     await bEU.begin();
+    //   };
+    // });
+
+
     // 一些便捷函数，免得前端代码写得太长
     const getReplacedToken = (idx) => {
       let tokenList = exampleWrap.example.material.tokenList;
@@ -309,7 +312,7 @@ const RootComponent = {
       //
       theSaver,
       //
-      theApi,
+      // theApi,
       theBackEnd,
       //
       toogleShowOrigin,

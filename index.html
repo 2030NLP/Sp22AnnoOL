@@ -65,7 +65,7 @@
               class="btn btn-sm me-2"
               :class="ctrl.currentPage=='setup'?'btn-primary':'btn-outline-primary'"
               @click="ctrl.currentPage='setup'"
-            >配置</button>
+            >准备</button>
             <!-- <button
               type="button"
               name="nav_list"
@@ -120,15 +120,21 @@
             <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
+              @click="()=>{bEU.begin()}"
+              title="开始标注"
+            >开始标注</button>
+            <!-- <button
+              type="button"
+              class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{bEU.connect()}"
               title="每次刷新页面后需「同步信息」并获取任务列表"
-            >同步信息</button>
-            <button
+            >同步信息</button> -->
+            <!-- <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{bEU.updateTarget()}"
               title="所有任务完成后，可为自己设置新的标注目标，增加总任务量"
-            >更新目标</button>
+            >更新目标</button> -->
           </div>
         </div>
       </div>
@@ -184,7 +190,7 @@
             >显示有效标注: {{newThings.tasksShowValid ?'on':'off'}}</button>
           </div>
           <div class="col col-12 my-2" v-if="newThings?.lastEID!=null">
-            <div class="small text-muted">最近查看的序号：{{newThings?.lastEID}}</div>
+            <div class="small text-muted">最近查看的序号：#{{newThings?.lastEID}}</div>
           </div>
           <div class="col col-12 col-md-12 col-lg-12 my-2">
             <button
@@ -194,7 +200,7 @@
               class="btn btn-sm me-2 my-1"
               :class="`btn-${taskBtn.valid?'info':taskBtn.dropped?'dark':taskBtn.skipped?'outline-primary':'outline-primary'}`"
               @click="bEU.touchTaskBtn(taskBtn)"
-            >#{{taskBtn.eId}}</button>
+            >[{{1+parseInt(taskBtn.idx)}}] #{{taskBtn.eId}}</button>
           </div>
         </div>
       </div>
@@ -213,18 +219,19 @@
       v-if="example!=null&&example?.material!=null"
       :class="ctrl?.currentWorker=='admin'?'admin':''"
     >
-      <div class="container">
+      <div class="container" id="page-main-editor--container">
 
+        <div class="row">
+          <div class="row mt-2 mb-0">
+            <p class="text-muted small">#{{example?._info?.entry_id}}　{{`${fileInfo(example?.originId).用户显示名称}`}}</p>
+          </div>
+        </div>
 
-        <div class="row mt-2 mb-3 align-items-center" id="page-main-editor--main">
+        <div class="row mt-0 mb-2 __align-items-center" id="page-main-editor--main">
           <!-- 内容区 开始 -->
-          <div class="col col-12 col-lg-7 my-2">
-
-            <div class="row my-2">
-              <p class="text-muted small">#{{example?._info?.entry_id}}　{{`${fileInfo(example?.originId).用户显示名称}`}}</p>
-            </div>
+          <div class="col col-12 col-lg-7 my-1">
             <!-- 替换后文本区 开始 -->
-            <div class="row my-2 material-area" id="material-replaced">
+            <div class="row my-1 material-area" id="material-replaced">
               <p>
                 <span
                   v-for="token in getTokenList()"
@@ -250,7 +257,7 @@
             </div>
             <!-- 替换后文本区 结束 -->
             <!-- 替换前原文区 开始 -->
-            <div class="row my-2 material-area" id="material-origin" :data-show="ctrl.showOrigin" v-show="ctrl.showOrigin">
+            <div class="row my-1 material-area" id="material-origin" :data-show="ctrl.showOrigin" v-show="ctrl.showOrigin">
               <p>
                 <span
                   v-for="token in getTokenList()"
@@ -388,7 +395,9 @@
               </div>
               <!-- 选项按钮 -->
               <div class="col col-12 my-1" v-if="currentStep?.props?.optionBtns">
-                <button v-for="btn in currentStep.props.optionBtns" :key="btn.text" type="button" @click="stepCtrl.goRefStep(btn.go, btn.data)" class="btn btn-sm my-1 me-1" :class="`btn-${btn.style}`">{{ btn.text }}</button>
+                <template v-for="btn in currentStep.props.optionBtns">
+                  <button :key="btn.text" type="button" v-on:click="stepCtrl.goRefStep(btn.go, btn.data)" class="btn btn-sm my-1 me-1" :class="`btn-${btn.style}`">{{ btn.text }}</button><br v-if="false"/>
+                </template>
               </div>
               <!-- 完成按钮 -->
               <div class="col col-12 my-1" v-if="currentStep?.props?.okBtn">
@@ -704,7 +713,7 @@
             <div class="input-group input-group-sm ">
               <button class="btn btn-outline-secondary" type="button" @click="bEU.prev(example)">上一条</button>
               <!-- <span class="input-group-text">3</span> -->
-              <input type="text" class="form-control text-center" disabled :value="`第 ${example?._info?.btn_idx??'_'} 条: 编号 #${example?._info?.entry_id??'_'}`">
+              <input type="text" class="form-control text-center" disabled :value="`[${1+parseInt(example?._info?.btn_idx??'_')}] #${example?._info?.entry_id??'_'}`">
               <button class="btn btn-outline-secondary" type="button" @click="bEU.next(example)">下一条</button>
             </div>
           </div>

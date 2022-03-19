@@ -1,7 +1,7 @@
 {
   "name": "SpaCE2022",
-  "version": "2203013v0",
-  "using": "清洗",
+  "version": "2203019v1",
+  "using": "第1期",
   "清洗": {
     "startStep": "start",
     "endStep": "end",
@@ -196,6 +196,91 @@
             "go": "start",
             "style": "light"
           }
+        }
+      }
+    }
+  },
+  "第1期": {
+    "startStep": "start",
+    "endStep": "end",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "标注已完成。",
+          "canReset": true,
+          "resetBtn": {
+            "text": "清空并重新标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "nextBtn": {
+            "text": "下一条",
+            "style": "outline-primary"
+          },
+          "__cancelBtn": {
+            "text": "返回并补充标注",
+            "go": "start",
+            "style": "outline-secondary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "评估材料的空间关系",
+        "mode": "selectValue",
+        "props": {
+          "instruction": "这段话中的空间关系__________。",
+          "optionBtns": [
+            {
+              "text": "完全正常",
+              "data": {
+                "label": "fine",
+                "desc": "这段话中的空间信息完全正常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "尚能说通",
+              "data": {
+                "label": "someFine",
+                "desc": "这段话中的空间信息尚能说通"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "比较牵强",
+              "data": {
+                "label": "someBad",
+                "desc": "这段话中的空间信息比较牵强"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "显然异常",
+              "data": {
+                "label": "bad",
+                "desc": "这段话中的空间信息显然异常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "难以判断",
+              "data": {
+                "isDropping": true,
+                "label": "hardToJudge",
+                "desc": "难以判断这段话中的空间信息是否异常"
+              },
+              "go": "end",
+              "style": "outline-dark"
+            }
+          ]
         }
       }
     }

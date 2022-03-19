@@ -1,25 +1,39 @@
 // modifiedAt: 2022-03-15
 
-// import axios from '../modules_lib/axios_0.26.1_.mjs.js';
+import axios from '../modules_lib/axios_0.26.1_.mjs.js';
 
 class BackEnd {
-  constructor(bridge, handleErrorFn=console.log) {
-    this.bridge = bridge;  // axios
+  constructor(token, baseURL, handleErrorFn=console.log) {
+    // 初始化 后端 API
+    const theApi = axios.create({
+      baseURL,
+      timeout: 30000,
+      headers: {'Catch-Cotrol': 'no-cache'},
+    });
+    this.bridge = theApi;  // axios
+    this.token = token;
     this.handleErrorFn = handleErrorFn;
+    // this.setRequestHeader();
   }
-  static new(bridge, handleErrorFn) {
-    return new BackEnd(bridge, handleErrorFn);
+  static new(token, baseURL, handleErrorFn) {
+    return new BackEnd(token, baseURL, handleErrorFn);
   }
 
-  // const theApi = axios.create({
-  //   baseURL: `${API_BASE}/api/`,
-  //   timeout: 30000,
-  //   headers: {'Catch-Cotrol': 'no-cache'},
-  // });
+  // setRequestHeader () {
+  //   // 添加请求拦截器
+  //   this.bridge.interceptors.request.use((config) => {
+  //     // 发送请求之前带上token
+  //     config.headers = {
+  //       'authorization': `Bearer ${this.token}`
+  //     };
+  //   })
+  // }
 
   async request(config) {
     try {
-      let response = await this.bridge.request(config);
+      let response = await this.bridge.request({...config, headers: {
+              'authorization': `Bearer ${this.token}`
+            }});
       return response;
     } catch (error) {
       // console.log({config, error});
@@ -61,43 +75,29 @@ class BackEnd {
     // response.data.err === ''
   }
 
-  async getUser(user_id, name, password) {
+  async getUser() {
     // 获取 user 信息
-    // 输入：id或姓名至少其一，外加序列号（密码）
-    let data = {
-      'password': password,
-    };
-    if (user_id?.length) {
-      data.user_id = user_id;
-    } else if (name?.length) {
-      data.name = name;
-    };
     let response = await this.request({
-      method: "post",
+      method: "get",
       url: `/user/`,
-      data: data,
     });
     return response;
     // 应有输出：
     // response.data.user: {
     //   id,
     //   name,
-    //   password,
+    //   token,
     //   task: [task.id],        // 该用户有哪些 task
     //   annotated: [entry.id],  // 该用户已经标注过了哪些 entry  // 其实有点多余
     // }
     // response.data.err === ''
   }
 
-  async getWorkList(user_id, password) {
+  async getWorkList() {
     // 获取 当前 user 的 任务清单
     let response = await this.request({
-      method: "post",
-      url: `/work-list/`,
-      data: {
-        'user_id': user_id,
-        'password': password,
-      },
+      method: "get",
+      url: `/work-list/`
     });
     return response;
     // 应有输出：
@@ -202,6 +202,10 @@ class BackEnd {
     };
     if (anno_wrap.isDropping) {
       data.dropped = true;
+      data.valid = false;
+    } else {
+      data.dropped = false;
+      data.valid = true;
     };
     //
     // let dropped = false;
