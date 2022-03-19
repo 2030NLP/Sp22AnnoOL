@@ -1,0 +1,203 @@
+{
+  "name": "SpaCE2022",
+  "version": "2203013v0",
+  "using": "清洗",
+  "清洗": {
+    "startStep": "start",
+    "endStep": "end",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "标注已完成。",
+          "canReset": true,
+          "resetBtn": {
+            "text": "清空并重新标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "cancelBtn": {
+            "text": "继续增加标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "nextBtn": {
+            "text": "下一条",
+            "style": "outline-primary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "开始",
+        "mode": "selectValue",
+        "props": {
+          "instruction": "这段话符合下述哪种情形？",
+          "optionBtns": [
+            {
+              "text": "是正常的含有空间方位义的文本",
+              "data": {
+                "label": "fine",
+                "desc": "这段话是正常的含有空间方位义的文本"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "句中存在错误的字/词/符号",
+              "go": "handleErrorWord",
+              "style": "outline-dark"
+            },
+            {
+              "text": "句中存在分词错误",
+              "go": "handleErrorSeg",
+              "style": "outline-dark"
+            },
+            {
+              "text": "句中没有包含空间方位义",
+              "data": {
+                "label": "otherError",
+                "isDropping": true,
+                "desc": "句中没有包含空间方位义"
+              },
+              "go": "end",
+              "style": "outline-dark"
+            },
+            {
+              "text": "句中存在不表达空间方位义的方位词（如：“前/后/下”等表示时间或抽象意义）",
+              "__data": {
+                "label": "otherErrorNotice",
+                "isDropping": true,
+                "desc": "句中存在不表达空间方位义的方位词"
+              },
+              "go": "handleErrorNotice",
+              "style": "outline-dark"
+            },
+            {
+              "text": "句子意思复杂，很难看懂",
+              "data": {
+                "label": "otherErrorHard",
+                "isDropping": true,
+                "desc": "句子意思复杂，很难看懂"
+              },
+              "go": "end",
+              "style": "outline-dark"
+            },
+            {
+              "text": "存在其他问题",
+              "go": "handleOther",
+              "style": "outline-dark"
+            }
+          ]
+        }
+      },
+      "handleErrorNotice": {
+        "ref": "handleErrorNotice",
+        "name": "处理不合适的方位词",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "请在文中划选非空间义的方位词",
+          "selectedTitle": "当前选中了：",
+          "instruction": "（请勿填写下面的文本框，直接确定即可）",
+          "data": {
+            "label": "otherErrorNotice",
+            "desc": "是非空间义的方位词",
+            "on": [],
+            "withText": " "
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleErrorWord": {
+        "ref": "handleErrorWord",
+        "name": "处理错字",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "请在文中划选出错的字符串；忽略分词错误",
+          "selectedTitle": "当前选中了：",
+          "instruction": "应该修改为：",
+          "data": {
+            "label": "otherErrorString",
+            "desc": "有错，应改为：",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleErrorSeg": {
+        "ref": "handleErrorSeg",
+        "name": "处理分词错误",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "请在文中划选出出现分词错误的片段",
+          "selectedTitle": "当前选中了：",
+          "instruction": "应该修改为（用空格分词）：",
+          "data": {
+            "label": "otherErrorSeg",
+            "desc": "分词错误，应改为：",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleOther": {
+        "ref": "handleOther",
+        "name": "处理其他原因",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "若涉及具体片段，请在文中划选",
+          "canSkipSelection": true,
+          "selectedTitle": "当前选中了：",
+          "instruction": "请填写具体问题：",
+          "data": {
+            "label": "otherError",
+            "desc": "存在问题：",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      }
+    }
+  }
+}
