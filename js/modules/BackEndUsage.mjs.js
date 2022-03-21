@@ -99,6 +99,11 @@ class BackEndUsage {
         };
         this.tokenSelector.clear(this.ewp.example?.material?.tokenList);
 
+        if (!this.ewp.example._ctrl?.timeLog?.length) {
+          this.ewp.example._ctrl.timeLog = [];
+        }
+        this.ewp.example._ctrl.timeLog.push( ['in', JSON.parse(JSON.stringify(new Date()))] );
+
         //
         this.data.ctrl.currentPage = 'anno';
         this.data.newThings.lastEID = thing?.entry?.id;
@@ -242,6 +247,12 @@ class BackEndUsage {
 
   async save(content) {
     try {
+
+      if (!this.ewp.example._ctrl?.timeLog?.length) {
+        this.ewp.example._ctrl.timeLog = [];
+      }
+      this.ewp.example._ctrl.timeLog.push( ['out', JSON.parse(JSON.stringify(new Date()))] );
+
       let task_id = content?._info?.task_id;
       let anno_wrap = {
         'annotations': this.ewp.example?.annotations,
