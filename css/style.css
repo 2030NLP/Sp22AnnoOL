@@ -147,6 +147,7 @@
 
 
     .material-area {
+      -webkit-user-select: none;
       user-select: none;
     }
     .material-area span.token {

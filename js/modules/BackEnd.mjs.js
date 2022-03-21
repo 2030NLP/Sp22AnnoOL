@@ -8,7 +8,7 @@ class BackEnd {
     const theApi = axios.create({
       baseURL,
       timeout: 30000,
-      headers: {'Catch-Cotrol': 'no-cache'},
+      headers: {'Cache-Cotrol': 'no-cache'},
     });
     this.bridge = theApi;  // axios
     this.token = token;
@@ -45,7 +45,7 @@ class BackEnd {
 
 
   // 万能 api 开始
-  async db(table, operator, kwargs, _$$$) {
+  async db(table, operator, kwargs, _$$$, timeout=30000) {
     let data = {
       table: `${table??''}`,
       opt: `${operator??''}`,
@@ -56,6 +56,7 @@ class BackEnd {
       method: "post",
       url: `/db`,
       data: data,
+      timeout: timeout,
     });
     return response;
   }
@@ -114,11 +115,11 @@ class BackEnd {
     //   user_id
     //   task.id
     let response = await this.request({
-      method: "post",
-      url: `/thing/${task_id}`,
-      data: {
-        'user_id': user_id,
-      },
+      method: "get",
+      url: `/thing/${user_id}/${task_id}`,
+      // data: {
+      //   'user_id': user_id,
+      // },
     });
     return response;
     // 应有输出：
@@ -136,11 +137,11 @@ class BackEnd {
     //   user_id
     //   task.id
     let response = await this.request({
-      method: "post",
-      url: `/task/${task_id}`,
-      data: {
-        'user_id': user_id,
-      },
+      method: "get",
+      url: `/task/${user_id}/${task_id}`,
+      // data: {
+      //   'user_id': user_id,
+      // },
     });
     return response;
     // 应有输出：
@@ -160,12 +161,12 @@ class BackEnd {
     //   user_id
     //   task.id  // 该 annotation 所对应的 task
     let response = await this.request({
-      method: "post",
-      url: `/annotation/`,
-      data: {
-        'user_id': user_id,
-        'task_id': task_id,
-      },
+      method: "get",
+      url: `/anno/${user_id}/${task_id}`,
+      // data: {
+      //   'user_id': user_id,
+      //   'task_id': task_id,
+      // },
     });
     return response;
     // 应有输出：
@@ -214,8 +215,8 @@ class BackEnd {
     // let valid = true;
     //
     let response = await this.request({
-      method: "post",
-      url: `/update/`,
+      method: "put",
+      url: `/anno/${user_id}/${task_id}`,
       data: data,
     });
     return response;

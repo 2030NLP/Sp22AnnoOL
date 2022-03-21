@@ -54,7 +54,7 @@
     <!-- navbar end -->
 
 
-    <div class="container page my-4 hiddent" id="page-nav">
+    <div v-if="false" class="container page my-4 hiddent" id="page-nav">
       <div class="container py-2">
         <div class="row align-items-center">
           <div class="col col-12 my-2">
@@ -99,16 +99,16 @@
           </div>
           <div class="col col-12 col-md-9 col-lg-8 my-2">
             <div class="form-floating">
-              <input class="form-control form-control-sm" type="password" v-model="ctrl.currentWorkerSecret" placeholder="请输入您的序列号">
-              <label class="form-label">序列号</label>
+              <input class="form-control form-control-sm" type="password" v-model="ctrl.currentWorkerSecret" placeholder="请输入您的密码">
+              <label class="form-label">密码</label>
             </div>
           </div>
-          <div v-if="false" class="col col-12 col-md-3 col-lg-3 my-2">
+          <!-- <div v-if="false" class="col col-12 col-md-3 col-lg-3 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="text" v-model="ctrl.currentWorkerTarget" placeholder="请输入您的标注目标">
               <label class="form-label">标注目标数量</label>
             </div>
-          </div>
+          </div> -->
         </div>
         <div class="row align-items-center my-1" v-if="newThings?.topic?.length">
           <div class="col col-12">
@@ -720,7 +720,7 @@
             <div class="input-group input-group-sm ">
               <button class="btn btn-outline-secondary" type="button" @click="bEU.prev(example)">上一条</button>
               <!-- <span class="input-group-text">3</span> -->
-              <input type="text" class="form-control text-center" disabled :value="`[${1+parseInt(example?._info?.btn_idx??'_')}] #${example?._info?.entry_id??'_'}`">
+              <input type="text" class="form-control text-center" disabled :value="`[${1+parseInt(example?._info?.btn_idx??'_')}]`">
               <button class="btn btn-outline-secondary" type="button" @click="bEU.next(example)">下一条</button>
             </div>
           </div>

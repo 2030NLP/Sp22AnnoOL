@@ -40,7 +40,7 @@ const PROJ_PREFIX = "Sp22";
 const DEVELOPING = 0;
 const DEVELOPING_LOCAL = 0;
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
-const API_BASE_DEV = "http://192.168.124.28:8888/";  //"http://10.1.25.237:8888";
+const API_BASE_DEV = "http://192.168.124.28:8888";  //"http://10.1.25.237:8888";
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 
