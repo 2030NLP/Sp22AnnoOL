@@ -141,30 +141,6 @@
     </div>
 
 
-    <div class="container page my-4" id="page-overview" v-show="tasks.length">
-      <div class="container py-2">
-        <!-- progressCtrl start -->
-        <div class="row align-items-center">
-          <div class="col col-12 col-md-12 col-lg-12 my-2">
-            <!-- <label class="form-label">标注进度</label> -->
-            <div class="progress" title="标注进度">
-              <div
-                class="progress-bar bg-success"
-                role="progressbar"
-                :style="`min-width: ${ctrl.donePct};`"
-                :aria-valuenow="ctrl.doneNum"
-                :aria-valuemax="ctrl.totalNum"
-                aria-valuemin="0"
-              >{{ ctrl.doneNum }}/{{
-                ctrl.totalNum }}</div>
-            </div>
-          </div>
-        </div>
-        <!-- progressCtrl end -->
-      </div>
-    </div>
-
-
     <!-- 语料清单 开始 -->
     <div class="container page my-4" id="page-list" v-show="ctrl.currentPage=='list'||ctrl.currentPage=='setup' && tasks.length">
       <div class="container py-2">
@@ -223,7 +199,7 @@
 
         <div class="row">
           <div class="row mt-2 mb-0">
-            <p class="text-muted small">#{{example?._info?.entry_id}}　{{`${fileInfo(example?.originId).用户显示名称}`}}</p>
+            <p class="text-muted small">#{{example?._info?.entry_id}}　{{example?.originId}}　{{`${fileInfo(example?.originId).用户显示名称}`}}</p>
           </div>
         </div>
 
@@ -709,6 +685,30 @@
       </div>
     </div>
     <!-- 编辑区 结束 -->
+
+
+    <div class="container page my-4" id="page-overview" v-show="tasks.length">
+      <div class="container py-2">
+        <!-- progressCtrl start -->
+        <div class="row align-items-center">
+          <div class="col col-12 col-md-12 col-lg-12 my-2">
+            <!-- <label class="form-label">标注进度</label> -->
+            <div class="progress" title="标注进度">
+              <div
+                class="progress-bar bg-success"
+                role="progressbar"
+                :style="`min-width: ${ctrl.donePct};`"
+                :aria-valuenow="ctrl.doneNum"
+                :aria-valuemax="ctrl.totalNum"
+                aria-valuemin="0"
+              >{{ ctrl.doneNum }}/{{
+                ctrl.totalNum }}</div>
+            </div>
+          </div>
+        </div>
+        <!-- progressCtrl end -->
+      </div>
+    </div>
 
 
     <!-- 网络版 的 页码操作区 开始 -->
