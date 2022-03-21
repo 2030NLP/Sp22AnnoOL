@@ -1,6 +1,6 @@
 {
   "name": "SpaCE2022",
-  "version": "2203019v1",
+  "version": "2203021v1",
   "using": "第1期",
   "清洗": {
     "startStep": "start",
@@ -271,11 +271,11 @@
               "style": "outline-primary"
             },
             {
-              "text": "难以判断",
+              "text": "其他",
               "data": {
                 "isDropping": true,
                 "label": "hardToJudge",
-                "desc": "难以判断这段话中的空间信息是否异常"
+                "desc": "其他情况"
               },
               "go": "end",
               "style": "outline-dark"
