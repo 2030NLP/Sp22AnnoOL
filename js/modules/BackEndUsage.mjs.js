@@ -108,6 +108,7 @@ class BackEndUsage {
         this.data.ctrl.currentPage = 'anno';
         this.data.newThings.lastEID = thing?.entry?.id;
         this.storeTool.set(`${this.appName}:lastEID`, this.data.newThings.lastEID);
+
         return content;
       } else {
         console.log("thing:", thing);
@@ -139,7 +140,7 @@ class BackEndUsage {
         this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
         return;
       };
-      this.data.newThings.topic = resp?.data?.topic;
+      this.data.newThings.topic = resp?.data?.topic;  // TODO, 此处不应该有 TOPIC 信息
       await this.updateUser(resp?.data?.user);
       this.pushAlert(`${resp?.data?.user?.name}的信息已同步`);
       await this.updateTaskList();

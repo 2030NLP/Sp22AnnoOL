@@ -90,6 +90,7 @@ class BackEnd {
     //   task: [task.id],        // 该用户有哪些 task
     //   annotated: [entry.id],  // 该用户已经标注过了哪些 entry  // 其实有点多余
     // }
+    // response.data.topic  // TODO, 此处不应该有 TOPIC 信息
     // response.data.err === ''
   }
 

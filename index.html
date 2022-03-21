@@ -91,19 +91,19 @@
     <div class="container page my-4" id="page-setup" v-show="ctrl.currentPage=='setup'">
       <div class="container py-2">
         <div class="row align-items-center">
-          <div class="col col-12 col-md-3 col-lg-3 my-2">
+          <div class="col col-12 col-md-3 col-lg-4 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="text" v-model="ctrl.currentWorker" placeholder="请输入您的姓名">
               <label class="form-label">姓名</label>
             </div>
           </div>
-          <div class="col col-12 col-md-6 col-lg-6 my-2">
+          <div class="col col-12 col-md-9 col-lg-8 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="password" v-model="ctrl.currentWorkerSecret" placeholder="请输入您的序列号">
               <label class="form-label">序列号</label>
             </div>
           </div>
-          <div class="col col-12 col-md-3 col-lg-3 my-2">
+          <div v-if="false" class="col col-12 col-md-3 col-lg-3 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="text" v-model="ctrl.currentWorkerTarget" placeholder="请输入您的标注目标">
               <label class="form-label">标注目标数量</label>
@@ -141,7 +141,7 @@
     </div>
 
 
-    <div class="container page my-4" id="page-overview" v-show="ctrl.currentWorkerTarget">
+    <div class="container page my-4" id="page-overview" v-show="tasks.length">
       <div class="container py-2">
         <!-- progressCtrl start -->
         <div class="row align-items-center">
@@ -357,7 +357,7 @@
                 >{{ currentStep.props.nextBtn.text }}</button> -->
               </div>
               <!-- 网络版专用按钮 开始 -->
-              <div class="col col-12 my-1">
+              <!-- <div class="col col-12 my-1">
                 <button
                   type="button"
                   v-if="'finalResult'==(currentStep.mode)"
@@ -365,22 +365,29 @@
                   class="btn btn-sm my-1 me-4"
                   :class="`btn-danger`"
                 >不保存并前往下一条</button>
-              </div>
+              </div> -->
               <div class="col col-12 my-1">
-                <button
+                <!-- <button
                   type="button"
                   v-if="'finalResult'==(currentStep.mode)"
                   @click="bEU.save(example)"
                   class="btn btn-sm my-1 me-1"
                   :class="`btn-success`"
-                >保存</button>
-                <button
+                >保存</button> -->
+                <!-- <button
                   type="button"
                   v-if="'finalResult'==(currentStep.mode)"
                   @click="bEU.saveAndNext(example)"
                   class="btn btn-sm my-1 me-1"
                   :class="`btn-primary`"
-                >保存并前往下一条</button>
+                >保存并前往下一条</button> -->
+                <button
+                  type="button"
+                  v-if="'finalResult'==(currentStep.mode)"
+                  @click="bEU.saveAndNext(example)"
+                  class="btn btn-sm my-1 me-1"
+                  :class="`btn-success`"
+                >保存并继续</button>
               </div>
               <!-- 网络版专用按钮 结束 -->
             </div>
