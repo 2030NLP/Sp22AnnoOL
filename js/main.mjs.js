@@ -129,6 +129,7 @@ const RootComponent = {
         currentWorkerId: "",
         currentWorkerSecret: "",
         currentWorkerTarget: 600,
+        currentWorkerTaskType: "",
         //
         currentPage: "setup",
         //
@@ -165,6 +166,7 @@ const RootComponent = {
       appData.ctrl.currentWorkerId = stored?.workerId;
       appData.ctrl.currentWorkerSecret = stored?.secret;
       appData.ctrl.currentWorkerTarget = stored?.target;
+      appData.ctrl.currentWorkerTaskType = stored?.taskType;
       appData.ctrl.currentWorkerTaskCount = stored?.taskCount;
       appData.newThings.lastEID = store.get(`${APP_NAME}:lastEID`);
     });
@@ -223,32 +225,67 @@ const RootComponent = {
     appPack.stepCtrl = stepCtrl;
 
 
-    // 另一个 axios 实例，方便在控制台调试
-    const anotherAxios = axios.create({
-      headers: {'Catch-Cotrol': 'no-cache'},
+    // 一个 axios 实例，方便在控制台调试
+    const anAxios = axios.create({
+      headers: {'Cache-Cotrol': 'no-cache'},
     });
+
+
+
+    const topic2using = (topic) => {
+      const map = {
+        'check': '清洗',
+        't0': '清洗',
+        't1': '第1期',
+        't2': '第2期',
+        't3': '第3期',
+        'detail': '精标',
+        '清洗': '清洗',
+        '第1期': '第1期',
+        '第2期': '第2期',
+        '第3期': '第3期',
+        '精标': '精标',
+      };
+      if (!(topic in map)) {
+        return null;
+      }
+      return map[topic];
+    };
+
+    // 更新 schema
     const updateSchema = async () => {
       let wrap;
       try {
-        let response = await anotherAxios.request({
+        let response = await anAxios.request({
           url: "schema/steps.schema.json",
           method: 'get',
         });
         wrap = (response.data);
+        let taskType = appData.ctrl.currentWorkerTaskType;
+        let shouldUsing = topic2using(taskType);
+        if (shouldUsing?.length) {
+          wrap.using = shouldUsing;
+          wrap.version = wrap?.versions?.[shouldUsing];
+        };
+        if (shouldUsing==null || wrap.using==null || wrap.version==null) {
+          throw new Error("无效的 规范 或 版本号！");
+        };
       } catch (error) {
-        alertBox_pushAlert(`获取 schema 时出错！`, "danger");
+        alertBox_pushAlert(`获取 schema 时出错！（${error}）`, "danger", 5000, error);
+        throw error;
         return;
+        // return;
       };
       // console.debug(wrap);
       let got = stepCtrl.touchSchema(wrap);
       if (got) {
-        alertBox_pushAlert(`收到 schema（版本：${wrap.version}，规范：${wrap.using}）`, "warning");
+        alertBox_pushAlert(`当前 schema（规范：${wrap.using}，版本：${wrap.version}）`, "info", 2000);
       };
     };
 
-    onMounted(async () => {
-      await updateSchema();
-    });
+    // onMounted(async () => {
+    //   await updateSchema();
+    // });
 
     appPack.updateSchemaFn = updateSchema;
 
@@ -293,6 +330,10 @@ const RootComponent = {
 
 
 
+    const shouldShowNotice = () => (topic2using(appData?.ctrl?.currentWorkerTaskType)=='清洗' || appData?.ctrl?.currentWorker=='admin');
+    const shouldBeAdmin = () => (appData?.ctrl?.currentWorker=='admin');
+
+
 
     return {
       //
@@ -322,7 +363,7 @@ const RootComponent = {
       stepsDict,
       stepsDictWrap,
       //
-      anotherAxios,
+      anAxios,
       updateSchema,
       //
       stepCtrl,
@@ -333,6 +374,9 @@ const RootComponent = {
       getReplacedToken,
       getOriginToken,
       getTokenList,
+      //
+      shouldShowNotice,
+      shouldBeAdmin,
       //
     };
   },

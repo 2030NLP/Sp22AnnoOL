@@ -43,6 +43,7 @@ class BackEndUsage {
       workerId: this.data.ctrl.currentWorkerId,
       secret: this.data.ctrl.currentWorkerSecret,
       target: this.data.ctrl.currentWorkerTarget,
+      taskType: this.data.ctrl.currentWorkerTaskType,
       taskCount: this.data.ctrl.currentWorkerTaskCount,
     });
   }
@@ -119,7 +120,13 @@ class BackEndUsage {
   }
 
   async begin() {
-    await this.connect();
+    try {
+      await this.connect();
+      await this.updateSchema();
+    } catch (error) {
+      this.pushAlert(`发生错误，请联系管理员处理（${error}）`, "danger", 60000*60*24, error);
+      return;
+    };
     this.data.ctrl.currentPage = 'anno';
     let lastEID = this?.data?.newThings?.lastEID ?? null;
     let btn = this.data.tasks.find(btn => btn.eId == lastEID);
@@ -143,10 +150,20 @@ class BackEndUsage {
       this.data.newThings.topic = resp?.data?.topic;  // TODO, 此处不应该有 TOPIC 信息
       await this.updateUser(resp?.data?.user);
       this.pushAlert(`${resp?.data?.user?.name}的信息已同步`);
+      if (this.data.ctrl.currentWorkerQuitted) {
+        throw new Error("非活跃用户");
+        return;
+      }
       await this.updateTaskList();
+      if (!this?.data?.tasks?.length) {
+        throw new Error("目前没有任务");
+        return;
+      }
     } catch (error) {
       console.log(error);
       this.pushAlert(error, 'danger');
+      throw error;
+      return;
     };
     // this.pushAlert("connect 结束", 'secondary');
   }
@@ -231,13 +248,19 @@ class BackEndUsage {
       workerId: user.id,
       secret: user.token,
       target: user.task?.length,
+      taskType: user?.currTask,
+      taskGroup: user?.currTaskGroup,
       taskCount: user.task?.length,
+      quitted: user?.quitted,
     };
     this.data.ctrl.currentWorker = user.name;
     this.data.ctrl.currentWorkerId = user.id;
     this.data.ctrl.currentWorkerSecret = user.token;
     this.data.ctrl.currentWorkerTarget = user.task?.length;
+    this.data.ctrl.currentWorkerTaskType = user?.currTask;
+    this.data.ctrl.currentWorkerTaskGroup = user?.currTaskGroup;
     this.data.ctrl.currentWorkerTaskCount = user.task?.length;
+    this.data.ctrl.currentWorkerQuitted = user?.quitted;
     this.data.newThings.theUser = user;
 
     this.storeTool.set(`${this.appName}:it`, it);

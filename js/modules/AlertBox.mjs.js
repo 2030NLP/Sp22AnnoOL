@@ -1,4 +1,4 @@
-// modifiedAt: 2022-03-15
+// modifiedAt: 2022-03-22
 
 class AlertBox {
   constructor(reactive_alert_box_data) {
@@ -9,8 +9,8 @@ class AlertBox {
   static new(reactive_alert_box_data) {
     return new AlertBox(reactive_alert_box_data);
   }
-  pushAlert(ctt = "🐵", typ = "info", tot = 2000) {
-    console.log(['pushAlert', ctt, typ, tot]);
+  pushAlert(ctt = "🐵", typ = "info", tot = 2000, other) {
+    console.log(['pushAlert', ctt, typ, tot, other]);
     let idx = this.data.lastIdx + 1;
     this.data.alerts.push({
       'idx': idx,

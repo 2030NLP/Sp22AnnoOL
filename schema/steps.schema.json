@@ -1,6 +1,13 @@
 {
   "name": "SpaCE2022",
   "version": "2203021v1",
+  "versions": {
+    "清洗": "2203021v1",
+    "第1期": "2203021v1",
+    "第2期": null,
+    "第3期": null,
+    "精标": null
+  },
   "using": "第1期",
   "清洗": {
     "startStep": "start",

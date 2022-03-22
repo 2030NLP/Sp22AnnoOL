@@ -201,7 +201,7 @@
     /*.material-area span.token[data-pos=p] {
       color: #6f42c1;
     }*/
-    .admin .material-area span.token[data-replaced=true] {
+    .material-area.admin span.token[data-replaced=true] {
       /*color: #f00;*/
       /*font-weight: bold;*/
       border: 2px #ff0000 solid;
@@ -210,10 +210,10 @@
       border-bottom: 2px dotted #faa;
       border-radius: 5px;
     }*/
-    .material-area span.token[data-replaced=true].should-notice {
+    .material-area.show-notice span.token[data-replaced=true].should-notice {
       /*border: 1px #ff0000 solid;*/
-      /*color: #f00;*/
-      /*font-weight: bold;*/
+      color: #f00;
+      font-weight: bold;
     }
     .material-area span.token[data-selecting=true] {
       background: #eef;

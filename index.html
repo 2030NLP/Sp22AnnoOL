@@ -142,7 +142,7 @@
 
 
     <!-- 语料清单 开始 -->
-    <div class="container page my-4" id="page-list" v-show="ctrl.currentPage=='list'||ctrl.currentPage=='setup' && tasks.length">
+    <div v-if="false" class="container page my-4" id="page-list" v-show="ctrl.currentPage=='list'||ctrl.currentPage=='setup' && tasks.length">
       <div class="container py-2">
         <div class="row align-items-center">
           <div class="col col-12 my-2">
@@ -193,7 +193,6 @@
       id="page-main-editor"
       v-show="ctrl?.currentWorker?.length && ctrl.currentPage=='anno'"
       v-if="example!=null&&example?.material!=null"
-      :class="ctrl?.currentWorker=='admin'?'admin':''"
     >
       <div class="container" id="page-main-editor--container">
 
@@ -207,7 +206,11 @@
           <!-- 内容区 开始 -->
           <div class="col col-12 col-lg-7 my-1">
             <!-- 替换后文本区 开始 -->
-            <div class="row my-1 material-area" id="material-replaced">
+            <div
+              id="material-replaced"
+              class="row my-1 material-area"
+              :class="{'show-notice': shouldShowNotice(), 'admin': shouldBeAdmin()}"
+            >
               <p>
                 <span
                   v-for="token in getTokenList()"
@@ -233,7 +236,12 @@
             </div>
             <!-- 替换后文本区 结束 -->
             <!-- 替换前原文区 开始 -->
-            <div class="row my-1 material-area" id="material-origin" :data-show="ctrl.showOrigin" v-show="ctrl.showOrigin">
+            <div
+              id="material-origin"
+              class="row my-1 material-area"
+              v-show="ctrl.showOrigin"
+              :data-show="ctrl.showOrigin"
+            >
               <p>
                 <span
                   v-for="token in getTokenList()"
