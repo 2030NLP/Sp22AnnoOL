@@ -6,6 +6,12 @@
     }
 
 
+    .modal {
+      display: block;
+      background: rgba(0,0,0,0.5);
+      /*backdrop-filter: blur(2px);*/
+      /*-webkit-backdrop-filter: blur(2px);*/
+    }
 
     .alert-wrap {
       position: fixed;
@@ -114,7 +120,7 @@
 
     .bodywrap {
       min-height: 110vh;
-      padding-bottom: 6rem;
+      /*padding-bottom: 6rem;*/
     }
 
     .container.page {

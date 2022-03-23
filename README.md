@@ -514,14 +514,14 @@ let theBackEnd = new BackEnd(bridge, handleErrorFn);  // 实例化
 await theBackEnd.request(config);                      // 给后端发送定制请求
 await theBackEnd.db(table, operator, kwargs, _$$$);    // 后端数据库万能接口，非常危险，谨慎使用
 await theBackEnd.getTopic();                           // 获取当前标注任务的主题
-await theBackEnd.getUser();                            // 获取用户信息
+await theBackEnd.getMe();                            // 获取用户信息
 await theBackEnd.getWorkList();                        // 获取用户的任务清单
 await theBackEnd.getThing(user_id, task_id);           // 获取任务id对应的任务详情、语料、标注内容等
 await theBackEnd.getTask(user_id, task_id);            // 获取任务信息
 await theBackEnd.getEntry(entry_id);                   // 获取语料
 await theBackEnd.getAnno(user_id, task_id);            // 获取标注内容
 await theBackEnd.updateAnno(user_id, task_id, anno_wrap, topic);    // 更新标注内容
-await theBackEnd.newTask(user_id, count, topic);       // 给用户分配一定数量的新任务
+// await theBackEnd.newTask(user_id, count, topic);       // 给用户分配一定数量的新任务
 ```
 
 

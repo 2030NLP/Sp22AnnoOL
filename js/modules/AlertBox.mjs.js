@@ -10,8 +10,9 @@ class AlertBox {
     return new AlertBox(reactive_alert_box_data);
   }
   pushAlert(ctt = "🐵", typ = "info", tot = 2000, other) {
-    console.log(['pushAlert', ctt, typ, tot, other]);
+    tot = tot ?? 2000;
     let idx = this.data.lastIdx + 1;
+    console.log(['pushAlert', idx, ctt, typ, tot, other]);
     this.data.alerts.push({
       'idx': idx,
       'type': typ,

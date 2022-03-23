@@ -27,7 +27,49 @@ const uuid = () => {
    return uuid;
 }
 
-export { forceBlur, timeString, foolCopy, uuid };
+const errorHappened = (err) => {
+  if (err == null) {
+    // console.log('err == null');
+    return false;
+  };
+  if (typeof(err)=="string" && err.length==0) {
+    // console.log('typeof(err)=="string" && err.length==0');
+    return false;
+  };
+  if (err instanceof Array && err.length==0) {
+    // console.log('err instanceof Array && err.length==0');
+    return false;
+  };
+  if (typeof(err)=="number" && err<=0) {
+    // console.log('typeof(err)=="number" && err<=0');
+    return false;
+  };
+  if (typeof(err)=="string" && parseInt(err)<=0) {
+    // console.log('typeof(err)=="string" && parseInt(err)<=0');
+    return false;
+  };
+  if (!(err instanceof Array) && err instanceof Object && (Object.keys(err).length==0)) {
+    // console.log('err instanceof Object ...');
+    return false;
+  };
+  if (!(err instanceof Array) && err instanceof Object &&
+    (
+      !errorHappened(err?.code) &&
+      !errorHappened(err?.message) &&
+      !errorHappened(err?.msg) &&
+      !errorHappened(err?.Code) &&
+      !errorHappened(err?.Message) &&
+      !errorHappened(err?.Msg) &&
+      !errorHappened(err?.MSG)
+    )
+  ) {
+    console.log('err instanceof Object ...');
+    return false;
+  };
+  return true;
+};
+
+export { forceBlur, timeString, foolCopy, uuid, errorHappened };
 // if (typeof module !== 'undefined') {
 //   module.exports = { forceBlur, timeString, foolCopy, uuid };
 // }

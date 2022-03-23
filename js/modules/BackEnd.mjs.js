@@ -1,6 +1,7 @@
 // modifiedAt: 2022-03-15
 
 import axios from '../modules_lib/axios_0.26.1_.mjs.js';
+import { errorHappened } from '../util.mjs.js';
 
 class BackEnd {
   constructor(token, baseURL, handleErrorFn=console.log) {
@@ -31,9 +32,15 @@ class BackEnd {
 
   async request(config) {
     try {
-      let response = await this.bridge.request({...config, headers: {
-              'authorization': `Bearer ${this.token}`
-            }});
+      let response = await this.bridge.request({
+        ...config,
+        headers: {
+          'authorization': `Bearer ${this.token}`,
+        },
+      });
+      if (errorHappened(response?.data?.err)) {
+        throw new Error(response?.data?.err, {data: response?.data});
+      };
       return response;
     } catch (error) {
       // console.log({config, error});
@@ -76,11 +83,11 @@ class BackEnd {
     // response.data.err === ''
   }
 
-  async getUser() {
+  async getMe() {
     // 获取 user 信息
     let response = await this.request({
       method: "get",
-      url: `/user/`,
+      url: `/me`,
     });
     return response;
     // 应有输出：
@@ -88,6 +95,7 @@ class BackEnd {
     //   id,
     //   name,
     //   token,
+    //   currTask,               // 该用户当前参与的任务类型
     //   task: [task.id],        // 该用户有哪些 task
     //   annotated: [entry.id],  // 该用户已经标注过了哪些 entry  // 其实有点多余
     // }
@@ -95,11 +103,19 @@ class BackEnd {
     // response.data.err === ''
   }
 
+  async getUsersAll() {
+    let response = await this.request({
+      method: "get",
+      url: `/users`,
+    });
+    return response;
+  }
+
   async getWorkList() {
     // 获取 当前 user 的 任务清单
     let response = await this.request({
       method: "get",
-      url: `/work-list/`
+      url: `/work-list-for-me`
     });
     return response;
     // 应有输出：
@@ -116,7 +132,7 @@ class BackEnd {
     //   task.id
     let response = await this.request({
       method: "get",
-      url: `/thing/${user_id}/${task_id}`,
+      url: `/things/${user_id}/${task_id}`,
       // data: {
       //   'user_id': user_id,
       // },
@@ -138,7 +154,7 @@ class BackEnd {
     //   task.id
     let response = await this.request({
       method: "get",
-      url: `/task/${user_id}/${task_id}`,
+      url: `/tasks/${user_id}/${task_id}`,
       // data: {
       //   'user_id': user_id,
       // },
@@ -155,6 +171,22 @@ class BackEnd {
     // response.data.err === ''
   }
 
+  async getTasksMatters() {
+    let response = await this.request({
+      method: "get",
+      url: `/tasks-matter`,
+    });
+    return response;
+  }
+
+  async getTasksAll() {
+    let response = await this.request({
+      method: "get",
+      url: `/tasks`,
+    });
+    return response;
+  }
+
   async getAnno(user_id, task_id) {
     // 获取 annotation 信息
     // 输入：
@@ -162,7 +194,7 @@ class BackEnd {
     //   task.id  // 该 annotation 所对应的 task
     let response = await this.request({
       method: "get",
-      url: `/anno/${user_id}/${task_id}`,
+      url: `/annos/${user_id}/${task_id}`,
       // data: {
       //   'user_id': user_id,
       //   'task_id': task_id,
@@ -178,6 +210,14 @@ class BackEnd {
     //   content,  // 该 annotation 的具体内容
     // }
     // response.data.err === ''
+  }
+
+  async getAnnosAll() {
+    let response = await this.request({
+      method: "get",
+      url: `/annos`,
+    });
+    return response;
   }
 
   async updateAnno(user_id, task_id, anno_wrap, topic) {
@@ -216,7 +256,7 @@ class BackEnd {
     //
     let response = await this.request({
       method: "put",
-      url: `/anno/${user_id}/${task_id}`,
+      url: `/annos/${user_id}/${task_id}`,
       data: data,
     });
     return response;
@@ -229,7 +269,7 @@ class BackEnd {
     // 输入：entry.id
     let response = await this.request({
       method: "get",
-      url: `/entry/${entry_id}`,
+      url: `/entries/${entry_id}`,
     });
     return response;
     // 应有输出：
@@ -246,37 +286,37 @@ class BackEnd {
 
   // 几个功能性的 api 开始
 
-  async newTask(user_id, count, topic) {
-    // this.handleErrorFn("newTask 开始");
-    // 安排新任务
-    // 输入：
-    //   user_id
-    //   count  // 新增加任务的数量
-    //   topic  // 任务主题
+  // async newTask(user_id, count, topic) {
+  //   // this.handleErrorFn("newTask 开始");
+  //   // 安排新任务
+  //   // 输入：
+  //   //   user_id
+  //   //   count  // 新增加任务的数量
+  //   //   topic  // 任务主题
 
-    // 如果任务主题未知，则从服务器获取
-    topic = `${topic}`
-    if (!topic.length) {
-      let resp = await this.getTopic();
-      if (resp?.data?.topic?.length) {
-        topic = resp.data.topic;
-      };
-    };
-    //
-    let response = await this.request({
-      method: "post",
-      url: `/new-task/`,
-      data: {
-        'user_id': user_id,
-        'count': count,
-        'topic': topic,
-      },
-    });
-    // this.handleErrorFn("newTask 结束");
-    return response;
-    // 应有输出：
-    // response.data.err === ''
-  }
+  //   // 如果任务主题未知，则从服务器获取
+  //   topic = `${topic}`
+  //   if (!topic.length) {
+  //     let resp = await this.getTopic();
+  //     if (resp?.data?.topic?.length) {
+  //       topic = resp.data.topic;
+  //     };
+  //   };
+  //   //
+  //   let response = await this.request({
+  //     method: "post",
+  //     url: `/new-task/`,
+  //     data: {
+  //       'user_id': user_id,
+  //       'count': count,
+  //       'topic': topic,
+  //     },
+  //   });
+  //   // this.handleErrorFn("newTask 结束");
+  //   return response;
+  //   // 应有输出：
+  //   // response.data.err === ''
+  // }
 
 
 

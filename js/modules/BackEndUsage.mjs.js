@@ -2,6 +2,48 @@
 
 import { timeString, foolCopy } from '../util.mjs.js';
 
+const errorHappened = (err) => {
+  if (err == null) {
+    // console.log('err == null');
+    return false;
+  };
+  if (typeof(err)=="string" && err.length==0) {
+    // console.log('typeof(err)=="string" && err.length==0');
+    return false;
+  };
+  if (err instanceof Array && err.length==0) {
+    // console.log('err instanceof Array && err.length==0');
+    return false;
+  };
+  if (typeof(err)=="number" && err<=0) {
+    // console.log('typeof(err)=="number" && err<=0');
+    return false;
+  };
+  if (typeof(err)=="string" && parseInt(err)<=0) {
+    // console.log('typeof(err)=="string" && parseInt(err)<=0');
+    return false;
+  };
+  if (!(err instanceof Array) && err instanceof Object && (Object.keys(err).length==0)) {
+    // console.log('err instanceof Object ...');
+    return false;
+  };
+  if (!(err instanceof Array) && err instanceof Object &&
+    (
+      !errorHappened(err?.code) &&
+      !errorHappened(err?.message) &&
+      !errorHappened(err?.msg) &&
+      !errorHappened(err?.Code) &&
+      !errorHappened(err?.Message) &&
+      !errorHappened(err?.Msg) &&
+      !errorHappened(err?.MSG)
+    )
+  ) {
+    console.log('err instanceof Object ...');
+    return false;
+};
+  return true;
+};
+
 class BackEndUsage {
   constructor(appPack) {
     this.data = appPack.reactive_data;
@@ -54,7 +96,7 @@ class BackEndUsage {
     try {
       let resp = await this.backEnd.getThing(this.data.ctrl.currentWorkerId, task_btn?.id);
       // this.pushAlert(resp?.data);
-      if (resp?.data?.err?.length) {
+      if (errorHappened(resp?.data?.err)) {
         this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
         return;
       };
@@ -69,7 +111,11 @@ class BackEndUsage {
       await this.updateSchema();
       this.tokenSelector.clear(this.ewp.example?.material?.tokenList);
       //
-      this.ewp.example = {};
+      this.ewp.example = {
+        _info: {
+          btn_idx: task_btn.idx,
+        },
+      };
       //
       let thing = await this.touchTask(task_btn);
       if (thing?.entry) {
@@ -142,12 +188,12 @@ class BackEndUsage {
     console.log(this);
     try {
       console.log(this);
-      let resp = await this.backEnd.getUser();
-      if (resp?.data?.err?.length) {
+      let resp = await this.backEnd.getMe();
+      if (errorHappened(resp?.data?.err)) {
         this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
         return;
       };
-      this.data.newThings.topic = resp?.data?.topic;  // TODO, 此处不应该有 TOPIC 信息
+      this.data.newThings.topic = resp?.currTask;  //以前是 TOPIC 的
       await this.updateUser(resp?.data?.user);
       this.pushAlert(`${resp?.data?.user?.name}的信息已同步`);
       if (this.data.ctrl.currentWorkerQuitted) {
@@ -168,39 +214,39 @@ class BackEndUsage {
     // this.pushAlert("connect 结束", 'secondary');
   }
 
-  async updateTarget() {
-    // this.pushAlert("updateTarget 开始", 'secondary');
-    try {
-      let oldCount = this.data.ctrl.currentWorkerTaskCount;
-      let target = this.data.ctrl.currentWorkerTarget;
-      let delta = target - oldCount;
-      if (delta <= 0) {
-        this.pushAlert(`【操作取消】新目标要大于原始目标才行`, 'secondary');
-        this.data.ctrl.currentWorkerTarget = this.data.ctrl.currentWorkerTaskCount;
-        return;
-      };
-      if (delta > 50) {
-        delta = 50;
-        this.pushAlert(`【操作调整】新目标比原始目标多过50条，已自动调整`, 'secondary');
-      };
-      let resp = await this.backEnd.newTask(this.data.ctrl.currentWorkerId, delta, this.data.newThings.topic||null);
-      if (resp?.data?.err?.length) {
-        this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
-        this.data.ctrl.currentWorkerTarget = this.data.ctrl.currentWorkerTaskCount;
-        return;
-      };
-      await this.connect();
-      let newDelta = this.data.ctrl.currentWorkerTaskCount - oldCount;
-      if (newDelta <= 0) {
-        this.pushAlert(`【操作未果】没有更多可分配的任务`, 'info');
-        return
-      };
-      this.pushAlert(`【操作成功】已为您分配 ${newDelta} 条新任务`, 'success');
-    } catch (error) {
-      this.pushAlert(error, 'danger');
-    };
-    // this.pushAlert("updateTarget 结束", 'secondary');
-  }
+  // async updateTarget() {
+  //   // this.pushAlert("updateTarget 开始", 'secondary');
+  //   try {
+  //     let oldCount = this.data.ctrl.currentWorkerTaskCount;
+  //     let target = this.data.ctrl.currentWorkerTarget;
+  //     let delta = target - oldCount;
+  //     if (delta <= 0) {
+  //       this.pushAlert(`【操作取消】新目标要大于原始目标才行`, 'secondary');
+  //       this.data.ctrl.currentWorkerTarget = this.data.ctrl.currentWorkerTaskCount;
+  //       return;
+  //     };
+  //     if (delta > 50) {
+  //       delta = 50;
+  //       this.pushAlert(`【操作调整】新目标比原始目标多过50条，已自动调整`, 'secondary');
+  //     };
+  //     let resp = await this.backEnd.newTask(this.data.ctrl.currentWorkerId, delta, this.data.newThings.topic||null);
+  //     if (errorHappened(resp?.data?.err)) {
+  //       this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
+  //       this.data.ctrl.currentWorkerTarget = this.data.ctrl.currentWorkerTaskCount;
+  //       return;
+  //     };
+  //     await this.connect();
+  //     let newDelta = this.data.ctrl.currentWorkerTaskCount - oldCount;
+  //     if (newDelta <= 0) {
+  //       this.pushAlert(`【操作未果】没有更多可分配的任务`, 'info');
+  //       return
+  //     };
+  //     this.pushAlert(`【操作成功】已为您分配 ${newDelta} 条新任务`, 'success');
+  //   } catch (error) {
+  //     this.pushAlert(error, 'danger');
+  //   };
+  //   // this.pushAlert("updateTarget 结束", 'secondary');
+  // }
 
   async updateTaskList() {
     // this.pushAlert("updateTaskList 开始");
@@ -208,7 +254,7 @@ class BackEndUsage {
       let aa = this.pushAlert("正在获取任务列表，请稍等……", "info", 99999999);
       let resp = await this.backEnd.getWorkList();
       this.removeAlert(aa);
-      if (resp?.data?.err?.length) {
+      if (errorHappened(resp?.data?.err)) {
         this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
         return;
       };
@@ -290,7 +336,7 @@ class BackEndUsage {
         anno_wrap.isDropping = true;
       };
       let resp = await this.backEnd.updateAnno(this.data.ctrl.currentWorkerId, task_id, anno_wrap, this.data?.newThings?.topic);
-      if (resp?.data?.err?.length) {
+      if (errorHappened(resp?.data?.err)) {
         this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
         return false;
       };
@@ -313,7 +359,7 @@ class BackEndUsage {
     if (idx < this.data.tasks.length && idx >= 0) {
       let btn = this.data.tasks[idx];
       let content = await this.touchTaskBtn(btn);
-      return content;
+      return content ?? {};
     };
     return null;
   }

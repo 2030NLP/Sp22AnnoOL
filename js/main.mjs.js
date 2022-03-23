@@ -11,7 +11,7 @@ import {
   onMounted,
   // onUpdated,
   createApp as Vue_createApp,
-  watch
+  watch,
 } from './modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
 // import { timeString, foolCopy } from './util.mjs.js';
@@ -32,7 +32,7 @@ import __Wrap_of_store__ from './modules_lib/store_2.0.9_.legacy.min.mjs.js';
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0322-01";
+const APP_VERSION = "22-0323-00";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -69,7 +69,7 @@ const RootComponent = {
       alerts: [],
     });
     const alertBox = new AlertBox(alertData);
-    const alertBox_pushAlert = (ctt, typ, tot) => alertBox.pushAlert(ctt, typ, tot);
+    const alertBox_pushAlert = (ctt, typ, tot, other) => alertBox.pushAlert(ctt, typ, tot, other);
     const alertBox_removeAlert = (idx) => alertBox.removeAlert(idx);
 
     // 初始化 文件读取 模块
@@ -130,6 +130,7 @@ const RootComponent = {
         currentWorkerSecret: "",
         currentWorkerTarget: 600,
         currentWorkerTaskType: "",
+        currentWorkerTaskCount: null,
         //
         currentPage: "setup",
         //
@@ -193,8 +194,8 @@ const RootComponent = {
     const theBackEnd = new BackEnd(appData.ctrl.currentWorkerSecret, `${API_BASE}/api/`, alertBox_pushAlert);
 
     watch(()=>appData.ctrl.currentWorkerSecret, () => {
-      theBackEnd.token = appData.ctrl.currentWorkerSecret
-    })
+      theBackEnd.token = appData.ctrl.currentWorkerSecret;
+    });
 
     const appPack = {
       reactive_data: appData,
