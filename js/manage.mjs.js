@@ -198,8 +198,14 @@ const RootComponent = {
     //   }
     // }
 
-    const userCurrTasks = user => user.allTasks.filter(task => topic2using(task.topic)==topic2using(user.currTask));
-    const userCurrDoneTasks = user => user.doneTasks.filter(task => topic2using(task.topic)==topic2using(user.currTask));
+    const userCurrTasks = user => {
+      let tt = user.allTasks ?? [];
+      return tt.filter(task => topic2using(task.topic)==topic2using(user.currTask));
+    };
+    const userCurrDoneTasks = user => {
+      let tt = user.doneTasks ?? [];
+      return tt.filter(task => topic2using(task.topic)==topic2using(user.currTask));
+    };
     const userProgress = user => {
       let cDoneLen = userCurrDoneTasks(user).length;
       let cDueLen = userCurrTasks(user).length;
