@@ -75,18 +75,21 @@
         </div>
         <div class="row align-items-center my-2">
           <div class="col col-12">
+            <div>上次刷新数据的时间是 {{ctrl.lastTime}} 。</div>
+          </div>
+          <div class="col col-12">
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
-              :class="{'btn-outline-secondary': theDB.users?.length, 'btn-outline-primary': !theDB.users?.length}"
+              :class="{'btn-outline-success': theDB.users?.length, 'btn-outline-primary': !theDB.users?.length}"
               @click="()=>{sync()}"
               title="从服务器更新最新数据，仅更新 User, Task, Anno 表"
-            >更新数据库</button>
+            >刷新数据库</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
-              :class="{'btn-outline-secondary': theDB.entries?.length, 'btn-outline-primary': !theDB.entries?.length}"
-              @click="()=>{modalBox.toggle()}"
+              :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-primary': !theDB.entries?.length}"
+              @click="modalBox_open('upload-entries')"
               title="因网络传输不太稳定，而语料库较大，故请从本地选择语料库文件进行加载"
             >导入 语料(Entry) 表</button>
           </div>
@@ -133,7 +136,7 @@
               <tbody class="text-center">
                 <tr v-for="user in theDB.users" :key="user.id" class="align-middle">
                   <td>{{user.id}}</td>
-                  <td>{{user.name}}<span v-if="user.quited" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
+                  <td>{{user.name}}<span v-if="user.quitted" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
                   <td><span v-for="role in user.role" class="badge rounded-pill bg-primary me-1">{{role}}</span></td>
                   <td>{{user.currTaskGroup}}</td>
                   <td>{{user.manager}}</td>
@@ -176,28 +179,34 @@
                   <th scope="col">负责人</th>
                   <!-- <th scope="col">机构简称</th> -->
                   <th scope="col">机构</th>
-                  <th scope="col">电话</th>
+                  <!-- <th scope="col">电话</th>
                   <th scope="col">邮箱</th>
                   <th scope="col">微信</th>
-                  <th scope="col">其他</th>
+                  <th scope="col">其他</th> -->
                   <th scope="col">操作</th>
                 </tr>
               </thead>
               <tbody class="text-center">
                 <tr v-for="user in theDB.users" :key="user.id" class="align-middle">
                   <td>{{user.id}}</td>
-                  <td>{{user.name}}<span v-if="user.quited" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
+                  <td>{{user.name}}<span v-if="user.quitted" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
                   <td><span v-for="role in user.role" class="badge rounded-pill bg-primary me-1">{{role}}</span></td>
                   <td>{{topic2using(user.currTask)}}</td>
                   <td>{{user.currTaskGroup}}</td>
                   <td>{{user.manager}}</td>
                   <!-- <td>{{user?.info?.inst_abbr}}</td> -->
                   <td>{{user?.info?.institution}}</td>
-                  <td>{{user?.info?.phone}}</td>
+                  <!-- <td>{{user?.info?.phone}}</td>
                   <td>{{user?.info?.email}}</td>
                   <td>{{user?.info?.wechat}}</td>
-                  <td>{{user?.info?.other}}</td>
+                  <td>{{user?.info?.other}}</td> -->
                   <td>
+                    <button
+                      type="button"
+                      class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                      :title="`查看更多关于${user.name}的信息`"
+                      @click="modalBox_open('user-detail', user)"
+                    >更多信息</button>
                     <button
                       type="button"
                       class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
@@ -206,13 +215,23 @@
                     >拷贝密码</button>
                     <button
                       type="button"
+                      v-if="!user.quitted"
                       class="btn btn-sm me-2 my-1 btn-outline-secondary"
                       :title="`给${user.name}添加“已退出”标记`"
+                      @click="modalBox_open('user-set-quitted', user)"
                     >标记退出</button>
+                    <button
+                      type="button"
+                      v-if="user.quitted"
+                      class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                      :title="`为${user.name}移除“已退出”标记`"
+                      @click="modalBox_open('user-unset-quitted', user)"
+                    >不再退出</button>
                     <button
                       type="button"
                       class="btn btn-sm me-2 my-1 btn-outline-secondary"
                       :title="`对${user.name}的信息进行详细编辑`"
+                      @click="modalBox_open('user-edit', user)"
                     >编辑</button>
                   </td>
                 </tr>
@@ -228,10 +247,55 @@
     <!-- Modal -->
     <div class="modal-wrap" style="display: block;" ref="modal_wrap">
       <div class="modal" v-show="modalBox.data.show" :class="{show: modalBox.data.show}">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
 
 
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" v-if="modalBox.data.theme = MODAL_THEMES.default">
-          <div class="modal-content">
+          <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['default']">
+            <div class="modal-body">
+              <div class="row align-items-center my-2">
+                <div class="col-12">
+                  <p>😄</p>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide()}">取消</button>
+              <button type="button" class="btn btn-sm btn-primary" @click="()=>{modalBox.hide()}">确定</button>
+            </div>
+          </div>
+
+
+          <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-set-quitted']">
+            <div class="modal-body">
+              <div class="row align-items-center my-2">
+                <div class="col-12">
+                  <p>确定要将用户 {{modalBox.data.kwargs?.name}} 标记为“已退出”吗？</p>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide()}">取消</button>
+              <button type="button" class="btn btn-sm btn-danger" @click="setAsQuitted(modalBox.data.kwargs)">确定</button>
+            </div>
+          </div>
+
+
+          <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-unset-quitted']">
+            <div class="modal-body">
+              <div class="row align-items-center my-2">
+                <div class="col-12">
+                  <p>确定要去除用户 {{modalBox.data.kwargs?.name}} 的“已退出”标记吗？</p>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide()}">取消</button>
+              <button type="button" class="btn btn-sm btn-danger" @click="setNotQuitted(modalBox.data.kwargs)">确定</button>
+            </div>
+          </div>
+
+
+          <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['upload-entries']">
             <!-- <div class="modal-header">
               <h5 class="modal-title">Modal title</h5>
               <button type="button" class="btn-close"></button>
@@ -279,9 +343,9 @@
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide()}">Close</button>
             </div>
           </div>
+
+
         </div>
-
-
       </div>
     </div>
 

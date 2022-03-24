@@ -39,6 +39,7 @@ class BackEnd {
         },
       });
       if (errorHappened(response?.data?.err)) {
+        console.log(response);
         throw new Error(response?.data?.err, {data: response?.data});
       };
       return response;
@@ -103,10 +104,38 @@ class BackEnd {
     // response.data.err === ''
   }
 
+  async postAssigment(wrap) {
+    let response = await this.request({
+      method: "post",
+      url: `/assigment`,
+      data: {
+        'topic': wrap?.['topic']??null,
+        'user_tag': wrap?.['user_tag']??null,
+        'task_tag': wrap?.['task_tag']??null,
+        'users_per_task': wrap?.['users_per_task']??null,
+        'tasks_per_user': wrap?.['tasks_per_user']??null,
+        'exclusion': wrap?.['exclusion']??null,
+        'polygraphs_per_user': wrap?.['polygraphs_per_user']??null,
+      },
+    });
+    return response;
+  }
+
   async getUsersAll() {
     let response = await this.request({
       method: "get",
       url: `/users`,
+    });
+    return response;
+  }
+
+  async updateUser(user) {
+    let response = await this.request({
+      method: "put",
+      url: `/users/${user.id}`,
+      data: {
+        item: user,
+      },
     });
     return response;
   }

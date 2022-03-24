@@ -14,7 +14,7 @@ import {
   watch,
 } from './modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
-import { timeString, foolCopy, uuid, errorHappened } from './util.mjs.js';
+import { timeString, dateString, foolCopy, uuid, errorHappened } from './util.mjs.js';
 import BaseSaver from './modules/BaseSaver.mjs.js';
 import TheReader from './modules/TheReader.mjs.js';
 import AlertBox from './modules/AlertBox.mjs.js';
@@ -34,11 +34,11 @@ const APP_NAME = "Sp22-Anno-Manager";
 const APP_VERSION = "22-0323-00";
 
 // 开发环境 和 生产环境 的 控制变量
-const DEVELOPING = 0;
+const DEVELOPING = 1;
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const API_BASE_DEV = "http://192.168.124.28:8888";  //"http://10.1.25.237:8888";
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
-const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
+const API_BASE = DEVELOPING ? API_BASE_DEV_LOCAL : API_BASE_PROD;
 
 
 const RootComponent = {
@@ -48,18 +48,27 @@ const RootComponent = {
     const lo = _;
 
     const MODAL_THEMES = {
-      "default": "default",
+      'default': null,
+      'upload-entries': 'upload-entries',
+      'user-set-quitted': 'user-set-quitted',
+      'user-unset-quitted': 'user-unset-quitted',
     };
 
     // 初始化 提示框 模块
     const modalData = reactive({
       show: false,
       theme: 'default',
+      kwargs: {},
     });
     const modalBox = new ModalBox(modalData);
     const modalBox_show = () => modalBox.show();
     const modalBox_hide = () => modalBox.hide();
     const modalBox_toggle = () => modalBox.toggle();
+    const modalBox_open = (theme, kwargs) => {
+      modalData.theme = theme;
+      modalData.kwargs = kwargs;
+      modalBox_show();
+    };
 
     // 初始化 提示框 模块
     const alertData = reactive({
@@ -122,6 +131,7 @@ const RootComponent = {
       },
       haveStore: false,
       tab: TABS['overview'],
+      lastTime: "never",
     });
 
     const theBackEnd = new BackEnd(ctrl.currentUser.token, `${API_BASE}/api/`, alertBox_pushAlert);
@@ -145,6 +155,7 @@ const RootComponent = {
       store.set(`${APP_NAME}:version`, APP_VERSION);
       store.set(`${APP_NAME}:currentUser`, ctrl.currentUser);
       store.set(`${APP_NAME}:tab`, ctrl.tab);
+      store.set(`${APP_NAME}:lastTime`, ctrl.lastTime);
     };
 
     const goTab = (tb) => {
@@ -163,7 +174,11 @@ const RootComponent = {
       };
       let storedUser = store.get(`${APP_NAME}:currentUser`);
       if (storedUser != null) {
-        ctrl.currentUser = store.get(`${APP_NAME}:currentUser`);
+        ctrl.currentUser = storedUser;
+      };
+      let storedTime = store.get(`${APP_NAME}:lastTime`);
+      if (storedTime != null) {
+        ctrl.lastTime = storedTime;
       };
       let storedDB = store.get(`${APP_NAME}:DB`);
       if (storedDB != null) {
@@ -215,13 +230,14 @@ const RootComponent = {
 
     const sync = async () => {
       let aidx = alertBox_pushAlert('正在同步，请稍等……', 'info', 9999999);
+      let time = new Date();
       try {
         let usersResp = await app.theBackEnd.getUsersAll();
         if (errorHappened(usersResp?.data?.err)) {
           throw new Error(usersResp?.data?.err, {cause: usersResp?.data?.err});
           return;
         };
-        let tasksResp = await app.theBackEnd.getTasksMatters();
+        let tasksResp = await app.theBackEnd.getTasksAll();
         if (errorHappened(tasksResp?.data?.err)) {
           throw new Error(tasksResp?.data?.err, {cause: tasksResp?.data?.err});
           return;
@@ -232,16 +248,20 @@ const RootComponent = {
           return;
         };
 
-        theDB.users = usersResp?.data?.result;
-        theDB.tasks = tasksResp?.data?.result;
-        theDB.annos = annosResp?.data?.result;
+        theDB.users = usersResp?.data?.data;
+        theDB.tasks = tasksResp?.data?.data;
+        theDB.annos = annosResp?.data?.data;
 
         extendDB();
 
         saveDB();
 
         alertBox_removeAlert(aidx);
-        alertBox_pushAlert('同步完成', 'success');
+        ctrl.lastTime = time.toLocaleString();
+
+        saveBasic();
+
+        alertBox_pushAlert(`数据库已更新至最新状态(${ctrl.lastTime})`, 'success', 5000);
 
         return theDB;
 
@@ -252,6 +272,50 @@ const RootComponent = {
         return;
       };
       alertBox_removeAlert(aidx);
+    };
+
+    const setAsQuitted = async (user) => {
+      if (user.quitted) {
+        alertBox_pushAlert(`${user.name} 本来就被记为“已退出”了`, 'warning', 5000);
+        return;
+      };
+      let newUser = foolCopy(user);
+      newUser.quitted = true;
+      try {
+        let resp = await theBackEnd.updateUser(newUser);
+        if (!resp.data.succeed) {
+          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.err}】`, 'danger', 5000, resp);
+          return;
+        };
+        Object.assign(user, resp.data.data);
+        saveDB();
+        alertBox_pushAlert(`${user.name} 更新成功`, 'success');
+        modalBox_hide();
+      } catch(error) {
+        alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
+      }
+    };
+
+    const setNotQuitted = async (user) => {
+      if (!user.quitted) {
+        alertBox_pushAlert(`${user.name} 没有被记为“已退出”`, 'warning', 5000);
+        return;
+      };
+      let newUser = foolCopy(user);
+      newUser.quitted = null;
+      try {
+        let resp = await theBackEnd.updateUser(newUser);
+        if (!resp.data.succeed) {
+          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.err}】`, 'danger', 5000, resp);
+          return;
+        };
+        Object.assign(user, resp.data.data);
+        saveDB();
+        alertBox_pushAlert(`${user.name} 更新成功`, 'success');
+        modalBox_hide();
+      } catch(error) {
+        alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
+      }
     };
 
     const FileControl = class FileControl {
@@ -278,6 +342,7 @@ const RootComponent = {
       store,
       //
       timeString,
+      dateString,
       uuid,
       errorHappened,
       //
@@ -288,6 +353,8 @@ const RootComponent = {
       //
       TABS,
       MODAL_THEMES,
+      //
+      modalBox_open,
       //
       theBackEnd,
       modalBox,
@@ -301,6 +368,10 @@ const RootComponent = {
       //
       saveBasic,
       saveDB,
+      //
+      setAsQuitted,
+      setNotQuitted,
+      //
     };
   },
 };

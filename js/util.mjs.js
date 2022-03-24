@@ -17,6 +17,8 @@ const timeString = () => {
 
 const foolCopy = (it) => JSON.parse(JSON.stringify(it ?? null));
 
+const dateString = () => JSON.parse(JSON.stringify(new Date()));
+
 const uuid = () => {
   // Author: Abhishek Dutta, 12 June 2020
   // License: CC0 (https://creativecommons.org/choose/zero/)
@@ -69,7 +71,7 @@ const errorHappened = (err) => {
   return true;
 };
 
-export { forceBlur, timeString, foolCopy, uuid, errorHappened };
+export { forceBlur, timeString, dateString, foolCopy, uuid, errorHappened };
 // if (typeof module !== 'undefined') {
 //   module.exports = { forceBlur, timeString, foolCopy, uuid };
 // }

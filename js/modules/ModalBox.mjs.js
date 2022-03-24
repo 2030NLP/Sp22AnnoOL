@@ -3,6 +3,9 @@
 class ModalBox {
   constructor(reactive_modal_box_data) {
     // this.data.show = false;
+      // show: false,
+      // theme: 'default',
+      // kwargs: {},
     this.data = reactive_modal_box_data;
   }
   static new(reactive_modal_box_data) {
@@ -14,10 +17,16 @@ class ModalBox {
   }
   hide() {
     this.data.show = false;
+    this.data.theme = 'default';
+    this.data.kwargs = {};
     return this.data.show;
   }
   toggle() {
-    this.data.show = !this.data.show;
+    if (this.data.show) {
+      this.hide();
+    } else {
+      this.show();
+    };
     return this.data.show;
   }
 }
