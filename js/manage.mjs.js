@@ -430,7 +430,7 @@ const RootComponent = {
       console.log(dct);
       //
       assignData.plans = plans;
-      assignData.planPerUser = Object.entries(dct);
+      assignData.planPerUser = Object.entries(dct).filter(pair => pair[1].length);
 
       await analyzeAssignmentPlan();
 
