@@ -299,7 +299,10 @@ const RootComponent = {
         alertBox_pushAlert(`${user.name} 本来就被记为“已退出”了`, 'warning', 5000);
         return;
       };
-      let newUser = foolCopy(user);
+      let newUser = foolCopy({
+        id: user.id,
+        token: user.token,
+      });
       newUser.quitted = true;
       try {
         let resp = await theBackEnd.updateUser(newUser);
