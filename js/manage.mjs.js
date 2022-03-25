@@ -31,10 +31,10 @@ import __Wrap_of_lodash__ from './modules_lib/lodash_4.17.21_.min.mjs.js';     /
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0323-00";
+const APP_VERSION = "22-0325-00";
 
 // 开发环境 和 生产环境 的 控制变量
-const DEVELOPING = 1;
+const DEVELOPING = 0;
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const API_BASE_DEV = "http://192.168.124.28:8888";  //"http://10.1.25.237:8888";
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
@@ -49,6 +49,7 @@ const RootComponent = {
 
     const MODAL_THEMES = {
       'default': null,
+      'confirm': 'confirm',
       'upload-entries': 'upload-entries',
       'user-set-quitted': 'user-set-quitted',
       'user-unset-quitted': 'user-unset-quitted',
@@ -122,6 +123,7 @@ const RootComponent = {
       "userProgress": "userProgress",
       "overview": "overview",
       "entryAndTask": "entryAndTask",
+      "taskAssign": "taskAssign",
     };
 
     const ctrl = reactive({
@@ -156,18 +158,9 @@ const RootComponent = {
       store.set(`${APP_NAME}:currentUser`, ctrl.currentUser);
       store.set(`${APP_NAME}:tab`, ctrl.tab);
       store.set(`${APP_NAME}:lastTime`, ctrl.lastTime);
+      store.set(`${APP_NAME}:assignData_settings`, assignData.settings);
     };
-
-    const goTab = (tb) => {
-      ctrl.tab = TABS[tb]??TABS['overview'];
-      saveBasic();
-    };
-
-    const saveDB = () => {
-      store.set(`${APP_NAME}:DB`, theDB);
-    };
-
-    onMounted(() => {
+    const loadBasic = () => {
       let storedVersion = store.get(`${APP_NAME}:version`);
       if (storedVersion == APP_VERSION) {
         ctrl.haveStore = true;  // 没什么用
@@ -180,12 +173,27 @@ const RootComponent = {
       if (storedTime != null) {
         ctrl.lastTime = storedTime;
       };
+      let stored_assignData_settings = store.get(`${APP_NAME}:assignData_settings`);
+      if (stored_assignData_settings != null) {
+        assignData.settings = stored_assignData_settings;
+      };
+      goTab(store.get(`${APP_NAME}:tab`));
+    };
+    const saveDB = () => {
+      store.set(`${APP_NAME}:DB`, theDB);
+    };
+    onMounted(() => {
       let storedDB = store.get(`${APP_NAME}:DB`);
       if (storedDB != null) {
         Object.assign(theDB, storedDB);
       };
-      goTab(store.get(`${APP_NAME}:tab`));
+      loadBasic();
     });
+
+    const goTab = (tb) => {
+      ctrl.tab = TABS[tb]??TABS['overview'];
+      saveBasic();
+    };
 
     const begin = () => {
       saveBasic();
@@ -225,12 +233,18 @@ const RootComponent = {
         for (let task of theDB.tasks) {
           task.submitters = theDB.annos.filter(anno => anno.task==task.id).map(anno => anno.user);
           task.enough = task.to?.length??0 <= task.submitters?.length??0;
+          theDB.taskDict[task.id] = task;
         };
 
         for (let user of theDB.users) {
           user.allTasks = theDB.tasks.filter(task => task.to.includes(user.id));
           user.allAnnos = theDB.annos.filter(anno => anno.user==user.id);
           user.doneTasks = theDB.tasks.filter(task => task.submitters.includes(user.id));
+          theDB.userDict[user.id] = user;
+        };
+
+        for (let anno of theDB.annos) {
+          theDB.annoDict[anno.id] = anno;
         };
     };
 
@@ -289,8 +303,8 @@ const RootComponent = {
       newUser.quitted = true;
       try {
         let resp = await theBackEnd.updateUser(newUser);
-        if (!resp.data.succeed) {
-          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.err}】`, 'danger', 5000, resp);
+        if (resp.data?.code!=200) {
+          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
           return;
         };
         Object.assign(user, resp.data.data);
@@ -323,6 +337,161 @@ const RootComponent = {
         alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
       }
     };
+
+
+
+    const assignTopics = [
+      {value: "清洗", desc: "清洗"},
+      {value: "第1期", desc: "第1期"},
+      {value: "第2期", desc: "第2期"},
+      {value: "归因", desc: "归因"},
+      {value: "精标", desc: "精标"},
+    ];
+
+    const assignData = reactive({
+      settings: {
+        'topic': null,
+        'user_tag': null,
+        'task_tag': null,
+        'users_per_task': 2,
+        'tasks_per_user': 20,
+        'exclusion': [],
+        'polygraphs_per_user': {},
+      },
+      plans: [],
+      planPerUser: [],
+      analysis: [],
+      undone: true,
+    });
+    watch(() => assignData.settings, () => {
+      saveBasic();
+    }, { deep: true });
+
+    const analyzeAssignmentPlan = async () => {
+      const analysis = [];
+      for (let planTask of assignData.plans) {
+        if (planTask.id in theDB.taskDict) {
+          let item = {
+            id: planTask.id,
+            old_to: theDB.taskDict[planTask.id].to,
+            old_submitters: theDB.taskDict.submitters,
+            new_to: planTask.to,
+            plan: planTask,
+          };
+          item.new_guys = lo.difference(item.new_to, item.old_to);
+          item.solid_guys = lo.intersection(item.new_to, item.old_to);
+          item.canceled_guys = lo.difference(item.old_to, item.new_to);
+          item.type = item.canceled_guys.length ? "modify" : "assign";
+          analysis.push(item);
+        } else {
+          let item = {
+            id: planTask.id,
+            old_to: [],
+            old_submitters: [],
+            new_to: planTask.to,
+            plan: planTask,
+            new_guys: planTask.to,
+            solid_guys: [],
+            canceled_guys: [],
+          };
+          item.type = "insert";
+          analysis.push(item);
+        };
+      };
+      assignData.analysis = lo.sortBy(lo.sortBy(analysis, it => it.canceled_guys.length), it => -it.new_guys.length);
+    };
+
+    const planAssigment = async () => {
+      assignData.undone = true;
+      let aidx = alertBox_pushAlert(`正在规划任务，请稍等……`, 'info', 99999999);
+      const plansResp = await app.theBackEnd.makeAssigmentPlan(assignData.settings);
+      if (plansResp?.data?.code!=200) {
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`规划任务时出现问题：${plansResp?.data?.msg}`, 'danger', 5000, plansResp);
+        return;
+      };
+
+      const plans = plansResp?.data?.data;
+      console.log(plans);
+      let dct = {}
+      for (let task of plans) {
+        for (let user_id of task.to) {
+          if (!(user_id in dct)) {
+            dct[user_id] = [];
+          };
+          if (!task.submitters.includes(user_id)) {
+            dct[user_id].push(task.id);
+          };
+        };
+      };
+      console.log(dct);
+      //
+      assignData.plans = plans;
+      assignData.planPerUser = Object.entries(dct);
+
+      await analyzeAssignmentPlan();
+
+      alertBox_removeAlert(aidx);
+      if (plans.length) {
+        alertBox_pushAlert(`规划成功，请进行后续操作`, 'success', 3000, plansResp);
+      } else {
+        alertBox_pushAlert(`无法规划，请检查设置`, 'warning', 3000, plansResp);
+      };
+    };
+
+    const cleanAssigment = () => {
+      assignData.plans = [];
+      assignData.planPerUser = {};
+      assignData.analysis = [];
+    };
+    const cancelAssigment = () => {
+      cleanAssigment();
+      alertBox_pushAlert(`规划已撤除`, 'warning', 3000);
+    };
+
+    const doAssigment = async () => {
+      let aidx = alertBox_pushAlert(`正在执行分配，请稍等……`, 'info', 99999999);
+      const actResp = await app.theBackEnd.actAssigmentPlan(assignData.settings);
+      if (actResp?.data?.code!=200) {
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`执行分配时出现问题：${actResp?.data?.msg}`, 'danger', 5000, actResp);
+        return;
+      };
+
+      alertBox_removeAlert(aidx);
+      if (true) {
+        assignData.undone = false;
+        // cleanAssigment();
+        alertBox_pushAlert(`执行成功`, 'success', 3000, actResp);
+      } else {
+        alertBox_pushAlert(`执行失败`, 'danger', 5000, actResp);
+      };
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     const FileControl = class FileControl {
       constructor(pack) {
@@ -367,6 +536,13 @@ const RootComponent = {
       alertBox,
       ctrl,
       theDB,
+      //
+      assignTopics,
+      assignData,
+      planAssigment,
+      doAssigment,
+      cancelAssigment,
+      cleanAssigment,
       //
       goTab,
       begin,

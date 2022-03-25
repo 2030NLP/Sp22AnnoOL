@@ -100,7 +100,7 @@ class BackEndUsage {
         this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
         return;
       };
-      return resp?.data?.thing;
+      return resp?.data?.data;
     } catch (error) {
       this.pushAlert(error, 'danger');
     };
@@ -120,13 +120,13 @@ class BackEndUsage {
       let thing = await this.touchTask(task_btn);
       if (thing?.entry) {
         let content = thing?.entry?.content;
-        content.annotations = thing?.annotation?.content?.annotations ?? [];
-        content._ctrl = thing?.annotation?.content?._ctrl ?? {};
+        content.annotations = thing?.anno?.content?.annotations ?? [];
+        content._ctrl = thing?.anno?.content?._ctrl ?? {};
         content._info = {
           btn_idx: task_btn.idx,
           task_id: thing?.task?.id,
           entry_id: thing?.entry?.id,
-          anno_id: thing?.annotation?.id,
+          anno_id: thing?.anno?.id,
         };
 
         this.ewp.example = {};
@@ -194,8 +194,8 @@ class BackEndUsage {
         return;
       };
       this.data.newThings.topic = resp?.currTask;  //以前是 TOPIC 的
-      await this.updateUser(resp?.data?.user);
-      this.pushAlert(`${resp?.data?.user?.name}的信息已同步`);
+      await this.updateUser(resp?.data?.data);
+      this.pushAlert(`${resp?.data?.data?.name}的信息已同步`);
       if (this.data.ctrl.currentWorkerQuitted) {
         throw new Error("非活跃用户");
         return;
@@ -253,17 +253,18 @@ class BackEndUsage {
     try {
       let aa = this.pushAlert("正在获取任务列表，请稍等……", "info", 99999999);
       let resp = await this.backEnd.getWorkList();
+      console.log(resp);
       this.removeAlert(aa);
-      if (errorHappened(resp?.data?.err)) {
-        this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
-        return;
-      };
-      let work_list = resp?.data?.work_list ?? [];
+      // if (errorHappened(resp?.data?.err)) {
+      //   this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
+      //   return;
+      // };
+      let work_list = resp?.data?.data ?? [];
       console.debug(work_list);
       let task_btn_list = [];
       for (let work of work_list) {
         let task = work.task;
-        let anno = work?.annotation;
+        let anno = work?.anno;
         let task_btn = {
           id: task.id,
           eId: task.entry,
@@ -336,8 +337,8 @@ class BackEndUsage {
         anno_wrap.isDropping = true;
       };
       let resp = await this.backEnd.updateAnno(this.data.ctrl.currentWorkerId, task_id, anno_wrap, this.data?.newThings?.topic);
-      if (errorHappened(resp?.data?.err)) {
-        this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
+      if (resp?.data?.code!=200) {
+        this.pushAlert(`【发生错误】${resp?.data?.msg}`, 'danger', null, resp);
         return false;
       };
       this.pushAlert(`已保存`, 'success', 500);

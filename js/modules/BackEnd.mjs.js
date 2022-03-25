@@ -1,7 +1,6 @@
 // modifiedAt: 2022-03-15
 
 import axios from '../modules_lib/axios_0.26.1_.mjs.js';
-import { errorHappened } from '../util.mjs.js';
 
 class BackEnd {
   constructor(token, baseURL, handleErrorFn=console.log) {
@@ -38,9 +37,9 @@ class BackEnd {
           'authorization': `Bearer ${this.token}`,
         },
       });
-      if (errorHappened(response?.data?.err)) {
-        console.log(response);
-        throw new Error(response?.data?.err, {data: response?.data});
+      if (response?.data?.code!=200) {
+        console.log("request error", response);
+        throw new Error(`request error(${response?.data?.code}): ${response?.data?.msg}`);
       };
       return response;
     } catch (error) {
@@ -53,12 +52,11 @@ class BackEnd {
 
 
   // 万能 api 开始
-  async db(table, operator, kwargs, _$$$, timeout=30000) {
+  async db(table, operator, kwargs, timeout=30000) {
     let data = {
       table: `${table??''}`,
       opt: `${operator??''}`,
       args: kwargs ?? {},
-      "$$$": `${_$$$??''}`,
     };
     let response = await this.request({
       method: "post",
@@ -71,18 +69,6 @@ class BackEnd {
   // 万能 api 结束
 
   // 几个最基本的 api 开始
-
-  async getTopic() {
-    // 获取当前任务主题
-    let response = await this.request({
-      method: "get",
-      url: `/topic/`,
-    });
-    return response;
-    // 应有输出：
-    // response.data.topic:String // 当前任务主题
-    // response.data.err === ''
-  }
 
   async getMe() {
     // 获取 user 信息
@@ -104,10 +90,10 @@ class BackEnd {
     // response.data.err === ''
   }
 
-  async postAssigment(wrap) {
+  async makeAssigmentPlan(wrap) {
     let response = await this.request({
       method: "post",
-      url: `/assigment`,
+      url: `/assigment-plan`,
       data: {
         'topic': wrap?.['topic']??null,
         'user_tag': wrap?.['user_tag']??null,
@@ -116,6 +102,16 @@ class BackEnd {
         'tasks_per_user': wrap?.['tasks_per_user']??null,
         'exclusion': wrap?.['exclusion']??null,
         'polygraphs_per_user': wrap?.['polygraphs_per_user']??null,
+      },
+    });
+    return response;
+  }
+  async actAssigmentPlan(plans) {
+    let response = await this.request({
+      method: "post",
+      url: `/assigment-act`,
+      data: {
+        'plans': plans,
       },
     });
     return response;
@@ -135,7 +131,7 @@ class BackEnd {
       url: `/users/${user.id}`,
       data: {
         item: user,
-      },
+      },  // TODO 后端接口调整
     });
     return response;
   }
@@ -155,7 +151,7 @@ class BackEnd {
   }
 
   async getThing(user_id, task_id) {
-    // 获取 task.id 对应的 task, entry, annotation
+    // 获取 task.id 对应的 task, entry, anno
     // 输入：
     //   user_id
     //   task.id
@@ -168,10 +164,10 @@ class BackEnd {
     });
     return response;
     // 应有输出：
-    // response.data.thing: {
+    // response.data.data: {
     //   task,
     //   entry,
-    //   annotation,
+    //   anno,
     // }
     // response.data.err === ''
   }
@@ -190,12 +186,12 @@ class BackEnd {
     });
     return response;
     // 应有输出：
-    // response.data.task: {
+    // response.data.data: {
     //   id,
     //   topic,
     //   eId: entry.id,          // 该 task 所对应的 entry.id
     //   to: [user.id],          // 该 task 分配给了哪些 user
-    //   submitters: [user.id],  // 哪些 user 已经提交了该 task 的 annotation
+    //   submitters: [user.id],  // 哪些 user 已经提交了该 task 的 anno
     // }
     // response.data.err === ''
   }
@@ -217,10 +213,10 @@ class BackEnd {
   }
 
   async getAnno(user_id, task_id) {
-    // 获取 annotation 信息
+    // 获取 anno 信息
     // 输入：
     //   user_id
-    //   task.id  // 该 annotation 所对应的 task
+    //   task.id  // 该 anno 所对应的 task
     let response = await this.request({
       method: "get",
       url: `/annos/${user_id}/${task_id}`,
@@ -231,12 +227,12 @@ class BackEnd {
     });
     return response;
     // 应有输出：
-    // response.data.annotation: {
+    // response.data.data: {
     //   id,
-    //   eId,      // 该 annotation 所对应的 entry.id
-    //   user,     // 该 annotation 所对应的 user.id
-    //   task_id,  // 该 annotation 所对应的 task.id
-    //   content,  // 该 annotation 的具体内容
+    //   entry,    // 该 anno 所对应的 entry.id
+    //   user,     // 该 anno 所对应的 user.id
+    //   task,     // 该 anno 所对应的 task.id
+    //   content,  // 该 anno 的具体内容
     // }
     // response.data.err === ''
   }
@@ -250,24 +246,24 @@ class BackEnd {
   }
 
   async updateAnno(user_id, task_id, anno_wrap, topic) {
-    // 获取 annotation 信息
+    // 获取 anno 信息
     // 输入：
     //   user_id
-    //   task.id  // 该 annotation 所对应的 task
-    //   anno_wrap  // 该 annotation 所包含的内容，具体为 annotations 和 _ctrl
+    //   task.id  // 该 anno 所对应的 task
+    //   anno_wrap  // 该 anno 所包含的内容，具体为 annotations 和 _ctrl
     //
     // 获取任务主题
     // let topic = appData?.newThings?.topic;
     if (topic == null) {
-      let resp = this.getTopic();
-      if (resp?.data?.topic?.length) {
-        topic = resp.data.topic;
+      let resp = this.getMe();
+      if (resp?.data?.data?.currTask?.length) {
+        topic = resp?.data?.data?.currTask;
       };
     };
     //
     let data = {
       'user': user_id,
-      'task_id': task_id,
+      'task': task_id,
       'topic': topic,
       'content': anno_wrap,
     };
@@ -302,7 +298,7 @@ class BackEnd {
     });
     return response;
     // 应有输出：
-    // response.data.entry: {
+    // response.data.data: {
     //   id,
     //   originId,      // 该 entry 的语料的原始句子的编号
     //   content: {},   // 该 entry 的具体内容
@@ -310,6 +306,14 @@ class BackEnd {
     // }
     // response.data.err === ''
   }
+
+}
+
+export default BackEnd;
+
+
+
+
 
   // 几个最基本的 api 结束
 
@@ -347,10 +351,16 @@ class BackEnd {
   //   // response.data.err === ''
   // }
 
+  // async getTopic() {
+  //   // 获取当前任务主题
+  //   let response = await this.request({
+  //     method: "get",
+  //     url: `/topic/`,
+  //   });
+  //   return response;
+  //   // 应有输出：
+  //   // response.data.topic:String // 当前任务主题
+  //   // response.data.err === ''
+  // }
 
 
-
-
-}
-
-export default BackEnd;
