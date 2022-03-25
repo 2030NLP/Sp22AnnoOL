@@ -166,7 +166,7 @@
           </div>
           <template v-if="assignData.analysis.length">
             <div class="col col-12">
-              <h4 class="mt-3 mb-2">规划结果</h4>
+              <h4 class="mt-3 mb-2">{{ assignData.undone ? '规划' : '执行'}}结果</h4>
             </div>
             <div class="col col-12 my-2">
               <div class="fw-bold">具体到每个标注者：</div>
@@ -226,7 +226,7 @@
                 class="btn btn-sm me-2 my-1 btn-outline-secondary"
                 @click="()=>{if(assignData.undone){cancelAssigment();}else{cleanAssigment();}}"
                 :title="assignData.undone ? '撤除规划好的任务安排' : '清除以上信息'"
-              >{{ assignData.undone ? '撤除规划' : '清除'}}</button>
+              >{{ assignData.undone ? '撤除规划' : '知道了，清除'}}</button>
             </div>
           </template>
         </div>
