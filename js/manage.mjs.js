@@ -324,7 +324,10 @@ const RootComponent = {
         alertBox_pushAlert(`${user.name} 没有被记为“已退出”`, 'warning', 5000);
         return;
       };
-      let newUser = foolCopy(user);
+      let newUser = foolCopy({
+        id: user.id,
+        token: user.token,
+      });
       newUser.quitted = null;
       try {
         let resp = await theBackEnd.updateUser(newUser);
