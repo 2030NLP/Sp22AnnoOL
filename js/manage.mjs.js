@@ -331,8 +331,8 @@ const RootComponent = {
       newUser.quitted = null;
       try {
         let resp = await theBackEnd.updateUser(newUser);
-        if (!resp.data.succeed) {
-          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.err}】`, 'danger', 5000, resp);
+        if (resp.data?.code!=200) {
+          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
           return;
         };
         Object.assign(user, resp.data.data);
