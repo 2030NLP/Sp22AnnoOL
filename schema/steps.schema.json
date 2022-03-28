@@ -1,8 +1,8 @@
 {
   "name": "SpaCE2022",
-  "version": "2203024",
+  "version": "2203028",
   "versions": {
-    "清洗": "2203024",
+    "清洗": "2203028",
     "第1期": "2203021v1",
     "第2期": null,
     "第3期": null,
@@ -44,53 +44,49 @@
           "instruction": "这段话符合下述哪种情形？",
           "optionBtns": [
             {
-              "text": "是正常的含有空间方位义的文本",
+              "text": "该段落不表达空间方位义/复杂难懂/不完整",
               "data": {
-                "label": "fine",
-                "desc": "这段话是正常的含有空间方位义的文本"
+                "label": "otherErrorNonSpatial",
+                "isDropping": true,
+                "desc": "该段落不表达空间方位义/复杂难懂/不完整"
               },
               "go": "end",
-              "style": "outline-primary"
+              "style": "outline-dark"
             },
             {
-              "text": "句中存在错误的字/词/符号",
+              "text": "该段落存在字词或符号错误",
               "go": "handleErrorWord",
               "style": "outline-dark"
             },
             {
-              "text": "句中某些高亮方位词不表达空间方位义",
-              "__data": {
-                "label": "otherErrorNotice",
-                "desc": "句中某些高亮方位词不表达空间方位义"
-              },
-              "go": "handleErrorNotice",
+              "text": "红色词（方位词）不表达空间方位义",
+              "go": "handleErrorSpF",
               "style": "outline-dark"
             },
             {
-              "text": "句中红色高亮的方位词存在分词错误",
+              "text": "紫色词（趋向动词）不是表达空间方位义的趋向动词",
+              "go": "handleErrorDVerb",
+              "style": "outline-dark"
+            },
+            {
+              "text": "高亮词存在分词错误",
               "go": "handleErrorSeg",
               "style": "outline-dark"
             },
             {
-              "text": "句子整体无空间方位义",
+              "text": "无上述问题",
               "data": {
-                "label": "otherErrorNonSpatial",
-                "isDropping": true,
-                "desc": "句中没有包含空间方位义"
+                "label": "fine",
+                "desc": "这段话不存在上述问题"
               },
               "go": "end",
-              "style": "outline-dark"
-            },
-            {
-              "text": "存在其他问题",
-              "go": "handleOther",
-              "style": "outline-dark"
+              "style": "outline-primary"
             }
           ]
         }
       },
-      "handleErrorNotice": {
-        "ref": "handleErrorNotice",
+      "handleErrorSpF": {
+        "ref": "handleErrorSpF",
         "name": "处理不合适的方位词",
         "mode": "text",
         "props": {
@@ -98,8 +94,34 @@
           "selectedTitle": "当前选中了：",
           "instruction": "（请勿填写下面的文本框，直接确定即可）",
           "data": {
-            "label": "otherErrorNotice",
+            "label": "otherErrorSpF",
             "desc": "是非空间义的方位词",
+            "on": [],
+            "withText": " "
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleErrorDVerb": {
+        "ref": "handleErrorDVerb",
+        "name": "处理不合适的趋向动词",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "请在文中划选存在问题的词",
+          "selectedTitle": "当前选中了：",
+          "instruction": "（请勿填写下面的文本框，直接确定即可）",
+          "data": {
+            "label": "otherErrorDVerb",
+            "desc": "是不合适的趋向动词",
             "on": [],
             "withText": " "
           },
