@@ -64,7 +64,7 @@
               "style": "outline-dark"
             },
             {
-              "text": "紫色词（趋向动词）不是表达空间方位义的趋向动词",
+              "text": "橙色词（趋向动词）不是表达空间方位义的趋向动词",
               "go": "handleErrorDVerb",
               "style": "outline-dark"
             },
