@@ -1,8 +1,8 @@
 {
   "name": "SpaCE2022",
-  "version": "2203028",
+  "version": "2203028v1",
   "versions": {
-    "清洗": "2203028",
+    "清洗": "2203028v1",
     "第1期": "2203021v1",
     "第2期": null,
     "第3期": null,
@@ -54,8 +54,8 @@
               "style": "outline-dark"
             },
             {
-              "text": "该段落存在字词或符号错误",
-              "go": "handleErrorWord",
+              "text": "该段落存在错别字或符号错误",
+              "go": "handleErrorString",
               "style": "outline-dark"
             },
             {
@@ -137,9 +137,9 @@
           }
         }
       },
-      "handleErrorWord": {
-        "ref": "handleErrorWord",
-        "name": "处理错字",
+      "handleErrorString": {
+        "ref": "handleErrorString",
+        "name": "处理错错误字符",
         "mode": "text",
         "props": {
           "selectInstruction": "请在文中划选出错的字符串；忽略分词错误",
