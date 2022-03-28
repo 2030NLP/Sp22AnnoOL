@@ -1,6 +1,13 @@
 
 
 
+
+    dl, ol, ul {
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+
     .vh-80 {
       height: 80vh;
     }
@@ -194,6 +201,9 @@
     .material-area span.token:hover {
       background: #fee;
     }
+    .material-area span.token[data-auto-dverb=true] {
+      color: #6610f2;
+    }
     .material-area span.token[data-auto-entity=true] {
       /*border: 1px #0d6efd solid;*/
       /*color: #0d6efd;*/
@@ -211,7 +221,7 @@
       color: #0d6efd;
       /*border-bottom: 1px #0d6efd dotted;*/
     }
-    .material-area span.token[data-auto-entity=true][data-pos=s] {
+    .material-area span.token[data-pos=s] {
       color: #198754;
       /*border: 1px #198754 solid;*/
     }
