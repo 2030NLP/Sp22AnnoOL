@@ -28,12 +28,12 @@ import ClipboardJS from './modules_lib/clipboard_2.0.10_.mjs.js';
 import __Wrap_of_store__ from './modules_lib/store_2.0.9_.legacy.min.mjs.js';  //
 import __Wrap_of_lodash__ from './modules_lib/lodash_4.17.21_.min.mjs.js';     // 这两个包引入之后，直接全局能用，不用做任何处理。
 
-import assign_tasks from './assign_tasks.mjs.js';
+import assign_tasks from './assign_tasks_new.mjs.js';
 
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0330-00";
+const APP_VERSION = "22-0330-01";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = 0;
@@ -212,6 +212,7 @@ const RootComponent = {
       haveStore: false,
       tab: TABS['overview'],
       lastTime: "never",
+      lastTimeDict: {},
     });
 
     const theBackEnd = new BackEnd(ctrl.currentUser.token, `${API_BASE}/api/`, alertBox_pushAlert);
@@ -254,6 +255,7 @@ const RootComponent = {
       store.set(`${APP_NAME}:currentUser`, ctrl.currentUser);
       store.set(`${APP_NAME}:tab`, ctrl.tab);
       store.set(`${APP_NAME}:lastTime`, ctrl.lastTime);
+      store.set(`${APP_NAME}:lastTimeDict`, ctrl.lastTimeDict);
       store.set(`${APP_NAME}:assignData_settings`, assignData.settings);
     };
     const loadBasic = () => {
@@ -269,6 +271,10 @@ const RootComponent = {
       if (storedTime != null) {
         ctrl.lastTime = storedTime;
       };
+      let storedTimeDict = store.get(`${APP_NAME}:lastTimeDict`);
+      if (storedTimeDict != null) {
+        ctrl.lastTimeDict = storedTimeDict;
+      };
       let stored_assignData_settings = store.get(`${APP_NAME}:assignData_settings`);
       if (stored_assignData_settings != null) {
         assignData.settings = stored_assignData_settings;
@@ -276,12 +282,18 @@ const RootComponent = {
       goTab(store.get(`${APP_NAME}:tab`));
     };
     const saveDB = () => {
-      store.set(`${APP_NAME}:DB`, theDB);
+      store.set(`${APP_NAME}:DB`, {
+        users: theDB.users,
+        tasks: theDB.tasks,
+        annos: theDB.annos,
+        entries: theDB.entries,
+      });
     };
     onMounted(() => {
       let storedDB = store.get(`${APP_NAME}:DB`);
       if (storedDB != null) {
         Object.assign(theDB, storedDB);
+        extendDB();
       };
       loadBasic();
     });
@@ -353,45 +365,117 @@ const RootComponent = {
         for (let anno of theDB.annos) {
           theDB.annoDict[anno.id] = anno;
         };
+
+        for (let entry of theDB.entries) {
+          theDB.entryDict[entry.id] = entry;
+        };
     };
+
+    const syncTable = async (extend=true, tableName, tableListName, fnName) => {
+      let aidx = alertBox_pushAlert('正在同步，请稍等……', 'info', 9999999);
+      let time = new Date();
+      try {
+        alertBox_removeAlert(aidx);
+        aidx = alertBox_pushAlert(`正在同步${tableName}，请稍等……`, 'info', 9999999);
+        let resp = await app.theBackEnd[fnName]();
+        if (errorHappened(resp?.data?.err)) {
+          throw new Error(resp?.data?.err, {cause: resp?.data?.err});
+          return;
+        };
+
+        theDB[tableListName] = resp?.data?.data;
+
+        if (extend) {
+          extendDB();
+        }
+
+        saveDB();
+
+        alertBox_removeAlert(aidx);
+        ctrl.lastTimeDict[tableListName] = time.toLocaleString();
+
+        saveBasic();
+
+        alertBox_pushAlert(`${tableName}已更新至最新状态(${ctrl.lastTimeDict[tableListName]})`, 'success', 5000);
+
+        return theDB[tableListName];
+
+      } catch (error) {
+        // if (aidx!=undefined)
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`【发生错误】${error}`, 'danger', null, error);
+        return;
+      };
+      alertBox_removeAlert(aidx);
+    };
+
+
+    const syncUser = async (extend=true) => {
+      let result = await syncTable(extend, ' User 表', 'users', 'getUsersAll');
+      return result;
+    };
+    const syncTask = async (extend=true) => {
+      let result = await syncTable(extend, ' Task 表', 'tasks', 'getTasksAll');
+      return result;
+    };
+    const syncAnno = async (extend=true) => {
+      let result = await syncTable(extend, ' Anno 表', 'annos', 'getAnnosAll');
+      return result;
+    };
+    const syncEntryInfo = async (extend=true) => {
+      let result = await syncTable(extend, ' Entry 简表', 'entries', 'getEntryInfoAll');
+      return result;
+    };
+
+
+
+
+
+
 
     const sync = async () => {
       let aidx = alertBox_pushAlert('正在同步，请稍等……', 'info', 9999999);
       let time = new Date();
       try {
-        alertBox_removeAlert(aidx);
-        aidx = alertBox_pushAlert('正在同步用户表，请稍等……', 'info', 9999999);
-        let usersResp = await app.theBackEnd.getUsersAll();
-        if (errorHappened(usersResp?.data?.err)) {
-          throw new Error(usersResp?.data?.err, {cause: usersResp?.data?.err});
-          return;
-        };
-        alertBox_removeAlert(aidx);
-        aidx = alertBox_pushAlert('正在同步任务表，请稍等……', 'info', 9999999);
-        let tasksResp = await app.theBackEnd.getTasksAll();
-        if (errorHappened(tasksResp?.data?.err)) {
-          throw new Error(tasksResp?.data?.err, {cause: tasksResp?.data?.err});
-          return;
-        };
-        alertBox_removeAlert(aidx);
-        aidx = alertBox_pushAlert('正在同步语料表（仅基本信息），请稍等……', 'info', 9999999);
-        let entriesResp = await app.theBackEnd.getEntryInfoAll();
-        if (errorHappened(entriesResp?.data?.err)) {
-          throw new Error(entriesResp?.data?.err, {cause: entriesResp?.data?.err});
-          return;
-        };
-        alertBox_removeAlert(aidx);
-        aidx = alertBox_pushAlert('正在同步标注表，请稍等……', 'info', 9999999);
-        let annosResp = await app.theBackEnd.getAnnosAll();
-        if (errorHappened(annosResp?.data?.err)) {
-          throw new Error(annosResp?.data?.err, {cause: annosResp?.data?.err});
-          return;
-        };
 
-        theDB.users = usersResp?.data?.data;
-        theDB.entries = entriesResp?.data?.data;
-        theDB.tasks = tasksResp?.data?.data;
-        theDB.annos = annosResp?.data?.data;
+        await syncUser(false);
+        await syncTask(false);
+        await syncAnno(false);
+        await syncEntryInfo(false);
+
+        // alertBox_removeAlert(aidx);
+        // aidx = alertBox_pushAlert('正在同步用户表，请稍等……', 'info', 9999999);
+        // let usersResp = await app.theBackEnd.getUsersAll();
+        // if (errorHappened(usersResp?.data?.err)) {
+        //   throw new Error(usersResp?.data?.err, {cause: usersResp?.data?.err});
+        //   return;
+        // };
+        // alertBox_removeAlert(aidx);
+        // aidx = alertBox_pushAlert('正在同步任务表，请稍等……', 'info', 9999999);
+        // let tasksResp = await app.theBackEnd.getTasksAll();
+        // if (errorHappened(tasksResp?.data?.err)) {
+        //   throw new Error(tasksResp?.data?.err, {cause: tasksResp?.data?.err});
+        //   return;
+        // };
+        // alertBox_removeAlert(aidx);
+        // aidx = alertBox_pushAlert('正在同步语料表（仅基本信息），请稍等……', 'info', 9999999);
+        // let entriesResp = await app.theBackEnd.getEntryInfoAll();
+        // if (errorHappened(entriesResp?.data?.err)) {
+        //   throw new Error(entriesResp?.data?.err, {cause: entriesResp?.data?.err});
+        //   return;
+        // };
+        // alertBox_removeAlert(aidx);
+        // aidx = alertBox_pushAlert('正在同步标注表，请稍等……', 'info', 9999999);
+        // let annosResp = await app.theBackEnd.getAnnosAll();
+        // if (errorHappened(annosResp?.data?.err)) {
+        //   throw new Error(annosResp?.data?.err, {cause: annosResp?.data?.err});
+        //   return;
+        // };
+
+        // theDB.users = usersResp?.data?.data;
+        // theDB.entries = entriesResp?.data?.data;
+        // theDB.tasks = tasksResp?.data?.data;
+        // theDB.annos = annosResp?.data?.data;
 
         extendDB();
 
@@ -518,6 +602,7 @@ const RootComponent = {
       planPerUser: [],
       analysis: [],
       undone: true,
+      result: {},
     });
     watch(() => assignData.settings, () => {
       saveBasic();
@@ -558,10 +643,16 @@ const RootComponent = {
     };
 
     const planAssigment = async () => {
+      cleanAssigment();
       assignData.undone = true;
-      let aidx = alertBox_pushAlert(`正在规划任务，请稍等……`, 'info', 99999999);
-      const plansResp = await makeAssigmentPlan(assignData.settings);
-      // const plansResp = await app.theBackEnd.makeAssigmentPlan(assignData.settings);
+      let aidx = await alertBox_pushAlert(`正在规划任务，请稍等……`, 'info', 99999999);
+      let pack = assignData.settings;
+      pack.polygraphs_per_user = {
+        'otherErrorString': 2,
+        'otherErrorSeg': 3,
+      };
+      const plansResp = await makeAssigmentPlan(pack);
+      // const plansResp = await app.theBackEnd.makeAssigmentPlan(pack);
       if (plansResp?.data?.code!=200) {
         alertBox_removeAlert(aidx);
         alertBox_pushAlert(`规划任务时出现问题：${plansResp?.data?.msg}`, 'danger', 5000, plansResp);
@@ -576,6 +667,9 @@ const RootComponent = {
           if (!(user_id in dct)) {
             dct[user_id] = [];
           };
+          if (task.submitters==null) {
+            task.submitters = [];
+          };
           if (!task.submitters.includes(user_id)) {
             dct[user_id].push(task.id);
           };
@@ -586,7 +680,9 @@ const RootComponent = {
       assignData.plans = plans;
       assignData.planPerUser = Object.entries(dct).filter(pair => pair[1].length);
 
+      let bidx = alertBox_pushAlert(`计算完毕，准备规划结果……`, 'success', 9999999, plansResp);
       await analyzeAssignmentPlan();
+      alertBox_removeAlert(bidx);
 
       alertBox_removeAlert(aidx);
       if (plans.length) {
@@ -600,6 +696,7 @@ const RootComponent = {
       assignData.plans = [];
       assignData.planPerUser = {};
       assignData.analysis = [];
+      assignData.result = {};
     };
     const cancelAssigment = () => {
       cleanAssigment();
@@ -608,7 +705,7 @@ const RootComponent = {
 
     const doAssigment = async () => {
       let aidx = alertBox_pushAlert(`正在执行分配，请稍等……`, 'info', 99999999);
-      const actResp = await app.theBackEnd.actAssigmentPlan(assignData.settings);
+      const actResp = await app.theBackEnd.actAssigmentPlan(assignData.plans);
       if (actResp?.data?.code!=200) {
         alertBox_removeAlert(aidx);
         alertBox_pushAlert(`执行分配时出现问题：${actResp?.data?.msg}`, 'danger', 5000, actResp);
@@ -618,8 +715,9 @@ const RootComponent = {
       alertBox_removeAlert(aidx);
       if (true) {
         assignData.undone = false;
+        assignData.result = actResp?.data?.data;
         // cleanAssigment();
-        alertBox_pushAlert(`执行成功`, 'success', 3000, actResp);
+        alertBox_pushAlert(`执行成功`, 'success', 5000, actResp);
       } else {
         alertBox_pushAlert(`执行失败`, 'danger', 5000, actResp);
       };
@@ -635,7 +733,9 @@ const RootComponent = {
 
 
 
-
+    const exportPlan = () => {
+      theSaver.saveJson(assignData.plans, 'plans.json');
+    };
 
 
 
@@ -648,7 +748,8 @@ const RootComponent = {
       users_per_task=2,
       tasks_per_user=20,
       exclusion=[],
-      polygraphs_per_user=[],
+      polygraphs_per_user={},  // TODO 选项配置
+      tasks_idx_base=_.max(theDB.tasks.map(it=>+it.id)),
       lo,
     ) {
       console.log(arguments);
@@ -692,13 +793,17 @@ const RootComponent = {
       // theSaver.save(pack);
 
       console.log(['start', dateString()]);
-      let tasks_to_update = await assign_tasks(pack, _);
+      let tasks_to_update = await assign_tasks(foolCopy(pack), _);
       console.log(['end', dateString()]);
       return tasks_to_update;
     };
 
     const makeAssigmentPlan = async (wrap) => {
       console.log([1, dateString()]);
+      let polygraphs_per_user = {
+        'otherErrorString': 2,
+        'otherErrorSeg': 3,
+      };
       let tables_to_update = await assignment(
         wrap?.['topic'],
         wrap?.['user_tag'],
@@ -706,7 +811,8 @@ const RootComponent = {
         wrap?.['users_per_task'],
         wrap?.['tasks_per_user'],
         wrap?.['exclusion'],
-        wrap?.['polygraphs_per_user'],
+        polygraphs_per_user,
+        // wrap?.['polygraphs_per_user'],  // TODO 选项配置
       );
       console.log([5, dateString()]);
       console.log(tables_to_update);
@@ -770,10 +876,15 @@ const RootComponent = {
       doAssigment,
       cancelAssigment,
       cleanAssigment,
+      exportPlan,
       //
       goTab,
       begin,
       sync,
+      syncUser,
+      syncTask,
+      syncAnno,
+      syncEntryInfo,
       //
       saveBasic,
       saveDB,

@@ -32,7 +32,7 @@ import __Wrap_of_store__ from './modules_lib/store_2.0.9_.legacy.min.mjs.js';
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0330-00";
+const APP_VERSION = "22-0330-01";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 

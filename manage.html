@@ -75,7 +75,11 @@
         </div>
         <div class="row align-items-center my-2">
           <div class="col col-12">
-            <div>上次刷新数据的时间是 {{ctrl.lastTime}} 。</div>
+            <div>上次刷新整个数据库的时间是 {{ctrl.lastTime}} 。</div>
+            <div>上次刷新 User 表的时间是 {{ctrl.lastTimeDict?.users}} 。</div>
+            <div>上次刷新 Task 表的时间是 {{ctrl.lastTimeDict?.tasks}} 。</div>
+            <div>上次刷新 Anno 表的时间是 {{ctrl.lastTimeDict?.annos}} 。</div>
+            <div>上次刷新 Entry 表的时间是 {{ctrl.lastTimeDict?.entries}} 。</div>
           </div>
           <div class="col col-12">
             <button
@@ -89,28 +93,28 @@
               type="button"
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.users?.length, 'btn-outline-primary': !theDB.users?.length}"
-              @click="()=>{sync()}"
+              @click="()=>{syncUser()}"
               title="从服务器更新 User 表"
             >刷新 User 表</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.tasks?.length, 'btn-outline-primary': !theDB.tasks?.length}"
-              @click="()=>{sync()}"
+              @click="()=>{syncTask()}"
               title="从服务器更新 Task 表"
             >刷新 Task 表</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.annos?.length, 'btn-outline-primary': !theDB.annos?.length}"
-              @click="()=>{sync()}"
+              @click="()=>{syncAnno()}"
               title="从服务器更新 Anno 表"
             >刷新 Anno 表</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-primary': !theDB.entries?.length}"
-              @click="()=>{sync()}"
+              @click="()=>{syncEntryInfo()}"
               title="从服务器更新 Entry 表（仅基本信息）"
             >刷新 Entry 表（仅基本信息）</button>
             <button
@@ -246,7 +250,8 @@
                     <button
                       v-for="task_id in pair[1]"
                       type="button"
-                      class="btn btn-sm me-2 my-1 btn-light"
+                      class="btn btn-sm me-2 my-1"
+                      :class="theDB.entryDict[theDB.taskDict[task_id]?.entry]?.polygraph ? 'btn-warning' : 'btn-light'"
                     >#{{ task_id }}</button>
                   </div>
                 </li>
@@ -259,7 +264,7 @@
               <ul class="list-group max-vh-40 overflow-auto border border-1">
                 <li class="list-group-item" v-for="item in assignData.analysis">
                   <div>
-                    <span>「{{item?.plan?.topic}} 任务 #{{item.id}}」/ 语料 #{{item?.plan?.entry}}」</span>
+                    <span>「{{item?.plan?.topic}} 任务 #{{item.id}}</span><span></span> / <span></span><span>语料 #{{item?.plan?.entry}}」</span>
                     <!-- <br v-if="item.new_to?.length"/> -->
                     <span v-if="item.new_to?.length">
                       分配给：
@@ -288,11 +293,27 @@
               >开始执行</button>
               <button
                 type="button"
+                class="btn btn-sm me-2 my-1 btn-primary"
+                __click="doAssigment"
+                @click="exportPlan"
+                title="开始执行规划好的任务安排"
+                v-if="assignData.undone"
+              >导出计划</button>
+              <button
+                type="button"
                 class="btn btn-sm me-2 my-1"
                 :class="assignData.undone ? 'btn-outline-secondary' : 'btn-outline-success'"
                 @click="()=>{if(assignData.undone){cancelAssigment();}else{cleanAssigment();}}"
                 :title="assignData.undone ? '撤除规划好的任务安排' : '清除以上信息'"
               >{{ assignData.undone ? '撤除规划' : '知道了，清除'}}</button>
+            </div>
+            <div class="col col-12 my-2" v-if="'inserted' in assignData.result">
+              <div>执行结果：</div>
+            </div>
+            <div class="col col-12 my-2" v-if="'inserted' in assignData.result">
+              <div>修改： {{ assignData.result.replaced }}</div>
+              <div>新增： {{ assignData.result.inserted }}</div>
+              <div>异常： {{ assignData.result.strange }}</div>
             </div>
           </template>
         </div>

@@ -87,7 +87,6 @@ class TaskAssigner {
     let [incomplete_tasks, incomplete_tasks_num] = TaskAssigner._get_incomplete_tasks(tasks, users_per_task);
     let unassigned_entries = TaskAssigner._get_unassigned_entries(entries, tasks, exclusion);
     let [polygraphs, total_polygraphs_per_user] = TaskAssigner._get_polygraphs(entries, polygraphs_per_user);
-    console.log(total_polygraphs_per_user);
     return new TaskAssigner({
       entries: unassigned_entries,
       users: users,
@@ -199,11 +198,8 @@ class TaskAssigner {
   }
 
   _get_candidate_entries() {
-    // let real_tasks_per_user = this.tasks_per_user - this.total_polygraphs_per_user;
-    // let total_tasks_num = real_tasks_per_user * len(this.users);
-    this.real_tasks_per_user = this.tasks_per_user - this.total_polygraphs_per_user
-    let total_tasks_num = this.real_tasks_per_user * len(this.users);
-
+    let real_tasks_per_user = this.tasks_per_user - this.total_polygraphs_per_user;
+    let total_tasks_num = real_tasks_per_user * len(this.users);
     let needed_tasks_num = Math.max(0, total_tasks_num - this.incomplete_tasks_num);
     let needed_entries_num = Math.ceil(needed_tasks_num / this.users_per_task);
     let candidate_entries;
@@ -221,10 +217,8 @@ class TaskAssigner {
     console.log('WARNING: number of unassigned entries are smaller than needed entries');
     let provided_tasks_num = len(this.entries) * this.users_per_task;
     let total_tasks_num = provided_tasks_num + this.incomplete_tasks_num;
-    // let real_tasks_per_user = Math.ceil(total_tasks_num / len(this.users));
-    // this.tasks_per_user = real_tasks_per_user + this.total_polygraphs_per_user;
-    this.real_tasks_per_user = Math.ceil(total_tasks_num / len(this.users));
-    this.tasks_per_user = this.real_tasks_per_user + this.total_polygraphs_per_user;
+    let real_tasks_per_user = Math.ceil(total_tasks_num / len(this.users));
+    this.tasks_per_user = real_tasks_per_user + this.total_polygraphs_per_user;
   }
 
   _create_candidate_tasks(candidate_entries) {
@@ -264,7 +258,7 @@ class TaskAssigner {
   }
 
   _assign_tasks(candidate_tasks) {
-    for (let ix=0; ix<this.real_tasks_per_user; ix++) {
+    for (let ix=0; ix<this.tasks_per_user; ix++) {
       if (!this._assign_tasks_to_each_user(candidate_tasks)) {break;}
     }
     return this._queue_to_list(candidate_tasks);
