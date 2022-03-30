@@ -1,8 +1,8 @@
 {
   "name": "SpaCE2022",
-  "version": "2203028v1",
+  "version": "2203030",
   "versions": {
-    "清洗": "2203028v1",
+    "清洗": "2203030",
     "第1期": "2203021v1",
     "第2期": null,
     "第3期": null,
@@ -170,12 +170,12 @@
         "props": {
           "selectInstruction": "请在文中划选出出现分词错误的片段",
           "selectedTitle": "当前选中了：",
-          "instruction": "应该修改为（用空格分词）：",
+          "instruction": "（请勿填写下面的文本框，直接确定即可）",
           "data": {
             "label": "otherErrorSeg",
-            "desc": "分词错误，应改为：",
+            "desc": "存在分词错误",
             "on": [],
-            "withText": ""
+            "withText": " "
           },
           "okBtn": {
             "text": "确定",
