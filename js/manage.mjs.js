@@ -439,9 +439,9 @@ const RootComponent = {
       try {
 
         await syncUser(false);
+        await syncEntryInfo(false);  // 非常重要，必须放在 Task 表 更新之前！因为它会改变 Task 表！
         await syncTask(false);
         await syncAnno(false);
-        await syncEntryInfo(false);
 
         // alertBox_removeAlert(aidx);
         // aidx = alertBox_pushAlert('正在同步用户表，请稍等……', 'info', 9999999);
