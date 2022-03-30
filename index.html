@@ -198,7 +198,7 @@
 
         <div class="row">
           <div class="row mt-2 mb-0">
-            <p class="text-muted small">#{{example?._info?.entry_id}}　{{example?.originId}}　{{`${fileInfo(example?.originId)?.用户显示名称}`}}</p>
+            <p class="text-muted small">#{{example?._info?.entry_id}}　{{example?.originId}}　{{`${fileInfo(example?.originId)?.用户显示名称??'其他'}`}}</p>
           </div>
         </div>
 
@@ -580,7 +580,7 @@
                 <div>{{ currentStep?.props?.selectedTitle }}<span>“<span v-for="tokenIdx in selection.array">{{ getReplacedToken(tokenIdx) }}</span>”</span><!-- <sub>{{selection.array}}</sub> --></div>
               </div>
 
-              <template v-if="selection.array.length||currentStep?.props?.canSkipSelection"">
+              <template v-if="selection.array.length||currentStep?.props?.canSkipSelection">
                 <!-- 指导语 -->
                 <div class="col col-12 my-1">
                   <div v-if="currentStep?.props?.instruction">{{ currentStep?.props?.instruction }}</div>
@@ -616,6 +616,15 @@
                 <!-- cancelBtn -->
                 <button v-if="currentStep?.props?.cancelBtn" type="button" @click="stepCtrl.cancelStep(currentStep.props.cancelBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.cancelBtn.style}`">{{ currentStep.props.cancelBtn.text }}</button>
               </div>
+
+              <template v-if="selection.array.length&&currentStep.mode=='text'&&currentStep.ref=='handleErrorString'">
+                <!-- 220330：对于修改字符错误的情形，添加区域显示修改后的完整的文本 -->
+                <div class="col col-12 my-1">修改后的完整文本为：</div>
+                <div class="col col-12 my-1">
+                  <div class="text-muted small"><span>{{ modifiedText.sideL }}</span><span class="text-danger fw-bold">{{ modifiedText.sideM }}</span><span>{{ modifiedText.sideR }}</span></div>
+                </div>
+              </template>
+
             </div>
             <!-- choose 或 text 模式结束 -->
 

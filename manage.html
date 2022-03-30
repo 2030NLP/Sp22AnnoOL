@@ -83,8 +83,36 @@
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.users?.length, 'btn-outline-primary': !theDB.users?.length}"
               @click="()=>{sync()}"
-              title="从服务器更新最新数据，仅更新 User, Task, Anno 表"
-            >刷新数据库</button>
+              title="从服务器更新最新数据，包括 User, Task, Anno 表，以及 Entry 表中的基本信息"
+            >刷新全部</button>
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="{'btn-outline-success': theDB.users?.length, 'btn-outline-primary': !theDB.users?.length}"
+              @click="()=>{sync()}"
+              title="从服务器更新 User 表"
+            >刷新 User 表</button>
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="{'btn-outline-success': theDB.tasks?.length, 'btn-outline-primary': !theDB.tasks?.length}"
+              @click="()=>{sync()}"
+              title="从服务器更新 Task 表"
+            >刷新 Task 表</button>
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="{'btn-outline-success': theDB.annos?.length, 'btn-outline-primary': !theDB.annos?.length}"
+              @click="()=>{sync()}"
+              title="从服务器更新 Anno 表"
+            >刷新 Anno 表</button>
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-primary': !theDB.entries?.length}"
+              @click="()=>{sync()}"
+              title="从服务器更新 Entry 表（仅基本信息）"
+            >刷新 Entry 表（仅基本信息）</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
@@ -99,7 +127,7 @@
 
     <div class="container page my-4">
       <div class="container py-2">
-        <div class="row">
+        <div class="row mt-2 mb-4">
           <div class="col">
             <ul class="nav nav-tabs">
               <li class="nav-item">
@@ -120,6 +148,43 @@
             </ul>
           </div>
         </div>
+
+
+
+
+
+
+        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.overview">
+          <div class="col col-12">
+            <div>语料总量：一共有多少，其中删除的一共有多少。</div>
+            <div>纯原句多少，替换句多少，替换句对多少。任务是否已设置。</div>
+            <div>总体情况：</div>
+            <ul>
+              <li>总任务量：{{ tasks_computed.total.total_num }}</li>
+              <li>已分配量：{{ tasks_computed.total.assigned_num }}</li>
+              <li>非足量提交：{{ tasks_computed.total.working_num }}</li>
+              <li>已足量提交：{{ tasks_computed.total.done_num }}</li>
+            </ul>
+            <div>各类型情况：</div>
+            <ul>
+              <li v-for="pair in tasks_computed.by_topic">
+                <span>{{pair[0]}}</span><span>：</span>
+                <ul>
+                  <li>总量：{{pair[1]?.total_num}}</li>
+                  <li>已分配：{{pair[1]?.assigned_num}}</li>
+                  <li>非足量提交：{{pair[1]?.working_num}}</li>
+                  <li>已足量提交：{{pair[1]?.done_num}}</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+
+
+
+
 
 
         <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.taskAssign">
@@ -223,7 +288,8 @@
               >开始执行</button>
               <button
                 type="button"
-                class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                class="btn btn-sm me-2 my-1"
+                :class="assignData.undone ? 'btn-outline-secondary' : 'btn-outline-success'"
                 @click="()=>{if(assignData.undone){cancelAssigment();}else{cleanAssigment();}}"
                 :title="assignData.undone ? '撤除规划好的任务安排' : '清除以上信息'"
               >{{ assignData.undone ? '撤除规划' : '知道了，清除'}}</button>
@@ -240,10 +306,10 @@
               <thead class="text-center">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">姓名</th>
-                  <th scope="col">角色</th>
                   <th scope="col">小组</th>
                   <th scope="col">负责人</th>
+                  <th scope="col">姓名</th>
+                  <th scope="col">角色</th>
                   <th scope="col">任务类型</th>
                   <th scope="col">此类进度</th>
                   <th scope="col">累计</th>
@@ -253,17 +319,17 @@
               <tbody class="text-center">
                 <tr v-for="user in theDB.users" :key="user.id" class="align-middle">
                   <td>{{user.id}}</td>
+                  <td>{{user.currTaskGroup}}</td>
+                  <td>{{theDB.userDict[user.manager]?.name}}</td>
                   <td>{{user.name}}<span v-if="user.quitted" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
                   <td><span v-for="role in user.role" class="badge rounded-pill bg-primary me-1">{{role}}</span></td>
-                  <td>{{user.currTaskGroup}}</td>
-                  <td>{{user.manager}}</td>
                   <td>{{topic2using(user.currTask)}}</td>
                   <td>
                     <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="标注进度">
                       <div
                         class="progress-bar bg-success"
                         role="progressbar"
-                        :style="`min-width: ${userProgress(user).pct};`"
+                        :style="`width: ${userProgress(user).pct};`"
                         :aria-valuenow="userProgress(user).mn"
                         :aria-valuemax="userProgress(user).bg"
                         aria-valuemin="0"
@@ -289,11 +355,11 @@
               <thead class="text-center">
                 <tr>
                   <th scope="col">#</th>
+                  <th scope="col">小组</th>
+                  <th scope="col">负责人</th>
                   <th scope="col">姓名</th>
                   <th scope="col">角色</th>
                   <th scope="col">任务类型</th>
-                  <th scope="col">小组</th>
-                  <th scope="col">负责人</th>
                   <!-- <th scope="col">机构简称</th> -->
                   <th scope="col">机构</th>
                   <!-- <th scope="col">电话</th>
@@ -306,11 +372,11 @@
               <tbody class="text-center">
                 <tr v-for="user in theDB.users" :key="user.id" class="align-middle">
                   <td>{{user.id}}</td>
+                  <td>{{user.currTaskGroup}}</td>
+                  <td>{{theDB.userDict[user.manager]?.name}}</td>
                   <td>{{user.name}}<span v-if="user.quitted" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
                   <td><span v-for="role in user.role" class="badge rounded-pill bg-primary me-1">{{role}}</span></td>
                   <td>{{topic2using(user.currTask)}}</td>
-                  <td>{{user.currTaskGroup}}</td>
-                  <td>{{user.manager}}</td>
                   <!-- <td>{{user?.info?.inst_abbr}}</td> -->
                   <td>{{user?.info?.institution}}</td>
                   <!-- <td>{{user?.info?.phone}}</td>

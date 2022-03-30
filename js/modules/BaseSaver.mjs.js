@@ -1,10 +1,11 @@
-// modifiedAt: 2022-03-15
+// modifiedAt: 2022-03-30
 
 import * as FileSaver from '../modules_lib/FileSaver.js';
 
 class BaseSaver {
   constructor() {
-    this.saveAsFn = FileSaver.saveAs;
+    // console.log(FileSaver);
+    this.saveAsFn = saveAs;
   }
   static new() {
     return new BaseSaver();

@@ -212,6 +212,15 @@ class BackEnd {
     return response;
   }
 
+  async getEntryInfoAll(timeout=600000) {
+    let response = await this.request({
+      method: "get",
+      url: `/entry-infos`,
+      timeout: timeout,
+    });
+    return response;
+  }
+
   async getAnno(user_id, task_id) {
     // 获取 anno 信息
     // 输入：
@@ -245,7 +254,7 @@ class BackEnd {
     return response;
   }
 
-  async updateAnno(user_id, task_id, anno_wrap, topic) {
+  async updateAnno(user_id, task_id, entry_id, anno_wrap, topic, entryVer) {
     // 获取 anno 信息
     // 输入：
     //   user_id
@@ -264,6 +273,8 @@ class BackEnd {
     let data = {
       'user': user_id,
       'task': task_id,
+      'entry': entry_id,
+      'entryVer': entryVer,
       'topic': topic,
       'content': anno_wrap,
     };
