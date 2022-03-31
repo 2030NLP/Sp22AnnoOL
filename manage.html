@@ -220,6 +220,18 @@
              v-model="assignData.settings.users_per_task"
             >
           </div>
+          <div class="col col-12">
+            <label class="form-label">测谎题设置（Json字符串）</label>
+            <textarea
+              class="form-control form-control-sm"
+              v-model="assignData.settings.polygraphs_per_user_json_string"
+              :class="{'is-invalid': assignData.polygraphs_per_user_json_string_error}"
+            ></textarea>
+            <div
+              class="invalid-feedback"
+              v-show="assignData.polygraphs_per_user_json_string_error"
+            >Json解析失败，请检查</div>
+          </div>
         </div>
 
 

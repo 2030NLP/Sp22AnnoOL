@@ -1,4 +1,16 @@
 
+// 基本信息 变量
+const APP_NAME = "Sp22-Anno-Manager";
+const APP_VERSION = "22-0330-01";
+
+// 开发环境 和 生产环境 的 控制变量
+const DEVELOPING = 0;
+const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
+const DEV_HOSTS = ["http://192.168.124.3:8888", "http://10.1.22.96:8888"];
+const API_BASE_DEV = DEV_HOSTS[1];
+const API_BASE_PROD = "https://sp22.nlpsun.cn";
+const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
+
 // 引入依赖的模块
 
 import {
@@ -29,18 +41,6 @@ import __Wrap_of_store__ from './modules_lib/store_2.0.9_.legacy.min.mjs.js';  /
 import __Wrap_of_lodash__ from './modules_lib/lodash_4.17.21_.min.mjs.js';     // 这两个包引入之后，直接全局能用，不用做任何处理。
 
 import assign_tasks from './assign_tasks_new.mjs.js';
-
-
-// 基本信息 变量
-const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0330-01";
-
-// 开发环境 和 生产环境 的 控制变量
-const DEVELOPING = 0;
-const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
-const API_BASE_DEV = "http://192.168.124.3:8888";  //"http://10.1.25.237:8888";
-const API_BASE_PROD = "https://sp22.nlpsun.cn";
-const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 
 
 const RootComponent = {
@@ -503,7 +503,50 @@ const RootComponent = {
 
 
 
+    const editUser = async (user, jsonText) => {
+      // let newObj = {};
+      // try {
+      //   newObj = JSON.parse(jsonText);
+      // } catch(error) {
+      //   alertBox_pushAlert(`JSON解析失败，请检查`, 'warning', 5000, jsonText);
+      //   return;
+      // };
+      // for (let kk of ['id', 'name', 'token']) {
+      //   if (!(kk in newObj)) {
+      //     alertBox_pushAlert(`缺少必要字段「${kk}」`, 'warning', 5000, jsonText);
+      //   };
+      // };
+      // for (let kk of [['currTask', ''], ['currTaskGroup', ''], []]) {
+      //   if (!(kk in newObj)) {
+      //     alertBox_pushAlert(`缺少必要字段「${kk}」`, 'warning', 5000, jsonText);
+      //   };
+      // };
 
+
+
+      // if (user.quitted) {
+      //   alertBox_pushAlert(`${user.name} 本来就被记为“已退出”了`, 'warning', 5000);
+      //   return;
+      // };
+      // let newUser = foolCopy({
+      //   id: user.id,
+      //   token: user.token,
+      // });
+      // newUser.quitted = true;
+      // try {
+      //   let resp = await theBackEnd.updateUser(newUser);
+      //   if (resp.data?.code!=200) {
+      //     alertBox_pushAlert(`${user.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
+      //     return;
+      //   };
+      //   Object.assign(user, resp.data.data);
+      //   saveDB();
+      //   alertBox_pushAlert(`${user.name} 更新成功`, 'success');
+      //   modalBox_hide();
+      // } catch(error) {
+      //   alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
+      // }
+    };
 
 
 
@@ -596,8 +639,10 @@ const RootComponent = {
         'users_per_task': 2,
         'tasks_per_user': 20,
         'exclusion': [],
-        'polygraphs_per_user': {},
+        // 'polygraphs_per_user': {},
+        'polygraphs_per_user_json_string': "",
       },
+      'polygraphs_per_user_json_string_error': false,
       plans: [],
       planPerUser: [],
       analysis: [],
@@ -647,10 +692,22 @@ const RootComponent = {
       assignData.undone = true;
       let aidx = await alertBox_pushAlert(`正在规划任务，请稍等……`, 'info', 99999999);
       let pack = assignData.settings;
-      pack.polygraphs_per_user = {
-        'otherErrorString': 2,
-        'otherErrorSeg': 3,
+      try {
+        if (assignData.settings.polygraphs_per_user_json_string.length) {
+          let polygraphs_per_user = JSON.parse(assignData.settings.polygraphs_per_user_json_string);
+          pack.polygraphs_per_user = polygraphs_per_user;
+        } else {
+          pack.polygraphs_per_user = {};
+        }
+      } catch(error) {
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`无法解析测谎题配置，请检查`, 'warning', 5000, assignData.settings);
+        return;
       };
+      // pack.polygraphs_per_user = {
+      //   'otherErrorString': 2,
+      //   'otherErrorSeg': 3,
+      // };
       const plansResp = await makeAssigmentPlan(pack);
       // const plansResp = await app.theBackEnd.makeAssigmentPlan(pack);
       if (plansResp?.data?.code!=200) {
@@ -725,21 +782,26 @@ const RootComponent = {
 
 
 
-
-
-
-
-
-
-
-
-    const exportPlan = () => {
-      theSaver.saveJson(assignData.plans, 'plans.json');
+    const makeAssigmentPlan = async (wrap) => {
+      console.log([1, dateString()]);
+      // let polygraphs_per_user = {
+      //   'otherErrorString': 2,
+      //   'otherErrorSeg': 3,
+      // };
+      let tables_to_update = await assignment(
+        wrap?.['topic'],
+        wrap?.['user_tag'],
+        wrap?.['task_tag'],
+        wrap?.['users_per_task'],
+        wrap?.['tasks_per_user'],
+        wrap?.['exclusion'],
+        // polygraphs_per_user,
+        wrap?.['polygraphs_per_user'],  // 选项配置
+      );
+      console.log([5, dateString()]);
+      console.log(tables_to_update);
+      return {'data': {'code': 200, 'data': tables_to_update}};
     };
-
-
-
-
 
     const assignment = async function (
       topic=null,
@@ -798,29 +860,11 @@ const RootComponent = {
       return tasks_to_update;
     };
 
-    const makeAssigmentPlan = async (wrap) => {
-      console.log([1, dateString()]);
-      let polygraphs_per_user = {
-        'otherErrorString': 2,
-        'otherErrorSeg': 3,
-      };
-      let tables_to_update = await assignment(
-        wrap?.['topic'],
-        wrap?.['user_tag'],
-        wrap?.['task_tag'],
-        wrap?.['users_per_task'],
-        wrap?.['tasks_per_user'],
-        wrap?.['exclusion'],
-        polygraphs_per_user,
-        // wrap?.['polygraphs_per_user'],  // TODO 选项配置
-      );
-      console.log([5, dateString()]);
-      console.log(tables_to_update);
-      return {'data': {'code': 200, 'data': tables_to_update}};
+
+
+    const exportPlan = () => {
+      theSaver.saveJson(assignData.plans, 'plans.json');
     };
-
-
-
 
 
 
@@ -889,6 +933,7 @@ const RootComponent = {
       saveBasic,
       saveDB,
       //
+      editUser,
       setAsQuitted,
       setNotQuitted,
       //
