@@ -25,6 +25,20 @@ const topic_regulation = (topic) => {
   return null;
 };
 
+
+// 时间标记
+// 用来记录批次信息，用于排序
+const timeMark = () => {
+  let the_date = new Date();
+  let str = `1${(''+the_date.getFullYear()).slice(2,4)}${(''+(the_date.getMonth()+1)).length==1?'0':''}${the_date.getMonth()+1}${(''+the_date.getDate()).length==1?'0':''}${the_date.getDate()}${(''+the_date.getHours()).length==1?'0':''}${the_date.getHours()}${(''+the_date.getMinutes()).length==1?'0':''}${the_date.getMinutes()}${(''+the_date.getSeconds()).length==1?'0':''}${the_date.getSeconds()}`;
+  // 开头的 1 是用来防止首位为 0 的
+  return +str;  // 加号转数字
+};
+
+
+
+
+
 const assign_tasks = async (pack, lo) => {
   console.log(pack);
   let entries = pack.entries ?? [];
@@ -36,9 +50,10 @@ const assign_tasks = async (pack, lo) => {
   let tasks_per_user = pack.tasks_per_user ?? 30;
   let polygraphs_per_user_setting = pack.polygraphs_per_user ?? {};
   let tasks_idx_base = pack.tasks_idx_base ?? pack.tasks.length;
+  let retrieve = pack.retrieve ?? false;
 
   const new_task_id = () => {
-    let idx = tasks_idx_base;
+    let idx = +tasks_idx_base;
     while (lo.find(tasks, {'id': `${idx}`})) {
       idx++;
     };
@@ -162,21 +177,28 @@ const assign_tasks = async (pack, lo) => {
 
   // 正式开始
 
-  // 如果已分配的用户不在用户字典中，且未提交，则不再安排给他
   for (let task of tasks) {
+
     if (!('submitters' in task)) {
       task.submitters = [];  // 避免 includes 出错
     };
-    let new_to = [];
-    for (let u_id of task.to) {
-      // 但凡不是提交者，就不再保留
-      if (!task.submitters.includes(u_id)) {continue;};
-      new_to.push(u_id);
+
+    // 根据 retrieve 参数
+    // true  : 如果已分配的用户不在用户字典中，且未提交，则不再安排给他，即从他手里“收回”此任务
+    // false : 如果已分配的用户不在用户字典中，且未提交，也不要从他手里“收回”此任务，换句话说就是不需要做什么处理
+    if (retrieve) {
+      let new_to = [];
+      for (let u_id of task.to) {
+        // 但凡不是提交者，就不再保留
+        if (!task.submitters.includes(u_id)) {continue;};
+        new_to.push(u_id);
+      };
+      if (new_to.length != task.to.length) {
+        task.to = new_to;
+        modified_task_ids.push(task.id);
+      };
     };
-    if (new_to.length != task.to.length) {
-      task.to = new_to;
-      modified_task_ids.push(task.id);
-    };
+
   };
 
   console.log(5);
@@ -255,6 +277,8 @@ const assign_tasks = async (pack, lo) => {
   // 给被修改的任务去重
   modified_task_ids = Array.from(new Set(modified_task_ids));
   let output_tasks = tasks.filter(it=>modified_task_ids.includes(it.id));
+  let batch = timeMark();
+  output_tasks.forEach(it=>{it.batch=batch});
   // 最终输出需要更新的 tasks
   return output_tasks;
 };

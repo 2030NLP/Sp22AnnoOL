@@ -196,15 +196,6 @@
             <div>请进行参数设置：</div>
           </div>
           <div class="col col-12 col-sm-6 col-lg-4 my-2">
-            <label class="form-label">任务类型</label>
-            <select
-             class="form-select form-select-sm"
-             v-model="assignData.settings.topic"
-            >
-              <option v-for="topic in assignTopics" :value="topic.value">{{topic.desc}}</option>
-            </select>
-          </div>
-          <div class="col col-12 col-sm-6 col-lg-4 my-2">
             <label class="form-label">每个用户多少任务</label>
             <input
              class="form-control form-control-sm"
@@ -220,7 +211,16 @@
              v-model="assignData.settings.users_per_task"
             >
           </div>
-          <div class="col col-12">
+          <div class="col col-12 col-sm-6 col-lg-4 my-2">
+            <label class="form-label">任务类型</label>
+            <select
+             class="form-select form-select-sm"
+             v-model="assignData.settings.topic"
+            >
+              <option v-for="topic in assignTopics" :value="topic.value">{{topic.desc}}</option>
+            </select>
+          </div>
+          <div class="col col-12 my-2">
             <label class="form-label">测谎题设置（Json字符串）</label>
             <textarea
               class="form-control form-control-sm"
@@ -231,6 +231,45 @@
               class="invalid-feedback"
               v-show="assignData.polygraphs_per_user_json_string_error"
             >Json解析失败，请检查</div>
+          </div>
+          <div class="col col-12 my-2">
+            <label class="form-label">
+              <span>选择用户</span>
+            </label>
+            <div>
+              <button
+                type="button"
+                class="btn btn-sm mx-2 my-1 btn-outline-dark"
+                @click="selectUsersAuto"
+              >自动</button>
+              <button
+                type="button"
+                class="btn btn-sm mx-2 my-1 btn-outline-dark"
+                @click="selectUsersAll"
+              >全选</button>
+              <button
+                type="button"
+                class="btn btn-sm mx-2 my-1 btn-outline-dark"
+                @click="selectUsersNone"
+              >清除</button>
+            </div>
+            <div
+              class="form-control form-control-sm overflow-auto max-vh-40"
+            >
+              <button
+                v-for="user in theDB.users"
+                type="button"
+                class="btn btn-sm me-2 my-1"
+                :class="assignData.assignUserBoxDict[user.id] ? `btn-primary` : `btn-outline-secondary`"
+                @click="()=>{assignData.assignUserBoxDict[user.id]=!assignData.assignUserBoxDict[user.id]}"
+              >{{ user.currTaskGroup }} #{{ user.id }} {{ user.name }}</button>
+            </div>
+          </div>
+          <div class="col col-12 col-sm-6 col-lg-4 my-2">
+            <div class="form-check form-switch" :title="`通常大家在标注时要分配新任务的话，选「否」；\n如果要总地进行下一轮分配，通常选「是」`">
+              <input class="form-check-input" type="checkbox" role="switch" v-model="assignData.settings.retrieve">
+              <label class="form-check-label">是否收回未完成的任务（{{assignData.settings.retrieve?'是':'否'}}）</label>
+            </div>
           </div>
         </div>
 
@@ -249,8 +288,13 @@
             <div class="col col-12">
               <h4 class="mt-3 mb-2">{{ assignData.undone ? '规划' : '执行'}}结果</h4>
             </div>
+            <div class="col col-12">
+              <div class="text-muted">批次编号：{{ assignData.batch }}</div>
+            </div>
             <div class="col col-12 my-2">
               <div class="fw-bold">具体到每个标注者：</div>
+              <div class="text-muted">绿色表示新任务，灰色表示之前就分配给他了</div>
+              <div class="text-muted">着色表示正常任务，框线表示为测谎题</div>
             </div>
             <div class="col col-12">
               <ul class="list-group max-vh-40 overflow-auto border border-1">
@@ -263,7 +307,7 @@
                       v-for="task_id in pair[1]"
                       type="button"
                       class="btn btn-sm me-2 my-1"
-                      :class="theDB.entryDict[theDB.taskDict[task_id]?.entry]?.polygraph ? 'btn-warning' : 'btn-light'"
+                      :class="classAssignAnalisisByUser(pair[0], task_id)"
                     >#{{ task_id }}</button>
                   </div>
                 </li>

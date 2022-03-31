@@ -1,13 +1,13 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0330-01";
+const APP_VERSION = "22-0401-00";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = 0;
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const DEV_HOSTS = ["http://192.168.124.3:8888", "http://10.1.22.96:8888"];
-const API_BASE_DEV = DEV_HOSTS[1];
+const API_BASE_DEV = DEV_HOSTS[0];
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 
@@ -501,51 +501,59 @@ const RootComponent = {
 
 
 
+    const editUser = async (user, jsonText) => {};
+
+    const editingUser = async (user, jsonText) => {
+      let newObj = {};
+      try {
+        newObj = JSON.parse(jsonText);
+      } catch(error) {
+        alertBox_pushAlert(`JSON解析失败，请检查`, 'warning', 60000, jsonText);
+        return;
+      };
+      for (let kk of ['id', 'name', 'token']) {
+        if (!(kk in newObj)) {
+          alertBox_pushAlert(`缺少必要字段「${kk}」`, 'warning', 60000, jsonText);
+          return;
+        };
+      };
+      if (newObj.id!=user.id) {
+        alertBox_pushAlert(`id发生改变，操作中止（${user.id} → ${newObj.id}）`, 'warning', 60000, jsonText);
+        return;
+      };
+      for (let [kk, vv] of [['currTask', ''], ['currTaskGroup', ''], ['manager', ''], ['managerName', '']]) {
+        if (!(kk in newObj)) {
+          newObj[kk] = user[kk] ?? vv;
+        };
+      };
 
 
-    const editUser = async (user, jsonText) => {
-      // let newObj = {};
-      // try {
-      //   newObj = JSON.parse(jsonText);
-      // } catch(error) {
-      //   alertBox_pushAlert(`JSON解析失败，请检查`, 'warning', 5000, jsonText);
-      //   return;
-      // };
-      // for (let kk of ['id', 'name', 'token']) {
-      //   if (!(kk in newObj)) {
-      //     alertBox_pushAlert(`缺少必要字段「${kk}」`, 'warning', 5000, jsonText);
-      //   };
-      // };
-      // for (let kk of [['currTask', ''], ['currTaskGroup', ''], []]) {
-      //   if (!(kk in newObj)) {
-      //     alertBox_pushAlert(`缺少必要字段「${kk}」`, 'warning', 5000, jsonText);
-      //   };
-      // };
+
+      if (user.quitted) {
+        alertBox_pushAlert(`${user.name} 本来就被记为“已退出”了`, 'warning', 5000);
+        return;
+      };
+      let newUser = foolCopy({
+        id: user.id,
+        token: user.token,
+      });
+      newUser.quitted = true;
+      try {
+        let resp = await theBackEnd.updateUser(newUser);
+        if (resp.data?.code!=200) {
+          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
+          return;
+        };
+        Object.assign(user, resp.data.data);
+        saveDB();
+        alertBox_pushAlert(`${user.name} 更新成功`, 'success');
+        modalBox_hide();
+      } catch(error) {
+        alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
+      }
 
 
 
-      // if (user.quitted) {
-      //   alertBox_pushAlert(`${user.name} 本来就被记为“已退出”了`, 'warning', 5000);
-      //   return;
-      // };
-      // let newUser = foolCopy({
-      //   id: user.id,
-      //   token: user.token,
-      // });
-      // newUser.quitted = true;
-      // try {
-      //   let resp = await theBackEnd.updateUser(newUser);
-      //   if (resp.data?.code!=200) {
-      //     alertBox_pushAlert(`${user.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
-      //     return;
-      //   };
-      //   Object.assign(user, resp.data.data);
-      //   saveDB();
-      //   alertBox_pushAlert(`${user.name} 更新成功`, 'success');
-      //   modalBox_hide();
-      // } catch(error) {
-      //   alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
-      // }
     };
 
 
@@ -641,17 +649,105 @@ const RootComponent = {
         'exclusion': [],
         // 'polygraphs_per_user': {},
         'polygraphs_per_user_json_string': "",
+        'retrieve': false,
       },
       'polygraphs_per_user_json_string_error': false,
+      //
+      assignUserBoxDict: {},
+      //
+      batch: 0,
       plans: [],
       planPerUser: [],
       analysis: [],
+      analysisDict: {},
       undone: true,
       result: {},
     });
     watch(() => assignData.settings, () => {
       saveBasic();
     }, { deep: true });
+
+    const selectUsersAuto = () => {
+      for (let user of theDB.users) {
+        let jd = topic_regulation(user.currTask)==assignData.settings.topic && !user.quitted;
+        assignData.assignUserBoxDict[user.id] = jd ? true : false;
+      };
+    };
+
+    const selectUsersAll = () => {
+      for (let user of theDB.users) {
+        assignData.assignUserBoxDict[user.id] = true;
+      };
+    };
+
+    const selectUsersNone = () => {
+      for (let user of theDB.users) {
+        assignData.assignUserBoxDict[user.id] = false;
+      };
+    };
+
+    const planAssigment = async () => {
+      cleanAssigment();
+      assignData.undone = true;
+      let aidx = await alertBox_pushAlert(`正在规划任务，请稍等……`, 'info', 99999999);
+      let pack = assignData.settings;
+      try {
+        if (assignData.settings.polygraphs_per_user_json_string.length) {
+          let polygraphs_per_user = JSON.parse(assignData.settings.polygraphs_per_user_json_string);
+          pack.polygraphs_per_user = polygraphs_per_user;
+        } else {
+          pack.polygraphs_per_user = {};
+        }
+      } catch(error) {
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`无法解析测谎题配置，请检查`, 'warning', 5000, assignData.settings);
+        return;
+      };
+      // pack.polygraphs_per_user = {
+      //   'otherErrorString': 2,
+      //   'otherErrorSeg': 3,
+      // };
+      const plansResp = await makeAssigmentPlan(pack);
+      // const plansResp = await app.theBackEnd.makeAssigmentPlan(pack);
+      if (plansResp?.data?.code!=200) {
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`规划任务时出现问题：${plansResp?.data?.msg}`, 'danger', 5000, plansResp);
+        return;
+      };
+
+      const plans = plansResp?.data?.data;
+      assignData.batch = plans[0]?.batch ?? 0;
+      console.log(plans);
+      let dct = {}
+      for (let task of plans) {
+        for (let user_id of task.to) {
+          if (!(user_id in dct)) {
+            dct[user_id] = [];
+          };
+          if (task.submitters==null) {
+            task.submitters = [];
+          };
+          if (!task.submitters.includes(user_id)) {
+            dct[user_id].push(task.id);
+          };
+        };
+      };
+      console.log(dct);
+      //
+      assignData.plans = plans;
+      assignData.planPerUser = Object.entries(dct).filter(pair => pair[1].length);
+
+      let bidx = alertBox_pushAlert(`计算完毕，准备规划结果……`, 'success', 9999999, plansResp);
+      await analyzeAssignmentPlan();
+      alertBox_removeAlert(bidx);
+
+      alertBox_removeAlert(aidx);
+      if (plans.length) {
+        alertBox_pushAlert(`规划成功，请进行后续操作`, 'success', 3000, plansResp);
+      } else {
+        alertBox_pushAlert(`无法规划，请检查设置`, 'warning', 3000, plansResp);
+      };
+    };
 
     const analyzeAssignmentPlan = async () => {
       const analysis = [];
@@ -685,74 +781,16 @@ const RootComponent = {
         };
       };
       assignData.analysis = lo.sortBy(lo.sortBy(analysis, it => it.canceled_guys.length), it => -it.new_guys.length);
-    };
-
-    const planAssigment = async () => {
-      cleanAssigment();
-      assignData.undone = true;
-      let aidx = await alertBox_pushAlert(`正在规划任务，请稍等……`, 'info', 99999999);
-      let pack = assignData.settings;
-      try {
-        if (assignData.settings.polygraphs_per_user_json_string.length) {
-          let polygraphs_per_user = JSON.parse(assignData.settings.polygraphs_per_user_json_string);
-          pack.polygraphs_per_user = polygraphs_per_user;
-        } else {
-          pack.polygraphs_per_user = {};
-        }
-      } catch(error) {
-        alertBox_removeAlert(aidx);
-        alertBox_pushAlert(`无法解析测谎题配置，请检查`, 'warning', 5000, assignData.settings);
-        return;
-      };
-      // pack.polygraphs_per_user = {
-      //   'otherErrorString': 2,
-      //   'otherErrorSeg': 3,
-      // };
-      const plansResp = await makeAssigmentPlan(pack);
-      // const plansResp = await app.theBackEnd.makeAssigmentPlan(pack);
-      if (plansResp?.data?.code!=200) {
-        alertBox_removeAlert(aidx);
-        alertBox_pushAlert(`规划任务时出现问题：${plansResp?.data?.msg}`, 'danger', 5000, plansResp);
-        return;
-      };
-
-      const plans = plansResp?.data?.data;
-      console.log(plans);
-      let dct = {}
-      for (let task of plans) {
-        for (let user_id of task.to) {
-          if (!(user_id in dct)) {
-            dct[user_id] = [];
-          };
-          if (task.submitters==null) {
-            task.submitters = [];
-          };
-          if (!task.submitters.includes(user_id)) {
-            dct[user_id].push(task.id);
-          };
-        };
-      };
-      console.log(dct);
-      //
-      assignData.plans = plans;
-      assignData.planPerUser = Object.entries(dct).filter(pair => pair[1].length);
-
-      let bidx = alertBox_pushAlert(`计算完毕，准备规划结果……`, 'success', 9999999, plansResp);
-      await analyzeAssignmentPlan();
-      alertBox_removeAlert(bidx);
-
-      alertBox_removeAlert(aidx);
-      if (plans.length) {
-        alertBox_pushAlert(`规划成功，请进行后续操作`, 'success', 3000, plansResp);
-      } else {
-        alertBox_pushAlert(`无法规划，请检查设置`, 'warning', 3000, plansResp);
-      };
+      assignData.analysisDict = lo.keyBy(assignData.analysis, 'id');
     };
 
     const cleanAssigment = () => {
+      assignData.batch = 0;
       assignData.plans = [];
       assignData.planPerUser = {};
       assignData.analysis = [];
+      assignData.analysisDict = {};
+      assignData.undone = true;
       assignData.result = {};
     };
     const cancelAssigment = () => {
@@ -795,8 +833,8 @@ const RootComponent = {
         wrap?.['users_per_task'],
         wrap?.['tasks_per_user'],
         wrap?.['exclusion'],
-        // polygraphs_per_user,
         wrap?.['polygraphs_per_user'],  // 选项配置
+        wrap?.['retrieve'],
       );
       console.log([5, dateString()]);
       console.log(tables_to_update);
@@ -811,6 +849,7 @@ const RootComponent = {
       tasks_per_user=20,
       exclusion=[],
       polygraphs_per_user={},  // TODO 选项配置
+      retrieve=false,
       tasks_idx_base=_.max(theDB.tasks.map(it=>+it.id)),
       lo,
     ) {
@@ -821,11 +860,13 @@ const RootComponent = {
         return [];
       };
 
-      let users = theDB.users.filter(it => (
-        topic_tags(topic).includes(it['currTask'])
-        && (user_tag==null||(it['tags']?.length&&it['tags'].includes(user_tag)))
-        && !it['quitted']
-      ));
+      // let users = theDB.users.filter(it => (
+      //   topic_tags(topic).includes(it['currTask'])
+      //   && (user_tag==null||(it['tags']?.length&&it['tags'].includes(user_tag)))
+      //   && !it['quitted']
+      // ));
+
+      let users = theDB.users.filter(it => assignData.assignUserBoxDict[it.id]);
 
       let tasks = theDB.tasks.filter(it => (
         topic_tags(topic).includes(it['topic'])
@@ -851,6 +892,8 @@ const RootComponent = {
         users_per_task: users_per_task,
         tasks_per_user: tasks_per_user,
         polygraphs_per_user: polygraphs_per_user,
+        tasks_idx_base: tasks_idx_base,
+        retrieve: retrieve,
       };
       // theSaver.save(pack);
 
@@ -885,6 +928,21 @@ const RootComponent = {
 
 
 
+
+    const classAssignAnalisisByUser = (user_id, task_id) => {
+      let classConfig = {};
+      if (theDB.entryDict[theDB.taskDict[task_id]?.entry]?.polygraph) {
+        classConfig.prefix = "btn-outline-";
+      } else {
+        classConfig.prefix = "btn-";
+      };
+      if (assignData.analysisDict[task_id].new_guys.includes(user_id)) {
+        classConfig.color = "success";
+      } else {
+        classConfig.color = "secondary";
+      };
+      return `${classConfig.prefix}${classConfig.color}`;
+    };
 
     return {
       win,
@@ -936,6 +994,12 @@ const RootComponent = {
       editUser,
       setAsQuitted,
       setNotQuitted,
+      //
+      classAssignAnalisisByUser,
+      //
+      selectUsersAuto,
+      selectUsersAll,
+      selectUsersNone,
       //
     };
   },
