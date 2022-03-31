@@ -239,7 +239,7 @@
     /*.material-area span.token[data-auto-spatial=true][data-pos=v] {
       color: #d63384;
     }*/
-    .material-area span.token[data-pos=f] {
+    .material-area span.token[data-auto-spatial=true][data-pos=f] {
       /*color: #0dcaf0;*/
       color: #dc3545;
     }
