@@ -191,6 +191,9 @@
 
 
 
+
+
+
     .material-area {
       -webkit-user-select: none;
       user-select: none;
@@ -206,15 +209,30 @@
     .material-area span.token:hover {
       background: #fee;
     }
+
+    /*空间义动词，已舍弃*/
+    /*.material-area span.token[data-auto-spatial=true][data-pos=v] {
+      color: #d63384;
+    }*/
+
+    /*方位词 autoSpatial为True且pos为f*/
+    .material-area span.token[data-auto-spatial=true][data-pos=f] {
+      /*color: #0dcaf0;*/
+      color: #dc3545;
+    }
+
+    /*处所词 pos为s*/
+    .material-area span.token[data-pos=s] {
+      color: #11ab21;
+      /*border: 1px #198754 solid;*/
+    }
+
+    /*趋向动词 autoDVerb存在且为True*/
     .material-area span.token[data-auto-dverb=true] {
       color: #e39128;
     }
-    .material-area span.token[data-auto-entity=true] {
-      /*border: 1px #0d6efd solid;*/
-      /*color: #0d6efd;*/
-      /*color: #056;*/
-      /*color: #210;*/
-    }
+
+    /*名词 autoEntity为True*/
     .material-area span.token[data-auto-entity=true][data-pos=n] {
       color: #0d6efd;
     }
@@ -226,29 +244,33 @@
       color: #0d6efd;
       /*border-bottom: 1px #0d6efd dotted;*/
     }
-    .material-area span.token[data-pos=s] {
-      color: #11ab21;
-      /*border: 1px #198754 solid;*/
-    }
-    .material-area span.token[data-auto-spatial=true] {
+
+    /*其他实体词，不存在*/
+    /*.material-area span.token[data-auto-entity=true] {*/
+      /*border: 1px #0d6efd solid;*/
+      /*color: #0d6efd;*/
+      /*color: #056;*/
+      /*color: #210;*/
+    /*}*/
+
+    /*其他空间义的词，不管了*/
+    /*.material-area span.token[data-auto-spatial=true] {*/
       /*border: 1px #198754 solid;*/
       /*color: #198754;*/
       /*color: #650;*/
       /*color: #120;*/
-    }
-    /*.material-area span.token[data-auto-spatial=true][data-pos=v] {
-      color: #d63384;
-    }*/
-    .material-area span.token[data-auto-spatial=true][data-pos=f] {
-      /*color: #0dcaf0;*/
-      color: #dc3545;
-    }
+    /*}*/
+
+    /*代词*/
     /*.material-area span.token[data-pos=r] {
       color: #adb5bd;
     }*/
+    /*介词*/
     /*.material-area span.token[data-pos=p] {
       color: #6f42c1;
     }*/
+
+    /*管理员作弊，框出被替换的词*/
     .material-area.admin span.token[data-replaced=true] {
       /*color: #f00;*/
       /*font-weight: bold;*/
@@ -258,11 +280,13 @@
       border-bottom: 2px dotted #faa;
       border-radius: 5px;
     }*/
-    .material-area.show-notice span.token[data-replaced=true].should-notice {
-      /*border: 1px #ff0000 solid;*/
+
+    /*替换前是「前/后」的，要醒目；不过现在用不着220331*/
+    /*.material-area.show-notice span.token[data-replaced=true].should-notice {
       color: #f00;
       font-weight: bold;
-    }
+    }*/
+
     .material-area span.token[data-selecting=true] {
       background: #eef;
     }
