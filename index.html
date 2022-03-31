@@ -49,6 +49,15 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <a class="navbar-brand" href="#">空间关系理解数据标注 2022</a>
+        <button class="navbar-toggler" type="button" @click="newThings.navbar_collapse_show=!newThings.navbar_collapse_show">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" :class="{show: newThings.navbar_collapse_show}">
+          <div class="navbar-nav">
+            <a class="nav-link" href="./menu">文档</a>
+            <!-- <a class="nav-link" href="#">配置</a> -->
+          </div>
+        </div>
       </div>
     </nav>
     <!-- navbar end -->

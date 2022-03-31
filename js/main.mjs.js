@@ -153,6 +153,8 @@ const RootComponent = {
         tasksShowValid: true,
         tasksShowDropped: true,
         tasksShowUndone: true,
+        //
+        navbar_collapse_show: false,
       },
     });
 
