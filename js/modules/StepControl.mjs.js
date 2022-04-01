@@ -104,7 +104,7 @@ class StepControl {
   }
 
   dealWithData(data, fn) {
-    if (!this?.exam?.annotations?.length) {
+    if (!this?.ewp?.example?.annotations?.length) {
       this.ewp.example.annotations = [];
     };
     // 按照 schema 补充必要的数据字段
