@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0401-00";
+const APP_VERSION = "22-0401-01";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = 0;
@@ -37,7 +37,8 @@ import BackEnd from './modules/BackEnd.mjs.js';
 
 import axios from './modules_lib/axios_0.26.1_.mjs.js';
 import ClipboardJS from './modules_lib/clipboard_2.0.10_.mjs.js';
-import __Wrap_of_store__ from './modules_lib/store_2.0.9_.legacy.min.mjs.js';  //
+// import __Wrap_of_store__ from './modules_lib/store_2.0.9_.legacy.min.mjs.js';  //
+import __Wrap_of_froage__ from './modules_lib/localforage_1.10.0_.min.mjs.js';  //
 import __Wrap_of_lodash__ from './modules_lib/lodash_4.17.21_.min.mjs.js';     // 这两个包引入之后，直接全局能用，不用做任何处理。
 
 import assign_tasks from './assign_tasks_new.mjs.js';
@@ -55,6 +56,8 @@ const RootComponent = {
       'upload-entries': 'upload-entries',
       'user-set-quitted': 'user-set-quitted',
       'user-unset-quitted': 'user-unset-quitted',
+      'user-progress': 'user-progress',
+      'user-edit': 'user-edit',
     };
 
     // 初始化 提示框 模块
@@ -250,61 +253,63 @@ const RootComponent = {
 
 
 
-    const saveBasic = () => {
-      store.set(`${APP_NAME}:version`, APP_VERSION);
-      store.set(`${APP_NAME}:currentUser`, ctrl.currentUser);
-      store.set(`${APP_NAME}:tab`, ctrl.tab);
-      store.set(`${APP_NAME}:lastTime`, ctrl.lastTime);
-      store.set(`${APP_NAME}:lastTimeDict`, ctrl.lastTimeDict);
-      store.set(`${APP_NAME}:assignData_settings`, assignData.settings);
+    const saveBasic = async () => {
+      await localforage.setItem(`${APP_NAME}:version`, APP_VERSION);
+      await localforage.setItem(`${APP_NAME}:currentUser`, foolCopy(ctrl.currentUser));
+      await localforage.setItem(`${APP_NAME}:tab`, foolCopy(ctrl.tab));
+      await localforage.setItem(`${APP_NAME}:lastTime`, foolCopy(ctrl.lastTime));
+      await localforage.setItem(`${APP_NAME}:lastTimeDict`, foolCopy(ctrl.lastTimeDict));
+      await localforage.setItem(`${APP_NAME}:assignData_settings`, foolCopy(assignData.settings));
     };
-    const loadBasic = () => {
-      let storedVersion = store.get(`${APP_NAME}:version`);
+    const loadBasic = async () => {
+      let storedVersion = await localforage.getItem(`${APP_NAME}:version`);
       if (storedVersion == APP_VERSION) {
         ctrl.haveStore = true;  // 没什么用
       };
-      let storedUser = store.get(`${APP_NAME}:currentUser`);
+      let storedUser = await localforage.getItem(`${APP_NAME}:currentUser`);
       if (storedUser != null) {
         ctrl.currentUser = storedUser;
       };
-      let storedTime = store.get(`${APP_NAME}:lastTime`);
+      let storedTime = await localforage.getItem(`${APP_NAME}:lastTime`);
       if (storedTime != null) {
         ctrl.lastTime = storedTime;
       };
-      let storedTimeDict = store.get(`${APP_NAME}:lastTimeDict`);
+      let storedTimeDict = await localforage.getItem(`${APP_NAME}:lastTimeDict`);
       if (storedTimeDict != null) {
         ctrl.lastTimeDict = storedTimeDict;
       };
-      let stored_assignData_settings = store.get(`${APP_NAME}:assignData_settings`);
+      let stored_assignData_settings = await localforage.getItem(`${APP_NAME}:assignData_settings`);
       if (stored_assignData_settings != null) {
         assignData.settings = stored_assignData_settings;
       };
-      goTab(store.get(`${APP_NAME}:tab`));
+      await goTab(await localforage.getItem(`${APP_NAME}:tab`));
     };
-    const saveDB = () => {
-      store.set(`${APP_NAME}:DB`, {
-        users: theDB.users,
-        tasks: theDB.tasks,
-        annos: theDB.annos,
-        entries: theDB.entries,
+    const saveDB = async () => {
+      await localforage.setItem(`${APP_NAME}:DB`, {
+        users: foolCopy(theDB.users),
+        tasks: foolCopy(theDB.tasks),
+        annos: foolCopy(theDB.annos),
+        entries: foolCopy(theDB.entries),
       });
     };
-    onMounted(() => {
-      let storedDB = store.get(`${APP_NAME}:DB`);
+    onMounted(async () => {
+      let aidx = alertBox_pushAlert('正在加载缓存，请稍等……', 'info', 9999999);
+      let storedDB = await localforage.getItem(`${APP_NAME}:DB`);
       if (storedDB != null) {
         Object.assign(theDB, storedDB);
-        extendDB();
+        await extendDB();
       };
-      loadBasic();
+      await loadBasic();
+      alertBox_removeAlert(aidx);
     });
 
-    const goTab = (tb) => {
+    const goTab = async (tb) => {
       ctrl.tab = TABS[tb]??TABS['overview'];
-      saveBasic();
+      await saveBasic();
     };
 
-    const begin = () => {
-      saveBasic();
+    const begin = async () => {
+      await saveBasic();
     };
 
     // const User = class User {
@@ -342,7 +347,7 @@ const RootComponent = {
         theDB.topicTaskDict = {};
         for (let task of theDB.tasks) {
           task.submitters = theDB.annos.filter(anno => anno.task==task.id).map(anno => anno.user);
-          task.enough = task.to?.length??0 <= task.submitters?.length??0;
+          task.enough = ((task.to?.length??0) <= (task.submitters?.length??0));
           theDB.taskDict[task.id] = task;
           if (task.topic?.length && !theDB.topics.includes(task.topic)) {
             theDB.topics.push(task.topic);
@@ -389,12 +394,12 @@ const RootComponent = {
           extendDB();
         }
 
-        saveDB();
+        await saveDB();
 
         alertBox_removeAlert(aidx);
         ctrl.lastTimeDict[tableListName] = time.toLocaleString();
 
-        saveBasic();
+        await saveBasic();
 
         alertBox_pushAlert(`${tableName}已更新至最新状态(${ctrl.lastTimeDict[tableListName]})`, 'success', 5000);
 
@@ -479,12 +484,12 @@ const RootComponent = {
 
         extendDB();
 
-        saveDB();
+        await saveDB();
 
         alertBox_removeAlert(aidx);
         ctrl.lastTime = time.toLocaleString();
 
-        saveBasic();
+        await saveBasic();
 
         alertBox_pushAlert(`数据库已更新至最新状态(${ctrl.lastTime})`, 'success', 5000);
 
@@ -545,7 +550,7 @@ const RootComponent = {
           return;
         };
         Object.assign(user, resp.data.data);
-        saveDB();
+        await saveDB();
         alertBox_pushAlert(`${user.name} 更新成功`, 'success');
         modalBox_hide();
       } catch(error) {
@@ -581,7 +586,7 @@ const RootComponent = {
           return;
         };
         Object.assign(user, resp.data.data);
-        saveDB();
+        await saveDB();
         alertBox_pushAlert(`${user.name} 更新成功`, 'success');
         modalBox_hide();
       } catch(error) {
@@ -606,7 +611,7 @@ const RootComponent = {
           return;
         };
         Object.assign(user, resp.data.data);
-        saveDB();
+        await saveDB();
         alertBox_pushAlert(`${user.name} 更新成功`, 'success');
         modalBox_hide();
       } catch(error) {
@@ -663,8 +668,8 @@ const RootComponent = {
       undone: true,
       result: {},
     });
-    watch(() => assignData.settings, () => {
-      saveBasic();
+    watch(() => assignData.settings, async () => {
+      await saveBasic();
     }, { deep: true });
 
     const selectUsersAuto = () => {
@@ -947,7 +952,7 @@ const RootComponent = {
     return {
       win,
       lo,
-      store,
+      // store,
       theSaver,
       //
       timeString,

@@ -419,6 +419,7 @@
                       type="button"
                       class="btn btn-sm me-2 my-1 btn-outline-secondary"
                       :title="`查看${user.name}所标注的具体情况`"
+                      @click="modalBox_open('user-progress', user)"
                     >查看详情</button>
                   </td>
                 </tr>
@@ -536,6 +537,42 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">取消</button>
               <button type="button" class="btn btn-sm btn-primary" @click="()=>{modalBox.data.kwargs.action();modalBox.hide();}">确定</button>
+            </div>
+          </div>
+
+
+          <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-progress']">
+            <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
+              <div class="row align-items-center my-2">
+                <div class="col-12">
+                  <h5>{{user.name}}</h5>
+                </div>
+              </div>
+              <div class="row align-items-center my-2 card" v-for="anno in user.allAnnos">
+                <div class="col-12 my-2">
+                  <button type="button" class="btn btn-sm btn-outline-dark my-1 me-2">task#{{theDB.taskDict[anno.task]?.id}}</button>
+                  <div>
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{theDB.taskDict[anno.task]}}</span>
+                  </div>
+                </div>
+
+                <div class="col-12 my-2">
+                  <button type="button" class="btn btn-sm btn-outline-dark my-1 me-2">entry#{{theDB.entryDict[anno.entry]?.id}}</button>
+                  <div>
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{theDB.entryDict[anno.entry]}}</span>
+                  </div>
+                </div>
+
+                <div class="col-12 my-2">
+                  <button type="button" class="btn btn-sm btn-outline-dark text-wrap my-1 me-2">anno#{{anno.id}}</button>
+                  <div v-for="annot in anno.content?.annotations??[]">
+                    <span class="badge bg-light text-dark my-1 me-2">{{annot}}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide()}">关闭</button>
             </div>
           </div>
 
