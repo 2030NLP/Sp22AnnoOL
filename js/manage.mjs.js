@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0402-00";
+const APP_VERSION = "22-0402-05";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = 0;
@@ -311,7 +311,7 @@ const RootComponent = {
       });
     };
     onMounted(async () => {
-      let aidx = alertBox_pushAlert('正在加载缓存，请稍等……', 'info', 9999999);
+      let aidx = alertBox_pushAlert('正在加载缓存，请稍等……', 'warning', 9999999);
       let storedDB = await localforage.getItem(`${APP_NAME}:DB`);
       if (storedDB != null) {
         Object.assign(theDB, storedDB);
@@ -1117,7 +1117,7 @@ const RootComponent = {
       let aidx = alertBox_pushAlert(`开始`, 'info', 99999999);
       for (let anno of theDB.annos) {
         let entry = theDB.entryDict[anno.entry];
-        if (entry) {        
+        if (entry) {
           for (let annot of anno?.content?.annotations??[]) {
             if (annot.on) {
               annot.onText = annot.on.map(idx => wordAt(entry, idx)).join("");
@@ -1127,6 +1127,42 @@ const RootComponent = {
       };
       alertBox_removeAlert(aidx);
       alertBox_pushAlert(`完成`, 'info', 3000);
+    };
+
+
+    const updateOneEntry = async (entry_id) => {
+      let aidx = alertBox_pushAlert(`获取中……`, 'info', 99999999);
+      const entryResp = await app.theBackEnd.getEntry(entry_id);
+      if (entryResp?.data?.code!=200) {
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`出现问题：${entryResp?.data?.msg}`, 'danger', 5000, entryResp);
+        return;
+      };
+
+      let entry;
+
+      if (entryResp.data?.data) {
+        entry = theDB.entryDict[entry_id];
+        // entry.allTasks = theDB.inf_entry_all_tasks[entry.id];
+        // entry.allAnnos = theDB.inf_entry_all_annos[entry.id];
+        Object.assign(entry,  entryResp.data.data);
+
+        let entry_annos = theDB.annos.filter(anno => anno.entry==entry.id);
+        for (let anno of entry_annos) {
+          for (let annot of anno?.content?.annotations??[]) {
+            if (annot.on) {
+              annot.onText = annot.on.map(idx => wordAt(entry, idx)).join("");
+            };
+          };
+        };
+      } else {
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`数据异常`, 'danger', 5000, entryResp);
+        return;
+      };
+
+      alertBox_removeAlert(aidx);
+      alertBox_pushAlert(`执行成功`, 'success', 1000, entryResp);
     };
 
 
@@ -1192,6 +1228,7 @@ const RootComponent = {
       //
       wordAt,
       makeAnnoOnTexts,
+      updateOneEntry,
       //
     };
   },

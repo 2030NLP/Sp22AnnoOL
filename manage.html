@@ -634,6 +634,11 @@
                     type="button"
                     class="btn btn-sm btn-outline-dark my-1 me-2"
                   >entry#{{entry?.id}}</button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="updateOneEntry(entry?.id)"
+                  >📥</button>
                   <div v-show="entry.version">
                     <span class="badge bg-light text-dark text-wrap my-1 me-2">版本: {{entry.version}}</span>
                   </div>
@@ -722,6 +727,11 @@
                     class="btn btn-sm btn-outline-dark my-1 me-2"
                     @click="modalBox_open('entry-detail', entry)"
                   >entry#{{entry?.id}}</button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="updateOneEntry(entry?.id)"
+                  >📥</button>
                   <div v-show="entry.polygraph">
                     <span class="badge bg-warning text-dark text-wrap my-1 me-2">测谎类型: {{entry.polygraph}}</span>
                   </div>
@@ -817,6 +827,11 @@
                     class="btn btn-sm btn-outline-dark my-1 me-2"
                     @click="modalBox_open('entry-detail', entry)"
                   >entry#{{entry?.id}}</button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="updateOneEntry(entry?.id)"
+                  >📥</button>
                   <div v-show="entry.polygraph">
                     <span class="badge bg-warning text-dark text-wrap my-1 me-2">测谎类型: {{entry.polygraph}}</span>
                   </div>
@@ -928,6 +943,11 @@
                     class="btn btn-sm btn-outline-dark my-1 me-2"
                     @click="modalBox_open('entry-detail', entry)"
                   >entry#{{entry?.id}}</button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="updateOneEntry(entry?.id)"
+                  >📥</button>
                   <div v-show="entry.polygraph">
                     <span class="badge bg-warning text-dark text-wrap my-1 me-2">测谎类型: {{entry.polygraph}}</span>
                   </div>

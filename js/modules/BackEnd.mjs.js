@@ -196,6 +196,14 @@ class BackEnd {
     // response.data.err === ''
   }
 
+  async getEntry(entry_id) {
+    let response = await this.request({
+      method: "get",
+      url: `/entries/${entry_id}`,
+    });
+    return response;
+  }
+
   async getTasksMatters() {
     let response = await this.request({
       method: "get",
