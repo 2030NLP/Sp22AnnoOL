@@ -101,17 +101,17 @@
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
-              :class="{'btn-outline-success': theDB.annos?.length, 'btn-outline-primary': !theDB.annos?.length}"
-              @click="()=>{syncAnno()}"
-              title="从服务器更新 Anno 表"
-            >刷新 Anno 表</button>
-            <button
-              type="button"
-              class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.tasks?.length, 'btn-outline-primary': !theDB.tasks?.length}"
               @click="()=>{syncTask()}"
               title="从服务器更新 Task 表"
             >刷新 Task 表</button>
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="{'btn-outline-success': theDB.annos?.length, 'btn-outline-primary': !theDB.annos?.length}"
+              @click="()=>{syncAnno()}"
+              title="从服务器更新 Anno 表"
+            >刷新 Anno 表</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
@@ -216,13 +216,15 @@
             <ul>
               <li v-for="kkvv in Object.entries( lo.groupBy( theDB.tasks.filter(task=>task.polygraph&&task.submitters?.length), 'polygraph' ) )">
                 <h5>{{kkvv[0]}}</h5>
-                <template v-for="task in kkvv[1]">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="modalBox_open('task-detail', task)"
-                  >task#{{task?.id}}</button>
-                </template>
+                <div class="form-control form-control-sm overflow-auto max-vh-40">
+                  <template v-for="task in kkvv[1]">
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-light my-1 me-2"
+                      @click="modalBox_open('task-detail', task)"
+                    >task#{{task?.id}}</button>
+                  </template>
+                </div>
               </li>
             </ul>
           </div>
@@ -234,14 +236,16 @@
             <ul>
               <li v-for="kkvv in Object.entries(theDB.labelAnnoDict)">
                 <h5>{{kkvv[0]}}</h5>
-                <template v-for="anno_id in kkvv[1]">
-                  <button
-                    v-for="anno in [theDB.annoDict[anno_id]]"
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="modalBox_open('anno-detail', anno)"
-                  >anno#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
-                </template>
+                <div class="form-control form-control-sm overflow-auto max-vh-40">
+                  <template v-for="anno_id in kkvv[1]">
+                    <button
+                      v-for="anno in [theDB.annoDict[anno_id]]"
+                      type="button"
+                      class="btn btn-sm btn-light my-1 me-2"
+                      @click="modalBox_open('anno-detail', anno)"
+                    >anno#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
+                  </template>
+                </div>
               </li>
             </ul>
           </div>
