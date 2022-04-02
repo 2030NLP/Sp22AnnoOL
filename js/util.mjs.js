@@ -1,4 +1,4 @@
-// modifiedAt: 2022-03-15
+// modifiedAt: 2022-04-01
 
 const forceBlur = event => {
   let target = event.target;
@@ -8,6 +8,22 @@ const forceBlur = event => {
   }
   target.blur();
 };
+
+const chainGet = (it, keyArr) => {
+  let key = keyArr.shift();
+  let vv = it[key]??null;
+  if (vv==null) {
+    return vv;
+  };
+  if (!keyArr.length) {
+    return vv;
+  };
+  let uu = chainGet(vv, keyArr);
+  if (uu==null) {
+    return uu;
+  };
+  return uu;
+}
 
 const timeString = () => {
   let the_date = new Date();
@@ -71,7 +87,7 @@ const errorHappened = (err) => {
   return true;
 };
 
-export { forceBlur, timeString, dateString, foolCopy, uuid, errorHappened };
+export { chainGet, forceBlur, timeString, dateString, foolCopy, uuid, errorHappened };
 // if (typeof module !== 'undefined') {
 //   module.exports = { forceBlur, timeString, foolCopy, uuid };
 // }

@@ -76,10 +76,10 @@
         <div class="row align-items-center my-2">
           <div class="col col-12">
             <div>上次刷新整个数据库的时间是 {{ctrl.lastTime}} 。</div>
+            <div>上次刷新 Entry 表的时间是 {{ctrl.lastTimeDict?.entries}} 。</div>
             <div>上次刷新 User 表的时间是 {{ctrl.lastTimeDict?.users}} 。</div>
             <div>上次刷新 Task 表的时间是 {{ctrl.lastTimeDict?.tasks}} 。</div>
             <div>上次刷新 Anno 表的时间是 {{ctrl.lastTimeDict?.annos}} 。</div>
-            <div>上次刷新 Entry 表的时间是 {{ctrl.lastTimeDict?.entries}} 。</div>
           </div>
           <div class="col col-12">
             <button
@@ -89,20 +89,15 @@
               @click="()=>{sync()}"
               title="从服务器更新最新数据，包括 User, Task, Anno 表，以及 Entry 表中的基本信息"
             >刷新全部</button>
+          </div>
+          <div class="col col-12">
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
-              :class="{'btn-outline-success': theDB.users?.length, 'btn-outline-primary': !theDB.users?.length}"
-              @click="()=>{syncUser()}"
-              title="从服务器更新 User 表"
-            >刷新 User 表</button>
-            <button
-              type="button"
-              class="btn btn-sm me-2 my-1"
-              :class="{'btn-outline-success': theDB.tasks?.length, 'btn-outline-primary': !theDB.tasks?.length}"
-              @click="()=>{syncTask()}"
-              title="从服务器更新 Task 表"
-            >刷新 Task 表</button>
+              :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-primary': !theDB.entries?.length}"
+              @click="()=>{syncEntryInfo()}"
+              title="从服务器更新 Entry 表（仅基本信息，不含文本内容）"
+            >刷新 Entry 表（仅基本信息）</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
@@ -113,17 +108,34 @@
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
-              :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-primary': !theDB.entries?.length}"
-              @click="()=>{syncEntryInfo()}"
-              title="从服务器更新 Entry 表（仅基本信息）"
-            >刷新 Entry 表（仅基本信息）</button>
+              :class="{'btn-outline-success': theDB.tasks?.length, 'btn-outline-primary': !theDB.tasks?.length}"
+              @click="()=>{syncTask()}"
+              title="从服务器更新 Task 表"
+            >刷新 Task 表</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
-              :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-primary': !theDB.entries?.length}"
+              :class="{'btn-outline-success': theDB.users?.length, 'btn-outline-primary': !theDB.users?.length}"
+              @click="()=>{syncUser()}"
+              title="从服务器更新 User 表"
+            >刷新 User 表</button>
+          </div>
+          <div class="col col-12">
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="{'btn-outline-success': theDB.entries?.[0]?.content?.material?.tokenList?.length, 'btn-outline-primary': !theDB.entries?.[0]?.content?.material?.tokenList?.length}"
               @click="modalBox_open('upload-entries')"
               title="因网络传输不太稳定，而语料库较大，故请从本地选择语料库文件进行加载"
-            >导入 语料(Entry) 表</button>
+            >导入 Entry 表（完整)</button>
+            <button
+              type="button"
+              v-if="theDB.entries?.[0]?.content?.material?.tokenList?.length"
+              class="btn btn-sm me-2 my-1"
+              :class="'btn-outline-primary'"
+              @click="makeAnnoOnTexts"
+              title="配合语料文本更新 anno 细节"
+            >配合语料文本更新 anno 细节</button>
           </div>
         </div>
       </div>
@@ -169,7 +181,10 @@
               <li>非足量提交：{{ tasks_computed.total.working_num }}</li>
               <li>已足量提交：{{ tasks_computed.total.done_num }}</li>
             </ul>
-            <div>各类型情况：</div>
+          </div>
+
+          <div class="col col-12">
+            <div>各类型任务情况：</div>
             <ul>
               <li v-for="pair in tasks_computed.by_topic">
                 <span>{{pair[0]}}</span><span>：</span>
@@ -182,7 +197,58 @@
               </li>
             </ul>
           </div>
+
+          <div class="col col-12">
+            <div>各标签数量：</div>
+            <ul>
+              <li v-for="kkvv in Object.entries(theDB.labelAnnoDict)">
+                <span>{{kkvv[0]}}</span><span>：</span><span>{{kkvv[1].length}}</span>
+              </li>
+            </ul>
+          </div>
         </div>
+
+
+
+        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.entryAndTask">
+          <div class="col col-12">
+            <h4>测谎题情况</h4>
+            <ul>
+              <li v-for="kkvv in Object.entries( lo.groupBy( theDB.tasks.filter(task=>task.polygraph&&task.submitters?.length), 'polygraph' ) )">
+                <h5>{{kkvv[0]}}</h5>
+                <template v-for="task in kkvv[1]">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('task-detail', task)"
+                  >task#{{task?.id}}</button>
+                </template>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.entryAndTask">
+          <div class="col col-12">
+            <h4>按标签分组</h4>
+            <ul>
+              <li v-for="kkvv in Object.entries(theDB.labelAnnoDict)">
+                <h5>{{kkvv[0]}}</h5>
+                <template v-for="anno_id in kkvv[1]">
+                  <button
+                    v-for="anno in [theDB.annoDict[anno_id]]"
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('anno-detail', anno)"
+                  >anno#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
+                </template>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+
 
 
 
@@ -300,7 +366,7 @@
               <ul class="list-group max-vh-40 overflow-auto border border-1">
                 <li class="list-group-item" v-for="pair in assignData.planPerUser">
                   <div>
-                    <span>{{ `#${pair[0]} ${theDB.userDict[pair[0]].name}` }}</span> 分配到的 {{pair[1]?.length}} 条任务是：
+                    <span>{{ `#${pair[0]} ${theDB.userDict[pair[0]]?.name}` }}</span> 分配到的 {{pair[1]?.length}} 条任务是：
                   </div>
                   <div>
                     <button
@@ -541,40 +607,379 @@
           </div>
 
 
+
+
+
+
+
+
+
+
+
+
+          <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['entry-detail']">
+            <div class="modal-body" v-for="entry in [modalBox.data.kwargs]">
+              <div class="row align-items-center my-2">
+
+                <div class="col-12">
+                  <h4>语料详情</h4>
+                </div>
+
+                <div class="col-12">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                  >entry#{{entry?.id}}</button>
+                  <div v-show="entry.version">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">版本: {{entry.version}}</span>
+                  </div>
+                  <div v-show="entry.deleted">
+                    <span class="badge bg-danger text-light text-wrap my-1 me-2">已删除</span>
+                  </div>
+                  <div v-show="entry.originId">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">原句编号: {{entry.originId}}</span>
+                  </div>
+                  <div v-show="entry.polygraph">
+                    <span class="badge bg-warning text-dark text-wrap my-1 me-2">测谎类型: {{entry.polygraph}}</span>
+                  </div>
+                  <div v-if="entry?.content?.material?.tokenList">
+                    <div
+                      class="my-1 material-area admin show-notice"
+                    >
+                      <p>
+                        <span
+                          v-for="token in entry?.content?.material?.tokenList"
+                          :key="token.idx"
+                          class="token"
+                          :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
+                          :data-idx="token.idx"
+                          :data-pos="token.pos"
+                          :data-auto-dverb="token?.autoDVerb"
+                          :data-auto-entity="token.autoEntity"
+                          :data-auto-spatial="token.autoSpatial"
+                          :data-selecting="token?._ctrl?.selecting"
+                          :data-selected="token?._ctrl?.selected"
+                          :data-replaced="token?.replaced ?? false"
+                          :data-word="token.word"
+                          :data-to-word="token?.to?.word"
+                        >{{ token?.to?.word ?? token.word }}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div v-show="entry.info">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">更多信息: {{entry.info}}</span>
+                  </div>
+                </div>
+
+                <div class="col-12" v-for="anno_id in entry.allAnnos">
+                  <div class="card my-1" v-for="anno in [theDB.annoDict[anno_id]]">
+                    <div class="col-12">
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-dark my-1 me-2"
+                        @click="modalBox_open('anno-detail', anno)"
+                      >anno-{{anno?.topic}}-#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
+                      <div v-for="annot in anno.content?.annotations??[]">
+                        <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12" v-for="task_id in entry.allTasks">
+                  <button
+                    v-for="task in [theDB.taskDict[task_id]]"
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('task-detail', task)"
+                  >task-{{task?.topic}}-#{{task?.id}}</button>
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+            </div>
+          </div>
+
+
+
+          <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['anno-detail']">
+            <div class="modal-body" v-for="anno in [modalBox.data.kwargs]">
+              <div class="row align-items-center my-2">
+
+                <div class="col-12">
+                  <h4>标注详情</h4>
+                </div>
+
+                <div class="col-12" v-for="entry in [theDB.entryDict[anno.entry]]">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('entry-detail', entry)"
+                  >entry#{{entry?.id}}</button>
+                  <div v-show="entry.polygraph">
+                    <span class="badge bg-warning text-dark text-wrap my-1 me-2">测谎类型: {{entry.polygraph}}</span>
+                  </div>
+                  <div v-if="entry?.content?.material?.tokenList">
+                    <div
+                      class="my-1 material-area admin show-notice"
+                    >
+                      <p>
+                        <span
+                          v-for="token in entry?.content?.material?.tokenList"
+                          :key="token.idx"
+                          class="token"
+                          :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
+                          :data-idx="token.idx"
+                          :data-pos="token.pos"
+                          :data-auto-dverb="token?.autoDVerb"
+                          :data-auto-entity="token.autoEntity"
+                          :data-auto-spatial="token.autoSpatial"
+                          :data-selecting="token?._ctrl?.selecting"
+                          :data-selected="token?._ctrl?.selected"
+                          :data-replaced="token?.replaced ?? false"
+                          :data-word="token.word"
+                          :data-to-word="token?.to?.word"
+                        >{{ token?.to?.word ?? token.word }}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                  >anno-{{anno?.topic}}-#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
+                  <div v-for="annot in anno.content?.annotations??[]">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
+                  </div>
+                  <div>
+                    <span>Schema：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?.content?._ctrl?.schema}}</span>
+                  </div>
+                  <div v-if="anno?._timeInfo">
+                    <span>最后提交时间：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{(new Date(anno?._timeInfo?.lastAt)).toLocaleString()}}</span>
+                    <span>首次操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.firstDur/1000}}s</span>
+                    <span>累计操作次数：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.detail?.length}}次</span>
+                    <span>累计操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.totalDur/1000}}s</span>
+                    <span>累计时长跨度：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.stride/1000}}s</span>
+                  </div>
+                  <button
+                    v-for="task in [theDB.taskDict[anno.task]]"
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('task-detail', task)"
+                  >task#{{task?.id}}</button>
+                  <button
+                    v-for="user in [theDB.userDict[anno.user]]"
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('user-progress', user)"
+                  >user#{{user?.id}} {{user?.name}}</button>
+                </div>
+
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+            </div>
+          </div>
+
+
+
+          <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['task-detail']">
+            <div class="modal-body" v-for="task in [modalBox.data.kwargs]">
+              <div class="row align-items-center my-2">
+
+                <div class="col-12">
+                  <h4>任务详情</h4>
+                </div>
+
+                <div class="col-12">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                  >task#{{task?.id}}</button>
+                  <div>
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{task}}</span>
+                  </div>
+                </div>
+
+                <div class="col-12" v-for="entry in [theDB.entryDict[task.entry]]">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('entry-detail', entry)"
+                  >entry#{{entry?.id}}</button>
+                  <div v-show="entry.polygraph">
+                    <span class="badge bg-warning text-dark text-wrap my-1 me-2">测谎类型: {{entry.polygraph}}</span>
+                  </div>
+                  <div v-if="entry?.content?.material?.tokenList">
+                    <div
+                      class="my-1 material-area admin show-notice"
+                    >
+                      <p>
+                        <span
+                          v-for="token in entry?.content?.material?.tokenList"
+                          :key="token.idx"
+                          class="token"
+                          :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
+                          :data-idx="token.idx"
+                          :data-pos="token.pos"
+                          :data-auto-dverb="token?.autoDVerb"
+                          :data-auto-entity="token.autoEntity"
+                          :data-auto-spatial="token.autoSpatial"
+                          :data-selecting="token?._ctrl?.selecting"
+                          :data-selected="token?._ctrl?.selected"
+                          :data-replaced="token?.replaced ?? false"
+                          :data-word="token.word"
+                          :data-to-word="token?.to?.word"
+                        >{{ token?.to?.word ?? token.word }}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <h5>已提交的标注（{{task.submitters?.length}}）</h5>
+                  <div class="card my-1" v-for="user_id in task.submitters">
+                    <div class="col-12" v-for="anno_id in [theDB.inf_user_task_anno[`${user_id}/${task.id}`]]">
+                      <template v-for="anno in [theDB.annoDict[anno_id]]">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-outline-dark my-1 me-2"
+                          @click="modalBox_open('anno-detail', anno)"
+                        >anno#{{anno?.id}}-{{theDB.userDict[user_id]?.name}}</button>
+                        <div v-for="annot in anno.content?.annotations??[]">
+                          <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <h5>分配给{{task.to?.length}}人</h5>
+                  <template v-for="user_id in task.to">
+                    <button
+                      v-for="user in [theDB.userDict[user_id]]"
+                      type="button"
+                      class="btn btn-sm btn-outline-dark my-1 me-2"
+                      @click="modalBox_open('user-progress', user)"
+                    >user#{{user?.id}} {{user?.name}}</button>
+                  </template>
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
+
           <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-progress']">
             <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
               <div class="row align-items-center my-2">
                 <div class="col-12">
-                  <h5>{{user.name}}</h5>
+                  <h4>{{user.name}} 进度详情</h4>
+                </div>
+                <div class="col-12">
+                  <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="标注进度">
+                    <div
+                      class="progress-bar bg-success"
+                      role="progressbar"
+                      :style="`width: ${userProgress(user).pct};`"
+                      :aria-valuenow="userProgress(user).mn"
+                      :aria-valuemax="userProgress(user).bg"
+                      aria-valuemin="0"
+                    >{{ userCurrDoneTasks(user).length }}/{{ userCurrTasks(user).length }}</div>
+                  </div>
                 </div>
               </div>
-              <div class="row align-items-center my-2 card" v-for="anno in user.allAnnos">
-                <div class="col-12 my-2">
-                  <button type="button" class="btn btn-sm btn-outline-dark my-1 me-2">task#{{theDB.taskDict[anno.task]?.id}}</button>
-                  <div>
-                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{theDB.taskDict[anno.task]}}</span>
+              <div class="row align-items-center my-2 card" v-for="anno in user.allAnnos.map(it=>theDB.annoDict[it])">
+
+                <div class="col-12">
+                  <button
+                    v-for="task in [theDB.taskDict[anno.task]]"
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('task-detail', task)"
+                  >task#{{task?.id}}</button>
+                </div>
+
+                <div class="col-12" v-for="entry in [theDB.entryDict[anno.entry]]">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('entry-detail', entry)"
+                  >entry#{{entry?.id}}</button>
+                  <div v-show="entry.polygraph">
+                    <span class="badge bg-warning text-dark text-wrap my-1 me-2">测谎类型: {{entry.polygraph}}</span>
+                  </div>
+                  <div v-if="entry?.content?.material?.tokenList">
+                    <div
+                      class="my-1 material-area admin show-notice"
+                    >
+                      <p>
+                        <span
+                          v-for="token in entry?.content?.material?.tokenList"
+                          :key="token.idx"
+                          class="token"
+                          :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
+                          :data-idx="token.idx"
+                          :data-pos="token.pos"
+                          :data-auto-dverb="token?.autoDVerb"
+                          :data-auto-entity="token.autoEntity"
+                          :data-auto-spatial="token.autoSpatial"
+                          :data-selecting="token?._ctrl?.selecting"
+                          :data-selected="token?._ctrl?.selected"
+                          :data-replaced="token?.replaced ?? false"
+                          :data-word="token.word"
+                          :data-to-word="token?.to?.word"
+                        >{{ token?.to?.word ?? token.word }}</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                <div class="col-12 my-2">
-                  <button type="button" class="btn btn-sm btn-outline-dark my-1 me-2">entry#{{theDB.entryDict[anno.entry]?.id}}</button>
-                  <div>
-                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{theDB.entryDict[anno.entry]}}</span>
-                  </div>
-                </div>
-
-                <div class="col-12 my-2">
-                  <button type="button" class="btn btn-sm btn-outline-dark text-wrap my-1 me-2">anno#{{anno.id}}</button>
+                <div class="col-12">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('anno-detail', anno)"
+                  >anno-{{anno?.topic}}-#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
                   <div v-for="annot in anno.content?.annotations??[]">
-                    <span class="badge bg-light text-dark my-1 me-2">{{annot}}</span>
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
                   </div>
                 </div>
+
               </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide()}">关闭</button>
             </div>
           </div>
+
+
+
+
+
+
+
+
+
+
 
 
           <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-set-quitted']">
@@ -625,29 +1030,12 @@
                 </div>
                 <div class="btn-group btn-group-sm col-md-4 my-2">
                   <button
-                    v-if="ctrl?.currentWorker?.length"
                     type="button"
                     name="do_import"
                     id="do_import"
-                    @click="ioC.onImport(win.document)"
+                    @click="onImportEntryTable"
                     class="btn btn-primary"
                   >导入</button>
-                  <button
-                    v-if="!dfWrap?.dataItems?.length && ctrl.haveStore && ctrl?.currentWorker?.length"
-                    type="button"
-                    name="do_loadStore"
-                    id="do_loadStore"
-                    @click="ioC.loadStore()"
-                    class="btn btn-success"
-                  >加载缓存数据</button>
-                  <button
-                    :disabled="!dfWrap?.dataItems?.length"
-                    type="button"
-                    name="do_export"
-                    id="do_export"
-                    @click="ioC.onExport()"
-                    class="btn btn-info"
-                  >导出</button>
                 </div>
               </form>
             </div>

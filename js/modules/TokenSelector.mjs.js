@@ -51,6 +51,12 @@ class TokenSelector {
       return;
     };
     //
+    if (this.selection.again) {
+      if (this.selection.start != this.selection.current) {
+        this.selection.again = false;
+      };
+    };
+    //
     this.selection.hasDown = true;
     for (let tkn of tokenList) {
       tkn._ctrl = tkn._ctrl ?? {};
@@ -90,6 +96,13 @@ class TokenSelector {
     // console.log(['mouseUp', token.word]);
     //
     if (this.selection.start == null) {return;};
+    if (this.selection.start == this.selection.current) {
+      if (!this.selection.again) {
+        this.selection.again = true;
+        return;
+      };
+      this.selection.again = false;
+    };
     //
     //
     this.selection.end = token.idx;

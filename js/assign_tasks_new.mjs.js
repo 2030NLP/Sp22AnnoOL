@@ -209,9 +209,9 @@ const assign_tasks = async (pack, lo) => {
 
   // 待分配任务的用户队列
   // 将 user_ids 重复 real_tasks_per_user 次，并降维，打乱
-  // let uq = lo.shuffle(lo.times(real_tasks_per_user, ()=>user_ids).flat());
-  // 将 user_ids 重复 real_tasks_per_user 次，并降维，不用打乱，因为任务是乱的
-  let uq = (lo.times(real_tasks_per_user, ()=>user_ids).flat());
+  let uq = lo.shuffle(lo.times(real_tasks_per_user, ()=>user_ids).flat());
+  // 将 user_ids 重复 real_tasks_per_user 次，并降维，【不用打乱，因为任务是乱的】错了！任务不是乱的！
+  // let uq = (lo.times(real_tasks_per_user, ()=>user_ids).flat());
   console.log('uq', uq.length, uq.length/user_ids.length, uq);
 
   console.log(6);
