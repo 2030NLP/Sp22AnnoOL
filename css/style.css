@@ -234,14 +234,14 @@
 
     /*名词 autoEntity为True*/
     .material-area span.token[data-auto-entity=true][data-pos=n] {
-      color: #0d6efd;
+      /*color: #0d6efd;*/
     }
     .material-area span.token[data-auto-entity=true][data-pos=ns] {
-      color: #0d6efd;
+      /*color: #0d6efd;*/
       /*border-bottom: 1px #0d6efd solid;*/
     }
     .material-area span.token[data-auto-entity=true][data-pos=nr] {
-      color: #0d6efd;
+      /*color: #0d6efd;*/
       /*border-bottom: 1px #0d6efd dotted;*/
     }
 

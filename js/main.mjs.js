@@ -1,12 +1,17 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0402-05";
+const APP_VERSION = "22-0403-00";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
 // 开发环境 和 生产环境 的 控制变量
-const DEVELOPING = 0;
+const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
+if (DEVELOPING) {
+  console.log("DEVELOPING");
+} else {
+  console.log("PRODUCTION");
+};
 const DEVELOPING_LOCAL = 0;
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const DEV_HOSTS = ["http://192.168.124.3:8888", "http://10.1.22.96:8888"];

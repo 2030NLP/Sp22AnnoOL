@@ -1,10 +1,15 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0402-05";
+const APP_VERSION = "22-0403-00";
 
 // 开发环境 和 生产环境 的 控制变量
-const DEVELOPING = 0;
+const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
+if (DEVELOPING) {
+  console.log("DEVELOPING");
+} else {
+  console.log("PRODUCTION");
+};
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const DEV_HOSTS = ["http://192.168.124.3:8888", "http://10.1.22.96:8888"];
 const API_BASE_DEV = DEV_HOSTS[0];
@@ -217,16 +222,19 @@ const RootComponent = {
         name: "",
         token: "",
       },
+      showOnlyMyMembers: false,
       haveStore: false,
       tab: TABS['overview'],
       lastTime: "never",
       lastTimeDict: {},
-    });
-
-    const theBackEnd = new BackEnd(ctrl.currentUser.token, `${API_BASE}/api/`, alertBox_pushAlert);
-
-    watch(() => ctrl?.currentUser?.token, () => {
-      theBackEnd.token = ctrl?.currentUser?.token;
+      entryIdBoxText: "",
+      taskIdBoxText: "",
+      annoIdBoxText: "",
+      userIdBoxText: "",
+      entryIdBoxList: [],
+      taskIdBoxList: [],
+      annoIdBoxList: [],
+      userIdBoxList: [],
     });
 
     const theDB = reactive({
@@ -255,6 +263,12 @@ const RootComponent = {
       //
     });
 
+    const theBackEnd = new BackEnd(ctrl.currentUser.token, `${API_BASE}/api/`, alertBox_pushAlert);
+
+    watch(() => ctrl?.currentUser?.token, () => {
+      theBackEnd.token = ctrl?.currentUser?.token;
+    });
+
     const tasks_sta = (tasks) => ({
       total_num: tasks?.length ?? 0,
       assigned_num: tasks.filter(task => task.to?.length).length,
@@ -266,6 +280,26 @@ const RootComponent = {
       total: tasks_sta(theDB.tasks),
       by_topic: Object.entries(theDB.topicTaskDict).map(pr => [pr[0], tasks_sta(pr[1])]),
     }));
+
+
+
+
+
+    const search = () => {
+      let entryIdBoxList = ctrl.entryIdBoxText.match(/\d+/g) ?? [];
+      ctrl.entryIdBoxList = entryIdBoxList.filter(it=>it in theDB.entryDict);
+      let taskIdBoxList = ctrl.taskIdBoxText.match(/\d+/g) ?? [];
+      ctrl.taskIdBoxList = taskIdBoxList.filter(it=>it in theDB.taskDict);
+      let annoIdBoxList = ctrl.annoIdBoxText.match(/\d+/g) ?? [];
+      ctrl.annoIdBoxList = annoIdBoxList.filter(it=>it in theDB.annoDict);
+      let userIdBoxList = ctrl.userIdBoxText.match(/\d+/g) ?? [];
+      ctrl.userIdBoxList = userIdBoxList.filter(it=>it in theDB.userDict);
+    };
+
+
+
+
+
 
 
 
@@ -287,6 +321,13 @@ const RootComponent = {
       let storedUser = await localforage.getItem(`${APP_NAME}:currentUser`);
       if (storedUser != null) {
         ctrl.currentUser = storedUser;
+        if (theDB.users.length) {
+          let me = theDB.users.find(it=>it.token==ctrl.currentUser.token);
+          if (me) {
+            ctrl.currentUser = me;
+            await localforage.setItem(`${APP_NAME}:currentUser`, foolCopy(ctrl.currentUser));
+          };
+        };
       };
       let storedTime = await localforage.getItem(`${APP_NAME}:lastTime`);
       if (storedTime != null) {
@@ -309,6 +350,29 @@ const RootComponent = {
         annos: foolCopy(theDB.annos),
         entries: foolCopy(theDB.entries),
       });
+    };
+    const exportDB = async () => {
+      if (!theDB.tasks.length) {
+        alertBox_pushAlert('请注意： Task 表为空！导出数据可能不完整！', 'warning', 30000);
+      };
+      if (!theDB.annos.length) {
+        alertBox_pushAlert('请注意： Anno 表为空！导出数据可能不完整！', 'warning', 30000);
+      };
+      if (!theDB.users.length) {
+        alertBox_pushAlert('请注意： User 表为空！导出数据可能不完整！', 'warning', 30000);
+      };
+      if (!theDB.entries.length) {
+        alertBox_pushAlert('请注意： Entry 表为空！导出数据可能不完整！', 'warning', 30000);
+      };
+      if (!theDB.entries?.[0]?.content?.material?.tokenList?.length) {
+        alertBox_pushAlert('请注意： Entry 表中缺少语料文本！导出数据可能不完整！', 'warning', 30000);
+      };
+      await theSaver.save({
+        users: foolCopy(theDB.users),
+        tasks: foolCopy(theDB.tasks),
+        annos: foolCopy(theDB.annos),
+        entries: foolCopy(theDB.entries),
+      }, 'db.json');
     };
     onMounted(async () => {
       let aidx = alertBox_pushAlert('正在加载缓存，请稍等……', 'warning', 9999999);
@@ -351,12 +415,17 @@ const RootComponent = {
       let bg = Math.max(cDoneLen, cDueLen);
       let mn = Math.min(cDoneLen, cDueLen);
       let pct = bg==0 ? `0` : `${mn/bg*100}%`;
+      let ratio = cDoneLen/cDueLen;
+      ratio = isNaN(ratio) ? 0 : ratio;
       let done = cDoneLen >= cDueLen;
       return {
+        cDoneLen,
+        cDueLen,
         done,
         pct,
         bg,
-        mn
+        mn,
+        ratio
       };
     };
 
@@ -1213,6 +1282,7 @@ const RootComponent = {
       //
       saveBasic,
       saveDB,
+      exportDB,
       //
       editUser,
       setAsQuitted,
@@ -1229,6 +1299,8 @@ const RootComponent = {
       wordAt,
       makeAnnoOnTexts,
       updateOneEntry,
+      //
+      search,
       //
     };
   },

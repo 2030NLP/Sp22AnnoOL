@@ -15,7 +15,7 @@ const errorHappened = (err) => {
     // console.log('err instanceof Array && err.length==0');
     return false;
   };
-  if (typeof(err)=="number" && err<=0) {
+  if (typeof(err)=="number" && (err==200||err<=0)) {
     // console.log('typeof(err)=="number" && err<=0');
     return false;
   };
