@@ -240,25 +240,32 @@ const RootComponent = {
 
 
 
-    const topic2using = (topic) => {
-      const map = {
-        'check': '清洗',
-        't0': '清洗',
-        't1': '第1期',
-        't2': '第2期',
-        't3': '第3期',
-        'detail': '精标',
-        '清洗': '清洗',
-        '第1期': '第1期',
-        '第2期': '第2期',
-        '第3期': '第3期',
-        '精标': '精标',
+    const ll0 = ['t0', '第0期', '清洗', '0', 'clean', 'check'];
+    const ll1 = ['t1', '第1期', '正确性', '1'];
+    const ll2 = ['t2', '第2期', '同义性', '2'];
+    const ll3 = ['t3', '第3期', '归因', '3', 'reason'];
+    const ll4 = ['t4', '第4期', '精标', '4', 'detail'];
+
+    // 处理 topic 历史遗留混乱 用于 Task task.topic
+    const topic_regulation = (topic) => {
+      if (ll0.includes(topic)) {
+        return '清洗';
       };
-      if (!(topic in map)) {
-        return null;
-      }
-      return map[topic];
-    };
+      if (ll1.includes(topic)) {
+        return '第1期';
+      };
+      if (ll2.includes(topic)) {
+        return '第2期';
+      };
+      if (ll3.includes(topic)) {
+        return '归因';
+      };
+      if (ll4.includes(topic)) {
+        return '精标';
+      };
+      return topic;
+    }
+
 
     // 更新 schema
     const updateSchema = async () => {
@@ -270,7 +277,7 @@ const RootComponent = {
         });
         wrap = (response.data);
         let taskType = appData.ctrl.currentWorkerTaskType;
-        let shouldUsing = topic2using(taskType);
+        let shouldUsing = topic_regulation(taskType);
         if (shouldUsing?.length) {
           wrap.using = shouldUsing;
           wrap.version = wrap?.versions?.[shouldUsing];
@@ -350,7 +357,7 @@ const RootComponent = {
     });
 
 
-    const shouldShowNotice = () => (topic2using(appData?.ctrl?.currentWorkerTaskType)=='清洗' || appData?.ctrl?.currentWorker=='admin');
+    const shouldShowNotice = () => (topic_regulation(appData?.ctrl?.currentWorkerTaskType)=='清洗' || appData?.ctrl?.currentWorker=='admin');
     const shouldBeAdmin = () => (appData?.ctrl?.currentWorker=='admin');
 
 
@@ -398,6 +405,8 @@ const RootComponent = {
       //
       shouldShowNotice,
       shouldBeAdmin,
+      //
+      topic_regulation,
       //
     };
   },

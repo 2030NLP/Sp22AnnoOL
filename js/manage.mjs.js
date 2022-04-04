@@ -143,7 +143,7 @@ const RootComponent = {
       if (ll4.includes(topic)) {
         return '精标';
       };
-      return null;
+      return topic;
     }
 
     // 处理 topic 历史遗留混乱 用于 User user.currTask
@@ -163,7 +163,7 @@ const RootComponent = {
       if (ll4.includes(topic)) {
         return 't4';
       };
-      return null;
+      return topic;
     }
 
     // 处理 topic 历史遗留混乱 用于 find()
@@ -183,28 +183,8 @@ const RootComponent = {
       if (ll4.includes(topic)) {
         return ll4;
       };
-      return [];
+      return [topic];
     }
-
-    const topic2using = (topic) => {
-      const map = {
-        'check': '清洗',
-        't0': '清洗',
-        't1': '第1期',
-        't2': '第2期',
-        't3': '第3期',
-        'detail': '精标',
-        '清洗': '清洗',
-        '第1期': '第1期',
-        '第2期': '第2期',
-        '第3期': '第3期',
-        '精标': '精标',
-      };
-      if (!(topic in map)) {
-        return null;
-      }
-      return map[topic];
-    };
 
 
 
@@ -403,11 +383,11 @@ const RootComponent = {
 
     const userCurrTasks = user => {
       let tt = user.allTasks ?? [];
-      return tt.filter(task => topic2using(theDB.taskDict[task]?.topic)==topic2using(user.currTask));
+      return tt.filter(task => topic_regulation(theDB.taskDict[task]?.topic)==topic_regulation(user.currTask));
     };
     const userCurrDoneTasks = user => {
       let tt = user.doneTasks ?? [];
-      return tt.filter(task => topic2using(theDB.taskDict[task]?.topic)==topic2using(user.currTask));
+      return tt.filter(task => topic_regulation(theDB.taskDict[task]?.topic)==topic_regulation(user.currTask));
     };
     const userProgress = user => {
       let cDoneLen = userCurrDoneTasks(user).length;
@@ -1247,7 +1227,7 @@ const RootComponent = {
       uuid,
       errorHappened,
       //
-      topic2using,
+      topic_regulation,
       userCurrTasks,
       userCurrDoneTasks,
       userProgress,

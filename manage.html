@@ -145,6 +145,12 @@
               @click="exportDB"
               title="将整个数据库导出为json文件（需要先刷新数据库到本地，否则数据可能不完整；其中Entry表可使用离线版）"
             >导出数据库（需要先刷新数据库到本地）</button>
+            <a
+              class="btn btn-sm me-2 my-1"
+              :class="'btn-outline-primary'"
+              href="https://github.com/2030NLP/sp22scripts/blob/main/SpaCE2022_DB.spec.md"
+              target="_blank"
+            >查看数据格式说明</a>
           </div>
         </div>
       </div>
@@ -404,6 +410,9 @@
 
         <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.taskAssign">
           <div class="col col-12">
+            <div>说明：分配任务前，请先：1、在后端构建任务；2、刷新Task表；3、刷新Entry表。</div>
+          </div>
+          <div class="col col-12">
             <div>请进行参数设置：</div>
           </div>
           <div class="col col-12 col-sm-6 col-lg-4 my-2">
@@ -646,7 +655,7 @@
                   <td>{{theDB.userDict[user.manager]?.name}}</td>
                   <td>{{user.name}}<span v-if="user.quitted" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
                   <td><span v-for="role in user.role" class="badge rounded-pill bg-primary me-1">{{role}}</span></td>
-                  <td>{{topic2using(user.currTask)}}</td>
+                  <td>{{topic_regulation(user.currTask)}}</td>
                   <td>
                     <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="标注进度">
                       <div
@@ -700,7 +709,7 @@
                   <td>{{theDB.userDict[user.manager]?.name}}</td>
                   <td>{{user.name}}<span v-if="user.quitted" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
                   <td><span v-for="role in user.role" class="badge rounded-pill bg-primary me-1">{{role}}</span></td>
-                  <td>{{topic2using(user.currTask)}}</td>
+                  <td>{{topic_regulation(user.currTask)}}</td>
                   <!-- <td>{{user?.info?.inst_abbr}}</td> -->
                   <td>{{user?.info?.institution}}</td>
                   <!-- <td>{{user?.info?.phone}}</td>
@@ -715,10 +724,18 @@
                       @click="modalBox_open('user-detail', user)"
                     >更多信息</button>
                     <button
+                      v-if="!(user.role??[]).includes('admin')"
                       type="button"
                       class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
                       :title="`点击拷贝${user.name}的密码`"
                       :data-clipboard-text="`${user.name}的密码是： ${user.token}`"
+                    >拷贝密码</button>
+                    <button
+                      v-if="(user.role??[]).includes('admin')"
+                      type="button"
+                      class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
+                      :title="`点击拷贝${user.name}的密码`"
+                      :data-clipboard-text="`不能拷贝管理员的密码`"
                     >拷贝密码</button>
                     <button
                       type="button"
@@ -949,10 +966,10 @@
                     <span>Schema：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?.content?._ctrl?.schema}}</span>
                   </div>
                   <div v-if="anno?._timeInfo">
-                    <span>最后提交时间：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{(new Date(anno?._timeInfo?.lastAt)).toLocaleString()}}</span>
-                    <span>首次操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.firstDur/1000}}s</span>
-                    <span>累计操作次数：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.detail?.length}}次</span>
-                    <span>累计操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.totalDur/1000}}s</span>
+                    <span>最后提交时间：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{(new Date(anno?._timeInfo?.lastAt)).toLocaleString()}}</span><br/>
+                    <span>首次操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.firstDur/1000}}s</span><br/>
+                    <span>累计操作次数：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.detail?.length}}次</span><br/>
+                    <span>累计操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.totalDur/1000}}s</span><br/>
                     <span>累计时长跨度：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.stride/1000}}s</span>
                   </div>
                   <button
