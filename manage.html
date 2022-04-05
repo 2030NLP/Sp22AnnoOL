@@ -871,6 +871,9 @@
                   <div v-show="entry.info">
                     <span class="badge bg-light text-dark text-wrap my-1 me-2">更多信息: {{entry.info}}</span>
                   </div>
+                  <div v-show="Object.keys(entry.results).length">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">参考信息: {{entry.results}}</span>
+                  </div>
                 </div>
 
                 <div class="col-12" v-for="anno_id in entry.allAnnos">

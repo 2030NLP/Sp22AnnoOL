@@ -183,6 +183,7 @@
             <button
               type="button"
               v-for="taskBtn in tasks"
+              :data-batch="taskBtn.batch"
               v-show="(taskBtn.valid&&newThings.tasksShowValid)||(taskBtn.dropped&&newThings.tasksShowDropped)||(!taskBtn.valid&&!taskBtn.dropped&&newThings.tasksShowUndone)"
               class="btn btn-sm me-2 my-1"
               :class="`btn-${taskBtn.valid?'info':taskBtn.dropped?'dark':taskBtn.skipped?'outline-primary':'outline-primary'}`"

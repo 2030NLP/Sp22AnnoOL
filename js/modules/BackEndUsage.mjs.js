@@ -272,6 +272,7 @@ class BackEndUsage {
         let task_btn = {
           id: task.id,
           entryId: task.entry,
+          batch: task.batch ?? 0,
           done: anno?.content?.annotations?.length ? true : false,
           valid: anno && !anno?.dropped && !anno?.skipped ? true : false,
           dropped: anno?.dropped ? true : false,
@@ -279,7 +280,8 @@ class BackEndUsage {
         };
         task_btn_list.push(task_btn);
       };
-      task_btn_list.sort((a, b)=>(+b.done)-(+a.done));
+      task_btn_list = this.lo.sortBy(task_btn_list, [(it=>!it.done), (it=>it.batch)]);
+      // task_btn_list.sort((a, b)=>(+b.done)-(+a.done));
       // task_btn_list = task_btn_list.sort((a,b)=> +a.entryId-b.entryId);
       for (let idx in task_btn_list) {
         task_btn_list[idx].idx = idx;

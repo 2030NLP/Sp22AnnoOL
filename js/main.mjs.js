@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0405-00";
+const APP_VERSION = "22-0405-01";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -171,6 +171,10 @@ const RootComponent = {
       let storedVersion = store.get(`${APP_NAME}:version`);
       if (storedVersion == APP_VERSION) {
         appData.ctrl.haveStore = true;
+        alertBox_pushAlert(`ver. ${APP_VERSION}`, "info", 300);
+      } else {
+        alertBox_pushAlert(`版本已更新到 ${APP_VERSION}`, "success", 1000);
+        store.set(`${APP_NAME}:version`, APP_VERSION);
       };
       let stored = store.get(`${APP_NAME}:it`);
       appData.ctrl.currentWorker = stored?.worker;

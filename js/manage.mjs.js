@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0405-00";
+const APP_VERSION = "22-0405-01";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -355,6 +355,14 @@ const RootComponent = {
       }, 'db.json');
     };
     onMounted(async () => {
+      let storedVersion = await localforage.getItem(`${APP_NAME}:version`);
+      if (storedVersion == APP_VERSION) {
+        alertBox_pushAlert(`ver. ${APP_VERSION}`, "info", 300);
+      } else {
+        alertBox_pushAlert(`版本已更新到 ${APP_VERSION}`, "success", 1000);
+        await localforage.setItem(`${APP_NAME}:version`, APP_VERSION);
+      };
+      //
       let aidx = alertBox_pushAlert('正在加载缓存，请稍等……', 'warning', 9999999);
       let storedDB = await localforage.getItem(`${APP_NAME}:DB`);
       if (storedDB != null) {
