@@ -210,7 +210,7 @@
 
         <div class="row">
           <div class="row mt-2 mb-0">
-            <p class="text-muted small">#{{example?._info?.entry_id}}　{{example?.originId}}　{{`${fileInfo(example?.originId)?.用户显示名称??'其他'}`}}</p>
+            <p class="text-muted small" :title="`originId: ${example?.originId}`">#{{example?._info?.entry_id}}　{{`${fileInfo(example?.originId)?.用户显示名称??'其他'}`}}</p>
           </div>
         </div>
 
@@ -308,18 +308,6 @@
 
           <!-- 0228之前的旧版功能区 开始 -->
           <div class="col col-12 col-lg-5 my-2" id="func-ctrl">
-
-            <!-- deBug用的 开始 -->
-            <!-- <div class="row mb-3">
-              <div class="col col-12">
-                <div class="card">
-                  <div class="card-body">
-                    <div>{{ stepRecords.list }}</div>
-                  </div>
-                </div>
-              </div>
-            </div> -->
-            <!-- deBug用的 结束 -->
 
             <!-- 结束模块 开始 -->
             <div class="row" v-show = "('interlude'==currentStep.mode&&currentStep?.props?.showResults)||'finalResult'==(currentStep.mode)" __v-if=" 'finalResult'==(currentStep.mode)" :data-mode="currentStep.mode">
@@ -742,17 +730,37 @@
     </div>
 
 
+    <div class="container py-4" id="padding" __v-show="tasks.length">
+      <div class="container py-2">
+      </div>
+    </div>
+
+
     <!-- 网络版 的 页码操作区 开始 -->
     <div class="position-fixed bottom-0 w-100 p-2 z-1030" id="idx-ctrl-wrap-online" v-if="ctrl.currentPage=='anno'">
       <div class="container">
         <!-- 页码操作区 开始 -->
         <div class="row page-ctrl">
-          <div class="col col-12 my-1">
+          <div class="col col-12 col-md-4 my-1">
             <div class="input-group input-group-sm ">
               <button class="btn btn-outline-secondary" type="button" @click="bEU.prev(example)">上一条</button>
               <!-- <span class="input-group-text">3</span> -->
               <input type="text" class="form-control text-center" disabled :value="`[${1+parseInt(example?._info?.btn_idx??'_')}]`">
               <button class="btn btn-outline-secondary" type="button" @click="bEU.next(example)">下一条</button>
+            </div>
+          </div>
+          <div class="col-md-4 my-0">
+          </div>
+          <div class="col col-12 col-md-4 my-1">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text">前往第</span>
+              <input type="number" class="form-control text-center" v-model="ctrl.targetIdx">
+              <span class="input-group-text">条</span>
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                @click="bEU.goIdx(ctrl.targetIdx-1)"
+              >GO</button>
             </div>
           </div>
         </div>
