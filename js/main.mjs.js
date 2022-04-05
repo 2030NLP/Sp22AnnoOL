@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0403-00";
+const APP_VERSION = "22-0405-00";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -47,6 +47,7 @@ import IoControl from './modules/IoControl.mjs.js';
 import axios from './modules_lib/axios_0.26.1_.mjs.js';
 import ClipboardJS from './modules_lib/clipboard_2.0.10_.mjs.js';
 import __Wrap_of_store__ from './modules_lib/store_2.0.9_.legacy.min.mjs.js';
+import __Wrap_of_lodash__ from './modules_lib/lodash_4.17.21_.min.mjs.js';
 
 
 // 语料信息映射
@@ -58,6 +59,8 @@ const RootComponent = {
 
     // 备用的窗口，作为 "ioC.onImport(win.document)" 的参数
     const win = reactive(window);
+
+    const lo = _;
 
     // 语料信息映射 函数
     const fileInfo = (originId) => {
@@ -177,6 +180,7 @@ const RootComponent = {
       appData.ctrl.currentWorkerTaskType = stored?.taskType;
       appData.ctrl.currentWorkerTaskCount = stored?.taskCount;
       appData.newThings.lastEID = store.get(`${APP_NAME}:lastEID`);
+      appData.newThings.theUser = store.get(`${APP_NAME}:theUser`);
     });
 
 
@@ -224,6 +228,7 @@ const RootComponent = {
       projDesc: PROJ_DESC,
       projPrefix: PROJ_PREFIX,
       storeTool: store,
+      lodash: lo,
 
       reader: theReader,
     };
@@ -361,10 +366,14 @@ const RootComponent = {
     const shouldBeAdmin = () => (appData?.ctrl?.currentWorker=='admin');
 
 
+    const isChecker = () => (appData?.newThings?.theUser?.role??[]).includes('checker')
+    ||(appData?.newThings?.theUser?.role??[]).includes('manager')
+    ||(appData?.newThings?.theUser?.role??[]).includes('admin');
 
     return {
       //
       win,
+      lo,
       //
       fileInfo,
       //
@@ -407,6 +416,8 @@ const RootComponent = {
       shouldBeAdmin,
       //
       topic_regulation,
+      //
+      isChecker,
       //
     };
   },

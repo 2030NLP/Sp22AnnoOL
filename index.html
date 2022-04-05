@@ -56,6 +56,8 @@
           <div class="navbar-nav">
             <a class="nav-link" href="./menu" target="_blank">文档</a>
             <!-- <a class="nav-link" href="#">配置</a> -->
+            <a class="nav-link" href="#" @click="ctrl.currentPage='setup'" v-if="isChecker()">准备</a>
+            <a class="nav-link" href="#" @click="ctrl.currentPage='anno'" v-if="isChecker()">标注</a>
           </div>
         </div>
       </div>

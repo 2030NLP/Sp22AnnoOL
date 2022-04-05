@@ -63,6 +63,7 @@ class BackEndUsage {
     this.appVersion = appPack.appVersion;
 
     this.storeTool = appPack.storeTool;
+    this.lo = appPack.lodash;
 
     // console.log(this);
   }
@@ -262,6 +263,7 @@ class BackEndUsage {
       //   return;
       // };
       let work_list = resp?.data?.data ?? [];
+      work_list = this.lo.shuffle(work_list);
       console.debug(work_list);
       let task_btn_list = [];
       for (let work of work_list) {
