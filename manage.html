@@ -928,7 +928,7 @@
                     class="btn btn-sm my-1 me-2"
                     :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
                     @click="modalBox_open('task-detail', task)"
-                  >task-{{task?.topic}}-#{{task?.id}}</button>
+                  >task-{{task?.topic}}-#{{task?.id}}</button><span>批次：{{task.batchName}}</span>
                 </div>
 
               </div>
@@ -1006,13 +1006,14 @@
                     <span>累计操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.totalDur/1000}}s</span><br/>
                     <span>累计时长跨度：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.stride/1000}}s</span>
                   </div>
-                  <button
-                    v-for="task in [theDB.taskDict[anno.task]]"
-                    type="button"
-                    class="btn btn-sm my-1 me-2"
-                    :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
-                    @click="modalBox_open('task-detail', task)"
-                  >task#{{task?.id}}</button>
+                  <template v-for="task in [theDB.taskDict[anno.task]]">
+                    <button
+                      type="button"
+                      class="btn btn-sm my-1 me-2"
+                      :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
+                      @click="modalBox_open('task-detail', task)"
+                    >task#{{task?.id}}</button><span>批次：{{task.batchName}}</span>
+                  </template>
                   <button
                     v-for="user in [theDB.userDict[anno.user]]"
                     type="button"
@@ -1157,13 +1158,14 @@
               <div class="row align-items-center my-2 card" v-for="anno in user.allAnnos.map(it=>theDB.annoDict[it])">
 
                 <div class="col-12">
-                  <button
-                    v-for="task in [theDB.taskDict[anno.task]]"
-                    type="button"
-                    class="btn btn-sm my-1 me-2"
-                    :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
-                    @click="modalBox_open('task-detail', task)"
-                  >task#{{task?.id}}</button>
+                  <template v-for="task in [theDB.taskDict[anno.task]]">
+                    <button
+                      type="button"
+                      class="btn btn-sm my-1 me-2"
+                      :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
+                      @click="modalBox_open('task-detail', task)"
+                    >task#{{task?.id}}</button><span>批次：{{task.batchName}}</span>
+                  </template>
                 </div>
 
                 <div class="col-12" v-for="entry in [theDB.entryDict[anno.entry]]">
