@@ -12,7 +12,7 @@ if (DEVELOPING) {
 };
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const DEV_HOSTS = ["http://192.168.124.3:8888", "http://192.168.1.100:8888"];
-const API_BASE_DEV = DEV_HOSTS[1];
+const API_BASE_DEV = DEV_HOSTS[0];
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 
@@ -251,15 +251,29 @@ const RootComponent = {
 
     const workerState = reactive({
       working: false,
+      works: [],
     });
+
     const theWorker = new Worker("js/workers/manageWorker.worker.js");
     theWorker.onmessage = async (message) => {
       // console.log(message);
       const pack = message.data;
       const actions = {
-        'working': ()=>{workerState.working=true},
-        'done': ()=>{workerState.working=false},
-        'updateDB': ()=>{Object.assign(theDB, pack.data)},
+        'working': ()=>{
+          workerState.working=true
+        },
+        'done': ()=>{
+          workerState.working=false;
+          let nextWork = workerState.works.shift();
+          if (nextWork) {
+            theWorker.postMessage(foolCopy(nextWork));
+          } else {
+            alertBox_pushAlert(`辅助线程 队列已完成`, "success");
+          };
+        },
+        'updateDB': async()=>{
+          await Object.assign(theDB, pack.data);
+        },
         'alert': ()=>{alertBox_pushAlert(...pack.data)},
       };
       if (pack.command in actions) {
@@ -283,6 +297,81 @@ const RootComponent = {
       });
       // console.timeEnd('theWorker.postMessage');
     });
+
+    const pushWork = async (work) => {
+      workerState.works.push(work);
+      if (!workerState.working) {
+        workerState.working = true;
+        theWorker.postMessage(foolCopy(workerState.works.shift()));
+      };
+    };
+
+
+
+
+    const extendTasks = async () => {
+      // require tasks, annos
+
+      // if (workerState.working) {
+      //   alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
+      //   return;
+      // };
+      // workerState.working=true;
+      pushWork({
+        'command': "extendTasks",
+        'data': (theDB),
+      });
+    };
+
+    const extendAnnos = async () => {
+      // require annos, tasks
+
+      // if (workerState.working) {
+      //   alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
+      //   return;
+      // };
+      // workerState.working=true;
+      pushWork({
+        'command': "extendAnnos",
+        'data': (theDB),
+      });
+    };
+
+    const extendUsers = async () => {
+      // require users, tasks, annos
+      // require extendTasks
+
+      // if (workerState.working) {
+      //   alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
+      //   return;
+      // };
+      // workerState.working=true;
+      pushWork({
+        'command': "extendUsers",
+        'data': (theDB),
+      });
+    };
+
+    const extendEntries = async () => {
+      // require entries, tasks, annos
+
+      // if (workerState.working) {
+      //   alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
+      //   return;
+      // };
+      // workerState.working=true;
+      pushWork({
+        'command': "extendEntries",
+        'data': (theDB),
+      });
+    };
+
+
+
+
+
+
+
 
 
 
@@ -487,65 +576,6 @@ const RootComponent = {
 
 
 
-    const extendTasks = async () => {
-      // require tasks, annos
-
-      if (workerState.working) {
-        alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
-        return;
-      };
-
-      theWorker.postMessage({
-        'command': "extendTasks",
-        'data': foolCopy(theDB),
-      });
-
-    };
-
-    const extendAnnos = async () => {
-      // require annos, tasks
-
-      if (workerState.working) {
-        alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
-        return;
-      };
-
-      theWorker.postMessage({
-        'command': "extendAnnos",
-        'data': foolCopy(theDB),
-      });
-
-    };
-
-    const extendUsers = async () => {
-      // require users, tasks, annos
-      // require extendTasks
-
-      for (let user of theDB.users) {
-        // user.allTasks = theDB.tasks.filter(task => task.to.includes(user.id)).map(it=>it.id);
-        // user.allAnnos = theDB.annos.filter(anno => anno.user==user.id).map(it=>it.id);
-        user.allTasks = theDB.inf_user_all_tasks[user.id]??[];
-        user.allAnnos = theDB.inf_user_all_annos[user.id]??[];
-        user.doneTasks = user.allTasks.map(tid=>theDB.taskDict[tid]).filter(task => (task.submitters??[]).includes(user.id)).map(it=>it.id);
-        theDB.userDict[user.id] = user;
-      };
-    };
-
-    const extendEntries = async () => {
-      // require entries, tasks, annos
-
-      for (let entry of theDB.entries) {
-        // if (theDB.tasks.find(it=>it.entry==entry.id)) {
-        // entry.allTasks = theDB.tasks.filter(task=>task.entry==entry.id).map(it=>it.id);
-        // entry.allAnnos = theDB.annos.filter(anno=>anno.entry==entry.id).map(it=>it.id);
-        entry.allTasks = theDB.inf_entry_all_tasks[entry.id];
-        entry.allAnnos = theDB.inf_entry_all_annos[entry.id];
-        theDB.entryDict[entry.id] = entry;
-        // };
-      };
-    };
-
-
 
     const extendDB = async () => {
       await extendTasks();
@@ -588,7 +618,7 @@ const RootComponent = {
 
         await saveBasic();
 
-        await alertBox_pushAlert(`${tableName}已更新至最新状态(${ctrl.lastTimeDict[tableListName]})`, 'success', 5000);
+        // await alertBox_pushAlert(`${tableName}已更新至最新状态(${ctrl.lastTimeDict[tableListName]})`, 'success', 5000);
 
         return true;  //theDB[tableListName];
 
@@ -626,7 +656,7 @@ const RootComponent = {
 
 
     const sync = async () => {
-      let aidx = alertBox_pushAlert('正在同步，请稍等……', 'info', 9999999);
+      let aidx = alertBox_pushAlert('正在获取数据，请稍等……', 'info', 9999999);
       let time = new Date();
       try {
 
@@ -644,7 +674,7 @@ const RootComponent = {
 
         await saveBasic();
 
-        alertBox_pushAlert(`数据库已更新至最新状态(${ctrl.lastTime})`, 'success', 5000);
+        // alertBox_pushAlert(`数据库已刷新至最新状态(${ctrl.lastTime})`, 'success');
 
         return theDB;
 
@@ -1206,6 +1236,7 @@ const RootComponent = {
       // store,
       theSaver,
       theWorker,
+      workerState,
       //
       timeString,
       dateString,

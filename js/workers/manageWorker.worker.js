@@ -164,8 +164,10 @@ const extendTasks = async (theDB) => {
 
 onmessage = async function (event) {
   const pack = event.data;
+  console.log("pack:", pack);
 
-  const tplt = async (fn, theDB) => {
+  const tplt = async (fn, theDB, label="tplt") => {
+    console.time(label);
     postMessage({
       'command': "working",
     });
@@ -177,6 +179,7 @@ onmessage = async function (event) {
     postMessage({
       'command': "done",
     });
+    console.timeEnd(label);
   };
 
   const actions = {
@@ -187,22 +190,24 @@ onmessage = async function (event) {
       });
     },
     'extendTasks': async (theDB)=>{
-      await tplt(extendTasks, theDB);
+      await tplt(extendTasks, theDB, "extendTasks");
     },
     'extendAnnos': async (theDB)=>{
-      await tplt(extendAnnos, theDB);
+      await tplt(extendAnnos, theDB, "extendAnnos");
     },
     'extendEntries': async (theDB)=>{
-      await tplt(extendEntries, theDB);
+      await tplt(extendEntries, theDB, "extendEntries");
     },
     'extendUsers': async (theDB)=>{
-      await tplt(extendUsers, theDB);
+      await tplt(extendUsers, theDB, "extendUsers");
     },
 
 
   };
   if (pack.command in actions) {
+    console.time(`cmd-${pack.command}`);
     await actions[pack.command](pack.data);
+    console.timeEnd(`cmd-${pack.command}`);
   } else {
     postMessage({
       'command': "alert",

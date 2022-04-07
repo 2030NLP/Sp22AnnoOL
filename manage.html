@@ -97,6 +97,7 @@
               @click="()=>{loadCacheDB()}"
               title="加载缓存数据"
             >加载缓存</button>
+            <span class="text-danger" v-show="workerState.works.length">辅助线程 还有 {{workerState.works.length}} 项任务未完成，请稍等！！！</span>
           </div>
           <div class="col col-12">
             <button
