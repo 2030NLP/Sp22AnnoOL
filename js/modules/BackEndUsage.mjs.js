@@ -2,6 +2,35 @@
 
 import { timeString, foolCopy } from '../util.mjs.js';
 
+
+
+const ll0 = ['t0', '第0期', '清洗', '0', 'clean', 'check'];
+const ll1 = ['t1', '第1期', '正确性', '1'];
+const ll2 = ['t2', '第2期', '同义性', '2'];
+const ll3 = ['t3', '第3期', '归因', '3', 'reason'];
+const ll4 = ['t4', '第4期', '精标', '4', 'detail'];
+
+// 处理 topic 历史遗留混乱 用于 Task task.topic
+const topic_regulation = (topic) => {
+  if (ll0.includes(topic)) {
+    return '清洗';
+  };
+  if (ll1.includes(topic)) {
+    return '第1期';
+  };
+  if (ll2.includes(topic)) {
+    return '第2期';
+  };
+  if (ll3.includes(topic)) {
+    return '归因';
+  };
+  if (ll4.includes(topic)) {
+    return '精标';
+  };
+  return topic;
+}
+
+
 const errorHappened = (err) => {
   if (err == null) {
     // console.log('err == null');
@@ -45,7 +74,7 @@ const errorHappened = (err) => {
 };
 
 class BackEndUsage {
-  constructor(appPack) {
+  constructor(appPack, checkDB={}) {
     this.data = appPack.reactive_data;
     this.ewp = appPack.reactive_exam_wrap;
 
@@ -65,10 +94,12 @@ class BackEndUsage {
     this.storeTool = appPack.storeTool;
     this.lo = appPack.lodash;
 
+    this.checkDB = checkDB;
+
     // console.log(this);
   }
-  static new(appPack) {
-    return new BackEndUsage(appPack);
+  static new(appPack, checkDB) {
+    return new BackEndUsage(appPack, checkDB);
   }
 
   updateProgress() {
@@ -250,6 +281,44 @@ class BackEndUsage {
   //   };
   //   // this.pushAlert("updateTarget 结束", 'secondary');
   // }
+
+  async makeCheckList(user_id, topic, batchName, batch) {}
+
+  async extendCheckDB(data) {
+    this.checkDB.users = data?.users??[];
+    this.checkDB.tasks = data?.tasks??[];
+    this.checkDB.annos = data?.annos??[];
+
+    this.checkDB.userDict = this.lo.keyBy(this.checkDB.users, 'id');
+    this.checkDB.taskDict = this.lo.keyBy(this.checkDB.tasks, 'id');
+    this.checkDB.annoDict = this.lo.keyBy(this.checkDB.annos, 'id');
+
+    this.checkDB.topics = this.lo.uniq(this.checkDB.tasks.map(task=>topic_regulation(task.topic)));
+    this.checkDB.batchs = this.lo.uniq(this.checkDB.tasks.map(task=>topic_regulation(task.batch)));
+    this.checkDB.batchNames = this.lo.uniq(this.checkDB.tasks.map(task=>topic_regulation(task.batchName)));
+  }
+
+  async updateCheckDB() {
+    let aa = this.pushAlert("正在获取审查数据，请稍等……", "info", 99999999);
+    try {
+      let resp = await this.backEnd.getCheckDB();
+      console.log(resp);
+      this.removeAlert(aa);
+      if (resp?.data?.code!=200) {
+        this.pushAlert(`【发生错误】${resp?.data?.msg}`, 'danger', null, resp);
+        return false;
+      };
+
+      await extendCheckDB(resp?.data?.data);
+
+      this.pushAlert("完成", 'success', 2000);
+    } catch (error) {
+      this.removeAlert(aa);
+      this.pushAlert(error, 'danger', 5000, error);
+    };
+    this.removeAlert(aa);
+    return true;
+  }
 
   async updateTaskList() {
     // this.pushAlert("updateTaskList 开始");

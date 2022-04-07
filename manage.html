@@ -191,7 +191,7 @@
             <div>纯原句多少，替换句多少，替换句对多少。任务是否已设置。</div>
             <div>总体情况：</div>
             <ul>
-              <li>总任务量：{{ tasks_computed.total.total_num }}</li>
+              <li :title="`${tasks_computed.total.total_num} - ${tasks_computed.total.deleted_num}`">总任务量：{{ tasks_computed.total.total_num - tasks_computed.total.deleted_num }}</li>
               <li>已分配量：{{ tasks_computed.total.assigned_num }}</li>
               <li>非足量提交：{{ tasks_computed.total.working_num }}</li>
               <li>已足量提交：{{ tasks_computed.total.done_num }}</li>
@@ -204,7 +204,7 @@
               <li v-for="pair in tasks_computed.by_topic">
                 <span>{{pair[0]}}</span><span>：</span>
                 <ul>
-                  <li>总量：{{pair[1]?.total_num}}</li>
+                  <li :title="`${pair[1]?.total_num} - ${pair[1]?.deleted_num}`">总量：{{pair[1]?.total_num - pair[1]?.deleted_num}}</li>
                   <li>已分配：{{pair[1]?.assigned_num}}</li>
                   <li>非足量提交：{{pair[1]?.working_num}}</li>
                   <li>已足量提交：{{pair[1]?.done_num}}</li>
@@ -440,6 +440,14 @@
               <option v-for="topic in assignTopics" :value="topic.value">{{topic.desc}}</option>
             </select>
           </div>
+          <div class="col col-12 col-sm-6 col-lg-4 my-2">
+            <label class="form-label">任务批次名称（用于筛选）</label>
+            <input
+             class="form-control form-control-sm"
+             type="text"
+             v-model="assignData.settings.batchName"
+            >
+          </div>
           <div class="col col-12 my-2">
             <label class="form-label">质检题设置（Json字符串）</label>
             <textarea
@@ -625,7 +633,7 @@
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
                 @click="()=>{theDB.users.sort((a,b)=>+userProgress(a).cDoneLen-userProgress(b).cDoneLen);}"
-              >按总完成量降序排序</button>
+              >按总完成量升序排序</button>
               <button
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
@@ -895,7 +903,8 @@
                   <button
                     v-for="task in [theDB.taskDict[task_id]]"
                     type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    class="btn btn-sm my-1 me-2"
+                    :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
                     @click="modalBox_open('task-detail', task)"
                   >task-{{task?.topic}}-#{{task?.id}}</button>
                 </div>
@@ -978,7 +987,8 @@
                   <button
                     v-for="task in [theDB.taskDict[anno.task]]"
                     type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    class="btn btn-sm my-1 me-2"
+                    :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
                     @click="modalBox_open('task-detail', task)"
                   >task#{{task?.id}}</button>
                   <button
@@ -1128,7 +1138,8 @@
                   <button
                     v-for="task in [theDB.taskDict[anno.task]]"
                     type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    class="btn btn-sm my-1 me-2"
+                    :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
                     @click="modalBox_open('task-detail', task)"
                   >task#{{task?.id}}</button>
                 </div>

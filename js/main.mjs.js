@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0405-01";
+const APP_VERSION = "22-0405-05";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -324,8 +324,10 @@ const RootComponent = {
 
     // appPack.ioControl = ioC;
 
+    const checkDB = reactive({});
+
     // 初始化 网络版 的 主要逻辑
-    const bEU = new BackEndUsage(appPack);
+    const bEU = new BackEndUsage(appPack, checkDB);
 
     // 网络版 使用 网络版相应函数
     stepCtrl.updateProgress = () => { bEU.updateProgress(); };
@@ -384,6 +386,8 @@ const RootComponent = {
       ...toRefs(exampleWrap),
       ...toRefs(appData),
       dfWrap,
+      //
+      checkDB,
       //
       alertData,
       alertBox,

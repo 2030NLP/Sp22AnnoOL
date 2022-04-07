@@ -150,6 +150,14 @@ class BackEnd {
     // response.data.err === ''
   }
 
+  async getCheckDB() {
+    let response = await this.request({
+      method: "get",
+      url: `/check-list-for-me`
+    });
+    return response;
+  }
+
   async getThing(user_id, task_id) {
     // 获取 task.id 对应的 task, entry, anno
     // 输入：

@@ -1,4 +1,10 @@
-// modifiedAt: 2022-04-01
+// modifiedAt: 2022-04-06
+
+const assert = jj => {
+  if (!jj) {
+    throw new Error("");
+  };
+};
 
 const forceBlur = event => {
   let target = event.target;
@@ -87,7 +93,7 @@ const errorHappened = (err) => {
   return true;
 };
 
-export { chainGet, forceBlur, timeString, dateString, foolCopy, uuid, errorHappened };
+export { assert, chainGet, forceBlur, timeString, dateString, foolCopy, uuid, errorHappened };
 // if (typeof module !== 'undefined') {
 //   module.exports = { forceBlur, timeString, foolCopy, uuid };
 // }

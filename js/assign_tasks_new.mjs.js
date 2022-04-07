@@ -45,6 +45,7 @@ const assign_tasks = async (pack, lo) => {
   let users = pack.users ?? [];
   let tasks = pack.tasks ?? [];
   let topic = pack.topic ?? null;
+  let batchName = pack.batchName ?? null;
   let exclusion = pack.exclusion ?? [];
   let users_per_task = pack.users_per_task ?? 2;
   let tasks_per_user = pack.tasks_per_user ?? 30;
@@ -105,6 +106,7 @@ const assign_tasks = async (pack, lo) => {
 
 
   // 检查 tasks 情况，多不动，少补
+  // ⚠️ topic 和 batchName 假设是没有错误的，需要在函数外部确认这一点
   // 真任务
   for (let e_id of real_entry_ids) {
     let target = lo.find(tasks, it=>it.entry==e_id&&topic_regulation(it.topic)==topic);
@@ -112,6 +114,7 @@ const assign_tasks = async (pack, lo) => {
       let it = {
         'id': new_task_id(),
         'topic': topic,
+        'batchName': batchName,
         'entry': e_id,
         'to': [],
         'submitters': [],
@@ -124,9 +127,11 @@ const assign_tasks = async (pack, lo) => {
   for (let entry of Object.values(polygraph_entries_dict).flat()) {
     let target = lo.find(tasks, it=>it.entry==entry.id&&topic_regulation(it.topic)==topic);
     if (!target || !target.polygraph?.length) {
+      // 顺便补全 polygraph 信息
       let it = {
         'id': target?.id ?? new_task_id(),
         'topic': topic,
+        'batchName': batchName,
         'entry': entry.id,
         'to': target?.to ?? [],
         'submitters': target?.submitters ?? [],
