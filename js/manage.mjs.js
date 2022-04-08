@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0407-02";
+const APP_VERSION = "22-0408-01";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -29,6 +29,7 @@ import {
   // onUpdated,
   createApp as Vue_createApp,
   watch,
+  h,
 } from './modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
 import { timeString, dateString, foolCopy, uuid, errorHappened } from './util.mjs.js';
@@ -255,24 +256,46 @@ const RootComponent = {
     });
 
     const theWorker = new Worker("js/workers/manageWorker.worker.js");
+
+    theWorker.checkNext = async () => {
+      if (!workerState.working) {
+        let nextWork = workerState.works.shift();
+        if (nextWork) {
+          workerState.working=true;
+          await theWorker.postMessage(foolCopy(nextWork));
+        } else {
+          alertBox_pushAlert(`辅助线程 队列已完成`, "success");
+        };
+      };
+    };
+
+    watch(()=>workerState.working, async()=>{
+      if(!workerState.working){await theWorker.checkNext();};
+    });
+
     theWorker.onmessage = async (message) => {
       // console.log(message);
       const pack = message.data;
       const actions = {
         'working': ()=>{
-          workerState.working=true
+          workerState.working=true;
         },
-        'done': ()=>{
-          workerState.working=false;
-          let nextWork = workerState.works.shift();
-          if (nextWork) {
-            theWorker.postMessage(foolCopy(nextWork));
-          } else {
-            alertBox_pushAlert(`辅助线程 队列已完成`, "success");
-          };
-        },
+        // 'done': ()=>{
+        //   workerState.working=false;
+        //   await theWorker.checkNext();
+        // },
         'updateDB': async()=>{
+          workerState.working=true;
+          console.log("main got:", foolCopy(pack.data));
           await Object.assign(theDB, pack.data);
+
+          await theDB.entries.forEach(entry=>{theDB.entryDict[entry.id] = entry;});
+          await theDB.tasks.forEach(task=>{theDB.taskDict[task.id] = task;});
+          await theDB.annos.forEach(anno=>{theDB.annoDict[anno.id] = anno;});
+          await theDB.users.forEach(user=>{theDB.userDict[user.id] = user;});
+
+          workerState.working=false;
+          // await theWorker.checkNext();
         },
         'alert': ()=>{alertBox_pushAlert(...pack.data)},
       };
@@ -300,10 +323,7 @@ const RootComponent = {
 
     const pushWork = async (work) => {
       workerState.works.push(work);
-      if (!workerState.working) {
-        workerState.working = true;
-        theWorker.postMessage(foolCopy(workerState.works.shift()));
-      };
+      await theWorker.checkNext();
     };
 
 
@@ -1211,6 +1231,7 @@ const RootComponent = {
         Object.assign(entry,  entryResp.data.data);
 
         let entry_annos = theDB.annos.filter(anno => anno.entry==entry.id);
+        console.log('entry_annos:', entry_annos);
         for (let anno of entry_annos) {
           for (let annot of anno?.content?.annotations??[]) {
             if (annot.on) {
@@ -1305,6 +1326,63 @@ const RootComponent = {
 };
 
 const the_app = Vue_createApp(RootComponent);
+
+the_app.component('anno-card', {
+  props: ["db", "anno"],
+  emits: ["open-modal"],
+  setup(props, ctx) {
+    const onOpenModal = () => {
+      ctx.emit('open-modal');
+    };
+    return { onOpenModal };
+  },
+  render() {
+    // console.log(this);
+    if (!this.anno) {
+      return h('div', {}, ["没有找到这条标注"]);
+    };
+    return h(
+      'div', {},
+      [
+        h(
+          'button', {
+            'type': "button",
+            'class':"btn btn-sm btn-outline-dark my-1 me-2",
+            'onClick': this.onOpenModal,
+          },
+          [`anno#${this.anno?.id}-${this.db?.userDict?.[this.anno?.user]?.name}`],
+        ),
+        h(
+          'div', {},
+          (this.anno?.content?.annotations??[]).map(annot=>h(
+            'span', {
+              'class': "badge bg-light text-dark text-wrap my-1 me-2",
+            },
+            [JSON.stringify(annot)],
+          )),
+        ),
+      ]
+    );
+  },
+  // template: `
+  //   <div>
+  //     <button
+  //       type="button"
+  //       class="btn btn-sm btn-outline-dark my-1 me-2"
+  //       @click="modalBox_open('anno-detail', anno)"
+  //     >anno#{{anno?.id}}-{{theDB.userDict[user_id]?.name}}</button>
+  //     <div v-for="annot in anno.content?.annotations??[]">
+  //       <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
+  //     </div>
+  //   </div>
+  // `,
+  // setup(props) {
+  //   const anno = reactive(props.anno);
+  //   return {anno};
+  // },
+});
+
+
 const app = the_app.mount('#bodywrap');
 window.app = app;
 // the_app.config.globalProperties.$axios = axios;  // 用 app.theBackEnd 就可以调试了。

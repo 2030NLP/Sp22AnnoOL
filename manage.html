@@ -407,6 +407,12 @@
                 <h5>{{kkvv[0]}}</h5>
                 <div class="form-control form-control-sm overflow-auto max-vh-40">
                   <template v-for="anno_id in kkvv[1]">
+                    <!-- <anno-card
+                      v-for="anno in [theDB.annoDict[anno_id]]"
+                      :anno="anno"
+                      :db="theDB"
+                      @open-modal="modalBox_open('anno-detail', anno)"
+                    /> -->
                     <button
                       v-for="anno in [theDB.annoDict[anno_id]]"
                       type="button"
@@ -909,26 +915,32 @@
                 <div class="col-12" v-for="anno_id in entry.allAnnos">
                   <div class="card my-1" v-for="anno in [theDB.annoDict[anno_id]]">
                     <div class="col-12">
-                      <button
+                      <anno-card
+                        :anno="anno"
+                        :db="theDB"
+                        @open-modal="modalBox_open('anno-detail', anno)"
+                      />
+                      <!-- <button
                         type="button"
                         class="btn btn-sm btn-outline-dark my-1 me-2"
                         @click="modalBox_open('anno-detail', anno)"
                       >anno-{{anno?.topic}}-#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
                       <div v-for="annot in anno.content?.annotations??[]">
                         <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                 </div>
 
                 <div class="col-12" v-for="task_id in entry.allTasks">
-                  <button
-                    v-for="task in [theDB.taskDict[task_id]]"
-                    type="button"
-                    class="btn btn-sm my-1 me-2"
-                    :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
-                    @click="modalBox_open('task-detail', task)"
-                  >task-{{task?.topic}}-#{{task?.id}}</button><span>批次：{{task.batchName}}</span>
+                  <template v-for="task in [theDB.taskDict[task_id]]">
+                    <button
+                      type="button"
+                      class="btn btn-sm my-1 me-2"
+                      :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
+                      @click="modalBox_open('task-detail', task)"
+                    >task-{{task?.topic}}-#{{task?.id}}</button><span v-if="task.batchName">批次：{{task.batchName}}</span>
+                  </template>
                 </div>
 
               </div>
@@ -1012,7 +1024,7 @@
                       class="btn btn-sm my-1 me-2"
                       :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
                       @click="modalBox_open('task-detail', task)"
-                    >task#{{task?.id}}</button><span>批次：{{task.batchName}}</span>
+                    >task#{{task?.id}}</button><span v-if="task.batchName">批次：{{task.batchName}}</span>
                   </template>
                   <button
                     v-for="user in [theDB.userDict[anno.user]]"
@@ -1095,14 +1107,19 @@
                   <div class="card my-1" v-for="user_id in task.submitters">
                     <div class="col-12" v-for="anno_id in [theDB.inf_user_task_anno[`${user_id}/${task.id}`]]">
                       <template v-for="anno in [theDB.annoDict[anno_id]]">
-                        <button
+                        <anno-card
+                          :anno="anno"
+                          :db="theDB"
+                          @open-modal="modalBox_open('anno-detail', anno)"
+                        />
+                        <!-- <button
                           type="button"
                           class="btn btn-sm btn-outline-dark my-1 me-2"
                           @click="modalBox_open('anno-detail', anno)"
                         >anno#{{anno?.id}}-{{theDB.userDict[user_id]?.name}}</button>
                         <div v-for="annot in anno.content?.annotations??[]">
                           <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
-                        </div>
+                        </div> -->
                       </template>
                     </div>
                   </div>
@@ -1164,7 +1181,7 @@
                       class="btn btn-sm my-1 me-2"
                       :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
                       @click="modalBox_open('task-detail', task)"
-                    >task#{{task?.id}}</button><span>批次：{{task.batchName}}</span>
+                    >task#{{task?.id}}</button><span v-if="task.batchName">批次：{{task.batchName}}</span>
                   </template>
                 </div>
 
@@ -1209,14 +1226,19 @@
                 </div>
 
                 <div class="col-12">
-                  <button
+                  <anno-card
+                    :anno="anno"
+                    :db="theDB"
+                    @open-modal="modalBox_open('anno-detail', anno)"
+                  />
+                  <!-- <button
                     type="button"
                     class="btn btn-sm btn-outline-dark my-1 me-2"
                     @click="modalBox_open('anno-detail', anno)"
                   >anno-{{anno?.topic}}-#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
                   <div v-for="annot in anno.content?.annotations??[]">
                     <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
-                  </div>
+                  </div> -->
                 </div>
 
               </div>
