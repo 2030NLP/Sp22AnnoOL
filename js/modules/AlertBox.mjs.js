@@ -1,4 +1,4 @@
-// modifiedAt: 2022-03-22
+// modifiedAt: 2022-04-08
 
 class AlertBox {
   constructor(reactive_alert_box_data) {
@@ -27,7 +27,10 @@ class AlertBox {
     return idx;
   }
   removeAlert(idx) {
-    this.data.alerts.find(alert => alert.idx == idx).show = 0;
+    let that = this.data.alerts.find(alert => alert.idx == idx);
+    if (that) {
+      that.show = 0;
+    };
   }
 }
 

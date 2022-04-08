@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0408-01";
+const APP_VERSION = "22-0408-02";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -253,18 +253,36 @@ const RootComponent = {
     const workerState = reactive({
       working: false,
       works: [],
+      alert_idx: null,
     });
 
     const theWorker = new Worker("js/workers/manageWorker.worker.js");
+
+    const pushWork = async (work) => {
+      workerState.works.push(work);
+      await theWorker.checkNext();
+    };
 
     theWorker.checkNext = async () => {
       if (!workerState.working) {
         let nextWork = workerState.works.shift();
         if (nextWork) {
           workerState.working=true;
+          if (workerState.alert_idx!=null){
+            alertBox_removeAlert(workerState.alert_idx);
+          };
+          let aidx = alertBox_pushAlert('辅助线程 工作中……', 'info', 9999999);
+          workerState.alert_idx = aidx;
           await theWorker.postMessage(foolCopy(nextWork));
         } else {
+          alertBox_removeAlert(workerState.alert_idx);
           alertBox_pushAlert(`辅助线程 队列已完成`, "success");
+        };
+      } else {
+        if (workerState.alert_idx!=null){
+          alertBox_removeAlert(workerState.alert_idx);
+          let aidx = alertBox_pushAlert('辅助线程 工作中……', 'info', 9999999);
+          workerState.alert_idx = aidx;
         };
       };
     };
@@ -320,11 +338,6 @@ const RootComponent = {
       });
       // console.timeEnd('theWorker.postMessage');
     });
-
-    const pushWork = async (work) => {
-      workerState.works.push(work);
-      await theWorker.checkNext();
-    };
 
 
 
@@ -523,11 +536,11 @@ const RootComponent = {
         console.time('assign');
         await Object.assign(theDB, storedDB);
         console.timeEnd('assign');
-        aidx = alertBox_pushAlert('正在组织数据，请稍等……', 'warning', 9999999);
-        console.time('extendDB');
+        // aidx = alertBox_pushAlert('正在组织数据，请稍等……', 'warning', 9999999);
+        // console.time('extendDB');
         await extendDB();
-        console.timeEnd('extendDB');
-        alertBox_removeAlert(aidx);
+        // console.timeEnd('extendDB');
+        // alertBox_removeAlert(aidx);
         return;
       };
       alertBox_pushAlert('没有找到缓存', 'danger');
@@ -617,7 +630,7 @@ const RootComponent = {
         };
 
         await alertBox_removeAlert(aidx);
-        aidx = await alertBox_pushAlert(`已取回${tableName}数据，正在处理，请稍等……`, 'info', 9999999);
+        aidx = await alertBox_pushAlert(`已取回${tableName}数据，正在处理，请稍等……`, 'info', 3000);
 
         theDB[tableListName] = await resp?.data?.data;
         if (extend) {
@@ -633,7 +646,7 @@ const RootComponent = {
 
         await saveDB();
 
-        await alertBox_removeAlert(aidx);
+        // await alertBox_removeAlert(aidx);
         ctrl.lastTimeDict[tableListName] = await time.toLocaleString();
 
         await saveBasic();
