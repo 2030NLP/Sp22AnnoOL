@@ -1,6 +1,6 @@
 // modifiedAt: 2022-03-15
 
-import { timeString, foolCopy } from '../util.mjs.js';
+import { dateString, timeString, foolCopy } from '../util.mjs.js';
 
 
 
@@ -154,8 +154,13 @@ class BackEndUsage {
         let content = thing?.entry?.content;
         content.annotations = thing?.anno?.content?.annotations ?? [];
         content._ctrl = thing?.anno?.content?._ctrl ?? {};
+        if (thing?.anno?.content?.review) {
+          content.review = thing?.anno?.content?.review;
+        };
         content._info = {
           btn_idx: task_btn.idx,
+          batchName: task_btn.batchName,
+          batch: task_btn.batch,
           task_id: thing?.task?.id,
           topic: thing?.task?.topic,
           entry_id: thing?.entry?.id,
@@ -209,7 +214,7 @@ class BackEndUsage {
     };
     this.data.ctrl.currentPage = 'anno';
     let lastEID = this?.data?.newThings?.lastEID ?? null;
-    let btn = this.data.tasks.find(btn => !btn.done);
+    let btn = this.data.tasks.find(btn => btn.rejectedTP==3&&!btn.checked) ?? this.data.tasks.find(btn => !btn.done);
     if (btn) {
       await this.goIdx(btn.idx);
       return;
@@ -341,15 +346,18 @@ class BackEndUsage {
         let task_btn = {
           id: task.id,
           entryId: task.entry,
+          batchName: task.batchName ?? "",
           batch: task.batch ?? 0,
           done: anno?.content?.annotations?.length ? true : false,
+          rejectedTP: anno?.content?.review?.accept===false ? 3 : anno?.content?.review?.accept===true ? 1 : 2,
+          checked: anno?.content?.review?.checked,
           valid: anno && !anno?.dropped && !anno?.skipped ? true : false,
           dropped: anno?.dropped ? true : false,
           skipped: anno?.skipped ? true : false,
         };
         task_btn_list.push(task_btn);
       };
-      task_btn_list = this.lo.sortBy(task_btn_list, [(it=>!it.done), (it=>it.batch)]);
+      task_btn_list = this.lo.sortBy(task_btn_list, [(it=>!it.done), (it=>it.rejectedTP), (it=>!it.checked), (it=>it.batchName), (it=>it.batch)]);
       // task_btn_list.sort((a, b)=>(+b.done)-(+a.done));
       // task_btn_list = task_btn_list.sort((a,b)=> +a.entryId-b.entryId);
       for (let idx in task_btn_list) {
@@ -396,6 +404,11 @@ class BackEndUsage {
   async save(content) {
     try {
 
+      if (this.ewp.example?.review?.accept) {
+        this.pushAlert(`审核已通过的标注不可再修改！`, 'warning');
+        return;
+      };
+
       if (!this.ewp.example._ctrl?.timeLog?.length) {
         this.ewp.example._ctrl.timeLog = [];
       }
@@ -405,10 +418,18 @@ class BackEndUsage {
       let entry_id = content?._info?.entry_id;
       let entryVer = content?._info?.entry_ver;
       let topic = content?._info?.topic;
+
       let anno_wrap = {
         'annotations': this.ewp.example?.annotations,
         '_ctrl': this.ewp.example?._ctrl,
       };
+      if (this.ewp.example?.review) {
+        let review = this.ewp.example.review??{};
+        review.checked = true;
+        review.checkedAt = dateString();
+        anno_wrap['review'] = review;
+      };
+
       if (!anno_wrap?.annotations?.length) {
         this.pushAlert(`【操作取消】没有标注内容，无需保存`, 'secondary');
         return false;

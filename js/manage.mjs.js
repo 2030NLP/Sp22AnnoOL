@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0408-02";
+const APP_VERSION = "22-0408-05";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -249,6 +249,9 @@ const RootComponent = {
 
     const theBackEnd = new BackEnd(ctrl.currentUser.token, `${API_BASE}/api/`, alertBox_pushAlert);
 
+    watch(() => ctrl?.currentUser?.token, () => {
+      theBackEnd.token = ctrl?.currentUser?.token;
+    });
 
     const workerState = reactive({
       working: false,
@@ -312,6 +315,8 @@ const RootComponent = {
           await theDB.annos.forEach(anno=>{theDB.annoDict[anno.id] = anno;});
           await theDB.users.forEach(user=>{theDB.userDict[user.id] = user;});
 
+          await setMe();
+
           workerState.working=false;
           // await theWorker.checkNext();
         },
@@ -344,12 +349,6 @@ const RootComponent = {
 
     const extendTasks = async () => {
       // require tasks, annos
-
-      // if (workerState.working) {
-      //   alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
-      //   return;
-      // };
-      // workerState.working=true;
       pushWork({
         'command': "extendTasks",
         'data': (theDB),
@@ -358,12 +357,6 @@ const RootComponent = {
 
     const extendAnnos = async () => {
       // require annos, tasks
-
-      // if (workerState.working) {
-      //   alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
-      //   return;
-      // };
-      // workerState.working=true;
       pushWork({
         'command': "extendAnnos",
         'data': (theDB),
@@ -373,12 +366,6 @@ const RootComponent = {
     const extendUsers = async () => {
       // require users, tasks, annos
       // require extendTasks
-
-      // if (workerState.working) {
-      //   alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
-      //   return;
-      // };
-      // workerState.working=true;
       pushWork({
         'command': "extendUsers",
         'data': (theDB),
@@ -387,12 +374,6 @@ const RootComponent = {
 
     const extendEntries = async () => {
       // require entries, tasks, annos
-
-      // if (workerState.working) {
-      //   alertBox_pushAlert("辅助线程正在工作，请稍后再试", "warning");
-      //   return;
-      // };
-      // workerState.working=true;
       pushWork({
         'command': "extendEntries",
         'data': (theDB),
@@ -408,9 +389,7 @@ const RootComponent = {
 
 
 
-    watch(() => ctrl?.currentUser?.token, () => {
-      theBackEnd.token = ctrl?.currentUser?.token;
-    });
+
 
     const tasks_sta = (tasks=[]) => {
       let not_deleted = tasks.filter(task => !task.deleted);
@@ -452,7 +431,15 @@ const RootComponent = {
 
 
 
-
+    const setMe = async () => {
+      if (theDB.users.length) {
+        let me = theDB.users.find(it=>it.token==ctrl.currentUser.token);
+        if (me) {
+          ctrl.currentUser = me;
+          await localforage.setItem(`${APP_NAME}:currentUser`, foolCopy(ctrl.currentUser));
+        };
+      };
+    };
 
 
 
@@ -472,13 +459,7 @@ const RootComponent = {
       let storedUser = await localforage.getItem(`${APP_NAME}:currentUser`);
       if (storedUser != null) {
         ctrl.currentUser = storedUser;
-        if (theDB.users.length) {
-          let me = theDB.users.find(it=>it.token==ctrl.currentUser.token);
-          if (me) {
-            ctrl.currentUser = me;
-            await localforage.setItem(`${APP_NAME}:currentUser`, foolCopy(ctrl.currentUser));
-          };
-        };
+        await setMe();
       };
       let storedTime = await localforage.getItem(`${APP_NAME}:lastTime`);
       if (storedTime != null) {
@@ -501,6 +482,7 @@ const RootComponent = {
         annos: foolCopy(theDB.annos),
         entries: foolCopy(theDB.entries),
       });
+      alertBox_pushAlert('数据已缓存', 'info');
     };
     const exportDB = async () => {
       if (!theDB.tasks.length) {
@@ -1236,7 +1218,6 @@ const RootComponent = {
       };
 
       let entry;
-
       if (entryResp.data?.data) {
         entry = theDB.entryDict[entry_id];
         // entry.allTasks = theDB.inf_entry_all_tasks[entry.id];
@@ -1258,8 +1239,90 @@ const RootComponent = {
         return;
       };
 
+      await saveDB();
+
       alertBox_removeAlert(aidx);
       alertBox_pushAlert(`执行成功`, 'success', 1000, entryResp);
+    };
+
+
+
+    const _annoTimeCompute = (anno) => {
+      const logs = anno?.content?._ctrl?.timeLog ?? [];
+      let box = [];
+      for (let log of logs) {
+        if (log[0]=="in") {
+          box.push([log[1], null]);
+        };
+        if (log[0]=="out" && box.length) {
+          if (box.at(-1)[1]==null) {
+            box.at(-1)[1] = log[1];
+          };
+        };
+      };
+      let totalDur = 0;
+      for (let pair of box) {
+        if (pair[0].length&&pair[1].length) {
+          let delta = (new Date(pair[1])) - (new Date(pair[0]));
+          totalDur += delta;
+        };
+      };
+      let firstDur = (new Date(box[0][1])) - (new Date(box[0][0]));
+      let stride = (new Date(box.at(-1)[1])) - (new Date(box[0][0]));
+      let lastAt = box.at(-1)[1];
+      return {firstDur, totalDur, stride, lastAt, detail: box};
+    };
+
+
+    const saveAnnoReview = async (anno, review) => {
+      let {user, task, entry, content, topic, entryVer} = anno;
+      review.reviewing = undefined;
+      review.reviewer = {
+        id: ctrl.currentUser?.id,
+        name: ctrl.currentUser?.name,
+      };
+      if (!anno._timeInfo.lastAt) {
+        anno._timeInfo = _annoTimeCompute(anno);
+      };
+      review.annoAt = anno._timeInfo.lastAt;
+      review.reviewedAt = dateString();
+      content.review = review;
+      let resp = await theBackEnd.updateAnno(user, task, entry, content, topic, entryVer);
+      if (resp?.data?.code!=200) {
+        alertBox_pushAlert(`【发生错误】${resp?.data?.msg}`, 'danger', null, resp);
+        return false;
+      } else {
+        alertBox_pushAlert(`已保存，自动刷新……`, 'success');
+      };
+      await updateOneAnno(anno);
+      return true;
+    };
+
+    const updateOneAnno = async (anno) => {
+      let aidx = alertBox_pushAlert(`获取中……`, 'info', 99999999);
+      console.log(anno);
+      const annoResp = await app.theBackEnd.getAnno(anno.user, anno.task);
+      if (annoResp?.data?.code!=200) {
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`出现问题：${annoResp?.data?.msg}`, 'danger', 5000, annoResp);
+        return;
+      };
+
+      if (annoResp.data?.data) {
+        let anno_in_dict = theDB.annoDict[anno.id];
+        let new_anno = annoResp.data.data;
+        new_anno._timeInfo = _annoTimeCompute(new_anno);
+        Object.assign(anno_in_dict, new_anno);
+      } else {
+        alertBox_removeAlert(aidx);
+        alertBox_pushAlert(`数据异常`, 'danger', 5000, annoResp);
+        return;
+      };
+
+      await saveDB();
+
+      alertBox_removeAlert(aidx);
+      alertBox_pushAlert(`执行成功`, 'success', 1000, annoResp);
     };
 
 
@@ -1331,6 +1394,8 @@ const RootComponent = {
       wordAt,
       makeAnnoOnTexts,
       updateOneEntry,
+      updateOneAnno,
+      saveAnnoReview,
       //
       search,
       //
@@ -1338,16 +1403,69 @@ const RootComponent = {
   },
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const the_app = Vue_createApp(RootComponent);
 
 the_app.component('anno-card', {
-  props: ["db", "anno"],
-  emits: ["open-modal"],
+  props: ["db", "anno", "reviewer"],
+  emits: ['open-modal', 'submit-review', 'update-anno', /*'update:modelValue'*/],
   setup(props, ctx) {
+    const ctrl = reactive({
+      reviewing: false,
+      comment: props?.anno?.content?.review?.comment??"",
+      accept: props?.anno?.content?.review?.accept??null,
+    });
     const onOpenModal = () => {
-      ctx.emit('open-modal');
+      ctx.emit('open-modal', ['anno-detail', props.anno]);
     };
-    return { onOpenModal };
+    const reviewPass = () => {
+      ctrl.accept=true;
+    };
+    const reviewReject = () => {
+      ctrl.accept=false;
+    };
+    const submitReview = () => {
+      ctx.emit('submit-review', [props.anno, ctrl]);
+      ctrl.reviewing=false;
+    };
+    const updateAnno = () => {
+      ctx.emit('update-anno', props.anno);
+    };
+    return { ctrl, onOpenModal, reviewPass, reviewReject, submitReview, updateAnno };
   },
   render() {
     // console.log(this);
@@ -1355,18 +1473,103 @@ the_app.component('anno-card', {
       return h('div', {}, ["没有找到这条标注"]);
     };
     return h(
-      'div', {},
+      'div', {
+        'class': "form-control form-control-sm mx-1 my-1",
+      },
       [
-        h(
-          'button', {
+        h('button', {
             'type': "button",
-            'class':"btn btn-sm btn-outline-dark my-1 me-2",
+            'class': "btn btn-sm btn-light my-1 me-2",
             'onClick': this.onOpenModal,
+            'title': JSON.stringify(this.anno),
           },
-          [`anno#${this.anno?.id}-${this.db?.userDict?.[this.anno?.user]?.name}`],
+          [`${this.db?.userDict?.[this.anno?.user]?.name} 的标注 #${this.anno?.id}`],
         ),
-        h(
-          'div', {},
+        !this.ctrl.reviewing ? h('button', {
+            'type': "button",
+            'class': "btn btn-sm btn-outline-primary my-1 me-2",
+            'onClick': ()=>{this.ctrl.reviewing=true},
+          },
+          [`审批`],
+        ) : null,
+        h('button', {
+            'type': "button",
+            'class': "btn btn-sm btn-light my-1 me-2",
+            'onClick': this.updateAnno,
+            'title': `刷新`,
+          },
+          [`🔄`],
+        ),
+        h('div', {},
+          this.ctrl.reviewing ? [
+            h('button', {
+                'type': "button",
+                'class': ["btn btn-sm my-1 me-2", `btn${this.ctrl.accept===true?'':'-outline'}-success`],
+                'onClick': this.reviewPass,
+              },
+              [`通过`],
+            ),
+            h('button', {
+                'type': "button",
+                'class': ["btn btn-sm my-1 me-2", `btn${this.ctrl.accept===false?'':'-outline'}-danger`],
+                'onClick': this.reviewReject,
+              },
+              [`否决`],
+            ),
+
+            h('input', {
+                'type': "text",
+                'class': "form-control form-control-sm my-1 me-2",
+                'placeholder': "填写批示/评论/备注",
+                'value': this.ctrl.comment,
+                'onInput': event => {
+                  this.ctrl.comment = event?.target?.value;
+                },
+              },
+            ),
+
+            // h('br'),
+
+            h('button', {
+                'type': "button",
+                'class': ["btn btn-sm my-1 me-2", `btn-outline-primary`],
+                'onClick': this.submitReview,
+              },
+              [`提交`],
+            ),
+            h('button', {
+                'type': "button",
+                'class': ["btn btn-sm my-1 me-2", `btn-outline-dark`],
+                'onClick': ()=>{this.ctrl.reviewing=false},
+              },
+              [`取消`],
+            ),
+          ] : this.anno?.content?.review.accept!=null ? [
+            h('span', {
+                'title': JSON.stringify(this.anno?.content?.review),
+                'class': ["badge text-wrap my-1 me-2",
+                  this.anno?.content?.review?.accept?
+                  ('bg-light border border-success text-dark'):
+                  (this.anno?.content?.review?.checked?
+                    'bg-warning border border-danger text-dark':
+                    'bg-light border border-danger text-dark')
+                ],
+              },
+              [
+                this.anno?.content?.review?.accept?'已通过':'已否决',' ',
+                this.anno?.content?.review?.comment?`「${this.anno?.content?.review?.comment}」`:null,' ',
+                this.anno?.content?.review?.accept?null:this.anno?.content?.review?.checked?`标注者已处理`:'标注者尚未处理',
+              ],
+            ),
+          ] : [
+            h('span', {
+                'class': "badge bg-light text-dark text-wrap my-1 me-2",
+              },
+              [`暂无批注`],
+            ),
+          ],
+        ),
+        h('div', {},
           (this.anno?.content?.annotations??[]).map(annot=>h(
             'span', {
               'class': "badge bg-light text-dark text-wrap my-1 me-2",
@@ -1377,22 +1580,76 @@ the_app.component('anno-card', {
       ]
     );
   },
-  // template: `
-  //   <div>
-  //     <button
-  //       type="button"
-  //       class="btn btn-sm btn-outline-dark my-1 me-2"
-  //       @click="modalBox_open('anno-detail', anno)"
-  //     >anno#{{anno?.id}}-{{theDB.userDict[user_id]?.name}}</button>
-  //     <div v-for="annot in anno.content?.annotations??[]">
-  //       <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
-  //     </div>
-  //   </div>
-  // `,
-  // setup(props) {
-  //   const anno = reactive(props.anno);
-  //   return {anno};
-  // },
+});
+
+the_app.component('entry-card', {
+  props: ["db", "entry"],
+  emits: ["open-modal", 'update-entry'],
+  setup(props, ctx) {
+    const onOpenModal = () => {
+      ctx.emit('open-modal', ['entry-detail', props.entry]);
+    };
+    const updateEntry = () => {
+      ctx.emit('update-entry', props.entry);
+    };
+    return { onOpenModal, updateEntry };
+  },
+  render() {
+    // console.log(this);
+    if (!this.entry) {
+      return h('div', {}, ["没有找到这条语料"]);
+    };
+    return h(
+      'div', {
+        'class': "form-control form-control-sm mx-1 my-1",
+      }, [],
+    );
+  },
+};
+
+
+
+the_app.component('task-card', {
+  props: ["db", "task"],
+  emits: ["open-modal"],
+  setup(props, ctx) {
+    const onOpenModal = () => {
+      ctx.emit('open-modal', ['task-detail', props.task]);
+    };
+    return { onOpenModal };
+  },
+  render() {
+    // console.log(this);
+    if (!this.task) {
+      return h('div', {}, ["没有找到这个任务"]);
+    };
+    return h(
+      'div', {
+        'class': "d-inline-block"
+      },
+      [
+        h('button', {
+            'type': "button",
+            'class': ["btn btn-sm my-1 me-2", this.task.deleted?'btn-danger':'btn-outline-dark'],
+            'onClick': this.onOpenModal,
+            'title': `task#${this.task?.id}`,
+          },
+          [`task#${this.task?.id}`],
+        ),
+        this.task.batchName ? h(
+          'span', {
+            'class': "badge bg-light text-dark text-wrap my-1 me-2",
+          },
+          [`批次：${this.task.batchName}`],
+        ) : null,
+        h('span', {
+            'class': "badge bg-light text-dark text-wrap my-1 me-2",
+          },
+          [`提交：${this.task?.submitters?.length}/${this.task?.to?.length}`],
+        ),
+      ]
+    );
+  },
 });
 
 

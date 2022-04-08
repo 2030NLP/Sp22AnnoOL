@@ -411,7 +411,9 @@
                       v-for="anno in [theDB.annoDict[anno_id]]"
                       :anno="anno"
                       :db="theDB"
-                      @open-modal="modalBox_open('anno-detail', anno)"
+                      @submit-review="(value)=>{saveAnnoReview(...value)}"
+                      @open-modal="(value)=>{modalBox_open(...value)}"
+                      @update-anno="(value)=>{updateOneAnno(value)}"
                     /> -->
                     <button
                       v-for="anno in [theDB.annoDict[anno_id]]"
@@ -918,7 +920,9 @@
                       <anno-card
                         :anno="anno"
                         :db="theDB"
-                        @open-modal="modalBox_open('anno-detail', anno)"
+                        @submit-review="(value)=>{saveAnnoReview(...value)}"
+                        @open-modal="(value)=>{modalBox_open(...value)}"
+                        @update-anno="(value)=>{updateOneAnno(value)}"
                       />
                       <!-- <button
                         type="button"
@@ -1018,14 +1022,12 @@
                     <span>累计操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.totalDur/1000}}s</span><br/>
                     <span>累计时长跨度：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.stride/1000}}s</span>
                   </div>
-                  <template v-for="task in [theDB.taskDict[anno.task]]">
-                    <button
-                      type="button"
-                      class="btn btn-sm my-1 me-2"
-                      :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
-                      @click="modalBox_open('task-detail', task)"
-                    >task#{{task?.id}}</button><span v-if="task.batchName">批次：{{task.batchName}}</span>
-                  </template>
+                  <task-card
+                    v-for="task in [theDB.taskDict[anno.task]]"
+                    :task="task"
+                    :db="theDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                  />
                   <button
                     v-for="user in [theDB.userDict[anno.user]]"
                     type="button"
@@ -1106,21 +1108,14 @@
                   <h5>已提交的标注（{{task.submitters?.length}}）</h5>
                   <div class="card my-1" v-for="user_id in task.submitters">
                     <div class="col-12" v-for="anno_id in [theDB.inf_user_task_anno[`${user_id}/${task.id}`]]">
-                      <template v-for="anno in [theDB.annoDict[anno_id]]">
-                        <anno-card
-                          :anno="anno"
-                          :db="theDB"
-                          @open-modal="modalBox_open('anno-detail', anno)"
-                        />
-                        <!-- <button
-                          type="button"
-                          class="btn btn-sm btn-outline-dark my-1 me-2"
-                          @click="modalBox_open('anno-detail', anno)"
-                        >anno#{{anno?.id}}-{{theDB.userDict[user_id]?.name}}</button>
-                        <div v-for="annot in anno.content?.annotations??[]">
-                          <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
-                        </div> -->
-                      </template>
+                      <anno-card
+                        v-for="anno in [theDB.annoDict[anno_id]]"
+                        :anno="anno"
+                        :db="theDB"
+                        @submit-review="(value)=>{saveAnnoReview(...value)}"
+                        @open-modal="(value)=>{modalBox_open(...value)}"
+                        @update-anno="(value)=>{updateOneAnno(value)}"
+                      />
                     </div>
                   </div>
                 </div>
@@ -1175,14 +1170,12 @@
               <div class="row align-items-center my-2 card" v-for="anno in user.allAnnos.map(it=>theDB.annoDict[it])">
 
                 <div class="col-12">
-                  <template v-for="task in [theDB.taskDict[anno.task]]">
-                    <button
-                      type="button"
-                      class="btn btn-sm my-1 me-2"
-                      :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
-                      @click="modalBox_open('task-detail', task)"
-                    >task#{{task?.id}}</button><span v-if="task.batchName">批次：{{task.batchName}}</span>
-                  </template>
+                  <task-card
+                    v-for="task in [theDB.taskDict[anno.task]]"
+                    :task="task"
+                    :db="theDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                  />
                 </div>
 
                 <div class="col-12" v-for="entry in [theDB.entryDict[anno.entry]]">
@@ -1229,7 +1222,9 @@
                   <anno-card
                     :anno="anno"
                     :db="theDB"
-                    @open-modal="modalBox_open('anno-detail', anno)"
+                    @submit-review="(value)=>{saveAnnoReview(...value)}"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-anno="(value)=>{updateOneAnno(value)}"
                   />
                   <!-- <button
                     type="button"

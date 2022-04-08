@@ -210,7 +210,7 @@
 
         <div class="row">
           <div class="row mt-2 mb-0">
-            <p class="text-muted small" :title="`originId: ${example?.originId}`">#{{example?._info?.entry_id}}　{{`${fileInfo(example?.originId)?.用户显示名称??'其他'}`}}</p>
+            <p class="text-muted small" :title="`${example?._info?.batchName} | ${example?._info?.batch}`">#{{example?._info?.entry_id}}　{{example?.originId}}　{{`${fileInfo(example?.originId)?.用户显示名称??'其他'}`}}</p>
           </div>
         </div>
 
@@ -634,6 +634,12 @@
 
         <!-- 标注结果展示模块 开始 -->
         <div class="row mt-2 mb-1 carded" id="annotations-area">
+          <div class="col col-12 my-1" v-show="example?.review?.accept!=null">
+            <span class="badge text-wrap my-1 me-2" :class="example?.review?.accept ? 'bg-success text-light' : example?.review?.checked ? 'bg-warning text-dark' : 'bg-danger text-light'">
+              <span>{{example?.review?.accept ? '审核通过' : example?.review?.checked ? '等待复审' : '审核未通过，请修改！'}}</span>
+              <span v-show="example?.review?.comment">（{{example?.review?.comment}}）</span>
+            </span>
+          </div>
           <div class="col col-12 my-1" v-show="!example?.annotations?.length">
             <div class="text-muted">标注好的内容将显示在这里</div>
           </div>
