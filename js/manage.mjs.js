@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0408-05-fix";
+const APP_VERSION = "22-0408-06";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -1474,7 +1474,7 @@ the_app.component('anno-card', {
     };
     return h(
       'div', {
-        'class': "form-control form-control-sm mx-1 my-1",
+        'class': "border rounded p-1 mx-1 my-1",
       },
       [
         h('button', {
@@ -1519,7 +1519,7 @@ the_app.component('anno-card', {
 
             h('input', {
                 'type': "text",
-                'class': "form-control form-control-sm my-1 me-2",
+                'class': "border rounded p-1 my-1 me-2 align-middle",
                 'placeholder': "填写批示/评论/备注",
                 'value': this.ctrl.comment,
                 'onInput': event => {
@@ -1556,7 +1556,7 @@ the_app.component('anno-card', {
                 ],
               },
               [
-                this.anno?.content?.review?.accept?'已通过':'已否决',' ',
+                this.anno?.content?.review?.accept?'审批通过':'审批不通过',' ',
                 this.anno?.content?.review?.comment?`「${this.anno?.content?.review?.comment}」`:null,' ',
                 this.anno?.content?.review?.accept?null:this.anno?.content?.review?.checked?`标注者已处理`:'标注者尚未处理',
               ],
@@ -1590,7 +1590,7 @@ the_app.component('entry-card', {
       ctx.emit('open-modal', ['entry-detail', props.entry]);
     };
     const updateEntry = () => {
-      ctx.emit('update-entry', props.entry);
+      ctx.emit('update-entry', props.entry.id);
     };
     return { onOpenModal, updateEntry };
   },
@@ -1599,13 +1599,108 @@ the_app.component('entry-card', {
     if (!this.entry) {
       return h('div', {}, ["没有找到这条语料"]);
     };
-    return h(
-      'div', {
-        'class': "form-control form-control-sm mx-1 my-1",
-      }, [],
+    return h('div', {
+        'class': "border rounded p-1 mx-1 my-1",
+      }, [
+        h('button', {
+            'type': "button",
+            'class': ["btn btn-sm my-1 me-2", this.entry?.deleted?'btn-danger':'btn-outline-dark'],
+            'onClick': this.onOpenModal,
+            // 'title': JSON.stringify(this.entry),
+          },
+          [`entry#${this.entry?.id}`],
+        ),
+        h('button', {
+            'type': "button",
+            'class': "btn btn-sm btn-light my-1 me-2",
+            'onClick': this.updateEntry,
+            'title': `完整加载`,
+          },
+          [`📥`],
+        ),
+        this.entry.polygraph ? h('div', {
+            'class': "my-1",
+          },
+          [
+            h('span', {
+                'class': "badge bg-warning text-dark text-wrap my-1 me-2",
+              },
+              [`质检标签: ${this.entry.polygraph}`],
+            ),
+            this.entry.polygraphType ? h('span', {
+                'class': "badge bg-warning text-dark text-wrap my-1 me-2",
+              },
+              [`质检类型: ${this.entry.polygraphType}`],
+            ) : null,
+            this.entry.results?._temp_labels ? h('span', {
+                'class': "badge bg-light text-dark text-wrap my-1 me-2",
+              },
+              [`参考标签: ${this.entry.results?._temp_labels}`],
+            ) : null,
+            this.entry.results?._temp_annots ? h('span', {
+                'class': "badge bg-light text-dark text-wrap my-1 me-2",
+              },
+              [`参考标注: ${JSON.stringify(this.entry.results?._temp_annots)}`],
+            ) : null,
+            this.entry.results?._temp_annos ? h('span', {
+                'class': "badge bg-light text-dark text-wrap my-1 me-2",
+              },
+              [`参考标注来源: ${this.entry.results?._temp_annos}`],
+            ) : null,
+          ],
+        ) : null,
+        this.entry?.content?.material?.tokenList ? h('div', {
+          'class':"my-1 material-area admin show-notice"
+        }, [
+          h('p', {}, this.entry?.content?.material?.tokenList.map(token=>h('span', {
+            'key': token.idx,
+            'class': "token",
+            'title': `idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`,
+            'data-idx': token.idx,
+            'data-pos': token.pos,
+            'data-auto-dverb': token?.autoDVerb,
+            'data-auto-entity': token.autoEntity,
+            'data-auto-spatial': token.autoSpatial,
+            'data-selecting': token?._ctrl?.selecting,
+            'data-selected': token?._ctrl?.selected,
+            'data-replaced': token?.replaced ?? false,
+            'data-word': token.word,
+            'data-to-word': token?.to?.word,
+          }, [`${token?.to?.word ?? token.word ?? ""}`]))),
+        ]) : null,
+      ],
     );
   },
 });
+
+// <div>
+//   <div v-if="entry?.content?.material?.tokenList">
+//     <div
+//       class="my-1 material-area admin show-notice"
+//     >
+//       <p>
+//         <span
+//           v-for="token in entry?.content?.material?.tokenList"
+//           :key="token.idx"
+//           class="token"
+//           :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
+//           :data-idx="token.idx"
+//           :data-pos="token.pos"
+//           :data-auto-dverb="token?.autoDVerb"
+//           :data-auto-entity="token.autoEntity"
+//           :data-auto-spatial="token.autoSpatial"
+//           :data-selecting="token?._ctrl?.selecting"
+//           :data-selected="token?._ctrl?.selected"
+//           :data-replaced="token?.replaced ?? false"
+//           :data-word="token.word"
+//           :data-to-word="token?.to?.word"
+//         >{{ token?.to?.word ?? token.word }}</span>
+//       </p>
+//     </div>
+//   </div>
+// </div>
+
+
 
 
 
@@ -1621,7 +1716,9 @@ the_app.component('task-card', {
   render() {
     // console.log(this);
     if (!this.task) {
-      return h('div', {}, ["没有找到这个任务"]);
+      return h('div', {
+        'class': "d-inline-block"
+      }, ["没有找到这个任务"]);
     };
     return h(
       'div', {
@@ -1630,7 +1727,7 @@ the_app.component('task-card', {
       [
         h('button', {
             'type': "button",
-            'class': ["btn btn-sm my-1 me-2", this.task.deleted?'btn-danger':'btn-outline-dark'],
+            'class': ["btn btn-sm my-1 me-2", this.task.deleted?'btn-danger':'btn-light'],
             'onClick': this.onOpenModal,
             'title': `task#${this.task?.id}`,
           },

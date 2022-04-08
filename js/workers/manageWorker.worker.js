@@ -4,6 +4,12 @@ const extendTasks = async (theDB) => {
   if (!theDB.topics?.length) {
     theDB.topics = [];
   };
+  if (!theDB.batchNames?.length) {
+    theDB.batchNames = [];
+  };
+  if (!theDB.batches?.length) {
+    theDB.batches = [];
+  };
   theDB.topicTaskDict = {};
   theDB.inf_user_all_tasks = {};
   theDB.inf_entry_all_tasks = {};
@@ -15,6 +21,13 @@ const extendTasks = async (theDB) => {
     if (task.topic?.length && !theDB.topics.includes(task.topic)) {
       theDB.topics.push(task.topic);
     };
+    if (task.batchName?.length && !theDB.batchNames.includes(task.batchName)) {
+      theDB.batchNames.push(task.batchName);
+    };
+    if (!theDB.batches.includes(task.batch)) {
+      theDB.batches.push(task.batch);
+    };
+
     if (task.topic?.length && !(task.topic in theDB.topicTaskDict)) {
       theDB.topicTaskDict[task.topic] = [];
     };
@@ -86,6 +99,12 @@ const extendAnnos = async (theDB) => {
 
     if (!anno.topic) {
       anno.topic = theDB.taskDict[anno.task]?.topic;
+    };
+    if (!anno.batch) {
+      anno.batch = theDB.taskDict[anno.task]?.batch;
+    };
+    if (!anno.batchName) {
+      anno.batchName = theDB.taskDict[anno.task]?.batchName;
     };
 
     if (anno.topic?.length && !theDB.topics.includes(anno.topic)) {

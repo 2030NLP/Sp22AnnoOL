@@ -857,61 +857,46 @@
               <div class="row align-items-center my-2">
 
                 <div class="col-12">
-                  <h4>语料详情</h4>
+                  <h4 class="mt-2">语料详情</h4>
                 </div>
 
                 <div class="col-12">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                  >entry#{{entry?.id}}</button>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="updateOneEntry(entry?.id)"
-                  >📥</button>
+                  <h5 class="mt-2">基本信息</h5>
+                </div>
+
+                <div class="col-12">
+                  <entry-card
+                    :entry="entry"
+                    :db="theDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-entry="(value)=>{updateOneEntry(value)}"
+                  />
+                </div>
+
+                <div class="col-12">
+                  <h5 class="mt-2">更多信息</h5>
+                </div>
+
+                <div class="col-12">
+                  <div v-show="entry.originId">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">原句编号: {{entry.originId}}</span>
+                  </div>
                   <div v-show="entry.version">
                     <span class="badge bg-light text-dark text-wrap my-1 me-2">版本: {{entry.version}}</span>
                   </div>
                   <div v-show="entry.deleted">
                     <span class="badge bg-danger text-light text-wrap my-1 me-2">已删除</span>
                   </div>
-                  <div v-show="entry.originId">
-                    <span class="badge bg-light text-dark text-wrap my-1 me-2">原句编号: {{entry.originId}}</span>
-                  </div>
-                  <div v-show="entry.polygraph">
-                    <span class="badge bg-warning text-dark text-wrap my-1 me-2">质检类型: {{entry.polygraph}}</span>
-                  </div>
-                  <div v-if="entry?.content?.material?.tokenList">
-                    <div
-                      class="my-1 material-area admin show-notice"
-                    >
-                      <p>
-                        <span
-                          v-for="token in entry?.content?.material?.tokenList"
-                          :key="token.idx"
-                          class="token"
-                          :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
-                          :data-idx="token.idx"
-                          :data-pos="token.pos"
-                          :data-auto-dverb="token?.autoDVerb"
-                          :data-auto-entity="token.autoEntity"
-                          :data-auto-spatial="token.autoSpatial"
-                          :data-selecting="token?._ctrl?.selecting"
-                          :data-selected="token?._ctrl?.selected"
-                          :data-replaced="token?.replaced ?? false"
-                          :data-word="token.word"
-                          :data-to-word="token?.to?.word"
-                        >{{ token?.to?.word ?? token.word }}</span>
-                      </p>
-                    </div>
-                  </div>
                   <div v-show="entry.info">
                     <span class="badge bg-light text-dark text-wrap my-1 me-2">更多信息: {{entry.info}}</span>
                   </div>
-                  <div v-show="Object.keys(entry.results).length">
+                  <!-- <div v-show="Object.keys(entry.results).length">
                     <span class="badge bg-light text-dark text-wrap my-1 me-2">参考信息: {{entry.results}}</span>
-                  </div>
+                  </div> -->
+                </div>
+
+                <div class="col-12">
+                  <h5 class="mt-2">已提交的标注</h5>
                 </div>
 
                 <div class="col-12" v-for="anno_id in entry.allAnnos">
@@ -924,27 +909,29 @@
                         @open-modal="(value)=>{modalBox_open(...value)}"
                         @update-anno="(value)=>{updateOneAnno(value)}"
                       />
-                      <!-- <button
-                        type="button"
-                        class="btn btn-sm btn-outline-dark my-1 me-2"
-                        @click="modalBox_open('anno-detail', anno)"
-                      >anno-{{anno?.topic}}-#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
-                      <div v-for="annot in anno.content?.annotations??[]">
-                        <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
-                      </div> -->
                     </div>
                   </div>
                 </div>
 
+                <div class="col-12">
+                  <h5 class="mt-2">关联的任务</h5>
+                </div>
+
                 <div class="col-12" v-for="task_id in entry.allTasks">
-                  <template v-for="task in [theDB.taskDict[task_id]]">
+                  <!-- <template v-for="task in [theDB.taskDict[task_id]]">
                     <button
                       type="button"
                       class="btn btn-sm my-1 me-2"
                       :class="task.deleted ? 'btn-danger' : 'btn-outline-dark'"
                       @click="modalBox_open('task-detail', task)"
                     >task-{{task?.topic}}-#{{task?.id}}</button><span v-if="task.batchName">批次：{{task.batchName}}</span>
-                  </template>
+                  </template> -->
+                  <task-card
+                    v-for="task in [theDB.taskDict[task_id]]"
+                    :task="task"
+                    :db="theDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                  />
                 </div>
 
               </div>
@@ -965,7 +952,13 @@
                 </div>
 
                 <div class="col-12" v-for="entry in [theDB.entryDict[anno.entry]]">
-                  <button
+                  <entry-card
+                    :entry="entry"
+                    :db="theDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-entry="(value)=>{updateOneEntry(value)}"
+                  />
+                  <!-- <button
                     type="button"
                     class="btn btn-sm btn-outline-dark my-1 me-2"
                     @click="modalBox_open('entry-detail', entry)"
@@ -1001,7 +994,7 @@
                         >{{ token?.to?.word ?? token.word }}</span>
                       </p>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
 
                 <div class="col-12">
@@ -1057,7 +1050,7 @@
                 <div class="col-12">
                   <button
                     type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    class="btn btn-sm btn-light my-1 me-2"
                   >task#{{task?.id}}</button>
                   <div>
                     <span class="badge bg-light text-dark text-wrap my-1 me-2">{{task}}</span>
@@ -1065,43 +1058,12 @@
                 </div>
 
                 <div class="col-12" v-for="entry in [theDB.entryDict[task.entry]]">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="modalBox_open('entry-detail', entry)"
-                  >entry#{{entry?.id}}</button>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="updateOneEntry(entry?.id)"
-                  >📥</button>
-                  <div v-show="entry.polygraph">
-                    <span class="badge bg-warning text-dark text-wrap my-1 me-2">质检类型: {{entry.polygraph}}</span>
-                  </div>
-                  <div v-if="entry?.content?.material?.tokenList">
-                    <div
-                      class="my-1 material-area admin show-notice"
-                    >
-                      <p>
-                        <span
-                          v-for="token in entry?.content?.material?.tokenList"
-                          :key="token.idx"
-                          class="token"
-                          :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
-                          :data-idx="token.idx"
-                          :data-pos="token.pos"
-                          :data-auto-dverb="token?.autoDVerb"
-                          :data-auto-entity="token.autoEntity"
-                          :data-auto-spatial="token.autoSpatial"
-                          :data-selecting="token?._ctrl?.selecting"
-                          :data-selected="token?._ctrl?.selected"
-                          :data-replaced="token?.replaced ?? false"
-                          :data-word="token.word"
-                          :data-to-word="token?.to?.word"
-                        >{{ token?.to?.word ?? token.word }}</span>
-                      </p>
-                    </div>
-                  </div>
+                  <entry-card
+                    :entry="entry"
+                    :db="theDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-entry="(value)=>{updateOneEntry(value)}"
+                  />
                 </div>
 
                 <div class="col-12">
@@ -1167,7 +1129,7 @@
                   </div>
                 </div>
               </div>
-              <div class="row align-items-center my-2 card" v-for="anno in user.allAnnos.map(it=>theDB.annoDict[it])">
+              <div class="row align-items-center my-2 card" v-for="anno in lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), it=>-it.batch)">
 
                 <div class="col-12">
                   <task-card
@@ -1179,43 +1141,12 @@
                 </div>
 
                 <div class="col-12" v-for="entry in [theDB.entryDict[anno.entry]]">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="modalBox_open('entry-detail', entry)"
-                  >entry#{{entry?.id}}</button>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="updateOneEntry(entry?.id)"
-                  >📥</button>
-                  <div v-show="entry.polygraph">
-                    <span class="badge bg-warning text-dark text-wrap my-1 me-2">质检类型: {{entry.polygraph}}</span>
-                  </div>
-                  <div v-if="entry?.content?.material?.tokenList">
-                    <div
-                      class="my-1 material-area admin show-notice"
-                    >
-                      <p>
-                        <span
-                          v-for="token in entry?.content?.material?.tokenList"
-                          :key="token.idx"
-                          class="token"
-                          :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
-                          :data-idx="token.idx"
-                          :data-pos="token.pos"
-                          :data-auto-dverb="token?.autoDVerb"
-                          :data-auto-entity="token.autoEntity"
-                          :data-auto-spatial="token.autoSpatial"
-                          :data-selecting="token?._ctrl?.selecting"
-                          :data-selected="token?._ctrl?.selected"
-                          :data-replaced="token?.replaced ?? false"
-                          :data-word="token.word"
-                          :data-to-word="token?.to?.word"
-                        >{{ token?.to?.word ?? token.word }}</span>
-                      </p>
-                    </div>
-                  </div>
+                  <entry-card
+                    :entry="entry"
+                    :db="theDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-entry="(value)=>{updateOneEntry(value)}"
+                  />
                 </div>
 
                 <div class="col-12">
