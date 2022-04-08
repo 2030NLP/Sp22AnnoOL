@@ -1565,7 +1565,7 @@ the_app.component('anno-card', {
             h('span', {
                 'class': "badge bg-light text-dark text-wrap my-1 me-2",
               },
-              [`暂无批注`],
+              [`暂无批示`],
             ),
           ],
         ),
