@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0408-05";
+const APP_VERSION = "22-0408-05-fix";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -1544,7 +1544,7 @@ the_app.component('anno-card', {
               },
               [`取消`],
             ),
-          ] : this.anno?.content?.review.accept!=null ? [
+          ] : this.anno?.content?.review?.accept!=null ? [
             h('span', {
                 'title': JSON.stringify(this.anno?.content?.review),
                 'class': ["badge text-wrap my-1 me-2",
