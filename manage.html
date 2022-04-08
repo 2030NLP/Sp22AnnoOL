@@ -669,9 +669,19 @@
                 class="btn btn-sm btn-light my-1 me-2"
                 @click="()=>{theDB.users.sort((b,a)=>+userProgress(a).cDoneLen-userProgress(b).cDoneLen);}"
               >按总完成量降序排序</button>
+              <button
+                type="button"
+                class="btn btn-sm btn-light my-1 me-2"
+                @click="()=>{theDB.users.sort((a,b)=>sortFnByPassRatio(a,b))}"
+              >按审核通过率升序排序</button>
+              <button
+                type="button"
+                class="btn btn-sm btn-light my-1 me-2"
+                @click="()=>{theDB.users.sort((b,a)=>sortFnByPassRatio(a,b))}"
+              >按审核通过率降序排序</button>
             </div>
           </div>
-          <div class="col col-12 my-2">
+          <!-- <div class="col col-12 my-2">
             <table class="table table-sm table-bordered table-striped table-hover">
               <thead class="text-center">
                 <tr>
@@ -718,8 +728,98 @@
                 </tr>
               </tbody>
             </table>
+          </div> -->
+        </div>
+        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
+          <div class="container my-2">
+            <div
+              class="row align-items-center my-1 border rounded p-2"
+              v-show="ctrl.currentUser?.id==user.manager||!ctrl.showOnlyMyMembers"
+              v-for="user in theDB.users"
+              :key="user.id"
+            >
+              <div class="col col-12 col-md-6 col-lg-4 mb-1">
+                <span class="__fw-bold fs-6 me-2">{{user.name}}</span>
+                <span class="badge rounded-pill bg-light text-dark me-1">#{{user.id}}</span>
+                <span v-for="role in user.role" class="badge rounded-pill bg-light _border _border-primary text-primary me-1">{{role}}</span>
+                <span v-if="user.quitted" class="badge rounded-pill bg-danger me-1">已退出</span>
+              <!-- </div>
+              <div class="col col-12 col-sm-6 col-md-3 my-2"> -->
+                <span class="badge bg-light text-dark me-1" :title="组别">{{user.currTaskGroup}}</span>
+                <span class="badge bg-light text-dark me-1" v-if="user.manager" :title="`组长：${theDB.userDict[user.manager]?.name}`">{{theDB.userDict[user.manager]?.name}}</span>
+              <!-- </div>
+              <div class="col col-12 col-sm-6 col-md-3 my-2"> -->
+                <span class="badge bg-light text-dark me-1" :title="当前任务">{{topic_regulation(user.currTask)}}</span>
+                <span class="badge bg-light text-dark me-1">已标总量：{{user.allAnnos?.length}}</span>
+                <span class="badge bg-light text-dark me-1">审核通过率：{{inspectionSum(user)?.passRatio?.toFixed?.(3)}}</span>
+              </div>
+              <div class="col col-12 col-md-6 col-lg-6 my-1">
+                <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="当前任务进度">
+                  <div
+                    class="progress-bar bg-success"
+                    role="progressbar"
+                    :style="`width: ${userProgress(user).pct};`"
+                    :aria-valuenow="userProgress(user).mn"
+                    :aria-valuemax="userProgress(user).bg"
+                    aria-valuemin="0"
+                  >当前任务进度　{{ userCurrDoneTasks(user).length }}/{{ userCurrTasks(user).length }}</div>
+                </div>
+              </div>
+              <div class="col col-12 col-md-12 col-lg-2 mt-1">
+                <button
+                  type="button"
+                  class="btn btn-sm me-2 my-1 btn-light"
+                  :title="`查看 ${user.name} 所标注的具体情况`"
+                  @click="modalBox_open('user-progress', user)"
+                >标注详情</button>
+                <button
+                  type="button"
+                  class="btn btn-sm me-2 my-1 btn-light"
+                  :title="`查看更多关于 ${user.name} 的信息`"
+                  @click="modalBox_open('user-detail', user)"
+                >更多</button>
+              </div>
+              <div class="col col-12 d-none">
+                <!-- <button
+                  v-if="!(user.role??[]).includes('admin')"
+                  type="button"
+                  class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
+                  :title="`点击拷贝 ${user.name} 的密码`"
+                  :data-clipboard-text="`${user.name} 的密码是： ${user.token}`"
+                >拷贝密码</button>
+                <button
+                  v-if="(user.role??[]).includes('admin')"
+                  type="button"
+                  class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
+                  :title="`点击拷贝 ${user.name} 的密码`"
+                  :data-clipboard-text="`不能拷贝管理员的密码`"
+                >拷贝密码</button>
+                <button
+                  type="button"
+                  v-if="!user.quitted"
+                  class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                  :title="`给 ${user.name} 添加“已退出”标记`"
+                  @click="modalBox_open('user-set-quitted', user)"
+                >标记退出</button>
+                <button
+                  type="button"
+                  v-if="user.quitted"
+                  class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                  :title="`为 ${user.name} 移除“已退出”标记`"
+                  @click="modalBox_open('user-unset-quitted', user)"
+                >不再退出</button> -->
+                <!-- <button
+                  type="button"
+                  class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                  :title="`对 ${user.name} 的信息进行详细编辑`"
+                  @click="modalBox_open('user-edit', user)"
+                >编辑</button> -->
+              </div>
+            </div>
           </div>
         </div>
+
+
         <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userInfo">
           <div class="col col-12">
             <table class="table table-sm table-bordered table-striped table-hover">
@@ -1111,25 +1211,52 @@
 
 
           <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-progress']">
-            <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
-              <div class="row align-items-center my-2">
-                <div class="col-12">
-                  <h4>{{user.name}} 进度详情</h4>
-                </div>
-                <div class="col-12">
-                  <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="标注进度">
-                    <div
-                      class="progress-bar bg-success"
-                      role="progressbar"
-                      :style="`width: ${userProgress(user).pct};`"
-                      :aria-valuenow="userProgress(user).mn"
-                      :aria-valuemax="userProgress(user).bg"
-                      aria-valuemin="0"
-                    >{{ userCurrDoneTasks(user).length }}/{{ userCurrTasks(user).length }}</div>
+            <div class="modal-header">
+              <div class="container" v-for="user in [modalBox.data.kwargs]">
+                <div class="row align-items-center my-2">
+                  <div class="col-6 col-sm-6 col-md-3 my-1">
+                    <h5>{{user.name}}</h5>
+                  </div>
+                  <div class="col-6 col-sm-6 col-md-3 my-1">
+                    <div v-for="sum in [inspectionSum(user)]">通过率： {{sum.passRatio?.toFixed?.(3)}} = {{sum.true??0}}/{{sum.sum??0}}</div>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 my-2">
+                    <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="标注进度">
+                      <div
+                        class="progress-bar bg-success"
+                        role="progressbar"
+                        :style="`width: ${userProgress(user).pct};`"
+                        :aria-valuenow="userProgress(user).mn"
+                        :aria-valuemax="userProgress(user).bg"
+                        aria-valuemin="0"
+                      >{{ userCurrDoneTasks(user).length }}/{{ userCurrTasks(user).length }}</div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-6 my-1">
+                    <select
+                     class="form-select form-select-sm"
+                     v-model="ctrl.userAnnoFilter.topic"
+                    >
+                      <option v-for="topic in theDB.topics" :value="topic">{{topic}}</option>
+                      <option value="【empty】">【empty】</option>
+                      <option value="【all】">【all】</option>
+                    </select>
+                  </div>
+                  <div class="col-12 col-sm-6 col-md-6 my-1">
+                    <select
+                     class="form-select form-select-sm"
+                     v-model="ctrl.userAnnoFilter.batchName"
+                    >
+                      <option v-for="batchName in theDB.batchNames" :value="batchName">{{batchName}}</option>
+                      <option value="【empty】">【empty】</option>
+                      <option value="【all】">【all】</option>
+                    </select>
                   </div>
                 </div>
               </div>
-              <div class="row align-items-center my-2 card" v-for="anno in lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), it=>-it.batch)">
+            </div>
+            <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
+              <div class="row align-items-center my-2 card" v-for="anno in lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), [annoSortFn, it=>(-it.batch)])" v-show="[anno.topic, '【all】'].includes(ctrl.userAnnoFilter.topic)&&[anno.batchName??'【empty】', '【all】'].includes(ctrl.userAnnoFilter.batchName??'【empty】')">
 
                 <div class="col-12">
                   <task-card
@@ -1156,15 +1283,7 @@
                     @submit-review="(value)=>{saveAnnoReview(...value)}"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-anno="(value)=>{updateOneAnno(value)}"
-                  />
-                  <!-- <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="modalBox_open('anno-detail', anno)"
-                  >anno-{{anno?.topic}}-#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
-                  <div v-for="annot in anno.content?.annotations??[]">
-                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
-                  </div> -->
+                  ></anno-card>
                 </div>
 
               </div>

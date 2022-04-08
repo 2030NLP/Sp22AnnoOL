@@ -1,6 +1,10 @@
 
 
 
+    .modal-header, .body, .footer {
+      padding: 0.25rem;
+    }
+
 
     .progress-bar {
       overflow: initial;

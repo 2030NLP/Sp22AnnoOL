@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0408-06";
+const APP_VERSION = "22-0409-00";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -207,6 +207,11 @@ const RootComponent = {
       haveStore: false,
       haveCache: false,
       started: false,
+
+      userAnnoFilter: {
+        topic: "",
+        batchName: "",
+      },
 
       tab: TABS['overview'],
       lastTime: "never",
@@ -1327,6 +1332,49 @@ const RootComponent = {
 
 
 
+    const annoSortFn = (anno) => {
+      // TODO
+      // let topic = anno.topic;
+      // let batchName = anno.batchName;
+      let batch = anno.batch;
+      let accepted = anno.content?.review?.accept;
+      let checked = anno.content?.review?.checked;
+      let polygraph = anno.polygraph;
+      if (checked===true && accepted===false) {
+        return -100;
+      };
+      if (accepted===false) {
+        return -80;
+      };
+      if (accepted===true) {
+        return -60;
+      };
+      if (polygraph?.length) {
+        return -40;
+      };
+      return 0;
+    };
+
+    const inspectionSum = (user) => {
+      let sum = lo.countBy(user.allAnnos.map(it=>theDB.annoDict[it]), anno=>anno?.content?.review?.accept);
+      sum.sum = sum.false??0 + sum.true??0;
+      sum.passRatio = sum.sum==0 ? 0 : sum.true/sum.sum;
+      return sum;
+    };
+
+    const sortFnByPassRatio = (u1, u2) => {
+      let ins1 = inspectionSum(u1);
+      let ins2 = inspectionSum(u2);
+      let r1 = ins1.passRatio - ins2.passRatio;
+      if (r1!=0) {return r1;};
+      return in1.true - ins2.true;
+    };
+
+
+
+
+
+
     return {
       win,
       lo,
@@ -1398,6 +1446,10 @@ const RootComponent = {
       saveAnnoReview,
       //
       search,
+      //
+      annoSortFn,
+      inspectionSum,
+      sortFnByPassRatio,
       //
     };
   },
@@ -1549,10 +1601,10 @@ the_app.component('anno-card', {
                 'title': JSON.stringify(this.anno?.content?.review),
                 'class': ["badge text-wrap my-1 me-2",
                   this.anno?.content?.review?.accept?
-                  ('bg-light border border-success text-dark'):
+                  ('bg-light border border-success text-success'):
                   (this.anno?.content?.review?.checked?
-                    'bg-warning border border-danger text-dark':
-                    'bg-light border border-danger text-dark')
+                    'bg-danger border border-danger text-light':
+                    'bg-light border border-danger text-danger')
                 ],
               },
               [
