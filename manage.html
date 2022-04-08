@@ -677,7 +677,7 @@
               <button
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
-                @click="()=>{theDB.users.sort((b,a)=>sortFnByPassRatio(a,b))}"
+                @click="()=>{theDB.users.sort((a,b)=>sortFnByPassRatioR(a,b))}"
               >按审核通过率降序排序</button>
             </div>
           </div>
@@ -751,7 +751,7 @@
               <div class="col col-12 col-sm-6 col-md-3 my-2"> -->
                 <span class="badge bg-light text-dark me-1" :title="当前任务">{{topic_regulation(user.currTask)}}</span>
                 <span class="badge bg-light text-dark me-1">已标总量：{{user.allAnnos?.length}}</span>
-                <span class="badge bg-light text-dark me-1">审核通过率：{{inspectionSum(user)?.passRatio?.toFixed?.(3)}}</span>
+                <span class="badge bg-light text-dark me-1">审核通过率：{{inspectionSum(user)?.passRatio?.toFixed?.(3)??'null'}}</span>
               </div>
               <div class="col col-12 col-md-6 col-lg-6 my-1">
                 <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="当前任务进度">
@@ -1209,6 +1209,11 @@
 
 
 
+          <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-detail']">
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+            </div>
+          </div>
 
           <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-progress']">
             <div class="modal-header">
@@ -1218,7 +1223,7 @@
                     <h5>{{user.name}}</h5>
                   </div>
                   <div class="col-6 col-sm-6 col-md-3 my-1">
-                    <div v-for="sum in [inspectionSum(user)]">通过率： {{sum.passRatio?.toFixed?.(3)}} = {{sum.true??0}}/{{sum.sum??0}}</div>
+                    <div v-for="sum in [inspectionSum(user)]">通过率： {{sum.passRatio?.toFixed?.(3)??'null'}} = {{sum.true??0}}/{{sum.sum??0}}</div>
                   </div>
                   <div class="col-12 col-sm-12 col-md-6 my-2">
                     <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="标注进度">

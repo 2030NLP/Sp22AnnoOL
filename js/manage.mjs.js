@@ -1357,17 +1357,29 @@ const RootComponent = {
 
     const inspectionSum = (user) => {
       let sum = lo.countBy(user.allAnnos.map(it=>theDB.annoDict[it]), anno=>anno?.content?.review?.accept);
-      sum.sum = sum.false??0 + sum.true??0;
-      sum.passRatio = sum.sum==0 ? 0 : sum.true/sum.sum;
+      sum.sum = (sum.false??0) + (sum.true??0);
+      sum.passRatio = sum.sum==0 ? null : (sum.true??0)/sum.sum;
       return sum;
     };
 
     const sortFnByPassRatio = (u1, u2) => {
       let ins1 = inspectionSum(u1);
       let ins2 = inspectionSum(u2);
+      if (!ins1.false && !ins1.true) {return true};
+      if (!ins2.false && !ins2.true) {return false};
       let r1 = ins1.passRatio - ins2.passRatio;
       if (r1!=0) {return r1;};
-      return in1.true - ins2.true;
+      return (ins1.true??0) - (ins2.true??0);
+    };
+
+    const sortFnByPassRatioR = (u1, u2) => {
+      let ins1 = inspectionSum(u1);
+      let ins2 = inspectionSum(u2);
+      if (!ins1.false && !ins1.true) {return true};
+      if (!ins2.false && !ins2.true) {return false};
+      let r1 = ins2.passRatio - ins1.passRatio;
+      if (r1!=0) {return r1;};
+      return (ins2.true??0) - (ins1.true??0);
     };
 
 
@@ -1450,6 +1462,7 @@ const RootComponent = {
       annoSortFn,
       inspectionSum,
       sortFnByPassRatio,
+      sortFnByPassRatioR,
       //
     };
   },
