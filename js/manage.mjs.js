@@ -1605,7 +1605,7 @@ the_app.component('entry-card', {
       }, [],
     );
   },
-};
+});
 
 
 
