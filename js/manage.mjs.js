@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0409-01";
+const APP_VERSION = "22-0409-02";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -321,6 +321,7 @@ const RootComponent = {
           await theDB.users.forEach(user=>{theDB.userDict[user.id] = user;});
 
           await setMe();
+          await saveDB();
 
           workerState.working=false;
           // await theWorker.checkNext();
@@ -631,7 +632,7 @@ const RootComponent = {
           await extendDB();
         }
 
-        await saveDB();
+        // await saveDB();
 
         // await alertBox_removeAlert(aidx);
         ctrl.lastTimeDict[tableListName] = await time.toLocaleString();

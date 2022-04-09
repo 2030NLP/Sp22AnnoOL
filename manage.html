@@ -110,14 +110,18 @@
               :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-secondary': !theDB.entries?.length}"
               @click="()=>{syncEntryInfo()}"
               title="从服务器更新 Entry 表（仅基本信息，不含文本内容）"
-            >刷新 Entry 表（仅基本信息）</button>
+              disabled
+              v-show="false"
+            ><s>刷新 Entry 表（仅基本信息）</s> 请直接刷新全部</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.tasks?.length, 'btn-outline-secondary': !theDB.tasks?.length}"
               @click="()=>{syncTask()}"
               title="从服务器更新 Task 表"
-            >刷新 Task 表</button>
+              disabled
+              v-show="false"
+            ><s>刷新 Task 表</s> 请直接刷新全部</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
@@ -133,7 +137,7 @@
               title="从服务器更新 User 表"
             >刷新 User 表</button>
           </div>
-          <div class="col col-12">
+          <div class="col col-12" v-show="false">
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
