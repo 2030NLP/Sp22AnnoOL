@@ -410,11 +410,12 @@
               >
                 <h5>{{kkvv[0]}}</h5>
                 <div class="form-control form-control-sm overflow-auto max-vh-40">
-                  <template v-for="anno_id in kkvv[1]">
+                  <template v-for="anno_id in kkvv[1]" :key="`anno_id`">
                     <!-- <anno-card
                       v-for="anno in [theDB.annoDict[anno_id]]"
                       :anno="anno"
                       :db="theDB"
+                      :key="anno.id"
                       @submit-review="(value)=>{saveAnnoReview(...value)}"
                       @open-modal="(value)=>{modalBox_open(...value)}"
                       @update-anno="(value)=>{updateOneAnno(value)}"
@@ -848,7 +849,7 @@
                 </div>
 
                 <div class="col-12" v-for="anno_id in entry.allAnnos">
-                  <div class="card my-1" v-for="anno in [theDB.annoDict[anno_id]]">
+                  <div class="card my-1" v-for="anno in [theDB.annoDict[anno_id]]" :key="anno.id">
                     <div class="col-12">
                       <anno-card
                         :anno="anno"
@@ -987,6 +988,7 @@
                         v-for="anno in [theDB.annoDict[anno_id]]"
                         :anno="anno"
                         :db="theDB"
+                        :key="anno.id"
                         @submit-review="(value)=>{saveAnnoReview(...value)}"
                         @open-modal="(value)=>{modalBox_open(...value)}"
                         @update-anno="(value)=>{updateOneAnno(value)}"
@@ -1092,7 +1094,11 @@
             </div>
 
             <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
-              <div class="row align-items-center my-3 border border-secondary border-2 rounded" v-for="anno in lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), [annoSortFn, it=>(-it.batch)])" v-show="[anno.topic, '【all】'].includes(ctrl.userAnnoFilter.topic)&&[anno.batchName??'【empty】', '【all】'].includes(ctrl.userAnnoFilter.batchName??'【empty】')">
+              <div
+                class="row align-items-center my-3 border border-secondary border-2 rounded"
+                v-for="anno in lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), [annoSortFn, it=>(-it.batch)])"
+                :key="anno.id"
+                v-show="[anno.topic, '【all】'].includes(ctrl.userAnnoFilter.topic)&&[anno.batchName??'【empty】', '【all】'].includes(ctrl.userAnnoFilter.batchName??'【empty】')">
 
                 <div class="col-12">
                   <task-card

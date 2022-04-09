@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0409-05";
+const APP_VERSION = "22-0409-06";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -1522,7 +1522,10 @@ the_app.component('anno-card', {
     };
     const submitReview = () => {
       ctx.emit('submit-review', [props.anno, ctrl]);
+      // ctx.emit('submit-review', [props.anno, JSON.parse(JSON.stringify(ctrl))]);
       ctrl.reviewing=false;
+      // ctrl.comment="";
+      // ctrl.accept=null;
     };
     const updateAnno = () => {
       ctx.emit('update-anno', props.anno);
@@ -1531,7 +1534,7 @@ the_app.component('anno-card', {
   },
   render() {
     // console.log(this);
-    if (!this.anno) {
+    if (!this.anno || !this?.anno?.id?.length) {
       return h('div', {}, ["没有找到这条标注"]);
     };
     return h(
@@ -1644,6 +1647,8 @@ the_app.component('anno-card', {
   },
 });
 
+
+
 the_app.component('entry-card', {
   props: ["db", "entry"],
   emits: ["open-modal", 'update-entry'],
@@ -1734,35 +1739,6 @@ the_app.component('entry-card', {
     );
   },
 });
-
-// <div>
-//   <div v-if="entry?.content?.material?.tokenList">
-//     <div
-//       class="my-1 material-area admin show-notice"
-//     >
-//       <p>
-//         <span
-//           v-for="token in entry?.content?.material?.tokenList"
-//           :key="token.idx"
-//           class="token"
-//           :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
-//           :data-idx="token.idx"
-//           :data-pos="token.pos"
-//           :data-auto-dverb="token?.autoDVerb"
-//           :data-auto-entity="token.autoEntity"
-//           :data-auto-spatial="token.autoSpatial"
-//           :data-selecting="token?._ctrl?.selecting"
-//           :data-selected="token?._ctrl?.selected"
-//           :data-replaced="token?.replaced ?? false"
-//           :data-word="token.word"
-//           :data-to-word="token?.to?.word"
-//         >{{ token?.to?.word ?? token.word }}</span>
-//       </p>
-//     </div>
-//   </div>
-// </div>
-
-
 
 
 
