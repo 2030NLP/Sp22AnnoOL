@@ -755,7 +755,10 @@
               <div class="col col-12 col-sm-6 col-md-3 my-2"> -->
                 <span class="badge bg-light text-dark me-1" :title="当前任务">{{topic_regulation(user.currTask)}}</span>
                 <span class="badge bg-light text-dark me-1">已标总量：{{user.allAnnos?.length}}</span>
-                <span class="badge bg-light text-dark me-1">审核通过率：{{inspectionSum(user)?.passRatio?.toFixed?.(3)??'null'}}</span>
+                <span
+                  class="badge me-1"
+                  :class="inspectionSum(user)?.passRatio>=0.9 ? 'bg-success text-light' : inspectionSum(user)?.passRatio>=0.8 ? 'bg-light text-success border border-1 border-success' : inspectionSum(user)?.passRatio==null ? 'bg-light text-dark' : inspectionSum(user)?.passRatio<=0.6 ? 'bg-danger text-light' : 'bg-light text-danger border border-1 border-danger'"
+                >审核通过率：{{inspectionSum(user)?.passRatio?.toFixed?.(3)??'null'}}</span>
               </div>
               <div class="col col-12 col-md-6 col-lg-6 my-1">
                 <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="当前任务进度">
