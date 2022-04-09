@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0409-03";
+const APP_VERSION = "22-0409-05";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -76,16 +76,12 @@ const RootComponent = {
       show: false,
       theme: 'default',
       kwargs: {},
+      history: [],
     });
     const modalBox = new ModalBox(modalData);
     const modalBox_show = () => modalBox.show();
     const modalBox_hide = () => modalBox.hide();
-    const modalBox_toggle = () => modalBox.toggle();
-    const modalBox_open = (theme, kwargs) => {
-      modalData.theme = theme;
-      modalData.kwargs = kwargs;
-      modalBox_show();
-    };
+    const modalBox_open = (theme, kwargs) => modalBox.open(theme, kwargs);
 
     // 初始化 提示框 模块
     const alertData = reactive({

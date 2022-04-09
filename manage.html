@@ -196,9 +196,9 @@
               <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.userProgress ? 'active' : ''" href="#" @click="goTab('userProgress')">用户进度</a>
               </li>
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.userInfo ? 'active' : ''" href="#" @click="goTab('userInfo')">用户信息</a>
-              </li>
+              </li> -->
               <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.taskAssign ? 'active' : ''" href="#" @click="goTab('taskAssign')">分配任务</a>
               </li>
@@ -418,7 +418,7 @@
                       @submit-review="(value)=>{saveAnnoReview(...value)}"
                       @open-modal="(value)=>{modalBox_open(...value)}"
                       @update-anno="(value)=>{updateOneAnno(value)}"
-                    /> -->
+                    ></anno-card> -->
                     <button
                       v-for="anno in [theDB.annoDict[anno_id]]"
                       type="button"
@@ -638,14 +638,13 @@
 
 
 
-
         <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
           <div class="col col-12 my-2">
             <div>
               <button
                 type="button"
                 class="btn btn-sm my-1 me-2"
-                :class="ctrl.showOnlyMyMembers ? 'btn-primary' : 'btn-outline-dark'"
+                :class="ctrl.showOnlyMyMembers ? 'btn-primary' : 'btn-outline-primary'"
                 @click="ctrl.showOnlyMyMembers = !ctrl.showOnlyMyMembers"
               >只显示我管理的人员</button>
               <button
@@ -685,55 +684,14 @@
               >按审核通过率降序排序</button>
             </div>
           </div>
-          <!-- <div class="col col-12 my-2">
-            <table class="table table-sm table-bordered table-striped table-hover">
-              <thead class="text-center">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">小组</th>
-                  <th scope="col">负责人</th>
-                  <th scope="col">姓名</th>
-                  <th scope="col">角色</th>
-                  <th scope="col">任务类型</th>
-                  <th scope="col">此类进度</th>
-                  <th scope="col">累计</th>
-                  <th scope="col">操作</th>
-                </tr>
-              </thead>
-              <tbody class="text-center">
-                <tr v-for="user in theDB.users" :key="user.id" class="align-middle" v-show="ctrl.currentUser?.id==user.manager||!ctrl.showOnlyMyMembers">
-                  <td>{{user.id}}</td>
-                  <td>{{user.currTaskGroup}}</td>
-                  <td>{{theDB.userDict[user.manager]?.name}}</td>
-                  <td>{{user.name}}<span v-if="user.quitted" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
-                  <td><span v-for="role in user.role" class="badge rounded-pill bg-primary me-1">{{role}}</span></td>
-                  <td>{{topic_regulation(user.currTask)}}</td>
-                  <td>
-                    <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="标注进度">
-                      <div
-                        class="progress-bar bg-success"
-                        role="progressbar"
-                        :style="`width: ${userProgress(user).pct};`"
-                        :aria-valuenow="userProgress(user).mn"
-                        :aria-valuemax="userProgress(user).bg"
-                        aria-valuemin="0"
-                      >{{ userCurrDoneTasks(user).length }}/{{ userCurrTasks(user).length }}</div>
-                    </div>
-                  </td>
-                  <td>{{user.allAnnos?.length}}</td>
-                  <td>
-                    <button
-                      type="button"
-                      class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                      :title="`查看${user.name}所标注的具体情况`"
-                      @click="modalBox_open('user-progress', user)"
-                    >查看详情</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div> -->
         </div>
+
+        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
+          <div class="col col-12 my-2">
+            <div>已审核 {{theDB?.annos?.filter?.(it=>it?.content?.review)?.length}} / {{theDB?.annos?.length}}</div>
+          </div>
+        </div>
+
         <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
           <div class="container my-2">
             <div
@@ -755,10 +713,11 @@
               <div class="col col-12 col-sm-6 col-md-3 my-2"> -->
                 <span class="badge bg-light text-dark me-1" :title="当前任务">{{topic_regulation(user.currTask)}}</span>
                 <span class="badge bg-light text-dark me-1">已标总量：{{user.allAnnos?.length}}</span>
-                <span
+                <template v-for="sum in [inspectionSum(user)]"><span
                   class="badge me-1"
-                  :class="inspectionSum(user)?.passRatio>=0.9 ? 'bg-success text-light' : inspectionSum(user)?.passRatio>=0.8 ? 'bg-light text-success border border-1 border-success' : inspectionSum(user)?.passRatio==null ? 'bg-light text-dark' : inspectionSum(user)?.passRatio<=0.6 ? 'bg-danger text-light' : 'bg-light text-danger border border-1 border-danger'"
-                >审核通过率：{{inspectionSum(user)?.passRatio?.toFixed?.(3)??'null'}}</span>
+                  :class="sum?.passRatio>=0.9 ? 'bg-success text-light' : sum?.passRatio>=0.8 ? 'bg-light text-success border border-1 border-success' : sum?.passRatio==null ? 'bg-light text-dark' : sum?.passRatio<=0.6 ? 'bg-danger text-light' : 'bg-light text-danger border border-1 border-danger'"
+                >审核通过率：{{sum?.passRatio?.toFixed?.(3)??'null'}}</span>
+                <span class="badge bg-light text-dark me-1">已审：{{inspectionSum(user)?.sum}}</span></template>
               </div>
               <div class="col col-12 col-md-6 col-lg-6 my-1">
                 <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="当前任务进度">
@@ -786,128 +745,10 @@
                   @click="modalBox_open('user-detail', user)"
                 >更多</button>
               </div>
-              <div class="col col-12 d-none">
-                <!-- <button
-                  v-if="!(user.role??[]).includes('admin')"
-                  type="button"
-                  class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
-                  :title="`点击拷贝 ${user.name} 的密码`"
-                  :data-clipboard-text="`${user.name} 的密码是： ${user.token}`"
-                >拷贝密码</button>
-                <button
-                  v-if="(user.role??[]).includes('admin')"
-                  type="button"
-                  class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
-                  :title="`点击拷贝 ${user.name} 的密码`"
-                  :data-clipboard-text="`不能拷贝管理员的密码`"
-                >拷贝密码</button>
-                <button
-                  type="button"
-                  v-if="!user.quitted"
-                  class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                  :title="`给 ${user.name} 添加“已退出”标记`"
-                  @click="modalBox_open('user-set-quitted', user)"
-                >标记退出</button>
-                <button
-                  type="button"
-                  v-if="user.quitted"
-                  class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                  :title="`为 ${user.name} 移除“已退出”标记`"
-                  @click="modalBox_open('user-unset-quitted', user)"
-                >不再退出</button> -->
-                <!-- <button
-                  type="button"
-                  class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                  :title="`对 ${user.name} 的信息进行详细编辑`"
-                  @click="modalBox_open('user-edit', user)"
-                >编辑</button> -->
-              </div>
             </div>
           </div>
         </div>
 
-
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userInfo">
-          <div class="col col-12">
-            <table class="table table-sm table-bordered table-striped table-hover">
-              <thead class="text-center">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">小组</th>
-                  <th scope="col">负责人</th>
-                  <th scope="col">姓名</th>
-                  <th scope="col">角色</th>
-                  <th scope="col">任务类型</th>
-                  <!-- <th scope="col">机构简称</th> -->
-                  <th scope="col">机构</th>
-                  <!-- <th scope="col">电话</th>
-                  <th scope="col">邮箱</th>
-                  <th scope="col">微信</th>
-                  <th scope="col">其他</th> -->
-                  <th scope="col">操作</th>
-                </tr>
-              </thead>
-              <tbody class="text-center">
-                <tr v-for="user in theDB.users" :key="user.id" class="align-middle">
-                  <td>{{user.id}}</td>
-                  <td>{{user.currTaskGroup}}</td>
-                  <td>{{theDB.userDict[user.manager]?.name}}</td>
-                  <td>{{user.name}}<span v-if="user.quitted" class="badge rounded-pill bg-danger ms-2">已退出</span></td>
-                  <td><span v-for="role in user.role" class="badge rounded-pill bg-primary me-1">{{role}}</span></td>
-                  <td>{{topic_regulation(user.currTask)}}</td>
-                  <!-- <td>{{user?.info?.inst_abbr}}</td> -->
-                  <td>{{user?.info?.institution}}</td>
-                  <!-- <td>{{user?.info?.phone}}</td>
-                  <td>{{user?.info?.email}}</td>
-                  <td>{{user?.info?.wechat}}</td>
-                  <td>{{user?.info?.other}}</td> -->
-                  <td>
-                    <button
-                      type="button"
-                      class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                      :title="`查看更多关于${user.name}的信息`"
-                      @click="modalBox_open('user-detail', user)"
-                    >更多信息</button>
-                    <button
-                      v-if="!(user.role??[]).includes('admin')"
-                      type="button"
-                      class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
-                      :title="`点击拷贝${user.name}的密码`"
-                      :data-clipboard-text="`${user.name}的密码是： ${user.token}`"
-                    >拷贝密码</button>
-                    <button
-                      v-if="(user.role??[]).includes('admin')"
-                      type="button"
-                      class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
-                      :title="`点击拷贝${user.name}的密码`"
-                      :data-clipboard-text="`不能拷贝管理员的密码`"
-                    >拷贝密码</button>
-                    <button
-                      type="button"
-                      v-if="!user.quitted"
-                      class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                      :title="`给${user.name}添加“已退出”标记`"
-                      @click="modalBox_open('user-set-quitted', user)"
-                    >标记退出</button>
-                    <button
-                      type="button"
-                      v-if="user.quitted"
-                      class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                      :title="`为${user.name}移除“已退出”标记`"
-                      @click="modalBox_open('user-unset-quitted', user)"
-                    >不再退出</button>
-                    <button
-                      type="button"
-                      class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                      :title="`对${user.name}的信息进行详细编辑`"
-                      @click="modalBox_open('user-edit', user)"
-                    >编辑</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -977,7 +818,7 @@
                     :db="theDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-entry="(value)=>{updateOneEntry(value)}"
-                  />
+                  ></entry-card>
                 </div>
 
                 <div class="col-12">
@@ -1015,7 +856,7 @@
                         @submit-review="(value)=>{saveAnnoReview(...value)}"
                         @open-modal="(value)=>{modalBox_open(...value)}"
                         @update-anno="(value)=>{updateOneAnno(value)}"
-                      />
+                      ></anno-card>
                     </div>
                   </div>
                 </div>
@@ -1038,13 +879,14 @@
                     :task="task"
                     :db="theDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
-                  />
+                  ></task-card>
                 </div>
 
               </div>
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}">关闭全部</button>
             </div>
           </div>
 
@@ -1064,44 +906,7 @@
                     :db="theDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-entry="(value)=>{updateOneEntry(value)}"
-                  />
-                  <!-- <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="modalBox_open('entry-detail', entry)"
-                  >entry#{{entry?.id}}</button>
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-dark my-1 me-2"
-                    @click="updateOneEntry(entry?.id)"
-                  >📥</button>
-                  <div v-show="entry.polygraph">
-                    <span class="badge bg-warning text-dark text-wrap my-1 me-2">质检类型: {{entry.polygraph}}</span>
-                  </div>
-                  <div v-if="entry?.content?.material?.tokenList">
-                    <div
-                      class="my-1 material-area admin show-notice"
-                    >
-                      <p>
-                        <span
-                          v-for="token in entry?.content?.material?.tokenList"
-                          :key="token.idx"
-                          class="token"
-                          :title="`idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`"
-                          :data-idx="token.idx"
-                          :data-pos="token.pos"
-                          :data-auto-dverb="token?.autoDVerb"
-                          :data-auto-entity="token.autoEntity"
-                          :data-auto-spatial="token.autoSpatial"
-                          :data-selecting="token?._ctrl?.selecting"
-                          :data-selected="token?._ctrl?.selected"
-                          :data-replaced="token?.replaced ?? false"
-                          :data-word="token.word"
-                          :data-to-word="token?.to?.word"
-                        >{{ token?.to?.word ?? token.word }}</span>
-                      </p>
-                    </div>
-                  </div> -->
+                  ></entry-card>
                 </div>
 
                 <div class="col-12">
@@ -1127,7 +932,7 @@
                     :task="task"
                     :db="theDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
-                  />
+                  ></task-card>
                   <button
                     v-for="user in [theDB.userDict[anno.user]]"
                     type="button"
@@ -1141,6 +946,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}">关闭全部</button>
             </div>
           </div>
 
@@ -1170,21 +976,21 @@
                     :db="theDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-entry="(value)=>{updateOneEntry(value)}"
-                  />
+                  ></entry-card>
                 </div>
 
                 <div class="col-12">
                   <h5>已提交的标注（{{task.submitters?.length}}）</h5>
                   <div class="card my-1" v-for="user_id in task.submitters">
                     <div class="col-12" v-for="anno_id in [theDB.inf_user_task_anno[`${user_id}/${task.id}`]]">
-                      <anno-card
+                      <!-- <anno-card
                         v-for="anno in [theDB.annoDict[anno_id]]"
                         :anno="anno"
                         :db="theDB"
                         @submit-review="(value)=>{saveAnnoReview(...value)}"
                         @open-modal="(value)=>{modalBox_open(...value)}"
                         @update-anno="(value)=>{updateOneAnno(value)}"
-                      />
+                      ></anno-card> -->
                     </div>
                   </div>
                 </div>
@@ -1205,6 +1011,7 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}">关闭全部</button>
             </div>
           </div>
 
@@ -1217,20 +1024,36 @@
 
 
           <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-detail']">
-            <div class="modal-footer">
+            <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
+              <div class="container">
+                <div class="row align-items-center my-2">
+                  <div class="col-6 col-sm-6 col-md-3 my-1">
+                    <h5>{{user.name}}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer" v-for="user in [modalBox.data.kwargs]">
+              <button type="button" class="btn btn-sm btn-outline-dark me-2" @click="modalBox_open('user-progress', user)">标注进度</button>
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}">关闭全部</button>
             </div>
           </div>
 
+
+
           <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-progress']">
-            <div class="modal-header">
-              <div class="container" v-for="user in [modalBox.data.kwargs]">
+            <div class="modal-header" v-for="user in [modalBox.data.kwargs]">
+              <div class="container">
                 <div class="row align-items-center my-2">
                   <div class="col-6 col-sm-6 col-md-3 my-1">
                     <h5>{{user.name}}</h5>
                   </div>
                   <div class="col-6 col-sm-6 col-md-3 my-1">
-                    <div v-for="sum in [inspectionSum(user)]">通过率： {{sum.passRatio?.toFixed?.(3)??'null'}} = {{sum.true??0}}/{{sum.sum??0}}</div>
+                    <span v-for="sum in [inspectionSum(user)]"
+                      class="badge me-1"
+                      :class="sum?.passRatio>=0.9 ? 'bg-success text-light' : sum?.passRatio>=0.8 ? 'bg-light text-success border border-1 border-success' : sum?.passRatio==null ? 'bg-light text-dark' : sum?.passRatio<=0.6 ? 'bg-danger text-light' : 'bg-light text-danger border border-1 border-danger'"
+                    >通过率： {{sum.passRatio?.toFixed?.(3)??'null'}} = {{sum.true??0}}/{{sum.sum??0}}</span>
                   </div>
                   <div class="col-12 col-sm-12 col-md-6 my-2">
                     <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="标注进度">
@@ -1267,6 +1090,7 @@
                 </div>
               </div>
             </div>
+
             <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
               <div class="row align-items-center my-3 border border-secondary border-2 rounded" v-for="anno in lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), [annoSortFn, it=>(-it.batch)])" v-show="[anno.topic, '【all】'].includes(ctrl.userAnnoFilter.topic)&&[anno.batchName??'【empty】', '【all】'].includes(ctrl.userAnnoFilter.batchName??'【empty】')">
 
@@ -1276,7 +1100,7 @@
                     :task="task"
                     :db="theDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
-                  />
+                  ></task-card>
                 </div>
 
                 <div class="col-12" v-for="entry in [theDB.entryDict[anno.entry]]">
@@ -1285,7 +1109,7 @@
                     :db="theDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-entry="(value)=>{updateOneEntry(value)}"
-                  />
+                  ></entry-card>
                 </div>
 
                 <div class="col-12">
@@ -1300,8 +1124,11 @@
 
               </div>
             </div>
-            <div class="modal-footer">
+
+            <div class="modal-footer" v-for="user in [modalBox.data.kwargs]">
+              <button type="button" class="btn btn-sm btn-outline-dark me-2" @click="modalBox_open('user-detail', user)">用户资料</button>
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide()}">关闭</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}">关闭全部</button>
             </div>
           </div>
 
