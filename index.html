@@ -220,7 +220,7 @@
             <!-- 替换后文本区 开始 -->
             <div
               id="material-replaced"
-              class="row my-1 material-area"
+              class="row my-1 material-area user-select-none"
               :class="{'show-notice': shouldShowNotice(), 'admin': shouldBeAdmin()}"
             >
               <p>
@@ -251,7 +251,7 @@
             <!-- 替换前原文区 开始 -->
             <div
               id="material-origin"
-              class="row my-1 material-area"
+              class="row my-1 material-area user-select-none"
               v-show="ctrl.showOrigin"
               :data-show="ctrl.showOrigin"
             >

@@ -205,8 +205,8 @@ const RootComponent = {
       started: false,
 
       userAnnoFilter: {
-        topic: "",
-        batchName: "",
+        topic: "【all】",
+        batchName: "【all】",
       },
 
       tab: TABS['overview'],
@@ -1514,18 +1514,20 @@ the_app.component('anno-card', {
     const onOpenModal = () => {
       ctx.emit('open-modal', ['anno-detail', props.anno]);
     };
-    const reviewPass = () => {
-      ctrl.accept=true;
-    };
-    const reviewReject = () => {
-      ctrl.accept=false;
-    };
     const submitReview = () => {
       ctx.emit('submit-review', [props.anno, ctrl]);
       // ctx.emit('submit-review', [props.anno, JSON.parse(JSON.stringify(ctrl))]);
       ctrl.reviewing=false;
       // ctrl.comment="";
       // ctrl.accept=null;
+    };
+    const reviewPass = () => {
+      ctrl.accept=true;
+      submitReview();
+    };
+    const reviewReject = () => {
+      ctrl.accept=false;
+      submitReview();
     };
     const updateAnno = () => {
       ctx.emit('update-anno', props.anno);
@@ -1567,6 +1569,18 @@ the_app.component('anno-card', {
         ),
         h('div', {},
           this.ctrl.reviewing ? [
+
+            h('input', {
+                'type': "text",
+                'class': "border rounded p-1 my-1 me-2 align-middle",
+                'placeholder': "填写批示/评论/备注",
+                'value': this.ctrl.comment,
+                'onInput': event => {
+                  this.ctrl.comment = event?.target?.value;
+                },
+              },
+            ),
+
             h('button', {
                 'type': "button",
                 'class': ["btn btn-sm my-1 me-2", `btn${this.ctrl.accept===true?'':'-outline'}-success`],
@@ -1581,27 +1595,16 @@ the_app.component('anno-card', {
               },
               [`否决`],
             ),
-
-            h('input', {
-                'type': "text",
-                'class': "border rounded p-1 my-1 me-2 align-middle",
-                'placeholder': "填写批示/评论/备注",
-                'value': this.ctrl.comment,
-                'onInput': event => {
-                  this.ctrl.comment = event?.target?.value;
-                },
-              },
-            ),
-
             // h('br'),
 
-            h('button', {
-                'type': "button",
-                'class': ["btn btn-sm my-1 me-2", `btn-outline-primary`],
-                'onClick': this.submitReview,
-              },
-              [`提交`],
-            ),
+            // h('button', {
+            //     'type': "button",
+            //     'class': ["btn btn-sm my-1 me-2", `btn-outline-primary`],
+            //     'onClick': this.submitReview,
+            //   },
+            //   [`提交`],
+            // ),
+
             h('button', {
                 'type': "button",
                 'class': ["btn btn-sm my-1 me-2", `btn-outline-dark`],
