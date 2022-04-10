@@ -214,7 +214,7 @@ class BackEndUsage {
     };
     this.data.ctrl.currentPage = 'anno';
     let lastEID = this?.data?.newThings?.lastEID ?? null;
-    let btn = this.data.tasks.find(btn => btn.rejectedTP==3&&!btn.checked) ?? this.data.tasks.find(btn => !btn.done);
+    let btn = this.data.tasks.find(btn => btn.rejectedTP==3&&!btn.checked) ?? this.data.tasks.find(btn => !btn.done) ?? this.data.tasks.find(btn => btn.rejectedTP==3);
     if (btn) {
       await this.goIdx(btn.idx);
       return;

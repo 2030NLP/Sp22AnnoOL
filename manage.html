@@ -1026,11 +1026,43 @@
 
 
           <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-detail']">
-            <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
+            <div class="modal-body" v-for="user in [modalBox.data.kwargs]" :key="user.id">
               <div class="container">
                 <div class="row align-items-center my-2">
-                  <div class="col-6 col-sm-6 col-md-3 my-1">
+                  <div class="col-12">
                     <h5>{{user.name}}</h5>
+                  </div>
+                </div>
+                <div class="row align-items-center my-2">
+                  <div class="col-12">
+                    <button
+                      v-if="!(user.role??[]).includes('admin')"
+                      type="button"
+                      class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
+                      :title="`点击拷贝 ${user.name} 的密码`"
+                      :data-clipboard-text="`${user.name} 的密码是： ${user.token}`"
+                    >拷贝密码</button>
+                    <button
+                      v-if="(user.role??[]).includes('admin')"
+                      type="button"
+                      class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
+                      :title="`点击拷贝 ${user.name} 的密码`"
+                      :data-clipboard-text="`不能拷贝管理员的密码`"
+                    >拷贝密码</button>
+                    <button
+                      type="button"
+                      v-if="!user.quitted"
+                      class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                      :title="`给 ${user.name} 添加“已退出”标记`"
+                      @click="modalBox_open('user-set-quitted', user)"
+                    >标记退出</button>
+                    <button
+                      type="button"
+                      v-if="user.quitted"
+                      class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                      :title="`为 ${user.name} 移除“已退出”标记`"
+                      @click="modalBox_open('user-unset-quitted', user)"
+                    >不再退出</button>
                   </div>
                 </div>
               </div>
@@ -1041,7 +1073,6 @@
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}">关闭全部</button>
             </div>
           </div>
-
 
 
           <div class="modal-content" v-if="modalBox.data.theme == MODAL_THEMES['user-progress']">
