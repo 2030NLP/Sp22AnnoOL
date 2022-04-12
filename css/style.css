@@ -219,22 +219,38 @@
       color: #d63384;
     }*/
 
-    /*方位词 autoSpatial为True且pos为f*/
+    /*方位词 （1）方位词高亮：autoSpatial为true且pos为f */
     .material-area span.token[data-auto-spatial=true][data-pos=f] {
       /*color: #0dcaf0;*/
       color: #dc3545;
     }
 
-    /*处所词 pos为s*/
-    .material-area span.token[data-pos=s] {
+    /*处所词 （2）处所词高亮：autoSpatial为true且pos为s */
+    .material-area span.token[data-auto-spatial=true][data-pos=s] {
       color: #11ab21;
       /*border: 1px #198754 solid;*/
     }
 
-    /*趋向动词 autoDVerb存在且为True*/
-    .material-area span.token[data-auto-dverb=true] {
+    /*趋向动词 （3）趋向动词高亮：autoSpatial为true且pos为dv */
+    .material-area span.token[data-auto-spatial=true][data-pos=dv] {
       color: #e39128;
     }
+
+    /*趋向动词 旧版 autoDVerb存在且为True*/
+    /*.material-area span.token[data-auto-dverb=true] {
+      color: #e39128;
+    }*/
+
+    /*介词 （4）介词高亮：autoSpatial为true且pos为p */
+    /*.material-area span.token[data-auto-spatial=true][data-pos=p] {
+      color: #8847ff;
+    }*/
+
+    /*副词 （5）副词高亮：autoSpatial为true且pos为d */
+    /*.material-area span.token[data-auto-spatial=true][data-pos=d] {
+      color: #4297c1;
+    }*/
+
 
     /*名词 autoEntity为True*/
     .material-area span.token[data-auto-entity=true][data-pos=n] {
@@ -268,10 +284,6 @@
     /*代词*/
     /*.material-area span.token[data-pos=r] {
       color: #adb5bd;
-    }*/
-    /*介词*/
-    /*.material-area span.token[data-pos=p] {
-      color: #6f42c1;
     }*/
 
     /*管理员作弊，框出被替换的词*/
