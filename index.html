@@ -223,29 +223,14 @@
               class="row my-1 material-area user-select-none"
               :class="{'show-notice': shouldShowNotice(), 'admin': shouldBeAdmin()}"
             >
-              <p>
-                <span
-                  v-for="token in getTokenList()"
-                  :key="token.idx"
-                  class="token"
-                  :class="{'right-space': true, 'should-notice': token.word=='前'||token.word=='后'}"
-                  :data-title="`${token.idx}, ${token.pos}`"
-                  :data-idx="token.idx"
-                  :data-pos="token.pos"
-                  :data-auto-dverb="token?.autoDVerb"
-                  :data-auto-entity="token.autoEntity"
-                  :data-auto-spatial="token.autoSpatial"
-                  :data-selecting="token?._ctrl?.selecting"
-                  :data-selected="token?._ctrl?.selected"
-                  :data-replaced="token?.replaced ?? false"
-                  :data-word="token.word"
-                  :data-to-word="token?.to?.word"
-                  @mousedown="tokenSelector.onMouseDown(token, $event, getTokenList())"
-                  @mouseenter="tokenSelector.onMouseEnter(token, getTokenList())"
-                  @mouseout="tokenSelector.onMouseOut(token)"
-                  @mouseup="tokenSelector.onMouseUp(token, getTokenList())"
-                >{{ token?.replaced ? token?.to?.word : token.word }}<!-- <sub>{{ token.idx }}</sub> --></span>
-              </p>
+              <token-list-p
+                :tokens="getTokenList()"
+                :showreplaced="true"
+                @tkn-down="(value)=>{tokenSelector.onMouseDown(value.token, value.event, getTokenList());}"
+                @tkn-enter="(value)=>{tokenSelector.onMouseEnter(value.token, getTokenList());}"
+                @tkn-out="(value)=>{tokenSelector.onMouseOut(value.token);}"
+                @tkn-up="(value)=>{tokenSelector.onMouseUp(value.token, getTokenList());}"
+              ></token-list-p>
             </div>
             <!-- 替换后文本区 结束 -->
             <!-- 替换前原文区 开始 -->
@@ -255,27 +240,14 @@
               v-show="ctrl.showOrigin"
               :data-show="ctrl.showOrigin"
             >
-              <p>
-                <span
-                  v-for="token in getTokenList()"
-                  :key="token.idx"
-                  class="token"
-                  :class="{'right-space': true}"
-                  :data-title="`${token.idx}, ${token.pos}`"
-                  :data-idx="token.idx"
-                  :data-pos="token.pos"
-                  :data-auto-dverb="token?.autoDVerb"
-                  :data-auto-entity="token.autoEntity"
-                  :data-auto-spatial="token.autoSpatial"
-                  :data-selecting="token?._ctrl?.selecting"
-                  :data-selected="token?._ctrl?.selected"
-                  :data-have-replace="token?.replaced ?? false"
-                  @mousedown="tokenSelector.onMouseDown(token, $event, getTokenList())"
-                  @mouseenter="tokenSelector.onMouseEnter(token, getTokenList())"
-                  @mouseout="tokenSelector.onMouseOut(token)"
-                  @mouseup="tokenSelector.onMouseUp(token, getTokenList())"
-                >{{ token.word }}<!-- <sub>{{ token.idx }}</sub> --></span>
-              </p>
+              <token-list-p
+                :tokens="getTokenList()"
+                :showreplaced="false"
+                @tkn-down="(value)=>{tokenSelector.onMouseDown(value.token, value.event, getTokenList());}"
+                @tkn-enter="(value)=>{tokenSelector.onMouseEnter(value.token, getTokenList());}"
+                @tkn-out="(value)=>{tokenSelector.onMouseOut(value.token);}"
+                @tkn-up="(value)=>{tokenSelector.onMouseUp(value.token, getTokenList());}"
+              ></token-list-p>
             </div>
             <!-- 替换前原文区 结束 -->
             <!-- 便捷选择操作区 开始 -->

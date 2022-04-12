@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0410-00";
+const APP_VERSION = "22-0411-00";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -81,7 +81,10 @@ const RootComponent = {
     const modalBox = new ModalBox(modalData);
     const modalBox_show = () => modalBox.show();
     const modalBox_hide = () => modalBox.hide();
-    const modalBox_open = (theme, kwargs) => modalBox.open(theme, kwargs);
+    const modalBox_open = (theme, kwargs) => {
+      console.log(theme, kwargs);
+      modalBox.open(theme, kwargs);
+    };
 
     // 初始化 提示框 模块
     const alertData = reactive({
@@ -1466,329 +1469,19 @@ const RootComponent = {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const the_app = Vue_createApp(RootComponent);
 
-the_app.component('anno-card', {
-  props: ["db", "anno", "reviewer"],
-  emits: ['open-modal', 'submit-review', 'update-anno', /*'update:modelValue'*/],
-  setup(props, ctx) {
-    const ctrl = reactive({
-      reviewing: false,
-      comment: props?.anno?.content?.review?.comment??"",
-      accept: props?.anno?.content?.review?.accept??null,
-    });
-    const onOpenModal = () => {
-      ctx.emit('open-modal', ['anno-detail', props.anno]);
-    };
-    const submitReview = () => {
-      ctx.emit('submit-review', [props.anno, ctrl]);
-      // ctx.emit('submit-review', [props.anno, JSON.parse(JSON.stringify(ctrl))]);
-      ctrl.reviewing=false;
-      // ctrl.comment="";
-      // ctrl.accept=null;
-    };
-    const reviewPass = () => {
-      ctrl.accept=true;
-      submitReview();
-    };
-    const reviewReject = () => {
-      ctrl.accept=false;
-      submitReview();
-    };
-    const updateAnno = () => {
-      ctx.emit('update-anno', props.anno);
-    };
-    return { ctrl, onOpenModal, reviewPass, reviewReject, submitReview, updateAnno };
-  },
-  render() {
-    // console.log(this);
-    if (!this.anno || !this?.anno?.id?.length) {
-      return h('div', {}, ["没有找到这条标注"]);
-    };
-    return h(
-      'div', {
-        'class': "border rounded p-1 mx-1 my-1",
-      },
-      [
-        h('button', {
-            'type': "button",
-            'class': "btn btn-sm btn-light my-1 me-2",
-            'onClick': this.onOpenModal,
-            'title': JSON.stringify(this.anno),
-          },
-          [`${this.db?.userDict?.[this.anno?.user]?.name} 的标注 #${this.anno?.id}`],
-        ),
-        !this.ctrl.reviewing ? h('button', {
-            'type': "button",
-            'class': "btn btn-sm btn-outline-primary my-1 me-2",
-            'onClick': ()=>{this.ctrl.reviewing=true},
-          },
-          [`审批`],
-        ) : null,
-        h('button', {
-            'type': "button",
-            'class': "btn btn-sm btn-light my-1 me-2",
-            'onClick': this.updateAnno,
-            'title': `刷新`,
-          },
-          [`🔄`],
-        ),
-        h('div', {},
-          this.ctrl.reviewing ? [
+import ModalContent from './components/ModalContent.cpnt.mjs.js';
+the_app.component('modal-content', ModalContent);
 
-            h('input', {
-                'type': "text",
-                'class': "border rounded p-1 my-1 me-2 align-middle",
-                'placeholder': "填写批示/评论/备注",
-                'value': this.ctrl.comment,
-                'onInput': event => {
-                  this.ctrl.comment = event?.target?.value;
-                },
-              },
-            ),
+import AnnoCard from './components/AnnoCard.cpnt.mjs.js';
+the_app.component('anno-card', AnnoCard);
 
-            h('button', {
-                'type': "button",
-                'class': ["btn btn-sm my-1 me-2", `btn${this.ctrl.accept===true?'':'-outline'}-success`],
-                'onClick': this.reviewPass,
-              },
-              [`通过`],
-            ),
-            h('button', {
-                'type': "button",
-                'class': ["btn btn-sm my-1 me-2", `btn${this.ctrl.accept===false?'':'-outline'}-danger`],
-                'onClick': this.reviewReject,
-              },
-              [`否决`],
-            ),
-            // h('br'),
+import EntryCard from './components/EntryCard.cpnt.mjs.js';
+the_app.component('entry-card', EntryCard);
 
-            // h('button', {
-            //     'type': "button",
-            //     'class': ["btn btn-sm my-1 me-2", `btn-outline-primary`],
-            //     'onClick': this.submitReview,
-            //   },
-            //   [`提交`],
-            // ),
-
-            h('button', {
-                'type': "button",
-                'class': ["btn btn-sm my-1 me-2", `btn-outline-dark`],
-                'onClick': ()=>{this.ctrl.reviewing=false},
-              },
-              [`取消`],
-            ),
-          ] : this.anno?.content?.review?.accept!=null ? [
-            h('span', {
-                'title': JSON.stringify(this.anno?.content?.review),
-                'class': ["badge text-wrap my-1 me-2",
-                  this.anno?.content?.review?.accept?
-                  ('bg-light border border-success text-success'):
-                  (this.anno?.content?.review?.checked?
-                    'bg-danger border border-danger text-light':
-                    'bg-light border border-danger text-danger')
-                ],
-              },
-              [
-                this.anno?.content?.review?.accept?'审批通过':'审批不通过',' ',
-                this.anno?.content?.review?.comment?`「${this.anno?.content?.review?.comment}」`:null,' ',
-                this.anno?.content?.review?.accept?null:this.anno?.content?.review?.checked?`标注者已处理`:'标注者尚未处理',
-              ],
-            ),
-          ] : [
-            h('span', {
-                'class': "badge bg-light text-dark text-wrap my-1 me-2",
-              },
-              [`暂无批示`],
-            ),
-          ],
-        ),
-        h('div', {},
-          (this.anno?.content?.annotations??[]).map(annot=>h(
-            'span', {
-              'class': "badge bg-light text-dark text-wrap my-1 me-2",
-            },
-            [JSON.stringify(annot)],
-          )),
-        ),
-      ]
-    );
-  },
-});
-
-
-
-the_app.component('entry-card', {
-  props: ["db", "entry"],
-  emits: ["open-modal", 'update-entry'],
-  setup(props, ctx) {
-    const onOpenModal = () => {
-      ctx.emit('open-modal', ['entry-detail', props.entry]);
-    };
-    const updateEntry = () => {
-      ctx.emit('update-entry', props.entry.id);
-    };
-    return { onOpenModal, updateEntry };
-  },
-  render() {
-    // console.log(this);
-    if (!this.entry) {
-      return h('div', {}, ["没有找到这条语料"]);
-    };
-    return h('div', {
-        'class': "border rounded p-1 mx-1 my-1",
-      }, [
-        h('button', {
-            'type': "button",
-            'class': ["btn btn-sm my-1 me-2", this.entry?.deleted?'btn-danger':'btn-outline-dark'],
-            'onClick': this.onOpenModal,
-            // 'title': JSON.stringify(this.entry),
-          },
-          [`entry#${this.entry?.id}`],
-        ),
-        h('button', {
-            'type': "button",
-            'class': "btn btn-sm btn-light my-1 me-2",
-            'onClick': this.updateEntry,
-            'title': `完整加载`,
-          },
-          [`📥`],
-        ),
-        this.entry.polygraph ? h('div', {
-            'class': "my-1",
-          },
-          [
-            h('span', {
-                'class': "badge bg-warning text-dark text-wrap my-1 me-2",
-              },
-              [`质检标签: ${this.entry.polygraph}`],
-            ),
-            this.entry.polygraphType ? h('span', {
-                'class': "badge bg-warning text-dark text-wrap my-1 me-2",
-              },
-              [`质检类型: ${this.entry.polygraphType}`],
-            ) : null,
-            this.entry.results?._temp_labels ? h('span', {
-                'class': "badge bg-light text-dark text-wrap my-1 me-2",
-              },
-              [`参考标签: ${this.entry.results?._temp_labels}`],
-            ) : null,
-            this.entry.results?._temp_annots ? h('span', {
-                'class': "badge bg-light text-dark text-wrap my-1 me-2",
-              },
-              [`参考标注: ${JSON.stringify(this.entry.results?._temp_annots)}`],
-            ) : null,
-            this.entry.results?._temp_annos ? h('span', {
-                'class': "badge bg-light text-dark text-wrap my-1 me-2",
-              },
-              [`参考标注来源: ${this.entry.results?._temp_annos}`],
-            ) : null,
-          ],
-        ) : null,
-        this.entry?.content?.material?.tokenList ? h('div', {
-          'class':"my-1 material-area admin show-notice"
-        }, [
-          h('p', {}, this.entry?.content?.material?.tokenList.map(token=>h('span', {
-            'key': token.idx,
-            'class': "token",
-            'title': `idx: ${token.idx}\npos: ${token.pos}${token.replaced?'\norigin: '+token.word:''}`,
-            'data-idx': token.idx,
-            'data-pos': token.pos,
-            'data-auto-dverb': token?.autoDVerb,
-            'data-auto-entity': token.autoEntity,
-            'data-auto-spatial': token.autoSpatial,
-            'data-selecting': token?._ctrl?.selecting,
-            'data-selected': token?._ctrl?.selected,
-            'data-replaced': token?.replaced ?? false,
-            'data-word': token.word,
-            'data-to-word': token?.to?.word,
-          }, [`${token?.to?.word ?? token.word ?? ""}`]))),
-        ]) : null,
-      ],
-    );
-  },
-});
-
-
-
-the_app.component('task-card', {
-  props: ["db", "task"],
-  emits: ["open-modal"],
-  setup(props, ctx) {
-    const onOpenModal = () => {
-      ctx.emit('open-modal', ['task-detail', props.task]);
-    };
-    return { onOpenModal };
-  },
-  render() {
-    // console.log(this);
-    if (!this.task) {
-      return h('div', {
-        'class': "d-inline-block"
-      }, ["没有找到这个任务"]);
-    };
-    return h(
-      'div', {
-        'class': "d-inline-block"
-      },
-      [
-        h('button', {
-            'type': "button",
-            'class': ["btn btn-sm my-1 me-2", this.task.deleted?'btn-danger':'btn-light'],
-            'onClick': this.onOpenModal,
-            'title': `task#${this.task?.id}`,
-          },
-          [`task#${this.task?.id}`],
-        ),
-        this.task.batchName ? h(
-          'span', {
-            'class': "badge bg-light text-dark text-wrap my-1 me-2",
-          },
-          [`批次：${this.task.batchName}`],
-        ) : null,
-        h('span', {
-            'class': "badge bg-light text-dark text-wrap my-1 me-2",
-          },
-          [`提交：${this.task?.submitters?.length}/${this.task?.to?.length}`],
-        ),
-      ]
-    );
-  },
-});
+import TaskCard from './components/TaskCard.cpnt.mjs.js';
+the_app.component('task-card', TaskCard);
 
 
 const app = the_app.mount('#bodywrap');

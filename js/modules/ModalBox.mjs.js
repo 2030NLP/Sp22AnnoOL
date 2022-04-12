@@ -36,6 +36,7 @@ class ModalBox {
   };
 
   hide() {
+    // console.log('hide', JSON.stringify(this.data));
     this.data.show = false;
     this.data.theme = 'default';
     this.data.kwargs = {};
@@ -49,6 +50,7 @@ class ModalBox {
     return this.data.show;
   }
   hideTotal() {
+    // console.log('hideTotal', JSON.stringify(this.data));
     this.data.show = false;
     this.data.theme = 'default';
     this.data.kwargs = {};

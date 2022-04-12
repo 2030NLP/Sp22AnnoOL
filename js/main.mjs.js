@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0410-00";
+const APP_VERSION = "22-0411-00";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -433,6 +433,13 @@ const RootComponent = {
 
 
 const the_app = Vue_createApp(RootComponent);
+
+import TokenListP from './components/TokenListP.cpnt.mjs.js';
+the_app.component('token-list-p', TokenListP);
+
+import FunctionalArea from './components/FunctionalArea.cpnt.mjs.js';
+the_app.component('functional-area', FunctionalArea);
+
 const app = the_app.mount('#bodywrap');
 window.app = app;
 // the_app.config.globalProperties.$axios = axios;  // 用 app.theBackEnd 就可以调试了。
