@@ -150,6 +150,8 @@ class BackEndUsage {
       };
       //
       let thing = await this.touchTask(task_btn);
+      this.updateProgress();
+      // this.stepCtrl.updateProgress();
       if (thing?.entry) {
         let content = thing?.entry?.content;
         content.annotations = thing?.anno?.content?.annotations ?? [];
@@ -458,6 +460,7 @@ class BackEndUsage {
   }
 
   async goIdx(idx) {
+    this.updateProgress();
     if (idx < this.data.tasks.length && idx >= 0) {
       let btn = this.data.tasks[idx];
       let content = await this.touchTaskBtn(btn);
