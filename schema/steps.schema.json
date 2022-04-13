@@ -1,9 +1,9 @@
 {
   "name": "SpaCE2022",
-  "version": "220412",
+  "version": "220413",
   "versions": {
     "清洗": "2203030",
-    "第1期": "220412",
+    "第1期": "220413",
     "第2期": null,
     "第3期": null,
     "精标": null
@@ -256,7 +256,7 @@
               "text": "完全正常",
               "data": {
                 "label": "fine",
-                "desc": "这段话中的空间信息完全正常"
+                "desc": "这段话完全正常"
               },
               "go": "end",
               "style": "outline-primary"
@@ -265,7 +265,7 @@
               "text": "尚能说通",
               "data": {
                 "label": "someFine",
-                "desc": "这段话中的空间信息尚能说通"
+                "desc": "这段话尚能说通"
               },
               "go": "end",
               "style": "outline-primary"
@@ -274,7 +274,7 @@
               "text": "比较牵强",
               "data": {
                 "label": "someBad",
-                "desc": "这段话中的空间信息比较牵强"
+                "desc": "这段话比较牵强"
               },
               "go": "end",
               "style": "outline-primary"
@@ -283,7 +283,7 @@
               "text": "显然异常",
               "data": {
                 "label": "bad",
-                "desc": "这段话中的空间信息显然异常"
+                "desc": "这段话显然异常"
               },
               "go": "end",
               "style": "outline-primary"
@@ -293,7 +293,7 @@
               "data": {
                 "isDropping": true,
                 "label": "other",
-                "desc": "不适合用于计算机空间语义理解"
+                "desc": "这段话不适合用于计算机空间语义理解"
               },
               "go": "end",
               "style": "outline-dark"
