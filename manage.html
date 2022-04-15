@@ -178,12 +178,12 @@
               @click="async()=>{ctrl.started=true;await getMemoList();}"
               title="开始工作"
             >开始工作</button>
-            <a
+            <!-- <a
               class="btn btn-sm me-2 my-1"
               :class="'btn-outline-dark'"
               href="./todos"
               target="_blank"
-            >打开任务板</a>
+            >打开任务板</a> -->
           </div>
         </div>
       </div>
@@ -225,7 +225,6 @@
         <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.memos">
           <div class="col col-12">
             <p>在下方文本框填写内容并「发布」，所有管理人员皆可看到。（普通标注人员不可见）</p>
-            <p>查看留言板需要「刷新留言板」。</p>
           </div>
           <div class="col col-12">
             <textarea
@@ -247,7 +246,7 @@
               :class="`btn-outline-dark`"
               @click="getMemoList"
               title="刷新留言板"
-            >刷新留言板</button>
+            >刷新</button>
           </div>
         </div>
 
@@ -258,8 +257,8 @@
               v-for="memo in theBoard.memos"
             >
               <div class="col col-12 my-1">
-                <p>{{memo.text}}</p>
-                <p class="text-muted small">
+                <p class="pre-wrap">{{memo.text}}</p>
+                <p class="text-muted small opacity-50">
                   <span>#{{memo.id}}</span><span>　</span>
                   <span>{{memo.user?.name}}</span><span>　</span>
                   <span>发布于 {{(new Date(memo.postedAt)).toLocaleString()}}</span><span>　</span>

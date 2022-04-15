@@ -6,6 +6,9 @@
     .cursor-pointer {
       cursor: pointer;
     }
+    .pre-wrap {
+      white-space: pre-wrap;
+    }
 
 
 
