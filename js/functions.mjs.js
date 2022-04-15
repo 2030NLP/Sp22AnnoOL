@@ -81,7 +81,7 @@ fn2 = () => {
 batchName="task1-01";
 
 log = console.log;
-annos = app.theDB.annos.filter(it=>it.batchName==batchName);
+annos = app.theDB.annos.filter(it=>it.batchName==batchName&&app.theDB.userDict[it.user]?.currTaskGroup!="zwdGroup");
 
 ll = annos.map(anno=>_.min([anno._timeInfo.totalDur,1000*60*3]));
 
@@ -111,7 +111,16 @@ log(`${batchName} 总耗时（单位 小时）：`, (firstTimes.at(-1)-firstTime
   return 一些annos的总历时(annos, lo);
 };
 
-每个用户的总历时列表 = app.theDB.users.map(it=>一个用户某个批次的总历时(it, batchName, app.theDB, _)).filter(it=>it!=null&&!isNaN(it));
+每个用户的总历时pair列表 = app.theDB.users
+  .filter(it=>it.currTaskGroup!="zwdGroup")
+  .map(it=>[it, 一个用户某个批次的总历时(it, batchName, app.theDB, _)])
+  .filter(it=>it[1]!=null&&!isNaN(it[1]));
+每个用户的总历时pair列表 = _.sortBy(每个用户的总历时pair列表, it=>+it[1]);
+pairs = 每个用户的总历时pair列表.map(it=>[it[0].id, it[0].currTaskGroup, it[0].name, +it[1]]);
+
+每个用户的总历时列表 = 每个用户的总历时pair列表.map(it=>it[1]);
+
+
 平均总历时 = _.sum(每个用户的总历时列表)/每个用户的总历时列表.length;
 log(`${batchName} 每个用户平均历时（单位 分钟）：`, 平均总历时/1000/60);
 
@@ -120,6 +129,8 @@ log(`${batchName} 最快用户历时（单位 分钟）：`, sorted_每个用户
 log(`${batchName} 中位用户历时（单位 分钟）：`, sorted_每个用户的总历时列表[Math.round(sorted_每个用户的总历时列表.length/2)]/1000/60);
 log(`${batchName} 最慢用户历时（单位 分钟）：`, sorted_每个用户的总历时列表.at(-1)/1000/60);
 
+log("pairs");
+log(pairs.map(it=>it.map(xx=>JSON.stringify(xx)).join(",")).join("\n"));
 
 
 };

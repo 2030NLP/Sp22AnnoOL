@@ -59,6 +59,7 @@ const RootComponent = {
 
     const win = reactive(window);
     const lo = _;
+    const mkd = marked;
 
     const MODAL_THEMES = {
       'default': null,
@@ -1557,6 +1558,7 @@ const RootComponent = {
     return {
       win,
       lo,
+      mkd,
       // store,
       theSaver,
       theWorker,

@@ -253,22 +253,30 @@
         <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.memos">
           <div class="container">
             <div
-              class="row border border-1 rounded my-2"
+              class="row"
               v-for="memo in theBoard.memos"
             >
               <div class="col col-12 my-1">
-                <p class="pre-wrap">{{memo.text}}</p>
-                <p class="text-muted small opacity-50">
-                  <span>#{{memo.id}}</span><span>　</span>
-                  <span>{{memo.user?.name}}</span><span>　</span>
-                  <span>发布于 {{(new Date(memo.postedAt)).toLocaleString()}}</span><span>　</span>
-                  <span
-                    v-if="memo.user?.id==ctrl.currentUser?.id"
-                  >
-                    <span class="cursor-pointer" @click="deleteMemo(memo)">删除</span>
-                    <span>　</span>
-                  </span>
-                </p>
+                <div class="border border-1 rounded my-2 px-2">
+                  <!-- <p class="pre-wrap">{{memo.text}}</p> -->
+                  <div class="memo-content-wrap">
+                    <div
+                      class="memo-content"
+                      v-html="mkd.parse(memo.text)"
+                    ></div>
+                  </div>
+                  <p class="text-muted small opacity-50">
+                    <span>#{{memo.id}}</span><span>　</span>
+                    <span>{{memo.user?.name}}</span><span>　</span>
+                    <span>发布于 {{(new Date(memo.postedAt)).toLocaleString()}}</span><span>　</span>
+                    <span
+                      v-if="memo.user?.id==ctrl.currentUser?.id"
+                    >
+                      <span class="cursor-pointer" @click="deleteMemo(memo)">删除</span>
+                      <span>　</span>
+                    </span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
