@@ -316,6 +316,40 @@ class BackEnd {
     // response.data.err === ''
   }
 
+  async getMemosAll() {
+    let response = await this.request({
+      method: "get",
+      url: `/memos`,
+    });
+    return response;
+  }
+
+  async postMemo(memo) {
+    let response = await this.request({
+      method: "post",
+      url: `/memos`,
+      data: memo,
+    });
+    return response;
+  }
+
+  async getMemo(memo_id) {
+    let response = await this.request({
+      method: "get",
+      url: `/memos/${memo_id}`,
+    });
+    return response;
+  }
+
+  async updateMemo(memo) {
+    let response = await this.request({
+      method: "put",
+      url: `/memos/${memo.id}`,
+      data: memo,
+    });
+    return response;
+  }
+
   async getEntry(entry_id) {
     // 获取 entry 信息
     // 输入：entry.id

@@ -1,6 +1,14 @@
 
 
 
+
+
+    .cursor-pointer {
+      cursor: pointer;
+    }
+
+
+
     .modal-header, .body, .footer {
       padding: 0.25rem;
     }

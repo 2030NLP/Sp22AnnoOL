@@ -122,7 +122,7 @@
               title="从服务器更新 Task 表"
               __disabled
               __v-show="false"
-            ><s>刷新 Task 表</s> 请直接刷新全部</button>
+            >刷新 Task 表</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
@@ -175,9 +175,15 @@
               type="button"
               class="btn btn-sm me-2 my-1"
               :class="`btn-info`"
-              @click="()=>{ctrl.started=true;}"
+              @click="async()=>{ctrl.started=true;await getMemoList();}"
               title="开始工作"
             >开始工作</button>
+            <a
+              class="btn btn-sm me-2 my-1"
+              :class="'btn-outline-dark'"
+              href="./todos"
+              target="_blank"
+            >打开任务板</a>
           </div>
         </div>
       </div>
@@ -197,6 +203,15 @@
               <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.userProgress ? 'active' : ''" href="#" @click="goTab('userProgress')">用户进度</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="ctrl.tab == TABS.functions ? 'active' : ''" href="#" @click="goTab('functions')">更多功能</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="ctrl.tab == TABS.memos ? 'active' : ''" href="#" @click="goTab('memos')">留言板</a>
+              </li>
+              <!-- <li class="nav-item">
+                <a class="nav-link" :class="ctrl.tab == TABS.todos ? 'active' : ''" href="#" @click="goTab('todos')">任务板</a>
+              </li> -->
               <!-- <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.userInfo ? 'active' : ''" href="#" @click="goTab('userInfo')">用户信息</a>
               </li> -->
@@ -207,6 +222,63 @@
           </div>
         </div>
 
+        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.memos">
+          <div class="col col-12">
+            <p>在下方文本框填写内容并「发布」，所有管理人员皆可看到。（普通标注人员不可见）</p>
+            <p>查看留言板需要「刷新留言板」。</p>
+          </div>
+          <div class="col col-12">
+            <textarea
+              class="form-control form-control-sm"
+              v-model="theBoard.text"
+            ></textarea>
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="`btn-outline-dark`"
+              @click="postNormalMemo"
+              title="发布"
+            >发布</button>
+          </div>
+          <div class="col col-12">
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="`btn-outline-dark`"
+              @click="getMemoList"
+              title="刷新留言板"
+            >刷新留言板</button>
+          </div>
+        </div>
+
+        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.memos">
+          <div class="container">
+            <div
+              class="row border border-1 rounded my-2"
+              v-for="memo in theBoard.memos"
+            >
+              <div class="col col-12 my-1">
+                <p>{{memo.text}}</p>
+                <p class="text-muted small">
+                  <span>#{{memo.id}}</span><span>　</span>
+                  <span>{{memo.user?.name}}</span><span>　</span>
+                  <span>发布于 {{(new Date(memo.postedAt)).toLocaleString()}}</span><span>　</span>
+                  <span
+                    v-if="memo.user?.id==ctrl.currentUser?.id"
+                  >
+                    <span class="cursor-pointer" @click="deleteMemo(memo)">删除</span>
+                    <span>　</span>
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.todos">
+          <div class="col col-12">
+          </div>
+        </div> -->
 
 
 
@@ -1102,7 +1174,8 @@
             <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
               <div
                 class="row align-items-center my-3 border border-secondary border-2 rounded"
-                v-for="anno in lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), [annoSortFn, it=>(-it.batch)])"
+                v-for="anno in user.allAnnos.map(it=>theDB.annoDict[it])"
+                __v-for="anno in lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), [annoSortFn, it=>(-it.batch)])"
                 :key="anno.id"
                 v-show="[anno.topic, '【all】'].includes(ctrl.userAnnoFilter.topic)&&[anno.batchName??'【empty】', '【all】'].includes(ctrl.userAnnoFilter.batchName??'【empty】')">
 

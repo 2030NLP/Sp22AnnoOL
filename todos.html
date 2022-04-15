@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+  <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+  <META HTTP-EQUIV="Expires" CONTENT="0">
+
+  <title>Sp22Anno 任务板</title>
+
+  <link href="css/bootstrap_5.1.3_.min.css" rel="stylesheet">
+
+  <link href="css/style.css" rel="stylesheet">
+
+  <style type="text/css">
+  </style>
+
+</head>
+
+<body>
+
+  <div class="bodywrap" id="bodywrap">
+
+    <div class="page-cover" v-if="false">
+      <div class="container pt-5 text-center">
+        <div class="row">
+          <div><h2>空间关系理解数据标注 2022 任务板</h2></div>
+        </div>
+        <div class="row">
+          <div>
+            <p>正在加载，请稍候……</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- navbar start -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="#">空间关系理解数据标注 2022 任务板</a>
+      </div>
+    </nav>
+    <!-- navbar end -->
+
+
+    <div class="container page my-4">
+      <div class="container py-2">
+        <div class="row align-items-center">
+          <div class="col col-12 col-md-3 col-lg-4 my-2">
+            <div class="form-floating">
+              <input
+               class="form-control form-control-sm"
+               type="text"
+               v-model="ctrl.currentUser.name"
+               placeholder="请输入您的姓名"
+              >
+              <label class="form-label">姓名</label>
+            </div>
+          </div>
+          <div class="col col-12 col-md-9 col-lg-8 my-2">
+            <div class="form-floating">
+              <input
+               class="form-control form-control-sm"
+               type="password"
+               v-model="ctrl.currentUser.token"
+               placeholder="请输入您的密码"
+              >
+              <label class="form-label">密码</label>
+            </div>
+          </div>
+        </div>
+        <div class="row align-items-center my-2">
+          <div class="col col-12">
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="`btn-outline-dark`"
+              @click="()=>{win.console.log(0)}"
+              title="刷新任务板"
+            >刷新任务板</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container page my-4">
+      <div class="container py-2">
+
+        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.memos">
+          <div class="col col-12">
+          </div>
+        </div>
+
+        <div class="row align-items-center my-2">
+          <div class="col col-12">
+          </div>
+        </div>
+
+
+        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.overview">
+          <div class="col col-12">
+            <div>语料总量：一共有多少，其中删除的一共有多少。</div>
+            <div>纯原句多少，替换句多少，替换句对多少。任务是否已设置。</div>
+            <div>总体情况：</div>
+            <ul>
+              <li :title="`${tasks_computed.total.total_num} - ${tasks_computed.total.deleted_num}`">总任务量：{{ tasks_computed.total.total_num - tasks_computed.total.deleted_num }}</li>
+              <li>已分配量：{{ tasks_computed.total.assigned_num }}</li>
+              <li>非足量提交：{{ tasks_computed.total.working_num }}</li>
+              <li>已足量提交：{{ tasks_computed.total.done_num }}</li>
+            </ul>
+          </div>
+
+          <div class="col col-12">
+            <div>各类型任务情况：</div>
+            <ul>
+              <li v-for="pair in tasks_computed.by_topic">
+                <span>{{pair[0]}}</span><span>：</span>
+                <ul>
+                  <li :title="`${pair[1]?.total_num} - ${pair[1]?.deleted_num}`">总量：{{pair[1]?.total_num - pair[1]?.deleted_num}}</li>
+                  <li>已分配：{{pair[1]?.assigned_num}}</li>
+                  <li>非足量提交：{{pair[1]?.working_num}}</li>
+                  <li>已足量提交：{{pair[1]?.done_num}}</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+
+
+      </div>
+    </div>
+
+
+
+    <!-- Modal -->
+    <div class="modal-wrap" style="display: block;" ref="modal_wrap">
+      <div class="modal" v-show="modalBox.data.show" :class="{show: modalBox.data.show}">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+
+          <modal-content
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['default']"
+            :box="modalBox"
+          >
+            <div class="row align-items-center my-2">
+              <div class="col-12">
+                <p>😄</p>
+              </div>
+            </div>
+          </modal-content>
+
+          <modal-content
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['confirm']"
+            :box="modalBox"
+            :needconfirm="true"
+            @confirm="()=>{modalBox.data.kwargs.action();modalBox.hide();}"
+            :closetext="modalBox.data.kwargs.closetext"
+            :confirmtext="modalBox.data.kwargs.confirmtext"
+            :confirmstyle="modalBox.data.kwargs.confirmstyle"
+          >
+            <div class="row align-items-center my-2">
+              <div class="col-12">
+                <p>{{ modalBox.data.kwargs.desc }}</p>
+              </div>
+            </div>
+          </modal-content>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Alert -->
+    <div class="alert-wrap" style="display: block;" ref="alert_wrap">
+      <transition name="fade" v-for="alert in alertBox.data.alerts">
+        <div v-show="alert?.show" class="alert alert-dismissible" :class="'alert-'+(alert?.type ?? 'info')">
+          <button type="button" class="btn-close" @click="alertBox.removeAlert(alert?.idx)"></button>
+          <div>{{alert?.content}}</div>
+        </div>
+      </transition>
+    </div>
+
+  </div>
+  <!-- bodywrap end -->
+
+  <script type="module" src="js/manage.mjs.js"></script>
+</body>
+
+</html>
