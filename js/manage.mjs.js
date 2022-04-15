@@ -1494,7 +1494,7 @@ const RootComponent = {
         };
         let new_memo = resp?.data?.data;
         theBoard.memos.push(new_memo);
-        theBoard.memos = lo.sortBy(theBoard.memos);
+        theBoard.memos = lo.sortBy(theBoard.memos, it=> -(new Date(it?.postedAt)).valueOf());
         theBoard.text="";
         return new_memo;
       } catch (error) {
