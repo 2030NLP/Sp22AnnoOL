@@ -1478,6 +1478,10 @@ const RootComponent = {
     };
 
     const postNormalMemo = async () => {
+      if (!theBoard?.text?.length) {
+        alertBox_pushAlert(`请先填写内容`, 'warning');
+        return;
+      };
       try {
         let memo = {
           text: theBoard.text,
