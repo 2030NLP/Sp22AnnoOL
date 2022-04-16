@@ -27,6 +27,16 @@
       margin-bottom: 0.25rem;
     }
 
+    h1, h2, h3 {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h4, h5, h6 {
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+
 
     .vh-80 {
       height: 80vh;

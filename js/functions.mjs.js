@@ -129,8 +129,47 @@ log(`${batchName} 最快用户历时（单位 分钟）：`, sorted_每个用户
 log(`${batchName} 中位用户历时（单位 分钟）：`, sorted_每个用户的总历时列表[Math.round(sorted_每个用户的总历时列表.length/2)]/1000/60);
 log(`${batchName} 最慢用户历时（单位 分钟）：`, sorted_每个用户的总历时列表.at(-1)/1000/60);
 
+
+
+
+
+一些annos的总耗时 = (annos, lo) => {
+  let totalDurs = annos.map(anno=>anno._timeInfo.totalDur);
+  return lo.sum(totalDurs);
+};
+
+一个用户某个批次的总耗时 = (user, batchName, db, lo) => {
+  let annos = db.annos.filter(it=>it.batchName==batchName&&it.user==user.id);
+  return 一些annos的总耗时(annos, lo);
+};
+
+每个用户的总耗时pair列表 = app.theDB.users
+  .filter(it=>it.currTaskGroup!="zwdGroup")
+  .map(it=>[it, 一个用户某个批次的总耗时(it, batchName, app.theDB, _)])
+  .filter(it=>it[1]!=null&&!isNaN(it[1])&&it[1]!=0);
+每个用户的总耗时pair列表 = _.sortBy(每个用户的总耗时pair列表, it=>+it[1]);
+pairs = 每个用户的总耗时pair列表.map(it=>[it[0].id, it[0].currTaskGroup, it[0].name, +it[1]]);
+
+每个用户的总耗时列表 = 每个用户的总耗时pair列表.map(it=>it[1]);
+
+
+平均总耗时 = _.sum(每个用户的总耗时列表)/每个用户的总耗时列表.length;
+log(`${batchName} 每个用户平均耗时（单位 分钟）：`, 平均总耗时/1000/60);
+
+sorted_每个用户的总耗时列表 = _.sortBy(每个用户的总耗时列表, it=>+it);
+log(`${batchName} 最快用户耗时（单位 分钟）：`, sorted_每个用户的总耗时列表[0]/1000/60);
+log(`${batchName} 中位用户耗时（单位 分钟）：`, sorted_每个用户的总耗时列表[Math.round(sorted_每个用户的总耗时列表.length/2)]/1000/60);
+log(`${batchName} 最慢用户耗时（单位 分钟）：`, sorted_每个用户的总耗时列表.at(-1)/1000/60);
+
+
+
 log("pairs");
-log(pairs.map(it=>it.map(xx=>JSON.stringify(xx)).join(",")).join("\n"));
+csv = pairs.map(it=>it.map(xx=>JSON.stringify(xx)).join(",")).join("\n");
+log(csv);
+
+app.theSaver.saveText(csv, 'task1-01-实际耗时表.csv')
+
+
 
 
 };
