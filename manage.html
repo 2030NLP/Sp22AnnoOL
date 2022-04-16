@@ -184,6 +184,12 @@
               href="./todos"
               target="_blank"
             >打开任务板</a> -->
+            <a
+              class="btn btn-sm me-2 my-1"
+              :class="'btn-outline-dark'"
+              href="./memos"
+              target="_blank"
+            >打开留言板</a>
           </div>
         </div>
       </div>
@@ -206,9 +212,9 @@
               <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.functions ? 'active' : ''" href="#" @click="goTab('functions')">更多功能</a>
               </li>
-              <li class="nav-item">
+              <!-- <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.memos ? 'active' : ''" href="#" @click="goTab('memos')">留言板</a>
-              </li>
+              </li> -->
               <!-- <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.todos ? 'active' : ''" href="#" @click="goTab('todos')">任务板</a>
               </li> -->
@@ -219,66 +225,6 @@
                 <a class="nav-link" :class="ctrl.tab == TABS.taskAssign ? 'active' : ''" href="#" @click="goTab('taskAssign')">分配任务</a>
               </li>
             </ul>
-          </div>
-        </div>
-
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.memos">
-          <div class="col col-12">
-            <p>在下方文本框填写内容并「发布」，所有管理人员皆可看到。（普通标注人员不可见）</p>
-          </div>
-          <div class="col col-12">
-            <textarea
-              class="form-control form-control-sm"
-              v-model="theBoard.text"
-            ></textarea>
-            <button
-              type="button"
-              class="btn btn-sm me-2 my-1"
-              :class="`btn-outline-dark`"
-              @click="postNormalMemo"
-              title="发布"
-            >发布</button>
-          </div>
-          <div class="col col-12">
-            <button
-              type="button"
-              class="btn btn-sm me-2 my-1"
-              :class="`btn-outline-dark`"
-              @click="getMemoList"
-              title="刷新留言板"
-            >刷新</button>
-          </div>
-        </div>
-
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.memos">
-          <div class="container">
-            <div
-              class="row"
-              v-for="memo in theBoard.memos"
-            >
-              <div class="col col-12 my-1">
-                <div class="border border-1 rounded my-2 px-2">
-                  <!-- <p class="pre-wrap">{{memo.text}}</p> -->
-                  <div class="memo-content-wrap">
-                    <div
-                      class="memo-content"
-                      v-html="mkd.parse(memo.text)"
-                    ></div>
-                  </div>
-                  <p class="text-muted small opacity-50">
-                    <span>#{{memo.id}}</span><span>　</span>
-                    <span>{{memo.user?.name}}</span><span>　</span>
-                    <span>发布于 {{(new Date(memo.postedAt)).toLocaleString()}}</span><span>　</span>
-                    <span
-                      v-if="memo.user?.id==ctrl.currentUser?.id"
-                    >
-                      <span class="cursor-pointer" @click="deleteMemo(memo)">删除</span>
-                      <span>　</span>
-                    </span>
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
