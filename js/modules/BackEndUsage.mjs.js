@@ -359,7 +359,7 @@ class BackEndUsage {
         };
         task_btn_list.push(task_btn);
       };
-      task_btn_list = task_btn_list.filter(it=>(!it.done)||(it.rejectedTP==3));
+      // task_btn_list = task_btn_list.filter(it=>(!it.done)||(it.rejectedTP==3));
       task_btn_list = this.lo.sortBy(task_btn_list, [(it=>!it.done), (it=>it.rejectedTP), (it=>!it.checked), (it=>it.batchName), (it=>it.batch)]);
       // task_btn_list.sort((a, b)=>(+b.done)-(+a.done));
       // task_btn_list = task_btn_list.sort((a,b)=> +a.entryId-b.entryId);
