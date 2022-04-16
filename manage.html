@@ -732,37 +732,37 @@
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
                 @click="()=>{theDB.users.sort((a,b)=>+a.id-b.id);}"
-              >按序号排序</button>
+              >序号 升序</button>
               <button
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
                 @click="()=>{theDB.users.sort((a,b)=>+userProgress(a).ratio-userProgress(b).ratio);}"
-              >按进度升序排序</button>
+              >进度 升序</button>
               <button
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
                 @click="()=>{theDB.users.sort((b,a)=>+userProgress(a).ratio-userProgress(b).ratio);}"
-              >按进度降序排序</button>
+              >进度 降序</button>
               <button
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
                 @click="()=>{theDB.users.sort((a,b)=>+userProgress(a).cDoneLen-userProgress(b).cDoneLen);}"
-              >按总完成量升序排序</button>
+              >总完成量 升序</button>
               <button
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
                 @click="()=>{theDB.users.sort((b,a)=>+userProgress(a).cDoneLen-userProgress(b).cDoneLen);}"
-              >按总完成量降序排序</button>
+              >总完成量 降序</button>
               <button
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
                 @click="()=>{theDB.users.sort((a,b)=>sortFnByPassRatio(a,b))}"
-              >按审核通过率升序排序</button>
+              >审核通过率 升序</button>
               <button
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
                 @click="()=>{theDB.users.sort((a,b)=>sortFnByPassRatioR(a,b))}"
-              >按审核通过率降序排序</button>
+              >审核通过率 降序</button>
             </div>
           </div>
         </div>
