@@ -123,6 +123,7 @@ const AnnoCard = {
                 ],
               },
               [
+                this.anno?.content?.review?.reviewer?.name??"",
                 this.anno?.content?.review?.accept?'审批通过':'审批不通过',' ',
                 this.anno?.content?.review?.comment?`「${this.anno?.content?.review?.comment}」`:null,' ',
                 this.anno?.content?.review?.accept?null:this.anno?.content?.review?.checked?`标注者已处理`:'标注者尚未处理',
