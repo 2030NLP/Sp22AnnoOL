@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0417-03";
+const APP_VERSION = "22-0418-00";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -65,10 +65,11 @@ const RootComponent = {
       'default': null,
       'confirm': 'confirm',
       'upload-entries': 'upload-entries',
-      'user-set-quitted': 'user-set-quitted',
-      'user-unset-quitted': 'user-unset-quitted',
+      // 'user-set-quitted': 'user-set-quitted',
+      // 'user-unset-quitted': 'user-unset-quitted',
+      // 'user-edit': 'user-edit',
       'user-progress': 'user-progress',
-      'user-edit': 'user-edit',
+      'user-editor': 'user-editor',
       'user-detail': 'user-detail',
       'entry-detail': 'entry-detail',
       'task-detail': 'task-detail',
@@ -420,8 +421,8 @@ const RootComponent = {
 
     const tasks_computed = computed(() => ({
       total: tasks_sta(theDB.tasks),
-      by_topic: Object.entries(theDB.topicTaskDict).map(pr => [pr[0], tasks_sta(pr[1])]),
-      by_batchName: Object.entries(theDB.batchNameTaskDict).map(pr => [pr[0], tasks_sta(pr[1])]),
+      by_topic: Object.entries(theDB.topicTaskDict??{}).map(pr => [pr[0], tasks_sta(pr[1])]),
+      by_batchName: Object.entries(theDB.batchNameTaskDict??{}).map(pr => [pr[0], tasks_sta(pr[1])]),
     }));
 
 
@@ -715,121 +716,6 @@ const RootComponent = {
         return;
       };
       alertBox_removeAlert(aidx);
-    };
-
-
-
-    const editUser = async (user, jsonText) => {};
-
-    const editingUser = async (user, jsonText) => {
-      let newObj = {};
-      try {
-        newObj = JSON.parse(jsonText);
-      } catch(error) {
-        alertBox_pushAlert(`JSON解析失败，请检查`, 'warning', 60000, jsonText);
-        return;
-      };
-      for (let kk of ['id', 'name', 'token']) {
-        if (!(kk in newObj)) {
-          alertBox_pushAlert(`缺少必要字段「${kk}」`, 'warning', 60000, jsonText);
-          return;
-        };
-      };
-      if (newObj.id!=user.id) {
-        alertBox_pushAlert(`id发生改变，操作中止（${user.id} → ${newObj.id}）`, 'warning', 60000, jsonText);
-        return;
-      };
-      for (let [kk, vv] of [['currTask', ''], ['currTaskGroup', ''], ['manager', ''], ['managerName', '']]) {
-        if (!(kk in newObj)) {
-          newObj[kk] = user[kk] ?? vv;
-        };
-      };
-
-
-
-      if (user.quitted) {
-        alertBox_pushAlert(`${user.name} 本来就被记为“已退出”了`, 'warning', 5000);
-        return;
-      };
-      let newUser = foolCopy({
-        id: user.id,
-        token: user.token,
-      });
-      newUser.quitted = true;
-      try {
-        let resp = await theBackEnd.updateUser(newUser);
-        if (resp.data?.code!=200) {
-          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
-          return;
-        };
-        Object.assign(user, resp.data.data);
-        await saveDB();
-        alertBox_pushAlert(`${user.name} 更新成功`, 'success');
-        modalBox_hide();
-      } catch(error) {
-        alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
-      }
-
-
-
-    };
-
-
-
-
-
-
-
-
-
-    const setAsQuitted = async (user) => {
-      if (user.quitted) {
-        alertBox_pushAlert(`${user.name} 本来就被记为“已退出”了`, 'warning', 5000);
-        return;
-      };
-      let newUser = foolCopy({
-        id: user.id,
-        token: user.token,
-      });
-      newUser.quitted = true;
-      try {
-        let resp = await theBackEnd.updateUser(newUser);
-        if (resp.data?.code!=200) {
-          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
-          return;
-        };
-        Object.assign(user, resp.data.data);
-        await saveDB();
-        alertBox_pushAlert(`${user.name} 更新成功`, 'success');
-        modalBox_hide();
-      } catch(error) {
-        alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
-      }
-    };
-
-    const setNotQuitted = async (user) => {
-      if (!user.quitted) {
-        alertBox_pushAlert(`${user.name} 没有被记为“已退出”`, 'warning', 5000);
-        return;
-      };
-      let newUser = foolCopy({
-        id: user.id,
-        token: user.token,
-      });
-      newUser.quitted = null;
-      try {
-        let resp = await theBackEnd.updateUser(newUser);
-        if (resp.data?.code!=200) {
-          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
-          return;
-        };
-        Object.assign(user, resp.data.data);
-        await saveDB();
-        alertBox_pushAlert(`${user.name} 更新成功`, 'success');
-        modalBox_hide();
-      } catch(error) {
-        alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
-      }
     };
 
 
@@ -1366,7 +1252,7 @@ const RootComponent = {
     };
 
     const inspectionSum = (user) => {
-      let sum = lo.countBy(user.allAnnos.map(it=>theDB.annoDict[it]), anno=>anno?.content?.review?.accept);
+      let sum = lo.countBy((user?.allAnnos??[]).map(it=>theDB.annoDict[it]), anno=>anno?.content?.review?.accept);
       sum.sum = (sum.false??0) + (sum.true??0);
       sum.passRatio = sum.sum==0 ? null : (sum.true??0)/sum.sum;
       return sum;
@@ -1648,6 +1534,202 @@ const RootComponent = {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    const editUser = async (user, jsonText) => {};
+
+    const editingUser = async (user, jsonText) => {
+      let newObj = {};
+      try {
+        newObj = JSON.parse(jsonText);
+      } catch(error) {
+        alertBox_pushAlert(`JSON解析失败，请检查`, 'warning', 60000, jsonText);
+        return;
+      };
+      for (let kk of ['id', 'name', 'token']) {
+        if (!(kk in newObj)) {
+          alertBox_pushAlert(`缺少必要字段「${kk}」`, 'warning', 60000, jsonText);
+          return;
+        };
+      };
+      if (newObj.id!=user.id) {
+        alertBox_pushAlert(`id发生改变，操作中止（${user.id} → ${newObj.id}）`, 'warning', 60000, jsonText);
+        return;
+      };
+      for (let [kk, vv] of [['currTask', ''], ['currTaskGroup', ''], ['manager', ''], ['managerName', '']]) {
+        if (!(kk in newObj)) {
+          newObj[kk] = user[kk] ?? vv;
+        };
+      };
+
+
+
+      if (user.quitted) {
+        alertBox_pushAlert(`${user.name} 本来就被记为“已退出”了`, 'warning', 5000);
+        return;
+      };
+      let newUser = foolCopy({
+        id: user.id,
+        token: user.token,
+      });
+      newUser.quitted = true;
+      try {
+        let resp = await theBackEnd.updateUser(newUser);
+        if (resp.data?.code!=200) {
+          alertBox_pushAlert(`${user.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
+          return;
+        };
+        Object.assign(user, resp.data.data);
+        await saveDB();
+        alertBox_pushAlert(`${user.name} 更新成功`, 'success');
+      } catch(error) {
+        alertBox_pushAlert(`${user.name} 更新时出错【${error}】`, 'danger', 5000, error);
+      }
+
+    };
+
+
+    const saveUpdatedUser = async (user, newUser) => {
+      if (user.id != null) {newUser.id = user.id;};
+      if (user.token != null) {newUser.token = user.token;};
+      try {
+        let resp = await theBackEnd.updateUser(newUser);
+        if (resp.data?.code!=200) {
+          alertBox_pushAlert(`用户 ${user?.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
+          return;
+        };
+        Object.assign(user, resp.data.data);
+        await saveDB();
+        alertBox_pushAlert(`用户 ${user?.name} 更新成功`, 'success');
+      } catch(error) {
+        alertBox_pushAlert(`用户 ${user?.name} 更新时出错【${error}】`, 'danger', 5000, error);
+      };
+    };
+
+
+    const setAsQuitted = async (user) => {
+      if (user.quitted) {
+        alertBox_pushAlert(`${user.name} 本来就被记为“已退出”了`, 'warning', 5000);
+        return;
+      };
+      let newUser = foolCopy({
+        id: user.id,
+        token: user.token,
+      });
+      newUser.quitted = true;
+      await saveUpdatedUser(user, newUser);
+    };
+
+    const setNotQuitted = async (user) => {
+      if (!user.quitted) {
+        alertBox_pushAlert(`${user.name} 没有被记为“已退出”`, 'warning', 5000);
+        return;
+      };
+      let newUser = foolCopy({
+        id: user.id,
+        token: user.token,
+      });
+      newUser.quitted = null;
+      await saveUpdatedUser(user, newUser);
+    };
+
+
+    const setAsInspector = async (user) => {
+      if (user?.role?.includes?.("inspector") || user?.role?.includes?.("super-inspector")) {
+        alertBox_pushAlert(`${user.name} 本来就已经是审核员了`, 'warning', 5000);
+        return;
+      };
+      let newUser = foolCopy({
+        id: user.id,
+        role: user?.role??[],
+      });
+      newUser.role.push("inspector");
+      await saveUpdatedUser(user, newUser);
+    };
+
+    const setNotInspector = async (user) => {
+      if (!user?.role?.includes?.("inspector") && !user?.role?.includes?.("super-inspector")) {
+        alertBox_pushAlert(`${user.name} 本来就不是审核员`, 'warning', 5000);
+        return;
+      };
+      let newUser = foolCopy({
+        id: user.id,
+        role: lo.difference(user.role, ["inspector", "super-inspector"]),
+      });
+      await saveUpdatedUser(user, newUser);
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     return {
       win,
       lo,
@@ -1704,6 +1786,9 @@ const RootComponent = {
       editUser,
       setAsQuitted,
       setNotQuitted,
+      setAsInspector,
+      setNotInspector,
+      saveUpdatedUser,
       //
       classAssignAnalisisByUser,
       //
@@ -1754,6 +1839,12 @@ the_app.component('entry-card', EntryCard);
 
 import TaskCard from './components/TaskCard.cpnt.mjs.js';
 the_app.component('task-card', TaskCard);
+
+
+
+import UserEditor from './components/UserEditor.cpnt.mjs.js';
+the_app.component('user-editor', UserEditor);
+
 
 
 const app = the_app.mount('#bodywrap');

@@ -10,7 +10,7 @@
   <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
   <META HTTP-EQUIV="Expires" CONTENT="0">
 
-  <title>Sp22Anno 管理后台</title>
+  <title>Sp22Anno 审核工具</title>
 
   <link href="css/bootstrap_5.1.3_.min.css" rel="stylesheet">
 
@@ -28,7 +28,7 @@
     <div class="page-cover" v-if="false">
       <div class="container pt-5 text-center">
         <div class="row">
-          <div><h2>空间关系理解数据标注 2022 后台</h2></div>
+          <div><h2>空间关系理解数据标注 2022 审核工具</h2></div>
         </div>
         <div class="row">
           <div>
@@ -41,7 +41,7 @@
     <!-- navbar start -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand" href="#">空间关系理解数据标注 2022 后台</a>
+        <a class="navbar-brand" href="#">空间关系理解数据标注 2022 审核工具</a>
       </div>
     </nav>
     <!-- navbar end -->
@@ -101,7 +101,7 @@
               @click="()=>{loadCacheDB()}"
               title="加载缓存数据"
             >加载缓存</button>
-            <span class="text-danger" v-show="workerState.working">辅助线程工作中，请稍等！！！</span>
+            <span class="text-danger" v-show="workerState.working">辅助线程工作中，请稍等……</span>
             <span class="text-danger" v-show="workerState.works.length">（还有 {{workerState.works.length}} 项任务正在排队）</span>
           </div>
           <div class="col col-12">
@@ -184,12 +184,12 @@
               href="./todos"
               target="_blank"
             >打开任务板</a> -->
-            <a
+            <!-- <a
               class="btn btn-sm me-2 my-1"
               :class="'btn-outline-dark'"
               href="./memos"
               target="_blank"
-            >打开留言板</a>
+            >打开留言板</a> -->
           </div>
         </div>
       </div>
@@ -197,475 +197,8 @@
 
     <div class="container page my-4" v-if="ctrl.started">
       <div class="container py-2">
-        <div class="row mt-2 mb-4">
-          <div class="col">
-            <ul class="nav nav-tabs">
-              <li class="nav-item">
-                <a class="nav-link" :class="ctrl.tab == TABS.overview ? 'active' : ''" href="#" @click="goTab('overview')">总体进度</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" :class="ctrl.tab == TABS.entryAndTask ? 'active' : ''" href="#" @click="goTab('entryAndTask')">标注详情</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" :class="ctrl.tab == TABS.userProgress ? 'active' : ''" href="#" @click="goTab('userProgress')">用户进度</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" :class="ctrl.tab == TABS.functions ? 'active' : ''" href="#" @click="goTab('functions')">更多功能</a>
-              </li>
-              <!-- <li class="nav-item">
-                <a class="nav-link" :class="ctrl.tab == TABS.memos ? 'active' : ''" href="#" @click="goTab('memos')">留言板</a>
-              </li> -->
-              <!-- <li class="nav-item">
-                <a class="nav-link" :class="ctrl.tab == TABS.todos ? 'active' : ''" href="#" @click="goTab('todos')">任务板</a>
-              </li> -->
-              <!-- <li class="nav-item">
-                <a class="nav-link" :class="ctrl.tab == TABS.userInfo ? 'active' : ''" href="#" @click="goTab('userInfo')">用户信息</a>
-              </li> -->
-              <li class="nav-item">
-                <a class="nav-link" :class="ctrl.tab == TABS.taskAssign ? 'active' : ''" href="#" @click="goTab('taskAssign')">分配任务</a>
-              </li>
-            </ul>
-          </div>
-        </div>
 
-        <!-- <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.todos">
-          <div class="col col-12">
-          </div>
-        </div> -->
-
-
-
-
-
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.overview">
-          <div class="col col-12">
-            <div>语料总量：一共有多少，其中删除的一共有多少。</div>
-            <div>纯原句多少，替换句多少，替换句对多少。任务是否已设置。</div>
-            <div>总体情况：</div>
-            <ul>
-              <li :title="`${tasks_computed.total.total_num} - ${tasks_computed.total.deleted_num}`">总任务量：{{ tasks_computed.total.total_num - tasks_computed.total.deleted_num }}</li>
-              <li>已分配量：{{ tasks_computed.total.assigned_num }}</li>
-              <li>非足量提交：{{ tasks_computed.total.working_num }}</li>
-              <li>已足量提交：{{ tasks_computed.total.done_num }}</li>
-            </ul>
-          </div>
-
-          <div class="col col-12">
-            <div>各批次情况：</div>
-            <ul>
-              <li v-for="pair in tasks_computed.by_batchName">
-                <span>{{pair[0]}}</span><span>：</span>
-                <ul>
-                  <li :title="`${pair[1]?.total_num} - ${pair[1]?.deleted_num}`">总量：{{pair[1]?.total_num - pair[1]?.deleted_num}}</li>
-                  <li>已分配：{{pair[1]?.assigned_num}}</li>
-                  <li>非足量提交：{{pair[1]?.working_num}}</li>
-                  <li>已足量提交：{{pair[1]?.done_num}}</li>
-                </ul>
-              </li>
-            </ul>
-          </div>
-
-          <div class="col col-12">
-            <div>各标签数量：</div>
-            <ul>
-              <li v-for="kkvv in Object.entries(theDB.labelAnnoDict)">
-                <span>{{kkvv[0]}}</span><span>：</span><span>{{kkvv[1].length}}</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-
-
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.entryAndTask">
-          <div class="col col-12">
-            <h4>检索</h4>
-          </div>
-          <div class="col col-12">
-            <p>说明：id 都是整数， id 与 id 之间用任意非数字字符（如逗号或空格）隔开</p>
-          </div>
-          <div class="col col-12 col-sm-6 col-md-3">
-            <label class="form-label">要检索哪些 entry.id</label>
-            <input
-             class="form-control form-control-sm"
-             type="text"
-             v-model="ctrl.entryIdBoxText"
-            >
-          </div>
-          <div class="col col-12 col-sm-6 col-md-3">
-            <label class="form-label">要检索哪些 task.id</label>
-            <input
-             class="form-control form-control-sm"
-             type="text"
-             v-model="ctrl.taskIdBoxText"
-            >
-          </div>
-          <div class="col col-12 col-sm-6 col-md-3">
-            <label class="form-label">要检索哪些 anno.id</label>
-            <input
-             class="form-control form-control-sm"
-             type="text"
-             v-model="ctrl.annoIdBoxText"
-            >
-          </div>
-          <div class="col col-12 col-sm-6 col-md-3">
-            <label class="form-label">要检索哪些 user.id</label>
-            <input
-             class="form-control form-control-sm"
-             type="text"
-             v-model="ctrl.userIdBoxText"
-            >
-          </div>
-          <div class="col col-12 col-sm-6 col-md-3">
-            <button
-              type="button"
-              class="btn btn-sm btn-primary my-1 me-2"
-              @click="search"
-            >检索</button>
-          </div>
-        </div>
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.entryAndTask">
-          <div class="col col-12">
-            <h4>检索结果</h4>
-          </div>
-
-          <div class="col col-12" v-if="ctrl.entryIdBoxList?.length">
-            <div
-              class="form-control form-control-sm overflow-auto my-2"
-            >
-              <h5>entries</h5>
-              <div class="form-control form-control-sm overflow-auto max-vh-40">
-                <template v-for="entry_id in ctrl.entryIdBoxList">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-light my-1 me-2"
-                    @click="modalBox_open('entry-detail', theDB.entryDict[entry_id])"
-                  >entry#{{entry_id}}</button>
-                </template>
-              </div>
-            </div>
-          </div>
-
-          <div class="col col-12" v-if="ctrl.taskIdBoxList?.length">
-            <div
-              class="form-control form-control-sm overflow-auto my-2"
-            >
-              <h5>tasks</h5>
-              <div class="form-control form-control-sm overflow-auto max-vh-40">
-                <template v-for="task_id in ctrl.taskIdBoxList">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-light my-1 me-2"
-                    @click="modalBox_open('task-detail', theDB.taskDict[task_id])"
-                  >task#{{task_id}}</button>
-                </template>
-              </div>
-            </div>
-          </div>
-
-          <div class="col col-12" v-if="ctrl.annoIdBoxList?.length">
-            <div
-              class="form-control form-control-sm overflow-auto my-2"
-            >
-              <h5>annos</h5>
-              <div class="form-control form-control-sm overflow-auto max-vh-40">
-                <template v-for="anno_id in ctrl.annoIdBoxList">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-light my-1 me-2"
-                    @click="modalBox_open('anno-detail', theDB.annoDict[anno_id])"
-                  >anno#{{anno_id}}</button>
-                </template>
-              </div>
-            </div>
-          </div>
-
-          <div class="col col-12" v-if="ctrl.userIdBoxList?.length">
-            <div
-              class="form-control form-control-sm overflow-auto my-2"
-            >
-              <h5>users</h5>
-              <div class="form-control form-control-sm overflow-auto max-vh-40">
-                <template v-for="user_id in ctrl.userIdBoxList">
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-light my-1 me-2"
-                    @click="modalBox_open('user-progress', theDB.userDict[user_id])"
-                  >user#{{user_id}}</button>
-                </template>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-
-
-
-
-        <div class="row align-items-center my-4" v-show="ctrl.tab == TABS.entryAndTask">
-          <div class="col col-12">
-            <h4>质检题情况</h4>
-
-              <div
-                class="form-control form-control-sm overflow-auto my-2"
-                v-for="kkvv in Object.entries( lo.groupBy( theDB.tasks.filter(task=>task.polygraph&&task.submitters?.length), 'polygraph' ) )"
-              >
-                <h5>{{kkvv[0]}}</h5>
-                <div class="form-control form-control-sm overflow-auto max-vh-40">
-                  <template v-for="task in kkvv[1]">
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-light my-1 me-2"
-                      @click="modalBox_open('task-detail', task)"
-                    >task#{{task?.id}}</button>
-                  </template>
-                </div>
-              </div>
-
-          </div>
-        </div>
-
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.entryAndTask">
-          <div class="col col-12">
-            <h4>按标签分组</h4>
-
-              <div
-                class="form-control form-control-sm overflow-auto my-2"
-                v-for="kkvv in Object.entries(theDB.labelAnnoDict)"
-              >
-                <h5>{{kkvv[0]}}</h5>
-                <div class="form-control form-control-sm overflow-auto max-vh-40">
-                  <template v-for="anno_id in kkvv[1]" :key="`anno_id`">
-                    <!-- <anno-card
-                      v-for="anno in [theDB.annoDict[anno_id]]"
-                      :anno="anno"
-                      :db="theDB"
-                      :key="anno.id"
-                      @submit-review="(value)=>{saveAnnoReview(...value)}"
-                      @open-modal="(value)=>{modalBox_open(...value)}"
-                      @update-anno="(value)=>{updateOneAnno(value)}"
-                    ></anno-card> -->
-                    <button
-                      v-for="anno in [theDB.annoDict[anno_id]]"
-                      type="button"
-                      class="btn btn-sm btn-light my-1 me-2"
-                      @click="modalBox_open('anno-detail', anno)"
-                    >anno#{{anno?.id}}-{{theDB.userDict[anno?.user]?.name}}</button>
-                  </template>
-                </div>
-              </div>
-
-          </div>
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.taskAssign">
-          <div class="col col-12">
-            <div>说明：分配任务前，请先：1、在后端构建任务；2、刷新Task表；3、刷新Entry表。</div>
-          </div>
-          <div class="col col-12">
-            <div>请进行参数设置：</div>
-          </div>
-          <div class="col col-12 col-sm-6 col-lg-4 my-2">
-            <label class="form-label">每个用户多少任务</label>
-            <input
-             class="form-control form-control-sm"
-             type="number"
-             v-model="assignData.settings.tasks_per_user"
-            >
-          </div>
-          <div class="col col-12 col-sm-6 col-lg-4 my-2">
-            <label class="form-label">每个任务需要几名用户参与</label>
-            <input
-             class="form-control form-control-sm"
-             type="number"
-             v-model="assignData.settings.users_per_task"
-            >
-          </div>
-          <div class="col col-12 col-sm-6 col-lg-4 my-2">
-            <label class="form-label">任务类型</label>
-            <select
-             class="form-select form-select-sm"
-             v-model="assignData.settings.topic"
-            >
-              <option v-for="topic in assignTopics" :value="topic.value">{{topic.desc}}</option>
-            </select>
-          </div>
-          <div class="col col-12 col-sm-6 col-lg-4 my-2">
-            <label class="form-label">任务批次名称（用于筛选）</label>
-            <input
-             class="form-control form-control-sm"
-             type="text"
-             v-model="assignData.settings.batchName"
-            >
-          </div>
-          <div class="col col-12 my-2">
-            <label class="form-label">质检题设置（Json字符串）</label>
-            <textarea
-              class="form-control form-control-sm"
-              v-model="assignData.settings.polygraphs_per_user_json_string"
-              :class="{'is-invalid': assignData.polygraphs_per_user_json_string_error}"
-            ></textarea>
-            <div
-              class="invalid-feedback"
-              v-show="assignData.polygraphs_per_user_json_string_error"
-            >Json解析失败，请检查</div>
-          </div>
-          <div class="col col-12 my-2">
-            <label class="form-label">
-              <span>选择用户</span>
-            </label>
-            <div>
-              <button
-                type="button"
-                class="btn btn-sm mx-2 my-1 btn-outline-dark"
-                @click="selectUsersAuto"
-              >自动</button>
-              <button
-                type="button"
-                class="btn btn-sm mx-2 my-1 btn-outline-dark"
-                @click="selectUsersAll"
-              >全选</button>
-              <button
-                type="button"
-                class="btn btn-sm mx-2 my-1 btn-outline-dark"
-                @click="selectUsersNone"
-              >清除</button>
-            </div>
-            <div
-              class="form-control form-control-sm overflow-auto max-vh-40"
-            >
-              <button
-                v-for="user in theDB.users"
-                type="button"
-                class="btn btn-sm me-2 my-1"
-                :class="assignData.assignUserBoxDict[user.id] ? `btn-primary` : `btn-outline-secondary`"
-                @click="()=>{assignData.assignUserBoxDict[user.id]=!assignData.assignUserBoxDict[user.id]}"
-              >{{ user.currTaskGroup }} #{{ user.id }} {{ user.name }}</button>
-            </div>
-          </div>
-          <div class="col col-12 col-sm-6 col-lg-4 my-2">
-            <div class="form-check form-switch" :title="`通常大家在标注时要分配新任务的话，选「否」；\n如果要总地进行下一轮分配，通常选「是」`">
-              <input class="form-check-input" type="checkbox" role="switch" v-model="assignData.settings.retrieve">
-              <label class="form-check-label">是否收回未完成的任务（{{assignData.settings.retrieve?'是':'否'}}）</label>
-            </div>
-          </div>
-        </div>
-
-
-
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.taskAssign">
-          <div class="col col-12">
-            <button
-              type="button"
-              class="btn btn-sm me-2 my-1 btn-outline-primary"
-              @click="planAssigment"
-              title="对任务分配进行规划"
-            >开始规划</button>
-          </div>
-          <template v-if="assignData.analysis.length">
-            <div class="col col-12">
-              <h4 class="mt-3 mb-2">{{ assignData.undone ? '规划' : '执行'}}结果</h4>
-            </div>
-            <div class="col col-12">
-              <div class="text-muted">批次编号：{{ assignData.batch }}</div>
-            </div>
-            <div class="col col-12 my-2">
-              <div class="fw-bold">具体到每个标注者：</div>
-              <div class="text-muted">绿色表示新任务，灰色表示之前就分配给他了</div>
-              <div class="text-muted">着色表示正常任务，框线表示为质检题</div>
-            </div>
-            <div class="col col-12">
-              <ul class="list-group max-vh-40 overflow-auto border border-1">
-                <li class="list-group-item" v-for="pair in assignData.planPerUser">
-                  <div>
-                    <span>{{ `#${pair[0]} ${theDB.userDict[pair[0]]?.name}` }}</span> 分配到的 {{pair[1]?.length}} 条任务是：
-                  </div>
-                  <div>
-                    <button
-                      v-for="task_id in pair[1]"
-                      type="button"
-                      class="btn btn-sm me-2 my-1"
-                      :class="classAssignAnalisisByUser(pair[0], task_id)"
-                    >#{{ task_id }}</button>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="col col-12 my-2">
-              <div class="fw-bold">具体到每个任务：</div>
-            </div>
-            <div class="col col-12">
-              <ul class="list-group max-vh-40 overflow-auto border border-1">
-                <li class="list-group-item" v-for="item in assignData.analysis">
-                  <div>
-                    <span>「{{item?.plan?.topic}} 任务 #{{item.id}}</span><span></span> / <span></span><span>语料 #{{item?.plan?.entry}}」</span>
-                    <!-- <br v-if="item.new_to?.length"/> -->
-                    <span v-if="item.new_to?.length">
-                      分配给：
-                      <span class="me-2 text-success __fw-bold" v-for="guy in item.new_guys">#{{guy}} {{theDB.userDict[guy]?.name}}</span>
-                      <span class="me-2" v-for="guy in item.solid_guys">#{{guy}} {{theDB.userDict[guy]?.name}}</span>
-                      。
-                    </span>
-                    <!-- <br v-if="item.canceled_guys?.length"/> -->
-                    <span v-if="item.canceled_guys?.length" class="text-muted">
-                      不再分配给：
-                      <s class="me-2" v-for="guy in item.canceled_guys">#{{guy}} {{theDB.userDict[guy]?.name}}</s>
-                      。
-                    </span>
-                  </div>
-                </li>
-              </ul>
-            </div>
-            <div class="col col-12 my-2">
-              <button
-                type="button"
-                class="btn btn-sm me-2 my-1 btn-danger"
-                __click="doAssigment"
-                @click="modalBox_open('confirm', {desc: '确定要执行规划好的任务安排吗？', action: doAssigment})"
-                title="开始执行规划好的任务安排"
-                v-if="assignData.undone"
-              >开始执行</button>
-              <button
-                type="button"
-                class="btn btn-sm me-2 my-1 btn-primary"
-                __click="doAssigment"
-                @click="exportPlan"
-                title="开始执行规划好的任务安排"
-                v-if="assignData.undone"
-              >导出计划</button>
-              <button
-                type="button"
-                class="btn btn-sm me-2 my-1"
-                :class="assignData.undone ? 'btn-outline-secondary' : 'btn-outline-success'"
-                @click="()=>{if(assignData.undone){cancelAssigment();}else{cleanAssigment();}}"
-                :title="assignData.undone ? '撤除规划好的任务安排' : '清除以上信息'"
-              >{{ assignData.undone ? '撤除规划' : '知道了，清除'}}</button>
-            </div>
-            <div class="col col-12 my-2" v-if="'inserted' in assignData.result">
-              <div>执行结果：</div>
-            </div>
-            <div class="col col-12 my-2" v-if="'inserted' in assignData.result">
-              <div>修改： {{ assignData.result.replaced }}</div>
-              <div>新增： {{ assignData.result.inserted }}</div>
-              <div>异常： {{ assignData.result.strange }}</div>
-            </div>
-          </template>
-        </div>
-
-
-
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
+        <div class="row align-items-center my-2" __v-show="ctrl.tab == TABS.userProgress">
           <div class="col col-12 my-2">
             <div>
               <button
@@ -713,13 +246,13 @@
           </div>
         </div>
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
+        <div class="row align-items-center my-2" __v-show="ctrl.tab == TABS.userProgress">
           <div class="col col-12 my-2">
             <div>已审核 {{theDB?.annos?.filter?.(it=>it?.content?.review)?.length}} / {{theDB?.annos?.length}}</div>
           </div>
         </div>
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
+        <div class="row align-items-center my-2" __v-show="ctrl.tab == TABS.userProgress">
           <div class="container my-2">
             <div
               class="row align-items-center my-1 border rounded p-2"
@@ -765,12 +298,6 @@
                   :title="`查看 ${user.name} 所标注的具体情况`"
                   @click="()=>{sortUserAnnos(user);modalBox_open('user-progress', user);}"
                 >标注详情</button>
-                <button
-                  type="button"
-                  class="btn btn-sm me-2 my-1 btn-light"
-                  :title="`查看更多关于 ${user.name} 的信息`"
-                  @click="modalBox_open('user-detail', user)"
-                >更多</button>
               </div>
             </div>
           </div>
@@ -789,7 +316,7 @@
 
 
           <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['entry-detail']">
-            <div class="modal-body" v-for="entry in [modalBox.data?.kwargs]">
+            <div class="modal-body" v-for="entry in [modalBox.data.kwargs]">
               <div class="row align-items-center my-2">
 
                 <div class="col-12">
@@ -881,7 +408,7 @@
 
 
           <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['anno-detail']">
-            <div class="modal-body" v-for="anno in [modalBox.data?.kwargs]">
+            <div class="modal-body" v-for="anno in [modalBox.data.kwargs]">
               <div class="row align-items-center my-2">
 
                 <div class="col-12">
@@ -941,7 +468,7 @@
 
 
           <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['task-detail']">
-            <div class="modal-body" v-for="task in [modalBox.data?.kwargs]">
+            <div class="modal-body" v-for="task in [modalBox.data.kwargs]">
               <div class="row align-items-center my-2">
 
                 <div class="col-12">
@@ -1006,23 +533,10 @@
 
 
           <template
-            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-editor']"
-          >
-            <user-editor
-              :db="theDB"
-              :box="modalBox"
-              :user="modalBox.data?.kwargs"
-              @check-error-on-save="alertBox.pushAlert('存在错误，请检查！', 'warning')"
-              @save="(value)=>{saveUpdatedUser(modalBox.data?.kwargs, value)}"
-            ></user-editor>
-          </template>
-
-
-          <template
             v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-detail']"
           ><modal-content
             :box="modalBox"
-            v-for="user in [modalBox.data?.kwargs]"
+            v-for="user in [modalBox.data.kwargs]"
             :key="user.id"
           >
 
@@ -1049,14 +563,8 @@
                   <p>其他：{{user?.info?.other}}</p>
                 </div>
               </div>
-              <div class="row align-items-center my-2">
+              <!-- <div class="row align-items-center my-2">
                 <div class="col-12">
-                  <button
-                    type="button"
-                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                    :title="`编辑 ${user.name} 的资料`"
-                    @click="modalBox_open('user-editor', user)"
-                  >编辑资料</button>
                   <button
                     v-if="!(user.role??[]).includes('admin')"
                     type="button"
@@ -1076,33 +584,17 @@
                     v-if="!user.quitted"
                     class="btn btn-sm me-2 my-1 btn-outline-secondary"
                     :title="`给 ${user.name} 添加“已退出”标记`"
-                    __on:click="modalBox_open('user-set-quitted', user)"
-                    @click="modalBox_open('confirm', {desc: `确定要将用户 ${user?.name} 标记为“已退出”吗？`, action: (()=>{setAsQuitted(user);}),})"
+                    @click="modalBox_open('user-set-quitted', user)"
                   >标记退出</button>
                   <button
                     type="button"
                     v-if="user.quitted"
                     class="btn btn-sm me-2 my-1 btn-outline-secondary"
                     :title="`为 ${user.name} 移除“已退出”标记`"
-                    __on:click="modalBox_open('user-unset-quitted', user)"
-                    @click="modalBox_open('confirm', {desc: `确定要去除用户 ${user?.name} 的“已退出”标记吗？`, action: (()=>{setNotQuitted(user);}),})"
+                    @click="modalBox_open('user-unset-quitted', user)"
                   >不再退出</button>
-                  <button
-                    type="button"
-                    v-if="(!user?.role?.includes?.('inspector'))&&(!user?.role?.includes?.('super-inspector'))"
-                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                    :title="`将 ${user.name} 设置为审核员（inspector）`"
-                    @click="modalBox_open('confirm', {desc: `确定要将 ${user.name} 设置为审核员吗？`, action: (()=>{setAsInspector(user);}),})"
-                  >设为审核员</button>
-                  <button
-                    type="button"
-                    v-if="(user?.role?.includes?.('inspector'))||(user?.role?.includes?.('super-inspector'))"
-                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
-                    :title="`将 ${user.name} 的审核员（inspector）身份撤除`"
-                    @click="modalBox_open('confirm', {desc: `确定要将 ${user.name} 的审核员身份撤除吗？`, action: (()=>{setNotInspector(user);}),})"
-                  >撤除审核员</button>
                 </div>
-              </div>
+              </div> -->
             </div>
 
             <template #footer>
@@ -1111,7 +603,7 @@
           </modal-content></template>
 
           <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-progress']">
-            <div class="modal-header" v-for="user in [modalBox.data?.kwargs]">
+            <div class="modal-header" v-for="user in [modalBox.data.kwargs]">
               <div class="container">
                 <div class="row align-items-center my-2">
                   <div class="col-6 col-sm-6 col-md-3 my-1">
@@ -1162,7 +654,7 @@
               </div>
             </div>
 
-            <div class="modal-body" v-for="user in [modalBox.data?.kwargs]">
+            <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
               <div
                 class="row align-items-center my-3 border border-secondary border-2 rounded"
                 v-for="anno in userAnnos.list"
@@ -1201,8 +693,8 @@
               </div>
             </div>
 
-            <div class="modal-footer" v-for="user in [modalBox.data?.kwargs]">
-              <button type="button" class="btn btn-sm btn-outline-dark me-2" @click="modalBox_open('user-detail', user)">用户资料</button>
+            <div class="modal-footer" v-for="user in [modalBox.data.kwargs]">
+              <!-- <button type="button" class="btn btn-sm btn-outline-dark me-2" @click="modalBox_open('user-detail', user)">用户资料</button> -->
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide()}">关闭</button>
               <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}" v-show="modalBox.data.history.length>1">关闭全部 ({{modalBox.data.history.length}})</button>
             </div>
@@ -1231,14 +723,41 @@
             v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['confirm']"
             :box="modalBox"
             :needconfirm="true"
-            @confirm="()=>{modalBox.data?.kwargs?.action?.();modalBox.hide();}"
-            :closetext="modalBox.data?.kwargs.closetext??'取消'"
-            :confirmtext="modalBox.data?.kwargs.confirmtext"
-            :confirmstyle="modalBox.data?.kwargs.confirmstyle"
+            @confirm="()=>{modalBox.data.kwargs.action();modalBox.hide();}"
+            :closetext="modalBox.data.kwargs.closetext"
+            :confirmtext="modalBox.data.kwargs.confirmtext"
+            :confirmstyle="modalBox.data.kwargs.confirmstyle"
           >
             <div class="row align-items-center my-2">
               <div class="col-12">
-                <p>{{ modalBox.data?.kwargs?.desc }}</p>
+                <p>{{ modalBox.data.kwargs.desc }}</p>
+              </div>
+            </div>
+          </modal-content>
+
+          <modal-content
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-set-quitted']"
+            :box="modalBox"
+            :needconfirm="true"
+            @confirm="setAsQuitted(modalBox.data.kwargs)"
+            :confirmstyle="'danger'"
+          >
+            <div class="row align-items-center my-2">
+              <div class="col-12">
+                <p>确定要将用户 {{modalBox.data.kwargs?.name}} 标记为“已退出”吗？</p>
+              </div>
+            </div>
+          </modal-content>
+
+          <modal-content
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-unset-quitted']"
+            :box="modalBox"
+            :needconfirm="true"
+            @confirm="setNotQuitted(modalBox.data.kwargs)"
+          >
+            <div class="row align-items-center my-2">
+              <div class="col-12">
+                <p>确定要去除用户 {{modalBox.data.kwargs?.name}} 的“已退出”标记吗？</p>
               </div>
             </div>
           </modal-content>
