@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0417-02";
+const APP_VERSION = "22-0417-03";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -421,6 +421,7 @@ const RootComponent = {
     const tasks_computed = computed(() => ({
       total: tasks_sta(theDB.tasks),
       by_topic: Object.entries(theDB.topicTaskDict).map(pr => [pr[0], tasks_sta(pr[1])]),
+      by_batchName: Object.entries(theDB.batchNameTaskDict).map(pr => [pr[0], tasks_sta(pr[1])]),
     }));
 
 

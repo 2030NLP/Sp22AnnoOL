@@ -251,9 +251,9 @@
           </div>
 
           <div class="col col-12">
-            <div>各类型任务情况：</div>
+            <div>各批次情况：</div>
             <ul>
-              <li v-for="pair in tasks_computed.by_topic">
+              <li v-for="pair in tasks_computed.by_batchName">
                 <span>{{pair[0]}}</span><span>：</span>
                 <ul>
                   <li :title="`${pair[1]?.total_num} - ${pair[1]?.deleted_num}`">总量：{{pair[1]?.total_num - pair[1]?.deleted_num}}</li>

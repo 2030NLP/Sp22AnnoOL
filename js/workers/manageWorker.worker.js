@@ -11,6 +11,7 @@ const extendTasks = async (theDB) => {
     theDB.batches = [];
   };
   theDB.topicTaskDict = {};
+  theDB.batchNameTaskDict = {};
   theDB.inf_user_all_tasks = {};
   theDB.inf_entry_all_tasks = {};
   for (let task of theDB.tasks) {
@@ -33,6 +34,13 @@ const extendTasks = async (theDB) => {
     };
     if (task.topic?.length) {
       theDB.topicTaskDict[task.topic].push(task);
+    };
+
+    if (task.batchName?.length && !(task.batchName in theDB.batchNameTaskDict)) {
+      theDB.batchNameTaskDict[task.batchName] = [];
+    };
+    if (task.batchName?.length) {
+      theDB.batchNameTaskDict[task.batchName].push(task);
     };
 
     for (let user of task.to??[]) {

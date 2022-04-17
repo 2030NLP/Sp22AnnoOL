@@ -125,7 +125,7 @@
               v-for="memo in theBoard.memos"
             >
               <div class="col col-12 my-1">
-                <div class="border border-1 rounded my-2 px-2">
+                <div class="border border-1 rounded my-2 px-2" :class="{'border-dark': memo.pinned}">
                   <!-- <p class="pre-wrap">{{memo.text}}</p> -->
                   <div class="memo-content-wrap">
                     <div
