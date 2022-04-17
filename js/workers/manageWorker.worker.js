@@ -157,6 +157,7 @@ const extendUsers = async (theDB) => {
     // user.allAnnos = theDB.annos.filter(anno => anno.user==user.id).map(it=>it.id);
     user.allTasks = theDB.inf_user_all_tasks[user.id]??[];
     user.allAnnos = theDB.inf_user_all_annos[user.id]??[];
+    user.currBatchName = theDB?.taskDict?.[user.allTasks.sort((a,b)=>+theDB?.taskDict?.[a]?.batch-theDB?.taskDict?.[b]?.batch)?.at?.(-1)]?.batchName;
     user.doneTasks = user.allTasks.map(tid=>theDB.taskDict[tid]).filter(task => (task.submitters??[]).includes(user.id)).map(it=>it.id);
     theDB.userDict[user.id] = user;
   };
@@ -171,8 +172,8 @@ const extendEntries = async (theDB) => {
     // if (theDB.tasks.find(it=>it.entry==entry.id)) {
     // entry.allTasks = theDB.tasks.filter(task=>task.entry==entry.id).map(it=>it.id);
     // entry.allAnnos = theDB.annos.filter(anno=>anno.entry==entry.id).map(it=>it.id);
-    entry.allTasks = theDB.inf_entry_all_tasks[entry.id];
-    entry.allAnnos = theDB.inf_entry_all_annos[entry.id];
+    entry.allTasks = theDB.inf_entry_all_tasks[entry.id]??[];
+    entry.allAnnos = theDB.inf_entry_all_annos[entry.id]??[];
     theDB.entryDict[entry.id] = entry;
     // };
   };

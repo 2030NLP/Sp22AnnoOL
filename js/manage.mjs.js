@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0416-01";
+const APP_VERSION = "22-0417-00";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -1396,6 +1396,62 @@ const RootComponent = {
 
 
 
+
+
+
+
+
+
+    const userAnnos = reactive({
+      list: [],
+    });
+
+    const sortUserAnnos = (user) => {
+      userAnnos.list = lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), [annoSortFn, it=>(-it.batch)]);
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // 一个 axios 实例，方便在控制台调试
     const anAxios = axios.create({
       headers: {'Cache-Cotrol': 'no-cache'},
@@ -1641,6 +1697,9 @@ const RootComponent = {
       getMemoList,
       postNormalMemo,
       deleteMemo,
+      //
+      userAnnos,
+      sortUserAnnos,
       //
     };
   },

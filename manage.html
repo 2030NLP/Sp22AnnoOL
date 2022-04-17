@@ -738,7 +738,7 @@
                 <span class="badge bg-light text-dark me-1" v-if="user.manager" :title="`组长：${theDB.userDict[user.manager]?.name}`">{{theDB.userDict[user.manager]?.name}}</span>
               <!-- </div>
               <div class="col col-12 col-sm-6 col-md-3 my-2"> -->
-                <span class="badge bg-light text-dark me-1" :title="当前任务">{{topic_regulation(user.currTask)}}</span>
+                <span class="badge bg-light text-dark me-1" :title="当前任务">{{user.currBatchName??topic_regulation(user.currTask)}}</span>
                 <span class="badge bg-light text-dark me-1">已标总量：{{user.allAnnos?.length}}</span>
                 <template v-for="sum in [inspectionSum(user)]"><span
                   class="badge me-1"
@@ -763,7 +763,7 @@
                   type="button"
                   class="btn btn-sm me-2 my-1 btn-light"
                   :title="`查看 ${user.name} 所标注的具体情况`"
-                  @click="modalBox_open('user-progress', user)"
+                  @click="()=>{sortUserAnnos(user);modalBox_open('user-progress', user);}"
                 >标注详情</button>
                 <button
                   type="button"
@@ -1100,25 +1100,28 @@
                       >{{ userCurrDoneTasks(user).length }}/{{ userCurrTasks(user).length }}</div>
                     </div>
                   </div>
-                  <div class="col-12 col-sm-6 col-md-6 my-1">
-                    <select
-                     class="form-select form-select-sm"
-                     v-model="ctrl.userAnnoFilter.topic"
-                    >
-                      <option v-for="topic in theDB.topics" :value="topic">{{topic}}</option>
-                      <option value="【empty】">【empty】</option>
-                      <option value="【all】">【all】</option>
-                    </select>
-                  </div>
-                  <div class="col-12 col-sm-6 col-md-6 my-1">
-                    <select
-                     class="form-select form-select-sm"
-                     v-model="ctrl.userAnnoFilter.batchName"
-                    >
-                      <option v-for="batchName in theDB.batchNames" :value="batchName">{{batchName}}</option>
-                      <option value="【empty】">【empty】</option>
-                      <option value="【all】">【all】</option>
-                    </select>
+                  <div class="col-12">
+                    <div class="input-group input-group-sm my-2">
+                      <label class="input-group-text">任务</label>
+                      <select
+                       class="form-select form-select-sm"
+                       v-model="ctrl.userAnnoFilter.topic"
+                      >
+                        <option v-for="topic in theDB.topics" :value="topic">{{topic}}</option>
+                        <option value="【empty】">【empty】</option>
+                        <option value="【all】">【all】</option>
+                      </select>
+                      <label class="input-group-text">批次</label>
+                      <select
+                       class="form-select form-select-sm"
+                       v-model="ctrl.userAnnoFilter.batchName"
+                      >
+                        <option v-for="batchName in theDB.batchNames" :value="batchName">{{batchName}}</option>
+                        <option value="【empty】">【empty】</option>
+                        <option value="【all】">【all】</option>
+                      </select>
+                      <button type="button" class="btn btn-sm btn-outline-secondary" @click="()=>{sortUserAnnos(user);}">排序</button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1127,7 +1130,7 @@
             <div class="modal-body" v-for="user in [modalBox.data.kwargs]">
               <div
                 class="row align-items-center my-3 border border-secondary border-2 rounded"
-                v-for="anno in user.allAnnos.map(it=>theDB.annoDict[it])"
+                v-for="anno in userAnnos.list"
                 __v-for="anno in lo.sortBy(user.allAnnos.map(it=>theDB.annoDict[it]), [annoSortFn, it=>(-it.batch)])"
                 :key="anno.id"
                 v-show="[anno.topic, '【all】'].includes(ctrl.userAnnoFilter.topic)&&[anno.batchName??'【empty】', '【all】'].includes(ctrl.userAnnoFilter.batchName??'【empty】')">
