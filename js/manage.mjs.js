@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0417-00";
+const APP_VERSION = "22-0417-02";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -1526,7 +1526,7 @@ const RootComponent = {
           alertBox_pushAlert(`【发生错误】${resp?.data?.msg}`, 'danger', resp);
           return;
         };
-        theBoard.memos = lo.sortBy(resp?.data?.data, it=> -(new Date(it?.postedAt)).valueOf());
+        theBoard.memos = lo.sortBy(resp?.data?.data, [it=>-(it.pinned??0), it=> -(new Date(it?.postedAt)).valueOf()]);
         return theBoard.memos;
       } catch (error) {
         alertBox_pushAlert(error, 'danger');
@@ -1555,7 +1555,7 @@ const RootComponent = {
         };
         let new_memo = resp?.data?.data;
         theBoard.memos.push(new_memo);
-        theBoard.memos = lo.sortBy(theBoard.memos, it=> -(new Date(it?.postedAt)).valueOf());
+        theBoard.memos = lo.sortBy(theBoard.memos, [it=>-(it.pinned??0), it=> -(new Date(it?.postedAt)).valueOf()]);
         theBoard.text="";
         return new_memo;
       } catch (error) {
@@ -1566,6 +1566,38 @@ const RootComponent = {
     const deleteMemo = async (memo) => {
       try {
         memo.deleted = true;
+        let resp = await theBackEnd.updateMemo(memo);
+        // alertBox_pushAlert(resp?.data);
+        if (resp?.data?.code!=200) {
+          alertBox_pushAlert(`【发生错误】${resp?.data?.msg}`, 'danger', resp);
+          return;
+        };
+        await getMemoList();
+        return;
+      } catch (error) {
+        alertBox_pushAlert(error, 'danger');
+      };
+    };
+
+    const pinMemo = async (memo) => {
+      try {
+        memo.pinned = true;
+        let resp = await theBackEnd.updateMemo(memo);
+        // alertBox_pushAlert(resp?.data);
+        if (resp?.data?.code!=200) {
+          alertBox_pushAlert(`【发生错误】${resp?.data?.msg}`, 'danger', resp);
+          return;
+        };
+        await getMemoList();
+        return;
+      } catch (error) {
+        alertBox_pushAlert(error, 'danger');
+      };
+    };
+
+    const unpinMemo = async (memo) => {
+      try {
+        memo.pinned = false;
         let resp = await theBackEnd.updateMemo(memo);
         // alertBox_pushAlert(resp?.data);
         if (resp?.data?.code!=200) {
@@ -1697,6 +1729,8 @@ const RootComponent = {
       getMemoList,
       postNormalMemo,
       deleteMemo,
+      pinMemo,
+      unpinMemo,
       //
       userAnnos,
       sortUserAnnos,

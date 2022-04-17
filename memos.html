@@ -137,10 +137,23 @@
                     <span>#{{memo.id}}</span><span>　</span>
                     <span>{{memo.user?.name}}</span><span>　</span>
                     <span>发布于 {{(new Date(memo.postedAt)).toLocaleString()}}</span><span>　</span>
+                    <span v-if="memo.pinned">📌 已置顶<span>　</span></span>
                     <span
                       v-if="memo.user?.id==ctrl.currentUser?.id"
                     >
-                      <span class="cursor-pointer" @click="deleteMemo(memo)">删除</span>
+                      <span class="cursor-pointer" @click="modalBox_open('confirm', {desc: '确定要删除吗？', action: (()=>{deleteMemo(memo)}),})">删除</span>
+                      <span>　</span>
+                    </span>
+                    <span
+                      v-if="ctrl.currentUser?.role?.includes?.('admin')&&!memo.pinned"
+                    >
+                      <span class="cursor-pointer" @click="modalBox_open('confirm', {desc: '确定要置顶吗？', action: (()=>{pinMemo(memo)}),})">置顶</span>
+                      <span>　</span>
+                    </span>
+                    <span
+                      v-if="ctrl.currentUser?.role?.includes?.('admin')&&memo.pinned"
+                    >
+                      <span class="cursor-pointer" @click="modalBox_open('confirm', {desc: '确定要取消置顶吗？', action: (()=>{unpinMemo(memo)}),})">取消置顶</span>
                       <span>　</span>
                     </span>
                   </p>
