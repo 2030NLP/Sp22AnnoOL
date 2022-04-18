@@ -64,17 +64,31 @@ const extendTasks = async (theDB) => {
 
 const _annoTimeCompute = (anno) => {
   const logs = anno?.content?._ctrl?.timeLog ?? [];
+
   let box = [];
+  let pureBox = [];
+
+  let pureStop = false;
   for (let log of logs) {
+    if (log[0]=="check") {
+      pureStop = true;
+    };
     if (log[0]=="in") {
       box.push([log[1], null]);
+      if (!pureStop) {
+        pureBox.push([log[1], null]);
+      };
     };
     if (log[0]=="out" && box.length) {
       if (box.at(-1)[1]==null) {
         box.at(-1)[1] = log[1];
+        if (!pureStop) {
+          pureBox.at(-1)[1] = log[1];
+        };
       };
     };
   };
+
   let totalDur = 0;
   for (let pair of box) {
     if (pair[0].length&&pair[1].length) {
@@ -82,10 +96,21 @@ const _annoTimeCompute = (anno) => {
       totalDur += delta;
     };
   };
+
+  let pureTotalDur = 0;
+  for (let pair of pureBox) {
+    if (pair[0].length&&pair[1].length) {
+      let delta = (new Date(pair[1])) - (new Date(pair[0]));
+      pureTotalDur += delta;
+    };
+  };
+
   let firstDur = (new Date(box[0][1])) - (new Date(box[0][0]));
   let stride = (new Date(box.at(-1)[1])) - (new Date(box[0][0]));
+  let pureStride = (new Date(pureBox.at(-1)[1])) - (new Date(pureBox[0][0]));
   let lastAt = box.at(-1)[1];
-  return {firstDur, totalDur, stride, lastAt, detail: box};
+  let pureLastAt = pureBox.at(-1)[1];
+  return {firstDur, totalDur, pureTotalDur, stride, pureStride, lastAt, pureLastAt, detail: box};
 };
 
 const extendAnnos = async (theDB) => {

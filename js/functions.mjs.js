@@ -175,4 +175,27 @@ app.theSaver.saveText(csv, 'task1-01-实际耗时表.csv')
 };
 
 
+
+
+
+
+
+
+
+const reviewerWorkStatistics = async () => {
+  // 统计审核员的工作量。
+  // 遍历 annos
+  //   检查 content?._ctrl?.timeLog 所有 [0] 为 'check' 的 [2] 中的 id 和 name
+  //     注意连续的 同一个审核员 'check' 只记为 1 次
+  //     如果没有 'check' 记录，说明是老版本，那么检查 content?.review?.reviewer 中的 id 和 name
+  //   给 id 或 name 做计次
+};
+
+
+
+
+
+
+
+
 export { fn };

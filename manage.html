@@ -74,12 +74,8 @@
           </div>
         </div>
         <div class="row align-items-center my-2">
-          <div class="col col-12">
-            <div>上次刷新整个数据库的时间是 {{ctrl.lastTime}} 。</div>
-            <div>上次刷新 Entry 表的时间是 {{ctrl.lastTimeDict?.entries}} 。</div>
-            <div>上次刷新 User 表的时间是 {{ctrl.lastTimeDict?.users}} 。</div>
-            <div>上次刷新 Task 表的时间是 {{ctrl.lastTimeDict?.tasks}} 。</div>
-            <div>上次刷新 Anno 表的时间是 {{ctrl.lastTimeDict?.annos}} 。</div>
+          <div class="col col-12 my-2">
+            <div>若要进行审核工作，请移步至 <a href="./inspect" target="_blank">审核工具</a> 。</div>
             <div>操作步骤：</div>
             <div>1、如果太久没刷新，点「刷新全部」；否则点「加载缓存」</div>
             <div>2、等待处理完毕</div>
@@ -110,18 +106,14 @@
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-secondary': !theDB.entries?.length}"
               @click="()=>{syncEntryInfo()}"
-              title="从服务器更新 Entry 表（仅基本信息，不含文本内容）"
-              __disabled
-              __v-show="false"
-            ><s>刷新 Entry 表（仅基本信息）</s> 请直接刷新全部</button>
+              title="从服务器更新 Entry 表 (仅基本信息，不含文本内容)"
+            >刷新 Entry 表 (仅基本信息，不含文本内容)</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.tasks?.length, 'btn-outline-secondary': !theDB.tasks?.length}"
               @click="()=>{syncTask()}"
               title="从服务器更新 Task 表"
-              __disabled
-              __v-show="false"
             >刷新 Task 表</button>
             <button
               type="button"
@@ -154,6 +146,13 @@
               @click="makeAnnoOnTexts"
               title="配合语料文本更新 anno 细节"
             >配合语料文本更新 anno 细节</button>
+          </div>
+          <div class="col col-12 text-muted small my-2">
+            <div>上次刷新整个数据库的时间是 {{ctrl.lastTime}} 。</div>
+            <div>上次刷新 Entry 表的时间是 {{ctrl.lastTimeDict?.entries}} 。</div>
+            <div>上次刷新 User 表的时间是 {{ctrl.lastTimeDict?.users}} 。</div>
+            <div>上次刷新 Task 表的时间是 {{ctrl.lastTimeDict?.tasks}} 。</div>
+            <div>上次刷新 Anno 表的时间是 {{ctrl.lastTimeDict?.annos}} 。</div>
           </div>
           <div class="col col-12">
             <button

@@ -53,7 +53,10 @@ const AnnoCard = {
         !this.ctrl.reviewing ? h('button', {
             'type': "button",
             'class': "btn btn-sm btn-outline-primary my-1 me-2",
-            'onClick': ()=>{this.ctrl.reviewing=true},
+            'onClick': async()=>{
+              await this.updateAnno();
+              this.ctrl.reviewing=true;
+            },
           },
           [`审批`],
         ) : null,

@@ -105,8 +105,8 @@
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-secondary': !theDB.entries?.length}"
               @click="()=>{syncEntryInfo()}"
-              title="从服务器更新 Entry 表（仅基本信息，不含文本内容）"
-            >刷新 Entry 表（仅基本信息）</button>
+              title="从服务器更新 Entry 表 (仅基本信息，不含文本内容)"
+            >刷新 Entry 表 (仅基本信息，不含文本内容)</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
@@ -176,12 +176,6 @@
               @click="async()=>{ctrl.started=true;await getMemoList();}"
               title="开始工作"
             >开始工作</button>
-            <!-- <a
-              class="btn btn-sm me-2 my-1"
-              :class="'btn-outline-dark'"
-              href="./todos"
-              target="_blank"
-            >打开任务板</a> -->
             <!-- <a
               class="btn btn-sm me-2 my-1"
               :class="'btn-outline-dark'"
@@ -269,13 +263,14 @@
                 <span class="badge bg-light text-dark me-1" v-if="user.manager" :title="`组长：${theDB.userDict[user.manager]?.name}`">{{theDB.userDict[user.manager]?.name}}</span>
               <!-- </div>
               <div class="col col-12 col-sm-6 col-md-3 my-2"> -->
-                <span class="badge bg-light text-dark me-1" :title="当前任务">{{user.currBatchName??topic_regulation(user.currTask)}}</span>
+                <span class="badge bg-light text-dark me-1" :title="最新批次" v-show="user.currBatchName">最新批次：{{user.currBatchName}}</span>
+                <span class="badge bg-light text-dark me-1" :title="当前任务" v-show="user.currTask&&!user.currBatchName">当前任务：{{topic_regulation(user.currTask)}}</span>
                 <span class="badge bg-light text-dark me-1">已标总量：{{user.allAnnos?.length}}</span>
                 <template v-for="sum in [inspectionSum(user)]"><span
                   class="badge me-1"
                   :class="sum?.passRatio>=0.9 ? 'bg-success text-light' : sum?.passRatio>=0.8 ? 'bg-light text-success border border-1 border-success' : sum?.passRatio==null ? 'bg-light text-dark' : sum?.passRatio<=0.6 ? 'bg-danger text-light' : 'bg-light text-danger border border-1 border-danger'"
                 >审核通过率：{{sum?.passRatio?.toFixed?.(3)??'null'}}</span>
-                <span class="badge bg-light text-dark me-1">已审：{{inspectionSum(user)?.sum}}</span></template>
+                <span class="badge bg-light text-dark me-1">该批已审：{{inspectionSum(user)?.sum}}</span></template>
               </div>
               <div class="col col-12 col-md-6 col-lg-6 my-1">
                 <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="当前任务进度">
@@ -434,9 +429,12 @@
                     <span>Schema：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?.content?._ctrl?.schema}}</span>
                   </div>
                   <div v-if="anno?._timeInfo">
-                    <span>最后提交时间：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{(new Date(anno?._timeInfo?.lastAt)).toLocaleString()}}</span><br/>
                     <span>首次操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.firstDur/1000}}s</span><br/>
                     <span>累计操作次数：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.detail?.length}}次</span><br/>
+                    <span>审核前最后提交时间：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{(new Date(anno?._timeInfo?.pureLastAt)).toLocaleString()}}</span><br/>
+                    <span>审核前累计操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.pureTotalDur/1000}}s</span><br/>
+                    <span>审核前累计时长跨度：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.pureStride/1000}}s</span><br/>
+                    <span>最后提交时间：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{(new Date(anno?._timeInfo?.lastAt)).toLocaleString()}}</span><br/>
                     <span>累计操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.totalDur/1000}}s</span><br/>
                     <span>累计时长跨度：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.stride/1000}}s</span>
                   </div>

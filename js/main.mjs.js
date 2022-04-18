@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0416-00";
+const APP_VERSION = "22-0418-05";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -14,8 +14,8 @@ if (DEVELOPING) {
 };
 const DEVELOPING_LOCAL = 0;
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
-const DEV_HOSTS = ["http://192.168.124.3:8888", "http://10.1.22.96:8888"];
-const API_BASE_DEV = DEV_HOSTS[0];
+const DEV_HOSTS = ["http://192.168.124.3:8888", "http://192.168.1.100:8888"];
+const API_BASE_DEV = DEV_HOSTS[1];
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 

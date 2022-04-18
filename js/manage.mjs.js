@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0418-03";
+const APP_VERSION = "22-0418-06";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -12,7 +12,7 @@ if (DEVELOPING) {
 };
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const DEV_HOSTS = ["http://192.168.124.3:8888", "http://192.168.1.100:8888"];
-const API_BASE_DEV = DEV_HOSTS[0];
+const API_BASE_DEV = DEV_HOSTS[1];
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 
@@ -1151,17 +1151,31 @@ const RootComponent = {
 
     const _annoTimeCompute = (anno) => {
       const logs = anno?.content?._ctrl?.timeLog ?? [];
+
       let box = [];
+      let pureBox = [];
+
+      let pureStop = false;
       for (let log of logs) {
+        if (log[0]=="check") {
+          pureStop = true;
+        };
         if (log[0]=="in") {
           box.push([log[1], null]);
+          if (!pureStop) {
+            pureBox.push([log[1], null]);
+          };
         };
         if (log[0]=="out" && box.length) {
           if (box.at(-1)[1]==null) {
             box.at(-1)[1] = log[1];
+            if (!pureStop) {
+              pureBox.at(-1)[1] = log[1];
+            };
           };
         };
       };
+
       let totalDur = 0;
       for (let pair of box) {
         if (pair[0].length&&pair[1].length) {
@@ -1169,10 +1183,21 @@ const RootComponent = {
           totalDur += delta;
         };
       };
+
+      let pureTotalDur = 0;
+      for (let pair of pureBox) {
+        if (pair[0].length&&pair[1].length) {
+          let delta = (new Date(pair[1])) - (new Date(pair[0]));
+          pureTotalDur += delta;
+        };
+      };
+
       let firstDur = (new Date(box[0][1])) - (new Date(box[0][0]));
       let stride = (new Date(box.at(-1)[1])) - (new Date(box[0][0]));
+      let pureStride = (new Date(pureBox.at(-1)[1])) - (new Date(pureBox[0][0]));
       let lastAt = box.at(-1)[1];
-      return {firstDur, totalDur, stride, lastAt, detail: box};
+      let pureLastAt = pureBox.at(-1)[1];
+      return {firstDur, totalDur, pureTotalDur, stride, pureStride, lastAt, pureLastAt, detail: box};
     };
 
 
@@ -1189,6 +1214,9 @@ const RootComponent = {
       review.annoAt = anno._timeInfo.lastAt;
       review.reviewedAt = dateString();
       content.review = review;
+
+      content?._ctrl?.timeLog?.push?.( ['check', JSON.parse(JSON.stringify(new Date())), review.reviewer] );
+
       let resp = await theBackEnd.updateAnno(user, task, entry, content, topic, entryVer);
       if (resp?.data?.code!=200) {
         alertBox_pushAlert(`【发生错误】${resp?.data?.msg}`, 'danger', null, resp);
@@ -1253,7 +1281,8 @@ const RootComponent = {
     };
 
     const inspectionSum = (user) => {
-      let sum = lo.countBy((user?.allAnnos??[]).map(it=>theDB.annoDict[it]), anno=>anno?.content?.review?.accept);
+      let annos = (user?.allAnnos??[]).map(it=>theDB.annoDict[it]).filter(it=>it?.batchName==user?.currBatchName);
+      let sum = lo.countBy(annos, anno=>anno?.content?.review?.accept);
       sum.sum = (sum.false??0) + (sum.true??0);
       sum.passRatio = sum.sum==0 ? null : (sum.true??0)/sum.sum;
       return sum;
