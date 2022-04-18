@@ -125,6 +125,15 @@ class BackEnd {
     return response;
   }
 
+  async postUser(user) {
+    let response = await this.request({
+      method: "post",
+      url: `/users`,
+      data: user,
+    });
+    return response;
+  }
+
   async updateUser(user) {
     let response = await this.request({
       method: "put",
@@ -366,6 +375,17 @@ class BackEnd {
     //   results: {},   // 该 entry 在当前 topic 之前已经确定下来的标注内容
     // }
     // response.data.err === ''
+  }
+
+  async postBuildTasks(settings) {
+    let response = await this.request({
+      method: "post",
+      url: `/build-tasks`,
+      data: {
+        settings: settings,
+      },
+    });
+    return response;
   }
 
 }

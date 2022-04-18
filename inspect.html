@@ -74,12 +74,7 @@
           </div>
         </div>
         <div class="row align-items-center my-2">
-          <div class="col col-12">
-            <div>上次刷新整个数据库的时间是 {{ctrl.lastTime}} 。</div>
-            <div>上次刷新 Entry 表的时间是 {{ctrl.lastTimeDict?.entries}} 。</div>
-            <div>上次刷新 User 表的时间是 {{ctrl.lastTimeDict?.users}} 。</div>
-            <div>上次刷新 Task 表的时间是 {{ctrl.lastTimeDict?.tasks}} 。</div>
-            <div>上次刷新 Anno 表的时间是 {{ctrl.lastTimeDict?.annos}} 。</div>
+          <div class="col col-12 my-2">
             <div>操作步骤：</div>
             <div>1、如果太久没刷新，点「刷新全部」；否则点「加载缓存」</div>
             <div>2、等待处理完毕</div>
@@ -111,17 +106,13 @@
               :class="{'btn-outline-success': theDB.entries?.length, 'btn-outline-secondary': !theDB.entries?.length}"
               @click="()=>{syncEntryInfo()}"
               title="从服务器更新 Entry 表（仅基本信息，不含文本内容）"
-              __disabled
-              __v-show="false"
-            ><s>刷新 Entry 表（仅基本信息）</s> 请直接刷新全部</button>
+            >刷新 Entry 表（仅基本信息）</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
               :class="{'btn-outline-success': theDB.tasks?.length, 'btn-outline-secondary': !theDB.tasks?.length}"
               @click="()=>{syncTask()}"
               title="从服务器更新 Task 表"
-              __disabled
-              __v-show="false"
             >刷新 Task 表</button>
             <button
               type="button"
@@ -138,7 +129,7 @@
               title="从服务器更新 User 表"
             >刷新 User 表</button>
           </div>
-          <div class="col col-12" v-show="false">
+          <!-- <div class="col col-12" v-show="false">
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
@@ -154,8 +145,8 @@
               @click="makeAnnoOnTexts"
               title="配合语料文本更新 anno 细节"
             >配合语料文本更新 anno 细节</button>
-          </div>
-          <div class="col col-12">
+          </div> -->
+          <!-- <div class="col col-12">
             <button
               type="button"
               class="btn btn-sm me-2 my-1"
@@ -169,6 +160,13 @@
               href="https://github.com/2030NLP/sp22scripts/blob/main/SpaCE2022_DB.spec.md"
               target="_blank"
             >查看数据格式说明</a>
+          </div> -->
+          <div class="col col-12 text-muted small my-2">
+            <div>上次刷新整个数据库的时间是 {{ctrl.lastTime}} 。</div>
+            <div>上次刷新 Entry 表的时间是 {{ctrl.lastTimeDict?.entries}} 。</div>
+            <div>上次刷新 User 表的时间是 {{ctrl.lastTimeDict?.users}} 。</div>
+            <div>上次刷新 Task 表的时间是 {{ctrl.lastTimeDict?.tasks}} 。</div>
+            <div>上次刷新 Anno 表的时间是 {{ctrl.lastTimeDict?.annos}} 。</div>
           </div>
           <div class="col col-12">
             <button

@@ -670,6 +670,12 @@
             <div>
               <button
                 type="button"
+                class="btn btn-sm btn-outline-dark my-1 me-2"
+                @click="modalBox_open('user-importer')"
+                title="新增用户"
+              >新增用户</button>
+              <button
+                type="button"
                 class="btn btn-sm my-1 me-2"
                 :class="ctrl.showOnlyMyMembers ? 'btn-primary' : 'btn-outline-primary'"
                 @click="ctrl.showOnlyMyMembers = !ctrl.showOnlyMyMembers"
@@ -1019,6 +1025,18 @@
 
 
           <template
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-importer']"
+          >
+            <user-importer
+              :db="theDB"
+              :box="modalBox"
+              @check-error-on-save="(value)=>{alertBox.pushAlert('存在错误，请检查！', 'warning', null, value)}"
+              @save="async(value)=>{let messages = await makeNewUsers(value); let resultText='执行结果：\n'+messages.join('\n'); modalBox_open('confirm', {desc: resultText, action: ()=>{}, closetext: '关闭', confirmtext: '知道了'} );}"
+            ></user-importer>
+          </template>
+
+
+          <template
             v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-detail']"
           ><modal-content
             :box="modalBox"
@@ -1062,7 +1080,7 @@
                     type="button"
                     class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
                     :title="`点击拷贝 ${user.name} 的密码`"
-                    :data-clipboard-text="`${user.name} 的密码是： ${user.token}`"
+                    :data-clipboard-text="`#${user.id} ${user.name} 的密码是： ${user.token}`"
                   >拷贝密码</button>
                   <button
                     v-if="(user.role??[]).includes('admin')"
@@ -1238,7 +1256,7 @@
           >
             <div class="row align-items-center my-2">
               <div class="col-12">
-                <p>{{ modalBox.data?.kwargs?.desc }}</p>
+                <p class="pre-wrap">{{ modalBox.data?.kwargs?.desc }}</p>
               </div>
             </div>
           </modal-content>

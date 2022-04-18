@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0418-00";
+const APP_VERSION = "22-0418-03";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -69,6 +69,7 @@ const RootComponent = {
       // 'user-unset-quitted': 'user-unset-quitted',
       // 'user-edit': 'user-edit',
       'user-progress': 'user-progress',
+      'user-importer': 'user-importer',
       'user-editor': 'user-editor',
       'user-detail': 'user-detail',
       'entry-detail': 'entry-detail',
@@ -1607,6 +1608,34 @@ const RootComponent = {
     };
 
 
+    const makeNewUsers = async (newUsers) => {
+      let messages = [];
+      for await(let newUser of newUsers) {
+        let message = "";
+        try {
+          let resp = await theBackEnd.postUser(newUser);
+          if (resp.data?.code!=200) {
+            message = `用户 ${newUser?.name} 添加失败【${resp.data.msg}】`;
+            messages.push(message);
+            alertBox_pushAlert(message, 'danger', 5000, resp);
+            continue;
+          };
+          let newUserGot = resp.data?.data;
+          message = `用户 ${newUserGot?.name} 添加成功`;
+          messages.push(`#${newUserGot.id} ${newUserGot.name} 的密码是： ${newUserGot.token}`);
+          alertBox_pushAlert(message, 'success');
+        } catch(error) {
+          message = `用户 ${newUser?.name} 添加时出错【${error}】`;
+          messages.push(message);
+          alertBox_pushAlert(message, 'danger', 5000, error);
+        };
+      };
+      await syncUser();
+      await saveDB();
+      return messages;
+    };
+
+
     const saveUpdatedUser = async (user, newUser) => {
       if (user.id != null) {newUser.id = user.id;};
       if (user.token != null) {newUser.token = user.token;};
@@ -1789,6 +1818,7 @@ const RootComponent = {
       setAsInspector,
       setNotInspector,
       saveUpdatedUser,
+      makeNewUsers,
       //
       classAssignAnalisisByUser,
       //
@@ -1844,6 +1874,8 @@ the_app.component('task-card', TaskCard);
 
 import UserEditor from './components/UserEditor.cpnt.mjs.js';
 the_app.component('user-editor', UserEditor);
+import UserImporter from './components/UserImporter.cpnt.mjs.js';
+the_app.component('user-importer', UserImporter);
 
 
 

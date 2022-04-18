@@ -1,4 +1,4 @@
-// modifiedAt: 2022-04-06
+// modifiedAt: 2022-04-18
 
 const assert = jj => {
   if (!jj) {
@@ -15,16 +15,16 @@ const forceBlur = event => {
   target.blur();
 };
 
-const chainGet = (it, keyArr) => {
-  let key = keyArr.shift();
+const chainGet = (it, keyChain) => {
+  let key = keyChain.shift();
   let vv = it[key]??null;
   if (vv==null) {
     return vv;
   };
-  if (!keyArr.length) {
+  if (!keyChain.length) {
     return vv;
   };
-  let uu = chainGet(vv, keyArr);
+  let uu = chainGet(vv, keyChain);
   if (uu==null) {
     return uu;
   };

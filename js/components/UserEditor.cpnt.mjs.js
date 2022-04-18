@@ -3,7 +3,7 @@ import ModalContent from './ModalContent.cpnt.mjs.js';
 
 const UserEditor = {
   props: ["db", "box", "user"],
-  emits: ["happy"],
+  emits: ["happy", "check-error", "check-error-on-save", "save"],
   component: {
     ModalContent,
   },
