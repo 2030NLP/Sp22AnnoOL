@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0418-06";
+const APP_VERSION = "22-0419-02";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -12,7 +12,7 @@ if (DEVELOPING) {
 };
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const DEV_HOSTS = ["http://192.168.124.3:8888", "http://192.168.1.100:8888"];
-const API_BASE_DEV = DEV_HOSTS[1];
+const API_BASE_DEV = DEV_HOSTS[0];
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 
@@ -220,6 +220,11 @@ const RootComponent = {
         topic: "【all】",
         batchName: "【all】",
       },
+
+      managerFilter: {
+        manager: "【all】",
+      },
+      showQuittedUsers: false,
 
       tab: TABS['overview'],
       lastTime: "never",

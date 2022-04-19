@@ -52,7 +52,7 @@ class BackEnd {
 
 
   // 万能 api 开始
-  async db(table, operator, kwargs, timeout=30000) {
+  async db(table, operator, kwargs, timeout=60000) {
     let data = {
       table: `${table??''}`,
       opt: `${operator??''}`,
@@ -271,10 +271,11 @@ class BackEnd {
     // response.data.err === ''
   }
 
-  async getAnnosAll() {
+  async getAnnosAll(timeout=600000) {
     let response = await this.request({
       method: "get",
       url: `/annos`,
+      timeout: timeout,
     });
     return response;
   }

@@ -15,7 +15,7 @@ if (DEVELOPING) {
 const DEVELOPING_LOCAL = 0;
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const DEV_HOSTS = ["http://192.168.124.3:8888", "http://192.168.1.100:8888"];
-const API_BASE_DEV = DEV_HOSTS[1];
+const API_BASE_DEV = DEV_HOSTS[0];
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 

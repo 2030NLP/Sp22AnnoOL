@@ -193,12 +193,31 @@
         <div class="row align-items-center my-2" __v-show="ctrl.tab == TABS.userProgress">
           <div class="col col-12 my-2">
             <div>
-              <button
+              <!-- <button
                 type="button"
                 class="btn btn-sm my-1 me-2"
                 :class="ctrl.showOnlyMyMembers ? 'btn-primary' : 'btn-outline-primary'"
                 @click="ctrl.showOnlyMyMembers = !ctrl.showOnlyMyMembers"
-              >只显示我管理的人员</button>
+                title="限小组长使用"
+              >只显示我管理的人员</button> -->
+              <div class="d-inline-block my-1 me-2 align-middle">
+                <select
+                 class="form-select form-select-sm"
+                 v-model="ctrl.managerFilter.manager"
+                >
+                  <option value="【all】" selected>【按组长筛选】</option>
+                  <option v-for="manager in theDB.users.filter(user=>user.role?.includes?.('manager'))" :value="manager.id">{{manager.name}}</option>
+                  <option value="null">【empty】</option>
+                  <option value="【all】">【all】</option>
+                </select>
+              </div>
+              <button
+                type="button"
+                class="btn btn-sm my-1 me-2"
+                :class="ctrl.showQuittedUsers ? 'btn-primary' : 'btn-outline-primary'"
+                @click="ctrl.showQuittedUsers = !ctrl.showQuittedUsers"
+                title="限小组长使用"
+              >显示/隐藏已退出人员</button>
               <button
                 type="button"
                 class="btn btn-sm btn-light my-1 me-2"
@@ -248,7 +267,8 @@
           <div class="container my-2">
             <div
               class="row align-items-center my-1 border rounded p-2"
-              v-show="ctrl.currentUser?.id==user.manager||!ctrl.showOnlyMyMembers"
+              __v-show="ctrl.currentUser?.id==user.manager||!ctrl.showOnlyMyMembers"
+              v-show="(ctrl.managerFilter.manager==user.manager||ctrl.managerFilter.manager=='【all】')&&(!user.quitted||ctrl.showQuittedUsers)"
               v-for="user in theDB.users"
               :key="user.id"
             >
