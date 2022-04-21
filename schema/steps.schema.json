@@ -1,9 +1,9 @@
 {
   "name": "SpaCE2022",
-  "version": "220413",
+  "version": "220421",
   "versions": {
-    "清洗": "2203030",
-    "第1期": "220413",
+    "清洗": "220330",
+    "第1期": "220421",
     "第2期": null,
     "第3期": null,
     "精标": null
@@ -290,15 +290,38 @@
             },
             {
               "text": "不适合用于计算机空间语义理解",
-              "data": {
-                "isDropping": true,
-                "label": "other",
-                "desc": "这段话不适合用于计算机空间语义理解"
-              },
-              "go": "end",
+              "go": "leaveComment",
               "style": "outline-dark"
             }
           ]
+        }
+      },
+      "leaveComment": {
+        "ref": "leaveComment",
+        "name": "填写备注",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "若涉及具体片段，请在文中划选",
+          "canSkipSelection": true,
+          "selectedTitle": "当前选中了：",
+          "instruction": "请填写不适合用于计算机空间语义理解的原因：",
+          "data": {
+            "isDropping": true,
+            "label": "other",
+            "desc": "导致不适合用于计算机空间语义理解的原因是：",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
         }
       }
     }
