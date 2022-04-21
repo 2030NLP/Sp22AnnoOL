@@ -303,8 +303,9 @@
         "props": {
           "selectInstruction": "若涉及具体片段，请在文中划选",
           "canSkipSelection": true,
+          "canSkipText": true,
           "selectedTitle": "当前选中了：",
-          "instruction": "请填写不适合用于计算机空间语义理解的原因：",
+          "instruction": "请填写不适合用于计算机空间语义理解的原因（选填）",
           "data": {
             "isDropping": true,
             "label": "other",

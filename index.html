@@ -584,7 +584,7 @@
               <!-- 按钮区 -->
               <div class="col col-12 my-1">
                 <!-- okBtn -->
-                <button v-if="currentStep?.props?.okBtn" type="button" @click="stepCtrl.handleChooseOrText(currentStep.props.okBtn.go, currentStep.props.data)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn.style}`" :disabled="(!currentStep?.props?.canSkipSelection&&!selection.array.length)||(!currentStep.props.data.withText.length)">{{ currentStep.props.okBtn.text }}</button>
+                <button v-if="currentStep?.props?.okBtn" type="button" @click="stepCtrl.handleChooseOrText(currentStep.props.okBtn.go, currentStep.props.data)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn.style}`" :disabled="(!currentStep?.props?.canSkipSelection&&!selection.array.length)||(!currentStep?.props?.canSkipText&&!currentStep.props.data.withText.length)">{{ currentStep.props.okBtn.text }}</button>
                 <button v-if="currentStep?.props?.okBtn1" type="button" @click="stepCtrl.handleChooseOrTextQita(currentStep.props.okBtn1.go, currentStep.props.data)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn1.style}`" :disabled="(!currentStep.props.data.withText.length)">{{ currentStep.props.okBtn1.text }}</button>
                 <!-- cancelBtn -->
                 <button v-if="currentStep?.props?.cancelBtn" type="button" @click="stepCtrl.cancelStep(currentStep.props.cancelBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.cancelBtn.style}`">{{ currentStep.props.cancelBtn.text }}</button>
@@ -647,7 +647,7 @@
                       “<span v-for="tokenIdx in anno.on" :key="tokenIdx" :title="tokenIdx">{{ getReplacedToken(tokenIdx) }}</span>”
                     </template>
                     <span> {{anno.desc ? anno.desc : anno.label}} </span>
-                    <span> {{anno.withText}}</span>
+                    <span> {{anno.withText.length ? anno.withText: '(空)'}}</span>
                   </div>
                 </template>
               </span>
