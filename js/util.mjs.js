@@ -1,8 +1,8 @@
-// modifiedAt: 2022-04-18
+// modifiedAt: 2022-04-20
 
-const assert = jj => {
+const assert = (jj, message) => {
   if (!jj) {
-    throw new Error("");
+    throw new Error(message??"");
   };
 };
 

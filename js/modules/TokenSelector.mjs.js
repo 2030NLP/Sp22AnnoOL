@@ -131,7 +131,7 @@ class TokenSelector {
 
 
   getReplacedToken(idx, tokenList) {
-    return tokenList[idx]?.replaced ? tokenList[idx]?.to?.word : tokenList[idx].word;
+    return tokenList[idx]?.to?.word ?? tokenList[idx].word;
   }
   getOriginToken(idx, tokenList) {
     return tokenList[idx].word;
