@@ -187,7 +187,7 @@ class StepControl {
     let should = (aa.length == Array.from(new Set(aa)).length);
 
     let flag = 0;
-    for (i = 0; i < this.ewp.example.annotations.length; i++) {
+    for (let i = 0; i < this.ewp.example.annotations.length; i++) {
       if ((this.ewp.example.annotations[i].mode == "multiSpans") && (this.ewp.example.annotations[i].label == data.label)) {
         let flag1 = 0;
         for (j = 0; j < this.ewp.example.annotations[i].tokenarrays.length; j++) {

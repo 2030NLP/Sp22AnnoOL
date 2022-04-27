@@ -360,6 +360,25 @@ class BackEnd {
     return response;
   }
 
+  async getVar(key) {
+    let response = await this.request({
+      method: "get",
+      url: `/var/${key}`,
+    });
+    return response;
+  }
+
+  async setVar(key, value) {
+    let response = await this.request({
+      method: "put",
+      url: `/var/${key}`,
+      data: {
+        value: value,
+      },
+    });
+    return response;
+  }
+
   async getEntry(entry_id) {
     // 获取 entry 信息
     // 输入：entry.id

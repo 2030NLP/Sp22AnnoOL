@@ -1,7 +1,7 @@
 import {  reactive, onMounted, h  } from '../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 import ModalContent from './ModalContent.cpnt.mjs.js';
 
-const SearchPanel = {
+export default {
   props: ["db", "box", "user"],
   emits: ["happy", "check-error", "check-error-on-save", "save"],
   component: {
@@ -125,6 +125,4 @@ const SearchPanel = {
     ];
   },
 };
-
-export default SearchPanel;
 

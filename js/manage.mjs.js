@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Manager";
-const APP_VERSION = "22-0419-02";
+const APP_VERSION = "22-0422-00";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -11,8 +11,8 @@ if (DEVELOPING) {
   console.log("PRODUCTION");
 };
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
-const DEV_HOSTS = ["http://192.168.124.3:8888", "http://192.168.1.100:8888"];
-const API_BASE_DEV = DEV_HOSTS[0];
+const DEV_HOSTS = ["http://192.168.124.3:8888", "http://192.168.1.100:8888", "http://10.1.108.200:8888/", "http://10.0.55.176:8888/"];
+const API_BASE_DEV = DEV_HOSTS[3];
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 
@@ -595,7 +595,7 @@ const RootComponent = {
       let cDueLen = userCurrTasks(user).length;
       let bg = Math.max(cDoneLen, cDueLen);
       let mn = Math.min(cDoneLen, cDueLen);
-      let pct = bg==0 ? `0` : `${mn/bg*100}%`;
+      let pct = bg==0 ? `0` : `${(mn/bg*100).toFixed(0)}%`;
       let ratio = cDoneLen/cDueLen;
       ratio = isNaN(ratio) ? 0 : ratio;
       let done = cDoneLen >= cDueLen;
@@ -983,7 +983,7 @@ const RootComponent = {
 
       let tasks = theDB.tasks.filter(it => (
         topic_tags(topic).includes(it['topic'])
-        && it['batchName'] == batchName
+        && (retrieve || it['batchName'] == batchName)
         && (task_tag==null||(it['tags']?.length&&it['tags'].includes(task_tag)))
         && !it['deleted']
       ));

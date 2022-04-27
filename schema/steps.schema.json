@@ -1,14 +1,14 @@
 {
   "name": "SpaCE2022",
-  "version": "220421",
+  "version": "220425",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
-    "第2期": null,
+    "第2期": "220425",
     "第3期": null,
     "精标": null
   },
-  "using": "第1期",
+  "using": "第2期",
   "清洗": {
     "startStep": "start",
     "endStep": "end",
@@ -316,6 +316,211 @@
           "okBtn": {
             "text": "确定",
             "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      }
+    }
+  },
+  "第2期": {
+    "startStep": "start",
+    "endStep": "end",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "标注已完成。",
+          "canReset": true,
+          "resetBtn": {
+            "text": "清空并重新标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "cancelBtn": {
+            "text": "继续增加标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "nextBtn": {
+            "text": "下一条",
+            "style": "outline-primary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "开始",
+        "mode": "selectValue",
+        "props": {
+          "instruction": "这段话似乎存在异常，原因有？",
+          "optionBtns": [
+            {
+              "text": "搭配不当",
+              "go": "handleReasonImproperCollocation",
+              "style": "outline-danger"
+            },
+            {
+              "text": "语义冲突",
+              "go": "handleReasonSemanticConflict",
+              "style": "outline-danger"
+            },
+            {
+              "text": "不符合常识",
+              "go": "handleReasonAgainstCommenSense",
+              "style": "outline-danger"
+            },
+            {
+              "text": "其他",
+              "go": "handleReasonOther",
+              "style": "outline-danger"
+            },
+            {
+              "text": "并无异常",
+              "data": {
+                "label": "ExceptionNotFound",
+                "desc": "这段话不存在异常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            }
+          ],
+          "okBtn": {
+            "text": "完成",
+            "go": "end",
+            "style": "outline-success"
+          },
+          "canReset": true,
+          "resetBtn": {
+            "text": "重置",
+            "go": "start",
+            "style": "outline-dark"
+          }
+        }
+      },
+      "handleReasonImproperCollocation": {
+        "ref": "handleReasonImproperCollocation",
+        "name": "处理归因：搭配不当",
+        "mode": "multiSpans",
+        "props": {
+          "instruction": "请在文中依次划选造成搭配不当的全部文本片段。选择完成后，可将其加入列表。",
+          "listTitle": "造成搭配不当的文本片段有：",
+          "lengthTip": "提示：请至少选择2个片段",
+          "data": {
+            "label": "ReasonImproperCollocation",
+            "desc": "搭配不当",
+            "tokenarrays": []
+          },
+          "addBtn": {
+            "text": "将所选片段加入列表",
+            "style": "primary"
+          },
+          "clearBtn": {
+            "text": "清除选区",
+            "style": "info"
+          },
+          "cleanBtn": {
+            "text": "清除已选片段",
+            "style": "light"
+          },
+          "okBtn": {
+            "text": "不再添加，完成",
+            "go": "start",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleReasonSemanticConflict": {
+        "ref": "handleReasonSemanticConflict",
+        "name": "处理归因：语义冲突",
+        "mode": "multiSpans",
+        "props": {
+          "instruction": "请在文中依次划选造成语义冲突的全部文本片段。选择完成后，可将其加入列表。",
+          "listTitle": "造成搭配不当的文本片段有：",
+          "lengthTip": "提示：请至少选择2个片段",
+          "data": {
+            "label": "ReasonSemanticConflict",
+            "desc": "语义冲突",
+            "tokenarrays": []
+          },
+          "addBtn": {
+            "text": "将所选片段加入列表",
+            "style": "primary"
+          },
+          "clearBtn": {
+            "text": "清除选区",
+            "style": "info"
+          },
+          "cleanBtn": {
+            "text": "清除已选片段",
+            "style": "light"
+          },
+          "okBtn": {
+            "text": "不再添加，完成",
+            "go": "start",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleReasonAgainstCommenSense": {
+        "ref": "handleReasonAgainstCommenSense",
+        "name": "处理归因：不符合常识",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "请在文中划选不符合常识的文本片段",
+          "selectedTitle": "当前选中的不符合常识的文本片段是：",
+          "instruction": "请填写该片段所不符合的常识",
+          "data": {
+            "label": "ReasonAgainstCommenSense",
+            "desc": "不符合常识",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "start",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleReasonOther": {
+        "ref": "handleReasonOther",
+        "name": "处理归因：其他",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "请在文中划选造成异常的文本片段",
+          "selectedTitle": "当前选中的造成异常的文本片段是：",
+          "instruction": "请填写异常的具体原因",
+          "data": {
+            "label": "ReasonOther",
+            "desc": "存在其他问题",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "start",
             "style": "success"
           },
           "cancelBtn": {

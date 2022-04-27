@@ -75,11 +75,12 @@
         </div>
         <div class="row align-items-center my-2">
           <div class="col col-12 my-2">
-            <div>若要进行审核工作，请移步至 <a href="./inspect" target="_blank">审核工具</a> 。</div>
+            <div>若非进行任务分配，请移步至 <a href="./master">新版</a> 。</div>
+            <!-- <div>若要进行审核工作，请移步至 <a href="./inspect" target="_blank">审核工具</a> 。</div>
             <div>操作步骤：</div>
             <div>1、如果太久没刷新，点「刷新全部」；否则点「加载缓存」</div>
             <div>2、等待处理完毕</div>
-            <div>3、点击「开始工作」，加载工作页面</div>
+            <div>3、点击「开始工作」，加载工作页面</div> -->
           </div>
           <div class="col col-12">
             <button
@@ -227,7 +228,7 @@
           </div>
         </div>
 
-        <!-- <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.todos">
+        <!-- <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.todos">
           <div class="col col-12">
           </div>
         </div> -->
@@ -236,7 +237,7 @@
 
 
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.overview">
+        <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.overview">
           <div class="col col-12">
             <div>语料总量：一共有多少，其中删除的一共有多少。</div>
             <div>纯原句多少，替换句多少，替换句对多少。任务是否已设置。</div>
@@ -276,7 +277,7 @@
 
 
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.entryAndTask">
+        <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.entryAndTask">
           <div class="col col-12">
             <h4>检索</h4>
           </div>
@@ -323,7 +324,7 @@
             >检索</button>
           </div>
         </div>
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.entryAndTask">
+        <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.entryAndTask">
           <div class="col col-12">
             <h4>检索结果</h4>
           </div>
@@ -402,7 +403,7 @@
 
 
 
-        <div class="row align-items-center my-4" v-show="ctrl.tab == TABS.entryAndTask">
+        <div class="row align-items-center my-4" v-if="ctrl.tab == TABS.entryAndTask">
           <div class="col col-12">
             <h4>质检题情况</h4>
 
@@ -425,7 +426,7 @@
           </div>
         </div>
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.entryAndTask">
+        <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.entryAndTask">
           <div class="col col-12">
             <h4>按标签分组</h4>
 
@@ -468,7 +469,7 @@
 
 
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.taskAssign">
+        <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.taskAssign">
           <div class="col col-12">
             <div>说明：分配任务前，请先：1、在后端构建任务；2、刷新Task表；3、刷新Entry表。</div>
           </div>
@@ -563,7 +564,7 @@
 
 
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.taskAssign">
+        <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.taskAssign">
           <div class="col col-12">
             <button
               type="button"
@@ -608,7 +609,12 @@
               <ul class="list-group max-vh-40 overflow-auto border border-1">
                 <li class="list-group-item" v-for="item in assignData.analysis">
                   <div>
-                    <span>「{{item?.plan?.topic}} 任务 #{{item.id}}</span><span></span> / <span></span><span>语料 #{{item?.plan?.entry}}」</span>
+                    <button
+                      type="button"
+                      class="btn btn-sm btn-light my-1 me-2"
+                      @click="modalBox_open('task-detail', theDB.taskDict[item?.plan?.id])"
+                    >task#{{item?.plan?.id}}</button>
+                    <span>「{{item?.plan?.topic}} 任务 #{{item.id}}</span><span> / </span><span>语料 #{{item?.plan?.entry}}」</span>
                     <!-- <br v-if="item.new_to?.length"/> -->
                     <span v-if="item.new_to?.length">
                       分配给：
@@ -664,7 +670,7 @@
 
 
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
+        <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.userProgress">
           <div class="col col-12 my-2">
             <div>
               <button
@@ -718,13 +724,13 @@
           </div>
         </div>
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
+        <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.userProgress">
           <div class="col col-12 my-2">
             <div>已审核 {{theDB?.annos?.filter?.(it=>it?.content?.review)?.length}} / {{theDB?.annos?.length}}</div>
           </div>
         </div>
 
-        <div class="row align-items-center my-2" v-show="ctrl.tab == TABS.userProgress">
+        <div class="row align-items-center my-2" v-if="ctrl.tab == TABS.userProgress">
           <div class="container my-2">
             <div
               class="row align-items-center my-1 border rounded p-2"
@@ -744,12 +750,13 @@
               <!-- </div>
               <div class="col col-12 col-sm-6 col-md-3 my-2"> -->
                 <span class="badge bg-light text-dark me-1" :title="当前任务">{{user.currBatchName??topic_regulation(user.currTask)}}</span>
-                <span class="badge bg-light text-dark me-1">已标总量：{{user.allAnnos?.length}}</span>
+                <!-- <span class="badge bg-light text-dark me-1" :title="已标总量">总 {{user.allAnnos?.length}}</span> -->
+                <span class="badge bg-light text-dark me-1" :title="当前进度">此类 {{ userCurrDoneTasks(user).length }}/{{ userCurrTasks(user).length }}</span>
                 <template v-for="sum in [inspectionSum(user)]"><span
                   class="badge me-1"
                   :class="sum?.passRatio>=0.9 ? 'bg-success text-light' : sum?.passRatio>=0.8 ? 'bg-light text-success border border-1 border-success' : sum?.passRatio==null ? 'bg-light text-dark' : sum?.passRatio<=0.6 ? 'bg-danger text-light' : 'bg-light text-danger border border-1 border-danger'"
                 >审核通过率：{{sum?.passRatio?.toFixed?.(3)??'null'}}</span>
-                <span class="badge bg-light text-dark me-1">已审：{{inspectionSum(user)?.sum}}</span></template>
+                <span class="badge bg-light text-dark me-1">已审：{{sum?.sum}}</span></template>
               </div>
               <div class="col col-12 col-md-6 col-lg-6 my-1">
                 <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="当前任务进度">
@@ -760,7 +767,7 @@
                     :aria-valuenow="userProgress(user).mn"
                     :aria-valuemax="userProgress(user).bg"
                     aria-valuemin="0"
-                  >当前任务进度　{{ userCurrDoneTasks(user).length }}/{{ userCurrTasks(user).length }}</div>
+                  >当前 {{userProgress(user).pct}} = {{ userCurrDoneTasks(user).length }}/{{ userCurrTasks(user).length }}</div>
                 </div>
               </div>
               <div class="col col-12 col-md-12 col-lg-2 mt-1">

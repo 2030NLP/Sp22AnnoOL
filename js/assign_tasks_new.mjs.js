@@ -201,6 +201,13 @@ const assign_tasks = async (pack, lo) => {
       };
       if (new_to.length != task.to.length) {
         task.to = new_to;
+        if (task.batchName != batchName) {
+          if (!task.batchNameHistory) {
+            task.batchNameHistory = [];
+          };
+          task.batchNameHistory.push(task.batchName);
+          task.batchName = batchName;
+        };
         modified_task_ids.push(task.id);
       };
     };

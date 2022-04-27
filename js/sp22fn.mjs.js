@@ -339,8 +339,8 @@ class Sp22FN {
   static tasks_computed(db) {
     return {
       total: Sp22FN.tasks_sta(db.tasks),
-      by_topic: Object.entries(db.computeTopicTaskDict()).map(pr => [pr[0], tasks_sta(pr[1])]),
-      by_batchName: Object.entries(db.computeBatchNameTaskDict()).map(pr => [pr[0], tasks_sta(pr[1])]),
+      by_topic: Object.entries(db.computeTopicTaskDict()).map(pr => [pr[0], Sp22FN.tasks_sta(pr[1])]),
+      by_batchName: Object.entries(db.computeBatchNameTaskDict()).map(pr => [pr[0], Sp22FN.tasks_sta(pr[1])]),
     };
   }
 
@@ -389,6 +389,10 @@ class Sp22FN {
 
   static annoLabelText(anno, _lo) {
     return Sp22FN.annoLabels(anno, _lo).join("&");
+  }
+
+  static labelAnnoDict(annos, _lo) {
+    return _lo.groupBy(annos, it=>`${it.topic}-${Sp22FN.annoLabelText(it, _lo)}`);
   }
 
   static annoTask1LabelSideText(anno, _lo) {

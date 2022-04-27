@@ -83,7 +83,12 @@ class Sp22DB {
 
   toObject() {
     const object = {
-      db: this.lo.pick(this.db, ['entries', 'tasks', 'users', 'annos']),
+      db: {
+        entries: this.db.entries,
+        tasks: this.db.tasks,
+        users: this.db.users,
+        annos: this.db.annos,
+      },  // this.lo.pick(this.db, ['entries', 'tasks', 'users', 'annos']),
       cache: this.cache,
       state: JSON.parse(JSON.stringify(this.state)),
     };
@@ -174,44 +179,28 @@ class Sp22DB {
   get allDictsNotBuilt() { return !this.state.entryDictBuilt && !this.state.taskDictBuilt && !this.state.userDictBuilt && !this.state.annoDictBuilt; }
 
   entry(id) {
-    if (!(id in this.entryDict) || !(this.entryDict[id])) {
-      let found = this.lo.find(this.entries, it=>it.id==id);
-      if (found) {
-        this.entryDict[id];
-        this.updateModified();
-      };
-    };
-    return this.entryDict[id];
+    // if (!Object.keys(this.db.entryDict??{})) {
+    //   this.buildEntryDict();
+    // };
+    return this.db.entryDict[id];
   }
   task(id) {
-    if (!(id in this.taskDict) || !(this.taskDict[id])) {
-      let found = this.lo.find(this.tasks, it=>it.id==id);
-      if (found) {
-        this.taskDict[id];
-        this.updateModified();
-      };
-    };
-    return this.taskDict[id];
+    // if (!Object.keys(this.db.taskDict??{})) {
+    //   this.buildTaskDict();
+    // };
+    return this.db.taskDict[id];
   }
   user(id) {
-    if (!(id in this.userDict) || !(this.userDict[id])) {
-      let found = this.lo.find(this.users, it=>it.id==id);
-      if (found) {
-        this.userDict[id];
-        this.updateModified();
-      };
-    };
-    return this.userDict[id];
+    // if (!Object.keys(this.db.userDict??{})) {
+    //   this.buildUserDict();
+    // };
+    return this.db.userDict[id];
   }
   anno(id) {
-    if (!(id in this.annoDict) || !(this.annoDict[id])) {
-      let found = this.lo.find(this.annos, it=>it.id==id);
-      if (found) {
-        this.annoDict[id];
-        this.updateModified();
-      };
-    };
-    return this.annoDict[id];
+    // if (!Object.keys(this.db.annoDict??{})) {
+    //   this.buildAnnoDict();
+    // };
+    return this.db.annoDict[id];
   }
 
   getAnnoByUserAndTask(user_id, task_id) {
@@ -370,6 +359,7 @@ class Sp22DB {
 
     for (let task_id of [anno.task]) {
       let task = this.task(anno.task);
+      if (!task) {continue};
       if (!anno.topic) {
         anno.topic = task.topic;
       };
@@ -442,7 +432,7 @@ class Sp22DB {
       await this.extendEntryByTask(entry, task);
     };
     const entryAnnos = this.annos.filter(it=>it.entry==entry.id);
-    for await (let anno of userAnnos) {
+    for await (let anno of entryAnnos) {
       await this.extendEntryByAnno(entry, anno);
     };
   }
@@ -543,20 +533,24 @@ class Sp22DB {
 
 
 
-  userCurrTasks(user) {
+  userCurrTasks(user, batchName) {
     let tt = user.allTasks ?? [];
-    return this.lo.filter(tt, task_id => Sp22FN.topic_regulation(this.task(task_id).topic)==Sp22FN.topic_regulation(user.currTask));
+    if (batchName==null) {batchName=user?.currBatchName};
+    return this.lo.filter(tt, task_id => this.task(task_id)?.batchName==batchName);
+    // return this.lo.filter(tt, task_id => Sp22FN.topic_regulation(this.task(task_id)?.topic)==Sp22FN.topic_regulation(user.currTask));
   }
-  userCurrDoneTasks(user) {
+  userCurrDoneTasks(user, batchName) {
     let tt = user.doneTasks ?? [];
-    return this.lo.filter(tt, task_id => Sp22FN.topic_regulation(this.task(task_id).topic)==Sp22FN.topic_regulation(user.currTask));
+    if (batchName==null) {batchName=user?.currBatchName};
+    return this.lo.filter(tt, task_id => this.task(task_id)?.batchName==batchName);
+    // return this.lo.filter(tt, task_id => Sp22FN.topic_regulation(this.task(task_id)?.topic)==Sp22FN.topic_regulation(user.currTask));
   }
-  userProgress(user) {
-    let cDoneLen = this.userCurrDoneTasks(user).length;
-    let cDueLen = this.userCurrTasks(user).length;
+  userProgress(user, batchName) {
+    let cDoneLen = this.userCurrDoneTasks(user, batchName).length;
+    let cDueLen = this.userCurrTasks(user, batchName).length;
     let bg = Math.max(cDoneLen, cDueLen);
     let mn = Math.min(cDoneLen, cDueLen);
-    let pct = bg==0 ? `0` : `${mn/bg*100}%`;
+    let pct = bg==0 ? `0` : `${(mn/bg*100).toFixed(2)}%`;
     let ratio = cDoneLen/cDueLen;
     ratio = isNaN(ratio) ? 0 : ratio;
     let done = cDoneLen >= cDueLen;
@@ -572,11 +566,11 @@ class Sp22DB {
   }
   userCurrBatchTasks(user) {
     let tt = user.allTasks ?? [];
-    return this.lo.filter(tt, task_id => this.task(task_id).batchName==user.currBatchName);
+    return this.lo.filter(tt, task_id => this.task(task_id)?.batchName==user.currBatchName);
   }
   userCurrBatchDoneTasks(user) {
     let tt = user.doneTasks ?? [];
-    return this.lo.filter(tt, task_id => this.task(task_id).batchName==user.currBatchName);
+    return this.lo.filter(tt, task_id => this.task(task_id)?.batchName==user.currBatchName);
   }
   userCurrBatchProgress(user) {
     let cDoneLen = this.userCurrBatchDoneTasks(user).length;
@@ -614,33 +608,83 @@ class Sp22DB {
 
 
 
-    inspectionSum(user) {
-      let annos = (user?.allAnnos??[]).map(it=>this.anno(it)).filter(it=>it?.batchName==user?.currBatchName);
-      let sum = this.lo.countBy(annos, anno=>anno?.content?.review?.accept);
-      sum.sum = (sum.false??0) + (sum.true??0);
-      sum.passRatio = sum.sum==0 ? null : (sum.true??0)/sum.sum;
-      return sum;
-    };
+  inspectionSum(user, batchName) {
+    if (batchName==null) {batchName=user?.currBatchName};
+    let annos = (user?.allAnnos??[]).map(it=>this.anno(it)).filter(it=>it?.batchName==batchName);
+    let sum = this.lo.countBy(annos, anno=>anno?.content?.review?.accept);
+    sum.sum = (sum.false??0) + (sum.true??0);
+    sum.passRatio = sum.sum==0 ? null : (sum.true??0)/sum.sum;
+    return sum;
+  };
 
-    sortFnByPassRatio(u1, u2) {
-      let ins1 = this.inspectionSum(u1);
-      let ins2 = this.inspectionSum(u2);
-      if (!ins1.false && !ins1.true) {return true};
-      if (!ins2.false && !ins2.true) {return false};
-      let r1 = ins1.passRatio - ins2.passRatio;
-      if (r1!=0) {return r1;};
-      return (ins1.true??0) - (ins2.true??0);
+  firstInspectionSum(user, batchName) {
+    const 求标签不连续出现次数 = (labels, label) => {
+      let num = 0;
+      let lastLabel;
+      for (let lb of labels) {
+        if (lb === label && lastLabel != label) {
+          num++;
+        };
+        lastLabel = lb;
+      };
+      return num;
     };
+    const 是否经过审核 = (anno) => {
+      return 求标签不连续出现次数(anno?.content?._ctrl?.timeLog?.map?.(it=>it[0]), "check") > 0;
+    };
+    const 是否只审核了一次 = (anno) => {
+      return 求标签不连续出现次数(anno?.content?._ctrl?.timeLog?.map?.(it=>it[0]), "check") === 1;
+    };
+    const 是否初审就通过 = (anno) => {
+      return anno?.content?.review?.accept && 是否只审核了一次(anno);
+    };
+    if (batchName==null) {batchName=user?.currBatchName};
+    let annos = (user?.allAnnos??[]).map(it=>this.anno(it)).filter(it=>it?.batchName==batchName&&是否经过审核(it));
+    let sum = this.lo.countBy(annos, anno=>是否初审就通过(anno));
+    sum.sum = (sum.false??0) + (sum.true??0);
+    sum.passRatio = sum.sum==0 ? null : (sum.true??0)/sum.sum;
+    return sum;
+  };
 
-    sortFnByPassRatioR(u1, u2) {
-      let ins1 = this.inspectionSum(u1);
-      let ins2 = this.inspectionSum(u2);
-      if (!ins1.false && !ins1.true) {return true};
-      if (!ins2.false && !ins2.true) {return false};
-      let r1 = ins2.passRatio - ins1.passRatio;
-      if (r1!=0) {return r1;};
-      return (ins2.true??0) - (ins1.true??0);
-    };
+  sortFnByPassRatio(u1, u2, batchName) {
+    let ins1 = this.inspectionSum(u1, batchName);
+    let ins2 = this.inspectionSum(u2, batchName);
+    if (!ins1.false && !ins1.true) {return true};
+    if (!ins2.false && !ins2.true) {return false};
+    let r1 = ins1.passRatio - ins2.passRatio;
+    if (r1!=0) {return r1;};
+    return (ins1.true??0) - (ins2.true??0);
+  };
+
+  sortFnByPassRatioR(u1, u2, batchName) {
+    let ins1 = this.inspectionSum(u1, batchName);
+    let ins2 = this.inspectionSum(u2, batchName);
+    if (!ins1.false && !ins1.true) {return true};
+    if (!ins2.false && !ins2.true) {return false};
+    let r1 = ins2.passRatio - ins1.passRatio;
+    if (r1!=0) {return r1;};
+    return (ins2.true??0) - (ins1.true??0);
+  };
+
+  sortFnByPrimaryPassRatio(u1, u2, batchName) {
+    let ins1 = this.firstInspectionSum(u1, batchName);
+    let ins2 = this.firstInspectionSum(u2, batchName);
+    if (!ins1.false && !ins1.true) {return true};
+    if (!ins2.false && !ins2.true) {return false};
+    let r1 = ins1.passRatio - ins2.passRatio;
+    if (r1!=0) {return r1;};
+    return (ins1.true??0) - (ins2.true??0);
+  };
+
+  sortFnByPrimaryPassRatioR(u1, u2, batchName) {
+    let ins1 = this.firstInspectionSum(u1, batchName);
+    let ins2 = this.firstInspectionSum(u2, batchName);
+    if (!ins1.false && !ins1.true) {return true};
+    if (!ins2.false && !ins2.true) {return false};
+    let r1 = ins2.passRatio - ins1.passRatio;
+    if (r1!=0) {return r1;};
+    return (ins2.true??0) - (ins1.true??0);
+  };
 
 
 
@@ -656,11 +700,11 @@ class Sp22DB {
 
 
   computeTopicTaskDict() {
-    return this.lo.keyBy(this.tasks, 'topic');
+    return this.lo.groupBy(this.tasks, 'topic');
   }
 
   computeBatchNameTaskDict() {
-    return this.lo.keyBy(this.tasks, 'batchName');
+    return this.lo.groupBy(this.tasks, 'batchName');
   }
 
 
@@ -670,7 +714,9 @@ class Sp22DB {
 
 
 
-
+  labelAnnoDict() {
+    return Sp22FN.labelAnnoDict(this.annos, this.lo);
+  }
 
 
 
