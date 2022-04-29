@@ -266,20 +266,20 @@
     }*/
 
     /*介词 （4）介词高亮：autoSpatial为true且pos为p */
-    /*.material-area span.token[data-auto-spatial=true][data-pos=p] {
-      color: #8847ff;
-    }*/
-    .material-area span.token[data-pos=p] {
+    .material-area span.token[data-auto-spatial=true][data-pos=p] {
       color: #8847ff;
     }
+/*    .material-area span.token[data-pos=p] {
+      color: #8847ff;
+    }*/
 
     /*副词 （5）副词高亮：autoSpatial为true且pos为d */
-    /*.material-area span.token[data-auto-spatial=true][data-pos=d] {
-      color: #4297c1;
-    }*/
-    .material-area span.token[data-pos=d] {
+    .material-area span.token[data-auto-spatial=true][data-pos=d] {
       color: #4297c1;
     }
+/*    .material-area span.token[data-pos=d] {
+      color: #4297c1;
+    }*/
 
 
     /*名词 autoEntity为True*/
