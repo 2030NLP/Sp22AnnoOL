@@ -19,6 +19,8 @@ const UserListPanel = {
       selectedBatchName: "",
       总审核量文本: "",
       此批审核量文本: "",
+      审核完美率文本: "",
+      初审完美率文本: "",
       listControlSettings: {
         showQuittedUsers: false,
         managerFilter: "【all】",
@@ -47,6 +49,21 @@ const UserListPanel = {
       let currReviewedAnnos = allReviewedAnnos?.filter?.(it=>it.batchName==localData.selectedBatchName) ?? [];
       localData.总审核量文本 = `${allReviewedAnnos.length} / ${theDB?.annos?.length} = ${(allReviewedAnnos.length/theDB?.annos?.length).toFixed(2)}`;
       localData.此批审核量文本 = `${currReviewedAnnos.length} / ${currAnnos.length} = ${(currReviewedAnnos.length/currAnnos.length).toFixed(2)}`;
+
+      let 有效用户 = (theDB?.users??[]).filter(user => theDB.inspectionSum(user, localData.selectedBatchName)?.sum>0);
+
+      let 审核完美布尔数组 = 有效用户.map(user => theDB.inspectionSum(user, localData.selectedBatchName)?.passRatio >= 0.9);
+      let 初审完美布尔数组 = 有效用户.map(user => theDB.firstInspectionSum(user, localData.selectedBatchName)?.passRatio >= 0.9);
+
+      let 审核完美量 = 审核完美布尔数组.filter(it=>it==true).length;
+      let 初审完美量 = 初审完美布尔数组.filter(it=>it==true).length;
+
+      let 审核完美率 = 审核完美量 / 审核完美布尔数组.length;
+      let 初审完美率 = 初审完美量 / 初审完美布尔数组.length;
+
+      localData.审核完美率文本 = `${审核完美量} / ${审核完美布尔数组.length} = ${审核完美率.toFixed(2)}`;
+      localData.初审完美率文本 = `${初审完美量} / ${初审完美布尔数组.length} = ${初审完美率.toFixed(2)}`;
+
       console.log(localData);
     };
 
@@ -111,9 +128,11 @@ const UserListPanel = {
                 ]),
               ]),
 
-              h("div", { 'class': "d-inline-block align-middle my-1 me-2", }, [
-                "全部已审", " ", localData.总审核量文本, " | ",
-                "此批已审", " ", localData.此批审核量文本,
+              h("div", { 'class': "__d-inline-block align-middle my-1 me-2", }, [
+                "全部已审", " ", localData.总审核量文本, h("br"),
+                "此批已审", " ", localData.此批审核量文本, h("br"),
+                "此批审核通过率达0.9以上的人员的比例", " ", localData.审核完美率文本, h("br"),
+                "此批初审通过率达0.9以上的人员的比例", " ", localData.初审完美率文本,
               ]),
               h("button", {
                 'type': "button",

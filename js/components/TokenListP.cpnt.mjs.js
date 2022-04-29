@@ -20,7 +20,15 @@ const TokenListP = {
       // console.log(token, event);
       ctx.emit('tkn-up', {token, event});
     };
-    return { onTknDown, onTknEnter, onTknOut, onTknUp };
+
+    const list = ["向", "到", "往", "自", "至", "朝", "在", "距", "于", "与", "同", "和", "随", "跟", "经", "从", "由", "沿", "使", "把", "以", "用", "被", "沿着", "朝着", "向着", "随着", "对着", "通过", "经由", "顺着", "距离", "连同", "靠着", "快速", "急速", "迅速", "疾速", "火速", "飞速", "稳步", "缓缓", "慢速", "缓慢", "低速", "急剧", "缓慢", "到处", "处处", "四处", "随处", "随地", "四下", "一起", "一道", "一齐", "单独", "大步", "阔步", "健步", "缓步", "快步", "急步", "疾步", "齐步", "单向", "双向", "当场", "现场", "当面", "正面", "实地", "就近", "中途", "顺路"];
+
+    const inList = (token) => {
+      let word = token?.to?.word ?? token?.word;
+      return list.includes(word);
+    };
+
+    return { onTknDown, onTknEnter, onTknOut, onTknUp, inList };
   },
   render() {
     return h(
@@ -40,6 +48,7 @@ const TokenListP = {
           'data-auto-dverb' : token?.autoDVerb,
           'data-auto-entity' : token.autoEntity,
           'data-auto-spatial' : token.autoSpatial,
+          'data-in-list' : this.inList(token),
           'data-selecting' : token?._ctrl?.selecting,
           'data-selected' : token?._ctrl?.selected,
           'data-replaced' : token?.to?.word?.length ? true : false,

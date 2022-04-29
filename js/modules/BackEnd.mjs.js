@@ -408,6 +408,18 @@ class BackEnd {
     return response;
   }
 
+  async postBackup(settings, timeout=1000*60*5) {
+    let response = await this.request({
+      method: "post",
+      url: `/backup`,
+      data: {
+        settings: settings,
+      },
+      timeout: timeout,
+    });
+    return response;
+  }
+
 }
 
 export default BackEnd;
