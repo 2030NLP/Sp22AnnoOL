@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno-Master";
-const APP_VERSION = "22-0429-1115";
+const APP_VERSION = "22-0429-1710";
 
 // 开发环境 和 生产环境 的 控制变量
 const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;
@@ -11,8 +11,8 @@ if (DEVELOPING) {
   console.log("PRODUCTION");
 };
 const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
-const DEV_HOSTS = ["http://192.168.124.3:8888", "http://192.168.1.101:8888", "http://10.1.108.200:8888/", "http://10.0.55.176:8888/", "http://10.2.25.245:8888/"];
-const API_BASE_DEV = DEV_HOSTS[4];
+const DEV_HOSTS = ["http://192.168.124.3:8888", "http://192.168.1.100:8888", "http://10.1.108.200:8888/", "http://10.0.55.176:8888/", "http://10.2.25.245:8888/"];
+const API_BASE_DEV = DEV_HOSTS[1];
 const API_BASE_PROD = "https://sp22.nlpsun.cn";
 const API_BASE = DEVELOPING ? API_BASE_DEV : API_BASE_PROD;
 

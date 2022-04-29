@@ -691,6 +691,14 @@ class Sp22DB {
 
 
 
+  annoLabelTextStatisticsForEntry(entry) {
+    return Sp22FN.annoLabelTextStatisticsForEntry(entry, this);
+  }
+
+
+
+
+
 
 
 

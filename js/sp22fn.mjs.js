@@ -391,6 +391,17 @@ class Sp22FN {
     return Sp22FN.annoLabels(anno, _lo).join("&");
   }
 
+  static annoLabelTextStatisticsForEntry(entry, sp22db, _lo) {
+    if (_lo == null) { _lo = sp22db.lo; };
+    let aids = entry?.allAnnos??[];
+    let annoLabelTexts = _lo.chain(aids)
+      .map(aid=>sp22db?.annoDict?.[aid])
+      .filter(anno=>anno.entry==entry.id)
+      .map(anno=>Sp22FN.annoLabelText(anno, _lo))
+      .value();
+    return _lo.countBy(annoLabelTexts, it=>it);
+  }
+
   static labelAnnoDict(annos, _lo) {
     return _lo.groupBy(annos, it=>`${it.topic}-${Sp22FN.annoLabelText(it, _lo)}`);
   }

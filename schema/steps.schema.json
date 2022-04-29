@@ -377,9 +377,9 @@
               "style": "outline-danger"
             },
             {
-              "text": "其他",
+              "text": "不适合用于计算机空间语义理解",
               "go": "handleReasonOther",
-              "style": "outline-danger"
+              "style": "outline-dark"
             },
             {
               "text": "并无异常",
@@ -509,9 +509,9 @@
         "name": "处理归因：其他",
         "mode": "text",
         "props": {
-          "selectInstruction": "请在文中划选造成异常的文本片段",
-          "selectedTitle": "当前选中的造成异常的文本片段是：",
-          "instruction": "请填写异常的具体原因",
+          "selectInstruction": "请在文中划选相关文本片段",
+          "selectedTitle": "当前选中的文本片段是：",
+          "instruction": "请填写不适合用于计算机空间语义理解的具体原因",
           "data": {
             "label": "ReasonOther",
             "desc": "存在其他问题",
