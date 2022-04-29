@@ -1,0 +1,645 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+
+<link href='https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext' rel='stylesheet' type='text/css' /><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; --title-bar-height:20px; }
+.mac-os-11 { --title-bar-height:28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; inset: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-fences-adv-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+  .typora-export-show-outline .typora-export-sidebar { display: none; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.6; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+.md-expand mark .md-meta { opacity: 0.3 !important; }
+mark .md-meta { color: rgb(0, 0, 0); }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-fences.md-fences-math { font-size: 1em; }
+.md-fences-advanced:not(.md-focus) { padding: 0px; white-space: nowrap; border: 0px; }
+.md-fences-advanced:not(.md-focus) { background: inherit; }
+.typora-export-show-outline .typora-export-content { max-width: 1440px; margin: auto; display: flex; flex-direction: row; }
+.typora-export-sidebar { width: 300px; font-size: 0.8rem; margin-top: 80px; margin-right: 18px; }
+.typora-export-show-outline #write { --webkit-flex:2; flex: 2 1 0%; }
+.typora-export-sidebar .outline-content { position: fixed; top: 0px; max-height: 100%; overflow: hidden auto; padding-bottom: 30px; padding-top: 60px; width: 300px; }
+@media screen and (max-width: 1024px) {
+  .typora-export-sidebar, .typora-export-sidebar .outline-content { width: 240px; }
+}
+@media screen and (max-width: 800px) {
+  .typora-export-sidebar { display: none; }
+}
+.outline-content li, .outline-content ul { margin-left: 0px; margin-right: 0px; padding-left: 0px; padding-right: 0px; list-style: none; }
+.outline-content ul { margin-top: 0px; margin-bottom: 0px; }
+.outline-content strong { font-weight: 400; }
+.outline-expander { width: 1rem; height: 1.42857rem; position: relative; display: table-cell; vertical-align: middle; cursor: pointer; padding-left: 4px; }
+.outline-expander::before { content: ""; position: relative; font-family: Ionicons; display: inline-block; font-size: 8px; vertical-align: middle; }
+.outline-item { padding-top: 3px; padding-bottom: 3px; cursor: pointer; }
+.outline-expander:hover::before { content: ""; }
+.outline-h1 > .outline-item { padding-left: 0px; }
+.outline-h2 > .outline-item { padding-left: 1em; }
+.outline-h3 > .outline-item { padding-left: 2em; }
+.outline-h4 > .outline-item { padding-left: 3em; }
+.outline-h5 > .outline-item { padding-left: 4em; }
+.outline-h6 > .outline-item { padding-left: 5em; }
+.outline-label { cursor: pointer; display: table-cell; vertical-align: middle; text-decoration: none; color: inherit; }
+.outline-label:hover { text-decoration: underline; }
+.outline-item:hover { border-color: rgb(245, 245, 245); background-color: var(--item-hover-bg-color); }
+.outline-item:hover { margin-left: -28px; margin-right: -28px; border-left: 28px solid transparent; border-right: 28px solid transparent; }
+.outline-item-single .outline-expander::before, .outline-item-single .outline-expander:hover::before { display: none; }
+.outline-item-open > .outline-item > .outline-expander::before { content: ""; }
+.outline-children { display: none; }
+.info-panel-tab-wrapper { display: none; }
+.outline-item-open > .outline-children { display: block; }
+.typora-export .outline-item { padding-top: 1px; padding-bottom: 1px; }
+.typora-export .outline-item:hover { margin-right: -8px; border-right: 8px solid transparent; }
+.typora-export .outline-expander::before { content: "+"; font-family: inherit; top: -1px; }
+.typora-export .outline-expander:hover::before, .typora-export .outline-item-open > .outline-item > .outline-expander::before { content: "−"; }
+.typora-export-collapse-outline .outline-children { display: none; }
+.typora-export-collapse-outline .outline-item-open > .outline-children, .typora-export-no-collapse-outline .outline-children { display: block; }
+.typora-export-no-collapse-outline .outline-expander::before { content: "" !important; }
+.typora-export-show-outline .outline-item-active > .outline-item .outline-label { font-weight: 700; }
+.md-inline-math-container mjx-container { zoom: 0.95; }
+
+
+:root {
+    --side-bar-bg-color: #fafafa;
+    --control-text-color: #777;
+}
+
+@include-when-export url(https://fonts.loli.net/css?family=Open+Sans:400italic,700italic,700,400&subset=latin,latin-ext);
+
+/* open-sans-regular - latin-ext_latin */
+  /* open-sans-italic - latin-ext_latin */
+    /* open-sans-700 - latin-ext_latin */
+    /* open-sans-700italic - latin-ext_latin */
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    font-family: "Open Sans","Clear Sans", "Helvetica Neue", Helvetica, Arial, 'Segoe UI Emoji', sans-serif;
+    color: rgb(51, 51, 51);
+    line-height: 1.6;
+}
+
+#write {
+    max-width: 860px;
+  	margin: 0 auto;
+  	padding: 30px;
+    padding-bottom: 100px;
+}
+
+@media only screen and (min-width: 1400px) {
+	#write {
+		max-width: 1024px;
+	}
+}
+
+@media only screen and (min-width: 1800px) {
+	#write {
+		max-width: 1200px;
+	}
+}
+
+#write > ul:first-child,
+#write > ol:first-child{
+    margin-top: 30px;
+}
+
+a {
+    color: #4183C4;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    line-height: 1.4;
+    cursor: text;
+}
+h1:hover a.anchor,
+h2:hover a.anchor,
+h3:hover a.anchor,
+h4:hover a.anchor,
+h5:hover a.anchor,
+h6:hover a.anchor {
+    text-decoration: none;
+}
+h1 tt,
+h1 code {
+    font-size: inherit;
+}
+h2 tt,
+h2 code {
+    font-size: inherit;
+}
+h3 tt,
+h3 code {
+    font-size: inherit;
+}
+h4 tt,
+h4 code {
+    font-size: inherit;
+}
+h5 tt,
+h5 code {
+    font-size: inherit;
+}
+h6 tt,
+h6 code {
+    font-size: inherit;
+}
+h1 {
+    font-size: 2.25em;
+    line-height: 1.2;
+    border-bottom: 1px solid #eee;
+}
+h2 {
+    font-size: 1.75em;
+    line-height: 1.225;
+    border-bottom: 1px solid #eee;
+}
+
+/*@media print {
+    .typora-export h1,
+    .typora-export h2 {
+        border-bottom: none;
+        padding-bottom: initial;
+    }
+
+    .typora-export h1::after,
+    .typora-export h2::after {
+        content: "";
+        display: block;
+        height: 100px;
+        margin-top: -96px;
+        border-top: 1px solid #eee;
+    }
+}*/
+
+h3 {
+    font-size: 1.5em;
+    line-height: 1.43;
+}
+h4 {
+    font-size: 1.25em;
+}
+h5 {
+    font-size: 1em;
+}
+h6 {
+   font-size: 1em;
+    color: #777;
+}
+p,
+blockquote,
+ul,
+ol,
+dl,
+table{
+    margin: 0.8em 0;
+}
+li>ol,
+li>ul {
+    margin: 0 0;
+}
+hr {
+    height: 2px;
+    padding: 0;
+    margin: 16px 0;
+    background-color: #e7e7e7;
+    border: 0 none;
+    overflow: hidden;
+    box-sizing: content-box;
+}
+
+li p.first {
+    display: inline-block;
+}
+ul,
+ol {
+    padding-left: 30px;
+}
+ul:first-child,
+ol:first-child {
+    margin-top: 0;
+}
+ul:last-child,
+ol:last-child {
+    margin-bottom: 0;
+}
+blockquote {
+    border-left: 4px solid #dfe2e5;
+    padding: 0 15px;
+    color: #777777;
+}
+blockquote blockquote {
+    padding-right: 0;
+}
+table {
+    padding: 0;
+    word-break: initial;
+}
+table tr {
+    border: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 0;
+}
+table tr:nth-child(2n),
+thead {
+    background-color: #f8f8f8;
+}
+table th {
+    font-weight: bold;
+    border: 1px solid #dfe2e5;
+    border-bottom: 0;
+    margin: 0;
+    padding: 6px 13px;
+}
+table td {
+    border: 1px solid #dfe2e5;
+    margin: 0;
+    padding: 6px 13px;
+}
+table th:first-child,
+table td:first-child {
+    margin-top: 0;
+}
+table th:last-child,
+table td:last-child {
+    margin-bottom: 0;
+}
+
+.CodeMirror-lines {
+    padding-left: 4px;
+}
+
+.code-tooltip {
+    box-shadow: 0 1px 1px 0 rgba(0,28,36,.3);
+    border-top: 1px solid #eef2f2;
+}
+
+.md-fences,
+code,
+tt {
+    border: 1px solid #e7eaed;
+    background-color: #f8f8f8;
+    border-radius: 3px;
+    padding: 0;
+    padding: 2px 4px 0px 4px;
+    font-size: 0.9em;
+}
+
+code {
+    background-color: #f3f4f4;
+    padding: 0 2px 0 2px;
+}
+
+.md-fences {
+    margin-bottom: 15px;
+    margin-top: 15px;
+    padding-top: 8px;
+    padding-bottom: 6px;
+}
+
+
+.md-task-list-item > input {
+  margin-left: -1.3em;
+}
+
+@media print {
+    html {
+        font-size: 13px;
+    }
+    table,
+    pre {
+        page-break-inside: avoid;
+    }
+    pre {
+        word-wrap: break-word;
+    }
+}
+
+.md-fences {
+	background-color: #f8f8f8;
+}
+#write pre.md-meta-block {
+	padding: 1rem;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border: 0;
+    border-radius: 3px;
+    color: #777777;
+    margin-top: 0 !important;
+}
+
+.mathjax-block>.code-tooltip {
+	bottom: .375rem;
+}
+
+.md-mathjax-midline {
+    background: #fafafa;
+}
+
+#write>h3.md-focus:before{
+	left: -1.5625rem;
+	top: .375rem;
+}
+#write>h4.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h5.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+#write>h6.md-focus:before{
+	left: -1.5625rem;
+	top: .285714286rem;
+}
+.md-image>.md-meta {
+    /*border: 1px solid #ddd;*/
+    border-radius: 3px;
+    padding: 2px 0px 0px 4px;
+    font-size: 0.9em;
+    color: inherit;
+}
+
+.md-tag {
+    color: #a7a7a7;
+    opacity: 1;
+}
+
+.md-toc { 
+    margin-top:20px;
+    padding-bottom:20px;
+}
+
+.sidebar-tabs {
+    border-bottom: none;
+}
+
+#typora-quick-open {
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+}
+
+#typora-quick-open-item {
+    background-color: #FAFAFA;
+    border-color: #FEFEFE #e5e5e5 #e5e5e5 #eee;
+    border-style: solid;
+    border-width: 1px;
+}
+
+/** focus mode */
+.on-focus-mode blockquote {
+    border-left-color: rgba(85, 85, 85, 0.12);
+}
+
+header, .context-menu, .megamenu-content, footer{
+    font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+.file-node-content:hover .file-node-icon,
+.file-node-content:hover .file-node-open-state{
+    visibility: visible;
+}
+
+.mac-seamless-mode #typora-sidebar {
+    background-color: #fafafa;
+    background-color: var(--side-bar-bg-color);
+}
+
+.md-lang {
+    color: #b4654d;
+}
+
+/*.html-for-mac {
+    --item-hover-bg-color: #E6F0FE;
+}*/
+
+#md-notification .btn {
+    border: 0;
+}
+
+.dropdown-menu .divider {
+    border-color: #e5e5e5;
+    opacity: 0.4;
+}
+
+.ty-preferences .window-content {
+    background-color: #fafafa;
+}
+
+.ty-preferences .nav-group-item.active {
+    color: white;
+    background: #999;
+}
+
+.menu-item-container a.menu-style-btn {
+    background-color: #f5f8fa;
+    background-image: linear-gradient( 180deg , hsla(0, 0%, 100%, 0.8), hsla(0, 0%, 100%, 0)); 
+}
+
+
+
+</style><title>task2_guide0428V2</title>
+</head>
+<body class='typora-export os-windows'><div class='typora-export-content'>
+<div id='write'  class=''><h3 id='centerspace2022中文空间语义理解评测数据标注工作指南center'><center><span>SpaCE2022中文空间语义理解评测数据标注工作指南</span></center></h3><h4 id='centertask2判断造成句子空间语义错误的原因是什么center'><center><span>task2：判断造成句子空间语义错误的原因是什么</span></center></h4><center>欢迎大家参与本次数据标注工作！</center><p><a href='#任务简介'><span>任务简介</span></a></p><p><a href='#语料来源'><span>语料来源</span></a></p><p><a href='#选项说明'><span>选项说明</span></a></p><p><a href='#标注工具使用说明'><span>标注工具使用说明</span></a></p><hr /><h4 id='任务简介'><span>任务简介</span></h4><ul><li><span>SpaCE2022课题组通过计算机程序收集了大量自然文本语料，该语料经过计算机程序自动分词和词性标注处理后对</span><font color="dc3545"><strong><span>方位词</span></strong></font><span>、</span><font color="e39128"><strong><span>趋向动词</span></strong></font><span>和</span><font color="11ab21"><strong><span>处所词</span></strong></font><span>进行了高亮显示。人工标注任务首先是根据语感判断一段中文文本中高亮词语所表达的空间语义信息是否有异常（task-1任务）。如果确实存在异常，则进一步分析造成异常的原因具体是什么，在标注页面上，选择适当的一种或多种原因类型（task-2任务）。</span></li></ul><p>&nbsp;</p><hr /><p>&nbsp;</p><h4 id='语料来源'><span>语料来源</span></h4><ul><li><p><span>本任务语料来自多个领域，有普通日常语言的文本，还有专业领域的文本，比如体育领域人体动作类语料、地理百科类语料等。</span></p><p>&nbsp;</p><hr /><p>&nbsp;</p></li></ul><h4 id='选项说明'><span>选项说明</span></h4><ul><li><p><strong><span>选项1： 搭配不当</span></strong></p><ul><li><p><span>含义：两个表示空间信息的语言成分不能搭配，因为语法、韵律、语言习惯等因素，通常不会这样说。</span></p></li><li><p><font style="font-family:楷体"><span>示例1 庄先生从少年宫回来之后，气呼呼一屁股坐在沙发上，脸色阴沉，那对浓眉像老鹰似的飞到额头，目光</span><font color="red"><strong><span>上</span></strong></font><span>燃烧着痛苦的怒火。</span></font></p><p><span>【红色高亮词”上”跟相邻的 “目光”不能搭配，不仅在这个句中无法组合，在所有句子中都无法组合，因此，该句异常的原因是“</span><strong><span>搭配不当</span></strong><span>”。标注者应首先选中不能搭配的两个成分，然后点选“搭配不当”。】</span></p></li><li><p><font style="font-family:楷体"><span>示例2 毛泽东终于见到了贺子珍，这是在老界山的山里</span><font color="red"><strong><span>下</span></strong></font><span>。那天在董老的安排下，两人在蒙蒙的细雨中，在老界山下那个半壁的小石屋里见面了。警卫员吴吉清把那盏马灯点亮，便退了出去。</span></font></p><p><span>【红色高亮词“下”和相邻的”山里“不宜搭配&quot;，不仅在这个句中无法组合，在所有句子中都无法组合，因此，该句异常的原因是“</span><strong><span>搭配不当</span></strong><span>”。标注者应首先选中不能搭配的两个成分，然后点选“搭配不当”。】</span></p></li><li><p><font style="font-family:楷体"><span>示例3 在芦苇丛里，水面</span><font color="red"><strong><span>边</span></strong></font><span>露出个小脑袋来。雨来还是像小鸭子一样抖着头上的水，用手抹一下眼睛和鼻子，扒着芦苇，向岸上的人问道：“鬼子走了？</span></font></p><p><span>【红色高亮词“边”和相邻的”水面“不宜搭配&quot;，不仅在这个句中无法组合，在所有句子中都无法组合，因此，该句异常的原因是“</span><strong><span>搭配不当</span></strong><span>”。标注者应首先选中不能搭配的两个成分，然后点选“搭配不当”。】</span></p></li><li><p><font style="font-family:楷体"><span>示例4 中午时分在一处小镇上买些面条吃了，又向东行。他无牵无挂，任意漫游，走到傍晚，前面树林中露出一角黄墙，行到近处，见是一所寺观，屋宇宏伟，门前铺着一条宽阔平正的青石板路，山门</span><font color="red"><strong><span>顶</span></strong></font><span>走出两个身负长剑的黄冠道人来。</span></font></p><p><span>【红色高亮部分“顶”和相邻的”山门“不宜搭配&quot;，不仅在这个句中无法组合，在所有句子中都无法组合，因此，该句异常的原因是“</span><strong><span>搭配不当</span></strong><span>”。标注者应首先选中不能搭配的两个成分，然后点选“搭配不当”。】</span></p></li></ul></li><li><p><strong><span>选项2：语义冲突</span></strong></p><ul><li><p><span>含义：句中表示空间信息的语言成分与上下文的其他空间方位表达（可以是词，也可以是词组或句子）在语义上不连贯或起冲突。两个成分通常不一起使用，主要是因为它们语义不兼容，而不是因为语法、韵律、习惯等因素。</span></p></li><li><p><font style="font-family:楷体"><span>示例5 这个就是我从水里捞出来的美国人手上戴着的戒指，</span><font color="red"><strong><span>里面刻着他的名字</span></strong></font><span>。塞科高高地举起戒指说，</span><font color="red"><strong><span>前面的名字</span></strong></font><span>是，他一边看一边念出</span><font color="red"><strong><span>里面刻着的字</span></strong></font><span>：“约翰·罗伯森·邓纳姆”。</span></font>
+<span>【红色高亮部分“前面的名字”和上文“里面刻着他的名字”、下文“里面刻着的字”语义冲突“，因此，该句异常的原因是“</span><strong><span>语义冲突</span></strong><span>”。标注者应首先选中语义冲突的两个或多个成分，然后点选“语义冲突”。】</span></p></li><li><p><font style="font-family:楷体"><span>示例6 从“女部长小合唱”中不难看出外经贸部部长吴仪对音乐的喜爱，作为音乐厅的常客，尽管她从</span><font color="red"><strong><span>不坐贵宾席</span></strong></font><span>，</span><font color="red"><strong><span>不出贵宾室</span></strong></font><span>，每次只悄悄坐在边上，但总是很容易被认出来，演出结束后常常挤得这位在谈判中挥洒自如的女部长迟迟不得脱身。</span></font></p><p><span>【红色高亮词“不坐贵宾席”和”不出贵宾室“语义冲突，“出”和“贵宾室”是有可能组合在一起的；但是根据上下文可推知”不出贵宾室“与“不坐贵宾席”语义冲突，句中的“不出贵宾室“应该为”不进贵宾室“。因此，该句异常的原因是“</span><strong><span>语义冲突</span></strong><span>”。标注者应首先选中语义冲突的两个成分，然后点选“语义冲突”。】</span></p></li><li><p><font style="font-family:楷体"><span>示例7 孩子们</span><font color="red"><strong><span>睡在蒙古包里</span></strong></font><span>，他们一醒来，就跳起来</span><font color="red"><strong><span>跑进蒙古包</span></strong></font><span>找妈妈。</span></font></p><p><span>【红色高亮部分“睡在蒙古包里”和“跑进蒙古包”语义冲突“，“睡在蒙古包里”和“跑进蒙古包”是有可能出现在同一句中，但由“睡在蒙古包里”可推知孩子们醒来时所处的位置为蒙古包，与“跑进蒙古包”在语义上有冲突，因此，该句异常的原因是“</span><strong><span>语义冲突</span></strong><span>”。标注者应首先选中语义冲突的两个成分，然后点选“语义冲突”。】</span></p></li><li><p class="MsoNormal"><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#212529;background:
+white">示例8 经审理查明，<span lang="EN-US">2020</span>年<span lang="EN-US">11</span>月<span lang="EN-US">19</span>日<span lang="EN-US">16</span>时<span lang="EN-US">45</span>分许，被告人杨某某驾驶牌号为沪<span lang="EN-US">EGXXXX</span>的重型自卸货车<span style="background:lightgrey;mso-highlight:lightgrey">沿上海市浦东新区盐朝公路由</span></span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#DC3545;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">东</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">向</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#DC3545;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">西</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:white">行驶至川南奉公路路口向</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#DC3545;background:
+white">北</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:
+&quot;Segoe UI&quot;;color:#212529;background:white">遇绿灯右转弯时，适逢被放行的被害人朱某某<span lang="EN-US">(</span>女性，<span lang="EN-US">1954</span>年出生<span lang="EN-US">)</span>驾驶自行车<span style="background:lightgrey;mso-highlight:lightgrey">沿盐朝公路由</span></span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#C00000;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">南</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">向</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#DC3545;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">西</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:white">行驶至此，双方发生碰撞，造成朱某某当场死亡及自行车损坏<span lang="EN-US">(</span>物损人民币<span lang="EN-US">241</span>元<span lang="EN-US">)</span>的道路交通事故。</span></span><span class="token"><span lang="EN-US" style="mso-bidi-font-size:10.5pt;font-family:楷体"><o:p></o:p></span></span></p><p><span>【句中“沿上海市浦东新区盐朝公路由东向西”和“沿盐朝公路由南向西”，两处描述在语义上有冲突，二者不可同时存在，因此，该句异常的原因是“</span><strong><span>语义冲突</span></strong><span>”。标注者应首先选中语义冲突的两个成分，然后点选“语义冲突”。】</span></p></li><li><p class="MsoNormal" ;="" text-indent:-7.05pt;mso-char-indent-count:-.67'=""><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#212529;background:
+white">示例9 公诉机关指控，<span lang="EN-US">2018</span>年<span lang="EN-US">7</span>月<span lang="EN-US">16</span>日<span lang="EN-US">17</span>时许，被告人张伟元驾驶号牌号码为沪<span lang="EN-US">C4XXXX</span>大型普通客车沿上海市嘉定区新源路<span style="background:lightgrey;
+mso-highlight:lightgrey">由</span></span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#DC3545;background:
+lightgrey;mso-highlight:lightgrey;mso-shading:white">北</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">向</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#DC3545;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">南</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">行驶</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:white">至曹安公路路口处遇绿灯，遂<span style="background:lightgrey;
+mso-highlight:lightgrey">右转弯由</span></span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#C00000;background:
+lightgrey;mso-highlight:lightgrey;mso-shading:white">西</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">向</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#DC3545;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">东</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">行驶</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:white">，适逢被害人李红英骑行牌号为<span lang="EN-US">XXXXXXX</span>电动自行车沿新源路西侧非机动车道<span style="background:lightgrey;mso-highlight:lightgrey">由</span></span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#DC3545;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">北</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">向</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#DC3545;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">南</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">行驶</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:white">，由于张伟元未按规定让行，致所驾车辆与李红英所骑电动自行车相撞，致两车不同程度损坏，李红英跌地被碾压后当场死亡。</span></span><span class="token"><span lang="EN-US" style="mso-bidi-font-size:10.5pt;font-family:宋体"><o:p></o:p></span></span></p><p><span>【句中客车先“由北向南行驶”再“右转弯”，可推知客车的行驶方向是“由东向西”，与句中”右转弯由西向东行驶“在语义上有冲突，因此，该句异常的原因是“</span><strong><span>语义冲突</span></strong><span>”。标注者应首先选中语义冲突的两个成分，然后点选“语义冲突”。】</span></p></li><li><p class="MsoNormal" ;mso-para-margin-left:2.0gd;="" text-indent:-14.4pt;mso-char-indent-count:-1.37'=""><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#212529;background:
+white">示例10 <span lang="EN-US">7</span>月中下旬，亚洲</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#11AB21;background:white">上空</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#212529;background:
+white">西风带再次经历一次剧变，北移到最</span></span><span class="token"><span style="font-family:
+楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#DC3545;background:white">北</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:white">位置。地面太平洋高压进一步<span style="background:lightgrey;
+mso-highlight:lightgrey">向</span></span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#DC3545;background:
+lightgrey;mso-highlight:lightgrey;mso-shading:white">西</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">向</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#DC3545;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">南</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">扩展</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:white">，高压脊线从北纬<span lang="EN-US">25°</span>再次</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#DC3545;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">北</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;
+color:#212529;background:lightgrey;mso-highlight:lightgrey;mso-shading:white">推到北纬<span lang="EN-US">30°</span></span></span><span class="token"><span style="font-family:
+楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#DC3545;background:lightgrey;
+mso-highlight:lightgrey;mso-shading:white">附近</span></span><span class="token"><span style="font-family:楷体;mso-bidi-font-family:&quot;Segoe UI&quot;;color:#212529;background:
+white">（北纬<span lang="EN-US">25°</span>～<span lang="EN-US">35°</span>），夏季风开始在华北盛行。至此，环流形势从初夏进入盛夏。<span lang="EN-US"><o:p></o:p></span></span></span></p><p><span>【句中“向西向南扩展”单独看没有问题，但跟下文的“从北纬25°再次北推到北纬30°附近”放到一起，就明显有冲突，因此，该句异常的原因是“</span><strong><span>语义冲突</span></strong><span>”。标注者应首先选中语义冲突的两个成分，然后点选“语义冲突”。】</span></p></li></ul></li><li><p><strong><span>选项3：不符合常识</span></strong></p><ul><li><p><span>含义：句中跟空间义表述相关的内容有不符合常识的地方。</span></p></li><li><p><font style="font-family:楷体"><span>示例11 他信步而行，走了半天，又</span><font color="red"><strong><span>到了长江里边</span></strong></font><span>，沿着江边大路，向下游行去。</span></font></p><p><span>【红色高亮部分“到了长江里边”不符合常识，标注者可选中红色高亮部分，点选“</span><strong><span>不符合常识</span></strong><span>”，并在弹出的文本框内填写不符合常识的原因：”人一般无法在江里行走。”】</span></p></li></ul><ul><li><p><font style="font-family:楷体"><span>示例12 男人们在午前到亲戚家、朋友家拜年。女人们在家中接待客人。城内城外有许多寺院举办庙会，小贩们在庙外摆摊卖茶、食品和各种玩具。小孩们特别爱逛庙会，为的是有机会到</span><font color="red"><strong><span>市区</span></strong></font><span>看看野景，可以骑毛驴，还能买到那些新年特有的玩具。庙会上有赛马的，还有赛骆驼的。这些比赛并不为争谁第一谁第二，而是在观众面前表演马骆驼与骑者的美好姿态与娴熟技能。</span></font></p><p><span>【红色高亮部分“市区”不符合常识，标注者可选中红色高亮部分，点选“</span><strong><span>不符合常识</span></strong><span>”，并在弹出的文本框内填写不符合常识的原因：”句中市区和后文的“野景”、“骑毛驴”语义矛盾，这些场景很少出现在市区，多出现在城外、乡下、郊区等处所。”】</span></p></li></ul></li></ul><ul><li><p><strong><span>选项4：其他</span></strong></p><ul><li><span>含义：若该段话不涉及空间语义异常的原因，存在无空间义、错字、敏感等不适合用于空间语义理解的情况，则点选此项。</span></li><li><font style="font-family:楷体"><span>示例13 由谁去充任那些苦难的角色？又有谁去体现这世间的幸福，骄傲和快乐？只好听凭偶然，是没有道理好讲的。</span></font></li></ul></li><li><p><strong><span>选项5：并无异常</span></strong></p><ul><li><span>含义：若该段话空间语义正常，不存在异常情况，则点选此项。</span></li><li><font style="font-family:楷体"><span>示例14 圆明园在北京西北郊，是一座举世闻名的皇家园林。它由圆明园、万春园和长春园组成，所以也叫圆明三园。此外，还有许多小园，分布在圆明园东、西、南三面，众星拱月般环绕在圆明园周围。</span></font></li></ul></li></ul><hr /><h4 id='注意事项'><span>注意事项</span></h4><ol start='' ><li><span>本课题收集语料目的仅为研究之用，为避免在计算机自动处理过程中产生不当信息内容，若句子政治性很强，比如涉及国家大政方针、党的理论，国家领导人等信息；或有国家法律法规不允许传播的内容，比如色情内容，涉恐信息等，就归入选项4「其他」。不再进入后续标注流程。</span></li><li><span>如果一段中文文本中有多种原因类型，则需要点选多个选项。</span></li><li><span>在分析交通事故和体育动作语料中空间方位关系的异常原因时需要设想一下现场情况。</span></li></ol><p>&nbsp;</p><hr /><p>&nbsp;</p><h4 id='标注工具使用说明'><span>标注工具使用说明</span></h4><ul><li><p><span>step1： 用户登录网站 </span><a href='https://2030nlp.github.io/Sp22AnnoOL/'><strong><span>点击网址</span></strong></a></p></li><li><p><span>step2： 输入 </span><strong><span>姓名</span></strong><span> 和 </span><strong><span>密码</span></strong><span> 。</span></p><p><img src="https://space2022photo-1310409365.cos.ap-nanjing.myqcloud.com/img/202204141118725.png" referrerpolicy="no-referrer" alt="setp1"></p></li><li><p><span>step3： 点击</span><strong><span>「开始标注」</span></strong><span>按钮，进入标注页面。</span></p><p><img src="https://space2022photo-1310409365.cos.ap-nanjing.myqcloud.com/img/202204141118973.png" referrerpolicy="no-referrer" alt="step2"></p></li><li><p><span>step4：根据当前句子情况，点击</span><strong><span>「搭配不当」</span></strong><span> 、</span><strong><span>「语义冲突」</span></strong><span>、</span><strong><span>「不符合常识」</span></strong><span>、</span><strong><span>「其他」</span></strong><span>和</span><strong><span>「并无异常」</span></strong><span>5个按钮进行标注（可以多选）。标注完成后点击</span><strong><span>「保存并继续」</span></strong><span>，直至标完事先分配好的任务，界面就会提示 </span><strong><span>「没有下一条了」</span></strong><span>。</span>
+<span>    </span></p></li><li><p><span>Tips</span></p><ul><li><p><span>标注工具仅支持电脑端chrome、firefox浏览器。</span></p></li><li><p><span>如有任何问题，请联系小组长。</span></p><hr /><p>&nbsp;</p></li></ul><p><font style="font-family:微软雅黑"><font size="2"><span>文档最近更新时间：2022-04-28</span></font></font></p><p><font style="font-family:微软雅黑"><font size="2"><span>北京大学SpaCE2022评测任务课题组 </span></font></font></p><p><font style="font-family:微软雅黑"><font size="2"><span>本项目得到国家科技创新2030“新一代人工智能”重大项目——“以自然语言为核心的语义理解理论、模型与方法”（项目号：2020AAA0106701）支持。</span></font></font></p></li></ul></div></div>
+</body>
+</html>
