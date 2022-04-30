@@ -629,25 +629,25 @@
 
               <span v-if="['multiSpans','choose','text'].includes(anno.mode)" class="badge rounded-pill bg-light text-dark my-1 me-2">
                 <template v-if="anno.mode=='multiSpans'">
-                  <span>错误原因：</span>
+                  <!-- <span>错误原因：</span> -->
                   <span v-for="tokenarray, kk in anno.tokenarrays" :key="kk">
                     “<span v-for="idx in tokenarray" :key="idx" :title="idx">{{ getReplacedToken(idx) }}<!-- <sub>{{idx}}</sub> --></span>”
                   </span>
-                  <span>{{anno.label}}</span>
+                  <span>{{anno.desc??anno.label}}</span>
                 </template>
 
                 <template v-if="anno.mode=='choose'||anno.mode=='text'">
-                  <div v-if="anno.label=='不符合常识'">
+                  <!-- <div v-if="anno.label=='不符合常识'">
                     <span>错误原因：</span>
                     “<span v-for="tokenIdx in anno.on" :key="tokenIdx" :title="tokenIdx">{{ getReplacedToken(tokenIdx) }}</span>”
                     <span>不符合{{anno.withText}}</span>
-                  </div>
-                  <div v-else>
+                  </div> -->
+                  <div __v-else>
                     <template v-if="anno?.on?.length">
                       “<span v-for="tokenIdx in anno.on" :key="tokenIdx" :title="tokenIdx">{{ getReplacedToken(tokenIdx) }}</span>”
                     </template>
-                    <span> {{anno.desc ? anno.desc : anno.label}} </span>
-                    <span> {{anno.withText.length ? anno.withText: '(空)'}}</span>
+                    <span class="mx-1"> {{anno.desc ?? anno.label}} </span>
+                    <span class="mx-1"> {{anno.withText.length ? anno.withText: '(空)'}} </span>
                   </div>
                 </template>
               </span>

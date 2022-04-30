@@ -397,13 +397,14 @@ class BackEnd {
     // response.data.err === ''
   }
 
-  async postBuildTasks(settings) {
+  async postBuildTasks(settings, timeout=1000*60*5) {
     let response = await this.request({
       method: "post",
       url: `/build-tasks`,
       data: {
         settings: settings,
       },
+      timeout: timeout,
     });
     return response;
   }
