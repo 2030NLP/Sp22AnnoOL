@@ -426,6 +426,16 @@ class Sp22DB {
     this.updateModified();
   }
 
+
+  wordAt(entry, idx) {
+    if (!entry?.content?.material?.tokenList?.length) {
+      return "";
+    };
+    let token = entry.content.material.tokenList[idx];
+    return token?.to?.word ?? token?.word ?? "";
+  }
+
+
   async extendEntry(entry) {
     const entryTasks = this.tasks.filter(it=>it.entry==entry.id);
     for await (let task of entryTasks) {
@@ -434,6 +444,21 @@ class Sp22DB {
     const entryAnnos = this.annos.filter(it=>it.entry==entry.id);
     for await (let anno of entryAnnos) {
       await this.extendEntryByAnno(entry, anno);
+      //
+      // 补全 anno 的字面内容
+      // on, tokenarrays
+      if (entry?.content?.material?.tokenList?.length) {
+        for (let annot of anno?.content?.annotations??[]) {
+          if (annot.on) {
+            annot.onText = annot.on.map(idx => this.wordAt(entry, idx)).join("");
+          };
+          if (annot.tokenarrays) {
+            annot.tokenarrayTexts = annot.tokenarrays.map(tokenarray => tokenarray.map(idx => this.wordAt(entry, idx)).join(""));
+          };
+        };
+      };
+      //
+      //
     };
   }
 
