@@ -1,10 +1,10 @@
 {
   "name": "SpaCE2022",
-  "version": "220425",
+  "version": "220501",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
-    "第2期": "220425",
+    "第2期": "220501",
     "第3期": null,
     "精标": null
   },
@@ -336,7 +336,7 @@
         "name": "标注结果",
         "mode": "finalResult",
         "props": {
-          "instruction": "标注已完成。",
+          "instruction": "",
           "canReset": true,
           "resetBtn": {
             "text": "清空并重新标注",
@@ -431,7 +431,7 @@
           },
           "okBtn": {
             "text": "不再添加，完成",
-            "go": "start",
+            "go": "end",
             "style": "success"
           },
           "cancelBtn": {
@@ -468,7 +468,7 @@
           },
           "okBtn": {
             "text": "不再添加，完成",
-            "go": "start",
+            "go": "end",
             "style": "success"
           },
           "cancelBtn": {
@@ -494,7 +494,7 @@
           },
           "okBtn": {
             "text": "确定",
-            "go": "start",
+            "go": "end",
             "style": "success"
           },
           "cancelBtn": {
@@ -522,7 +522,7 @@
           },
           "okBtn": {
             "text": "确定",
-            "go": "start",
+            "go": "end",
             "style": "success"
           },
           "cancelBtn": {
