@@ -156,7 +156,10 @@ const AnnoCard = {
           annotations: this.anno?.content?.annotations,
           tokens: this.db?.entryDict?.[this.anno?.entry]?.content?.material?.tokenList,
           showSub: true,
-          showTitle: true,
+          showIndex: true,
+          showTitleDetail: true,
+          canClose: false,
+          // onClose: (annot)=>{console.log(annot)},
         }),
       ]
     );
