@@ -1,10 +1,10 @@
 {
   "name": "SpaCE2022",
-  "version": "220501",
+  "version": "220502",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
-    "第2期": "220501",
+    "第2期": "220502",
     "第3期": null,
     "精标": null
   },
@@ -447,7 +447,7 @@
         "mode": "multiSpans",
         "props": {
           "instruction": "请在文中依次划选造成语义冲突的全部文本片段。选择完成后，可将其加入列表。",
-          "listTitle": "造成搭配不当的文本片段有：",
+          "listTitle": "造成语义冲突的文本片段有：",
           "lengthTip": "提示：请至少选择2个片段",
           "data": {
             "label": "ReasonSemanticConflict",
