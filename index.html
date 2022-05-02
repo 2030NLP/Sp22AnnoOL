@@ -434,7 +434,16 @@
               <div class="col col-12 my-1" v-if="['multiSpans'].includes(currentStep.mode)">
                 <div class="card">
                   <div class="card-body">
-                    <span class="badge rounded-pill bg-light text-dark m-1" v-for="tokenarray in currentStep.props.data.tokenarrays"><span v-for="tokenIdx in tokenarray">{{ getReplacedToken(tokenIdx) }}</span></span>
+                    <bs-badge
+                      class="rounded-pill m-1"
+                      v-for="(tokenarray, idx) in currentStep.props.data.tokenarrays"
+                      :key="idx"
+                      :can-remove="true"
+                      @remove="()=>{stepCtrl.deleteFromTokenarrays(currentStep, idx)}"
+                    >
+                      <span v-for="tokenIdx in tokenarray" >{{ getReplacedToken(tokenIdx) }}</span>
+                    </bs-badge>
+                    <!-- <span class="badge rounded-pill bg-light text-dark m-1" v-for="tokenarray in currentStep.props.data.tokenarrays"><span v-for="tokenIdx in tokenarray">{{ getReplacedToken(tokenIdx) }}</span></span> -->
                   </div>
                 </div>
               </div>
@@ -618,61 +627,18 @@
           </div>
           <div class="col col-12 my-1" v-show="example?.annotations?.length">
             <div class="text-muted">标注结果：</div>
-            <div
+            <results-display
               class="col col-12 col-lg-12"
-              v-for="anno in example.annotations"
-              :key="anno.idx"
-              :data-mode="anno.mode"
-              :data-label="anno.label"
-            >
-              <span v-if="['selectValue'].includes(anno.mode)" class="badge rounded-pill bg-light text-dark my-1 me-2">{{anno.desc}}</span>
-
-              <span v-if="['multiSpans','choose','text'].includes(anno.mode)" class="badge rounded-pill bg-light text-dark my-1 me-2">
-                <template v-if="anno.mode=='multiSpans'">
-                  <!-- <span>错误原因：</span> -->
-                  <span v-for="tokenarray, kk in anno.tokenarrays" :key="kk">
-                    “<span v-for="idx in tokenarray" :key="idx" :title="idx">{{ getReplacedToken(idx) }}<!-- <sub>{{idx}}</sub> --></span>”
-                  </span>
-                  <span>{{anno.desc??anno.label}}</span>
-                </template>
-
-                <template v-if="anno.mode=='choose'||anno.mode=='text'">
-                  <!-- <div v-if="anno.label=='不符合常识'">
-                    <span>错误原因：</span>
-                    “<span v-for="tokenIdx in anno.on" :key="tokenIdx" :title="tokenIdx">{{ getReplacedToken(tokenIdx) }}</span>”
-                    <span>不符合{{anno.withText}}</span>
-                  </div> -->
-                  <div __v-else>
-                    <template v-if="anno?.on?.length">
-                      “<span v-for="tokenIdx in anno.on" :key="tokenIdx" :title="tokenIdx">{{ getReplacedToken(tokenIdx) }}</span>”
-                    </template>
-                    <span class="mx-1"> {{anno.desc ?? anno.label}} </span>
-                    <span class="mx-1"> {{anno.withText.length ? anno.withText: '(空)'}} </span>
-                  </div>
-                </template>
-              </span>
-
-              <span v-if="['add','modify','delete'].includes(anno.mode)" class="badge rounded-pill bg-light text-dark my-1 me-2">
-
-                <template v-if="anno.mode=='add'">
-                  将“<span >{{ getReplacedToken(anno.source) }}<!-- <sub>{{anno.source}}</sub> --></span>”增改为“<span v-if="anno.side=='0'">{{anno.target}}</span><span >{{ getReplacedToken(anno.source) }}<!-- <sub>{{anno.source}}</sub> --></span><span v-if="anno.side=='1'">{{anno.target}}</span>”
-                </template>
-
-                <template v-if="anno.mode=='modify'">
-                  将 <span >“{{ getReplacedToken(anno.source) }}”<!-- <sub>{{anno.source}}</sub> --></span> 改为 <span>“{{anno.target}}”</span>
-                </template>
-
-                <template v-if="anno.mode=='delete'">
-                  删除<s><span >“{{ getReplacedToken(anno.source) }}”<!-- <sub>{{anno.source}}</sub> --></span></s>
-                </template>
-
-                <template v-if="anno.toSolve!=null">
-                  <span >以解决 {{example.annotations[anno.toSolve].label}}<!-- <sub>{{anno.toSolve}}</sub> --> 的问题</span>
-                </template>
-
-              </span>
-
-            </div>
+              :each-class="'rounded-pill my-1 me-2'"
+              :annotations="example.annotations"
+              :tokens="example?.material?.tokenList"
+              :show-sub="false"
+              :show-index="false"
+              :show-title-detail="false"
+              :can-close="false"
+              :wrap="true"
+              @close="(annot)=>{win.console.log(annot)}"
+            ></results-display>
           </div>
         </div>
         <!-- 标注结果展示模块 结束 -->

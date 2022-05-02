@@ -16,6 +16,7 @@ export default {
         class: ["bagde-close-btn", "ms-2", "cursor-pointer", "text-muted"],
         onClick: ()=>{
           ctx.emit("close");
+          ctx.emit("remove");
         },
       }, ["X"]) : null,
     ]);

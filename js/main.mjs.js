@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0430-0941";
+const APP_VERSION = "22-0503-0234";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -439,6 +439,13 @@ the_app.component('token-list-p', TokenListP);
 
 import FunctionalArea from './components/FunctionalArea.cpnt.mjs.js';
 the_app.component('functional-area', FunctionalArea);
+
+
+import ResultsDisplay from './components/Annotator/ResultsDisplay.cpnt.mjs.js';
+the_app.component('results-display', ResultsDisplay);
+import BsBadge from './components/bs/BsBadge.cpnt.mjs.js';
+the_app.component('bs-badge', BsBadge);
+
 
 const app = the_app.mount('#bodywrap');
 window.app = app;

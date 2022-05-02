@@ -182,6 +182,11 @@ class StepControl {
     await this.handleTemplate(ref, data, fn);
   }
 
+  async deleteFromTokenarrays(step, idx) {
+    if (step?.props?.data?.tokenarrays==null) {return;};
+    step.props.data.tokenarrays.splice(idx, 1);
+  }
+
   async handleMultiSpans(ref, data) {
     let aa = data.tokenarrays.flat(Infinity);
     let should = (aa.length == Array.from(new Set(aa)).length);

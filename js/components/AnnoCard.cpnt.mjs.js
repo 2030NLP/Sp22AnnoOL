@@ -158,6 +158,7 @@ const AnnoCard = {
           showSub: true,
           showIndex: true,
           showTitleDetail: true,
+          wrap: true,
           canClose: false,
           // onClose: (annot)=>{console.log(annot)},
         }),

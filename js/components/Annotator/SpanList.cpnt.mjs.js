@@ -1,7 +1,7 @@
 import { h } from '../../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 import BsBadge from '../bs/BsBadge.cpnt.mjs.js';
 
-// <results-display
+// <span-list
 //   class="col col-12 col-lg-12"
 //   :each-class="'rounded-pill my-1 me-2'"
 //   :annotations="example.annotations"
@@ -12,7 +12,7 @@ import BsBadge from '../bs/BsBadge.cpnt.mjs.js';
 //   :can-close="false"
 //   :wrap="true"
 //   @close="(annot)=>{win.console.log(annot)}"
-// ></results-display>
+// ></span-list>
 
 export default {
   props: ["eachClass", "tokens", "annotations", "showSub", "showIndex", "showTitleDetail", "canClose", "wrap"],
@@ -157,3 +157,30 @@ export default {
 
   },
 };
+
+
+
+
+
+// <!-- 已选列表 开始 -->
+// <div class="col col-12 my-1" v-if="currentStep?.props?.listTitle">
+//   <div>{{ currentStep?.props?.listTitle }}</div>
+// </div>
+// <div class="col col-12 my-1" v-if="['multiSpans'].includes(currentStep.mode)">
+//   <div class="card">
+//     <div class="card-body">
+//       <span class="badge rounded-pill bg-light text-dark m-1" v-for="tokenarray in currentStep.props.data.tokenarrays"><span v-for="tokenIdx in tokenarray">{{ getReplacedToken(tokenIdx) }}</span></span>
+//     </div>
+//   </div>
+// </div>
+// <div class="col col-12 my-1" v-if="currentStep.props.data.tokenarrays.length<2&&currentStep?.props?.lengthTip">
+//   <div>{{ currentStep?.props?.lengthTip }}</div>
+// </div>
+// <!-- 已选列表 结束 -->
+
+
+
+
+
+
+
