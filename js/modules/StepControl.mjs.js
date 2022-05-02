@@ -190,12 +190,12 @@ class StepControl {
     for (let i = 0; i < this.ewp.example.annotations.length; i++) {
       if ((this.ewp.example.annotations[i].mode == "multiSpans") && (this.ewp.example.annotations[i].label == data.label)) {
         let flag1 = 0;
-        for (j = 0; j < this.ewp.example.annotations[i].tokenarrays.length; j++) {
-          for (k = 0; k < data.tokenarrays.length; k++) {
+        for (let j = 0; j < this.ewp.example.annotations[i].tokenarrays.length; j++) {
+          for (let k = 0; k < data.tokenarrays.length; k++) {
             if (this.ewp.example.annotations[i].tokenarrays[j].toString() == data.tokenarrays[k].toString()) {
               flag1 = flag1 + 1;
             }
-            for (t = 0; t < data.tokenarrays[k].length; t++) {
+            for (let t = 0; t < data.tokenarrays[k].length; t++) {
               if ((this.ewp.example.annotations[i].tokenarrays[j].indexOf(data.tokenarrays[k][t])) != -1) {
                 flag = 1;
               }

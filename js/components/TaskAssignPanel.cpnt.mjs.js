@@ -5,14 +5,39 @@ import {
   watch,
   h,
 } from '../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
+import { APP_NAME, APP_VERSION } from '../master_constants.mjs.js';
+import { dateString, foolCopy } from '../util.mjs.js';
+import assign_tasks from '../assign_tasks_new.mjs.js';
 
 const TaskAssignPanel = {
-  props: ["dude", "guy"],
-  emits: ["happy", 'good'],
+  props: ["functions", "db", "settings", "frg", "alertBox", "modalBox", "backend", "saver"],
+  emits: [],
   component: {
   },
 
   setup(props, ctx) {
+    const theBackEnd = props.backend;
+    const theSaver = props.saver;
+    const spFN = props.functions;
+    const spDB = props.db;
+    const lo = spDB.lo;
+    const ctrl = props.settings;
+
+
+    const _setMe = async () => {
+      if (spDB.users.length) {
+        let me = lo.find(spDB.users, it=>it.token==ctrl.currentUser.token);
+        if (!me) {
+          me = lo.find(spDB.users, it=>it.name==ctrl.currentUser.name);
+        };
+        if (me) {
+          ctrl.currentUser = me;
+          await props.frg.setItem(`${APP_NAME}:currentUser`, foolCopy(ctrl.currentUser));
+        };
+      };
+    };
+
+
     const localData = reactive({
     });
 
@@ -55,20 +80,20 @@ const TaskAssignPanel = {
 
 
     const selectUsersAuto = () => {
-      for (let user of theDB.users) {
-        let jd = Sp22FN.topic_regulation(user.currTask)==assignData.settings.topic && !user.quitted;
-        assignData.assignUserBoxDict[user.id] = jd ? true : false;
+      for (let user of spDB.users) {
+        let jd = spFN.topic_regulation(user.currTask)==assignData.settings.topic && !user.quitted;
+        assignData.assignUserBoxDict[user.id] = (jd ? true : false);
       };
     };
 
     const selectUsersAll = () => {
-      for (let user of theDB.users) {
+      for (let user of spDB.users) {
         assignData.assignUserBoxDict[user.id] = true;
       };
     };
 
     const selectUsersNone = () => {
-      for (let user of theDB.users) {
+      for (let user of spDB.users) {
         assignData.assignUserBoxDict[user.id] = false;
       };
     };
@@ -76,7 +101,7 @@ const TaskAssignPanel = {
     const planAssigment = async () => {
       cleanAssigment();
       assignData.undone = true;
-      let aidx = await alertBox.pushAlert(`正在规划任务，请稍等……`, 'info', 99999999);
+      let aidx = await props.alertBox.pushAlert(`正在规划任务，请稍等……`, 'info', 99999999);
       let pack = assignData.settings;
       try {
         if (assignData.settings.polygraphs_per_user_json_string.length) {
@@ -86,8 +111,8 @@ const TaskAssignPanel = {
           pack.polygraphs_per_user = {};
         }
       } catch(error) {
-        alertBox.removeAlert(aidx);
-        alertBox.pushAlert(`无法解析测谎题配置，请检查`, 'warning', 5000, assignData.settings);
+        props.alertBox.removeAlert(aidx);
+        props.alertBox.pushAlert(`无法解析测谎题配置，请检查`, 'warning', 5000, assignData.settings);
         return;
       };
       // pack.polygraphs_per_user = {
@@ -95,10 +120,10 @@ const TaskAssignPanel = {
       //   'otherErrorSeg': 3,
       // };
       const plansResp = await makeAssigmentPlan(pack);
-      // const plansResp = await app.theBackEnd.makeAssigmentPlan(pack);
+      // const plansResp = await theBackEnd.makeAssigmentPlan(pack);
       if (plansResp?.data?.code!=200) {
-        alertBox.removeAlert(aidx);
-        alertBox.pushAlert(`规划任务时出现问题：${plansResp?.data?.msg}`, 'danger', 5000, plansResp);
+        props.alertBox.removeAlert(aidx);
+        props.alertBox.pushAlert(`规划任务时出现问题：${plansResp?.data?.msg}`, 'danger', 5000, plansResp);
         return;
       };
 
@@ -124,26 +149,26 @@ const TaskAssignPanel = {
       assignData.plans = plans;
       assignData.planPerUser = Object.entries(dct).filter(pair => pair[1].length);
 
-      let bidx = alertBox.pushAlert(`计算完毕，准备规划结果……`, 'success', 9999999, plansResp);
+      let bidx = props.alertBox.pushAlert(`计算完毕，准备规划结果……`, 'success', 9999999, plansResp);
       await analyzeAssignmentPlan();
-      alertBox.removeAlert(bidx);
+      props.alertBox.removeAlert(bidx);
 
-      alertBox.removeAlert(aidx);
+      props.alertBox.removeAlert(aidx);
       if (plans.length) {
-        alertBox.pushAlert(`规划成功，请进行后续操作`, 'success', 3000, plansResp);
+        props.alertBox.pushAlert(`规划成功，请进行后续操作`, 'success', 3000, plansResp);
       } else {
-        alertBox.pushAlert(`无法规划，请检查设置`, 'warning', 3000, plansResp);
+        props.alertBox.pushAlert(`无法规划，请检查设置`, 'warning', 3000, plansResp);
       };
     };
 
     const analyzeAssignmentPlan = async () => {
       const analysis = [];
       for (let planTask of assignData.plans) {
-        if (planTask.id in theDB.taskDict) {
+        if (planTask.id in spDB.taskDict) {
           let item = {
             id: planTask.id,
-            old_to: theDB.taskDict[planTask.id].to,
-            old_submitters: theDB.taskDict.submitters,
+            old_to: spDB.taskDict[planTask.id].to,
+            old_submitters: spDB.taskDict.submitters,
             new_to: planTask.to,
             plan: planTask,
           };
@@ -182,26 +207,26 @@ const TaskAssignPanel = {
     };
     const cancelAssigment = () => {
       cleanAssigment();
-      alertBox.pushAlert(`规划已撤除`, 'warning', 3000);
+      props.alertBox.pushAlert(`规划已撤除`, 'warning', 3000);
     };
 
     const doAssigment = async () => {
-      let aidx = alertBox.pushAlert(`正在执行分配，请稍等……`, 'info', 99999999);
-      const actResp = await app.theBackEnd.actAssigmentPlan(assignData.plans);
+      let aidx = props.alertBox.pushAlert(`正在执行分配，请稍等……`, 'info', 99999999);
+      const actResp = await theBackEnd.actAssigmentPlan(assignData.plans);
       if (actResp?.data?.code!=200) {
-        alertBox.removeAlert(aidx);
-        alertBox.pushAlert(`执行分配时出现问题：${actResp?.data?.msg}`, 'danger', 5000, actResp);
+        props.alertBox.removeAlert(aidx);
+        props.alertBox.pushAlert(`执行分配时出现问题：${actResp?.data?.msg}`, 'danger', 5000, actResp);
         return;
       };
 
-      alertBox.removeAlert(aidx);
+      props.alertBox.removeAlert(aidx);
       if (true) {
         assignData.undone = false;
         assignData.result = actResp?.data?.data;
         // cleanAssigment();
-        alertBox.pushAlert(`执行成功`, 'success', 5000, actResp);
+        props.alertBox.pushAlert(`执行成功`, 'success', 5000, actResp);
       } else {
-        alertBox.pushAlert(`执行失败`, 'danger', 5000, actResp);
+        props.alertBox.pushAlert(`执行失败`, 'danger', 5000, actResp);
       };
     };
 
@@ -239,8 +264,8 @@ const TaskAssignPanel = {
       exclusion=[],
       polygraphs_per_user={},  // TODO 选项配置
       retrieve=false,
-      tasks_idx_base=_.max(theDB.tasks.map(it=>+it.id)),
-      lo,
+      tasks_idx_base=lo.max(spDB.tasks.map(it=>+it.id)),
+      loda=lo,
     ) {
       console.log(arguments);
 
@@ -249,16 +274,16 @@ const TaskAssignPanel = {
         return [];
       };
 
-      // let users = theDB.users.filter(it => (
-      //   Sp22FN.topic_tags(topic).includes(it['currTask'])
+      // let users = spDB.users.filter(it => (
+      //   spFN.topic_tags(topic).includes(it['currTask'])
       //   && (user_tag==null||(it['tags']?.length&&it['tags'].includes(user_tag)))
       //   && !it['quitted']
       // ));
 
-      let users = theDB.users.filter(it => assignData.assignUserBoxDict[it.id]);
+      let users = spDB.users.filter(it => assignData.assignUserBoxDict[it.id]);
 
-      let tasks = theDB.tasks.filter(it => (
-        Sp22FN.topic_tags(topic).includes(it['topic'])
+      let tasks = spDB.tasks.filter(it => (
+        spFN.topic_tags(topic).includes(it['topic'])
         && it['batchName'] == batchName
         && (task_tag==null||(it['tags']?.length&&it['tags'].includes(task_tag)))
         && !it['deleted']
@@ -267,7 +292,7 @@ const TaskAssignPanel = {
       let e_ids = tasks.map(task => task['entry']);
       let entries = [];
       for (let e_id of e_ids) {
-        let entry_found = _.find(theDB.entries, it => (it['id']==e_id && !it['deleted']));
+        let entry_found = loda.find(spDB.entries, it => (it['id']==e_id && !it['deleted']));
         if (entry_found) {
           entries.push(entry_found);
         };
@@ -277,7 +302,7 @@ const TaskAssignPanel = {
         entries: entries,
         users: users,
         tasks: tasks,
-        topic: Sp22FN.topic_regulation(topic),
+        topic: spFN.topic_regulation(topic),
         batchName: batchName,
         exclusion: exclusion,
         users_per_task: users_per_task,
@@ -303,7 +328,7 @@ const TaskAssignPanel = {
 
     const classAssignAnalisisByUser = (user_id, task_id) => {
       let classConfig = {};
-      if (theDB.entryDict[theDB.taskDict[task_id]?.entry]?.polygraph) {
+      if (spDB.entryDict[spDB.taskDict[task_id]?.entry]?.polygraph) {
         classConfig.prefix = "btn-outline-";
       } else {
         classConfig.prefix = "btn-";
@@ -323,37 +348,19 @@ const TaskAssignPanel = {
 
 
     const saveBasic = async () => {
-      await frg.setItem(`${APP_NAME}:version`, APP_VERSION);
-      await frg.setItem(`${APP_NAME}:currentUser`, foolCopy(ctrl.currentUser));
-      await frg.setItem(`${APP_NAME}:tab`, foolCopy(ctrl.tab));
-      await frg.setItem(`${APP_NAME}:lastTime`, foolCopy(ctrl.lastTime));
-      await frg.setItem(`${APP_NAME}:lastTimeDict`, foolCopy(ctrl.lastTimeDict));
-      await frg.setItem(`${APP_NAME}:assignData_settings`, foolCopy(assignData.settings));
+      await props.frg.setItem(`${APP_NAME}:assignData_settings`, foolCopy(assignData.settings));
     };
 
     const loadBasic = async () => {
-      let storedVersion = await frg.getItem(`${APP_NAME}:version`);
-      let storedUser = await frg.getItem(`${APP_NAME}:currentUser`);
-      if (storedUser != null) {
-        ctrl.currentUser = storedUser;
-        await _setMe();
-      };
-      let storedTime = await frg.getItem(`${APP_NAME}:lastTime`);
-      if (storedTime != null) {
-        ctrl.lastTime = storedTime;
-      };
-      let storedTimeDict = await frg.getItem(`${APP_NAME}:lastTimeDict`);
-      if (storedTimeDict != null) {
-        ctrl.lastTimeDict = storedTimeDict;
-      };
-
-      await goTab(await frg.getItem(`${APP_NAME}:tab`));
-
-      let stored_assignData_settings = await frg.getItem(`${APP_NAME}:assignData_settings`);
+      let stored_assignData_settings = await props.frg.getItem(`${APP_NAME}:assignData_settings`);
       if (stored_assignData_settings != null) {
         assignData.settings = stored_assignData_settings;
       };
     };
+
+    onMounted(async () => {
+      await loadBasic();
+    });
 
 
 
@@ -380,6 +387,9 @@ const TaskAssignPanel = {
 
     return () => [
       h("div", { 'class': "row align-items-center my-2", }, [
+        // h("div", { 'class': "col col-12", }, [
+        //   h("p", { 'class': "text-danger" }, ["开发中，存在严重 BUG ，请勿使用！！！"], ),
+        // ], ),
         h("div", { 'class': "col col-12", }, [
           h("p", {}, ["说明：分配任务前，请先：1、在后端构建任务；2、刷新Task表；3、刷新Entry表。"], ),
         ], ),
@@ -389,46 +399,50 @@ const TaskAssignPanel = {
         h("div", { 'class': "col col-12 col-sm-6 col-lg-4 my-2", }, [
           h("label", { 'class': "form-label", }, ["每个用户多少任务"], ),
           h("input", {
-           'class': "form-control form-control-sm"
-           'type': "number"
-           'v-model': "assignData.settings.tasks_per_user"
+           'class': "form-control form-control-sm",
+           'type': "number",
+           'value': assignData.settings.tasks_per_user,
+           'onChange': (e) => {assignData.settings.tasks_per_user=e.target.value}
           }, [], ),
         ], ),
         h("div", { 'class': "col col-12 col-sm-6 col-lg-4 my-2", }, [
           h("label", { 'class': "form-label", }, ["每个任务需要几名用户参与"], ),
           h("input", {
-           'class': "form-control form-control-sm"
-           'type': "number"
-           'v-model': "assignData.settings.users_per_task"
+           'class': "form-control form-control-sm",
+           'type': "number",
+           'value': assignData.settings.users_per_task,
+           'onChange': (e) => {assignData.settings.users_per_task=e.target.value}
           }, [], ),
         ], ),
         h("div", { 'class': "col col-12 col-sm-6 col-lg-4 my-2", }, [
           h("label", { 'class': "form-label", }, ["任务类型"], ),
           h("select", {
-           'class': "form-select form-select-sm"
-           'v-model': "assignData.settings.topic"
+           'class': "form-select form-select-sm",
+           'value': assignData.settings.topic,
+           'onChange': (e) => {assignData.settings.topic=e.target.value}
           }, [
-            `<option 'v-for': "topic in assignTopics" ':value': "topic.value">{{topic.desc}}</option>`
-          ], ),
+            assignTopics.map(topic=>h('option', {value: topic.value}, [topic.desc]))
+          ]),
         ], ),
         h("div", { 'class': "col col-12 col-sm-6 col-lg-4 my-2", }, [
           h("label", { 'class': "form-label", }, ["任务批次名称（用于筛选）"], ),
           h("input", {
-           'class': "form-control form-control-sm"
-           'type': "text"
-           'v-model': "assignData.settings.batchName"
+           'class': "form-control form-control-sm",
+           'type': "text",
+           'value': assignData.settings.batchName,
+           'onChange': (e) => {assignData.settings.batchName=e.target.value}
           }, [], ),
         ], ),
         h("div", { 'class': "col col-12 my-2", }, [
           h("label", { 'class': "form-label", }, ["质检题设置（Json字符串）"], ),
           h("textarea", {
-            'class': "form-control form-control-sm"
-            'v-model': "assignData.settings.polygraphs_per_user_json_string"
-            ':class': "{'is-invalid': assignData.polygraphs_per_user_json_string_error}"
+            'class': `form-control form-control-sm ${assignData.polygraphs_per_user_json_string_error? 'is-invalid' : ''}`,
+            'value': assignData.settings.polygraphs_per_user_json_string,
+            'onChange': (e) => {assignData.settings.polygraphs_per_user_json_string=e.target.value},
           }, [], ),
           h("div", {
-            'class': "invalid-feedback"
-            'v-show': "assignData.polygraphs_per_user_json_string_error"
+            'class': "invalid-feedback",
+            style: assignData.polygraphs_per_user_json_string_error?'':'display:none;',
           }, ["Json解析失败，请检查"], ),
         ], ),
         h("div", { 'class': "col col-12 my-2", }, [
@@ -437,58 +451,59 @@ const TaskAssignPanel = {
           ], ),
           h("div", {}, [
             h("button", {
-              'type': "button"
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark"
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
               'onClick': ()=>{selectUsersAuto();},
             }, ["自动"], ),
             h("button", {
-              'type': "button"
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark"
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
               'onClick': ()=>{selectUsersAll();},
             }, ["全选"], ),
             h("button", {
-              'type': "button"
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark"
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
               'onClick': ()=>{selectUsersNone();},
             }, ["清除"], ),
           ], ),
           h("div", {
             'class': "form-control form-control-sm overflow-auto max-vh-40"
-          }, [
-            h("button", {
-              'v-for': "user in spDB.users"
-              'type': "button"
-              'class': "btn btn-sm me-2 my-1"
-              ':class': "assignData.assignUserBoxDict[user.id] ? `btn-primary` : `btn-outline-secondary`"
-              'onClick': ()=>{assignData.assignUserBoxDict[user.id]=!assignData.assignUserBoxDict[user.id]},
-            }, [`${ user.currTaskGroup } #${ user.id } ${ user.name }`], ),
-          ], ),
+            }, [
+              spDB.users.map(user=>
+                h("button", {
+                  'type': "button",
+                  'class': `btn btn-sm me-2 my-1 ${assignData.assignUserBoxDict[user.id] ? `btn-primary` : `btn-outline-secondary`}`,
+                  'onClick': ()=>{assignData.assignUserBoxDict[user.id]=!assignData.assignUserBoxDict[user.id]},
+                }, [`${ user.currTaskGroup } #${ user.id } ${ user.name }`], )
+              ),
+            ], ),
         ], ),
         h("div", { 'class': "col col-12 col-sm-6 col-lg-4 my-2", }, [
-          h("div", { 'class': "form-check form-switch" ':title': "`通常大家在标注时要分配新任务的话，选「否」；\n如果要总地进行下一轮分配，通常选「是」`", }, [
-            h("input", { 'class': "form-check-input" 'type': "checkbox" 'role': "switch" 'v-model': "assignData.settings.retrieve",}, [], ),
-            h("label", { 'class': "form-check-label",}, [`是否收回未完成的任务（{{assignData.settings.retrieve?'是':'否'}}）`], ),
+          h("div", { 'class': "form-check form-switch",
+          'title': `通常大家在标注时要分配新任务的话，选「否」；\n如果要总地进行下一轮分配，通常选「是」`, }, [
+            h("input", { 'class': "form-check-input", 'type': "checkbox", 'role': "switch", 'value': assignData.settings.retrieve, 'onChange': (e)=>{assignData.settings.retrieve=e.target.value}}, [], ),
+            h("label", { 'class': "form-check-label",}, [`是否收回未完成的任务（${assignData.settings.retrieve?'是':'否'}）`], ),
           ], ),
         ], ),
       ], ),
 
 
 
-      h("div", { 'class': "row align-items-center my-2" 'v-show': "ctrl.tab == TABS.taskAssign", }, [
+      h("div", { 'class': "row align-items-center my-2", }, [
         h("div", { 'class': "col col-12", }, [
           h("button", {
-            'type': "button"
-            'class': "btn btn-sm me-2 my-1 btn-outline-primary"
+            'type': "button",
+            'class': "btn btn-sm me-2 my-1 btn-outline-primary",
             'onClick': ()=>{planAssigment();},
             'title': "对任务分配进行规划"
           }, ["开始规划"], ),
-        ], ),
-        assignData.analysis.length ? (...[
+        ]),
+        assignData.analysis.length ? ([
           h("div", { 'class': "col col-12", }, [
-            h("h4", { 'class': "mt-3 mb-2", }, [`{{ assignData.undone ? '规划' : '执行'}}结果`], ),
-          ], ),
+            h("h4", { 'class': "mt-3 mb-2", }, [`${ assignData.undone ? '规划' : '执行'}结果`], ),
+          ]),
           h("div", { 'class': "col col-12", }, [
-            h("div", { 'class': "text-muted", }, ["批次编号：{{ assignData.batch }}"], ),
+            h("div", { 'class': "text-muted", }, [`批次编号：${ assignData.batch }`], ),
           ], ),
           h("div", { 'class': "col col-12 my-2", }, [
             h("div", { 'class': "fw-bold", }, ["具体到每个标注者："], ),
@@ -497,20 +512,18 @@ const TaskAssignPanel = {
           ], ),
           h("div", { 'class': "col col-12", }, [
             h("ul", { 'class': "list-group max-vh-40 overflow-auto border border-1", }, [
-              h("li", { 'class': "list-group-item" 'v-for': "pair in assignData.planPerUser", }, [
+              assignData.planPerUser.map(pair => h("li", { 'class': "list-group-item" }, [
                 h("div", {}, [
                   h("span", {}, [`#${pair[0]} ${spDB.user(pair[0])?.name}`], ),
-                  "分配到的 {{pair[1]?.length}} 条任务是：",
+                  `分配到的 ${pair[1]?.length} 条任务是：`,
                 ], ),
                 h("div", {}, [
-                  h("button", {
-                    'v-for': "task_id in pair[1]"
-                    'type': "button"
-                    'class': "btn btn-sm me-2 my-1"
-                    ':class': "classAssignAnalisisByUser(pair[0], task_id)"
-                  }, ["#{{ task_id }}"], ),
+                  pair[1].map(task_id => h("button", {
+                    'type': "button",
+                    'class': `btn btn-sm me-2 my-1 ${classAssignAnalisisByUser(pair[0], task_id)}`
+                  }, [`#${ task_id }`], ))
                 ], ),
-              ], ),
+              ], )),
             ], ),
           ], ),
           h("div", { 'class': "col col-12 my-2", }, [
@@ -518,63 +531,71 @@ const TaskAssignPanel = {
           ], ),
           h("div", { 'class': "col col-12", }, [
             h("ul", { 'class': "list-group max-vh-40 overflow-auto border border-1", }, [
-              h("li", { 'class': "list-group-item" 'v-for': "item in assignData.analysis", }, [
+              assignData.analysis.map(item=>h("li", { 'class': "list-group-item", }, [
                 h("div", {}, [
+                  // <button
+                  //     type="button"
+                  //     class="btn btn-sm btn-light my-1 me-2"
+                  //     @click="modalBox_open('task-detail', theDB.taskDict[item?.plan?.id])"
+                  //   >task#{{item?.plan?.id}}</button>
                   h("span", {}, [
-                    `「{{item?.plan?.topic}} 任务 #{{item.id}}`,
+                    '「',
+                    h("button", {
+                      type: "button",
+                      class: "btn btn-sm btn-light my-1 me-2",
+                      onClick: ()=>props.modalBox.open('task-detail', spDB.taskDict[item?.plan?.id]),
+                    },  [`${item?.plan?.topic} 任务 #${item.id}`]),
                     h("span", {}, [" / "], ),
-                    h("span", {}, [`语料 #{{item?.plan?.entry}}」`], ),
+                    h("span", {}, [`语料 #${item?.plan?.entry}」`], ),
                   ], ),
-                  h("span", { 'v-if': "item.new_to?.length", }, [
+                  item.new_to?.length ? 
+                  h("span", {}, [
                     "分配给：",
-                    h("span", { 'class': "me-2 text-success __fw-bold" 'v-for': "guy in item.new_guys", }, [`#{{guy}} {{spDB.user(guy)?.name}}`], ),
-                    h("span", { 'class': "me-2" 'v-for': "guy in item.solid_guys", }, [`#{{guy}} {{spDB.user(guy)?.name}}`], ),
+                    item.new_guys.map(guy => h("span", { 'class': "me-2 text-success __fw-bold", }, [`#${guy} ${spDB.user(guy)?.name}`], )),
+                    item.solid_guys.map(guy => h("span", { 'class': "me-2", }, [`#${guy} ${spDB.user(guy)?.name}`], )),
                     "。",
-                  ], ),
-                  h("span", { 'v-if': "item.canceled_guys?.length" 'class': "text-muted", }, [
+                  ], ) : null,
+                  item.canceled_guys?.length ? 
+                  h("span", { 'class': "text-muted", }, [
                     "不再分配给：",
-                    h("s", { 'class': "me-2" 'v-for': "guy in item.canceled_guys", }, [
-                      `#{{guy}} {{spDB.user(guy)?.name}}`,
-                    ], ),
+                    item.canceled_guys.map(guy => h("s", { 'class': "me-2 ", }, [`#${guy} ${spDB.user(guy)?.name}`], )),
                     "。",
-                  ], ),
+                  ], ) : null,
                 ], ),
-              ], ),
+              ], ))
             ], ),
           ], ),
           h("div", { 'class': "col col-12 my-2", }, [
+            assignData.undone ? h("button", {
+              'type': "button",
+              'class': "btn btn-sm me-2 my-1 btn-danger",
+              // '__click': doAssigment,
+              'onClick': ()=>{props.modalBox.open('confirm', {desc: '确定要执行规划好的任务安排吗？', action: doAssigment});},
+              'title': "开始执行规划好的任务安排",
+            }, ["开始执行"], ) : null,
             h("button", {
-              'type': "button"
-              'class': "btn btn-sm me-2 my-1 btn-danger"
-              '__click': "doAssigment"
-              'onClick': ()=>{modalBox_open('confirm', {desc: '确定要执行规划好的任务安排吗？', action: doAssigment})();},
-              'title': "开始执行规划好的任务安排"
-              'v-if': "assignData.undone"
-            }, ["开始执行"], ),
-            h("button", {
-              'type': "button"
-              'class': "btn btn-sm me-2 my-1 btn-primary"
-              '__click': "doAssigment"
+              'type': "button",
+              'class': "btn btn-sm me-2 my-1 btn-primary",
+              // '__click': doAssigment,
               'onClick': ()=>{exportPlan();},
-              'title': "开始执行规划好的任务安排"
-              'v-if': "assignData.undone"
-            }, ["导出计划"], ),
+              'title': "开始执行规划好的任务安排",
+            }, ["导出计划"], ),    
             h("button", {
-              'type': "button"
-              'class': "btn btn-sm me-2 my-1"
-              ':class': "assignData.undone ? 'btn-outline-secondary' : 'btn-outline-success'"
+              'type': "button",
+              'class': `btn btn-sm me-2 my-1 ${assignData.undone ? 'btn-outline-secondary' : 'btn-outline-success'}`,
               'onClick': ()=>{if(assignData.undone){cancelAssigment();}else{cleanAssigment();}},
-              ':title': "assignData.undone ? '撤除规划好的任务安排' : '清除以上信息'"
-            }, ["{{ assignData.undone ? '撤除规划' : '知道了，清除'}}"], ),
+              'title': assignData.undone ? '撤除规划好的任务安排' : '清除以上信息'
+            }, [assignData.undone ? '撤除规划' : '知道了，清除'], ),
           ], ),
-          h("div", { 'class': "col col-12 my-2" 'v-if': "'inserted' in assignData.result", }, [
-            h("div", {}, ["执行结果："], ),
-          ], ),
-          h("div", { 'class': "col col-12 my-2" 'v-if': "'inserted' in assignData.result", }, [
-            h("div", {}, ["修改： {{ assignData.result.replaced }}"], ),
-            h("div", {}, ["新增： {{ assignData.result.inserted }}"], ),
-            h("div", {}, ["异常： {{ assignData.result.strange }}"], ),
-          ], ),
+          'inserted' in assignData.result ? (
+            h("div", { 'class': "col col-12 my-2" }, [
+              h("div", {}, ["执行结果："], ),
+            ], ),
+            h("div", { 'class': "col col-12 my-2", }, [
+              h("div", {}, [`修改： ${ assignData.result.replaced }`], ),
+              h("div", {}, [`新增： ${ assignData.result.inserted }`], ),
+              h("div", {}, [`异常： ${ assignData.result.strange }`], ),
+            ], )) : ''
         ]) : null,
       ], ),
     ];

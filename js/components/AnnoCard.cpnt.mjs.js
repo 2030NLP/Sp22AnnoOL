@@ -1,4 +1,5 @@
 import {  reactive, h  } from '../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
+import ResultsDisplay from './Annotator/ResultsDisplay.cpnt.mjs.js';
 
 const AnnoCard = {
   props: ["db", "anno", "reviewer"],
@@ -30,7 +31,8 @@ const AnnoCard = {
     const updateAnno = () => {
       ctx.emit('update-anno', props.anno);
     };
-    return { ctrl, onOpenModal, reviewPass, reviewReject, submitReview, updateAnno };
+    const db = props.db;
+    return { db, ctrl, onOpenModal, reviewPass, reviewReject, submitReview, updateAnno };
   },
   render() {
     // console.log(this);
@@ -140,14 +142,22 @@ const AnnoCard = {
             ),
           ],
         ),
-        h('div', {},
-          (this.anno?.content?.annotations??[]).map(annot=>h(
-            'span', {
-              'class': "badge bg-light text-dark text-wrap my-1 me-2",
-            },
-            [JSON.stringify(annot)],
-          )),
-        ),
+        // h('div', {},
+        //   (this.anno?.content?.annotations??[]).map(annot=>h(
+        //     'span', {
+        //       'class': "badge bg-light text-dark text-wrap my-1 me-2",
+        //     },
+        //     [JSON.stringify(annot)],
+        //   )),
+        // ),
+        h(ResultsDisplay, {
+          class: "results-display",
+          eachClass: "my-1 me-2",
+          annotations: this.anno?.content?.annotations,
+          tokens: this.db?.entryDict?.[this.anno?.entry]?.content?.material?.tokenList,
+          showSub: true,
+          showTitle: true,
+        }),
       ]
     );
   },

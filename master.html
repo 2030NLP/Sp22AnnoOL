@@ -51,6 +51,15 @@
 
 
     <div class="container page my-4 py-2">
+
+      <!-- <div class="border border-1 border-danger py-2">
+        <bs-badge
+          :class="'h1'"
+          can-close="true"
+          @close="()=>{win.console.log('close----')}"
+        >哈哈哈</bs-badge>
+      </div> -->
+
       <login-panel
         :user="ctrl.currentUser"
         @update-user="(info)=>{Object.assign(ctrl.currentUser, info)}"
@@ -147,6 +156,12 @@
               <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.userProgress ? 'active' : ''" href="#" @click="goTab('userProgress')">用户进度</a>
               </li>
+              <li class="nav-item" v-show="isManager(ctrl.currentUser)">
+                <a class="nav-link" :class="ctrl.tab == TABS.finder ? 'active' : ''" href="#" @click="goTab('finder')">检索</a>
+              </li>
+              <li class="nav-item" v-show="isMaster(ctrl.currentUser)">
+                <a class="nav-link" :class="ctrl.tab == TABS.taskAssign ? 'active' : ''" href="#" @click="goTab('taskAssign')">分配任务</a>
+              </li>
               <!-- <li class="nav-item">
                 <a class="nav-link" :class="ctrl.tab == TABS.functions ? 'active' : ''" href="#" @click="goTab('functions')">更多功能</a>
               </li>
@@ -175,6 +190,26 @@
           @click-user-detail-btn="(user)=>{modalBox_open('user-detail', user);}"
           @click-user-progress-btn="(user)=>{sortUserAnnos(user);modalBox_open('user-progress', user);}"
         ></user-list-panel>
+
+
+        <finder-panel
+          :show="ctrl.tab == TABS.finder && isManager(ctrl.currentUser)"
+          :functions="Sp22FN"
+          :db="spDB"
+        ></finder-panel>
+
+
+        <task-assign-panel
+          :show="ctrl.tab == TABS.taskAssign && isMaster(ctrl.currentUser)"
+          :functions="Sp22FN"
+          :db="spDB"
+          :settings="ctrl"
+          :frg="frg"
+          :alert-box="alertBox"
+          :modal-box="modalBox"
+          :backend="theBackEnd"
+          :saver="theSaver"
+        ></task-assign-panel>
 
 
       </div>
@@ -247,7 +282,7 @@
                 <div class="col-12">
                   <entry-card
                     :entry="entry"
-                    :db="dbBasic"
+                    :db="spDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-entry="(value)=>{updateOneEntry(value)}"
                   ></entry-card>
@@ -284,7 +319,7 @@
                     <div class="col-12">
                       <anno-card
                         :anno="anno"
-                        :db="dbBasic"
+                        :db="spDB"
                         @submit-review="(value)=>{saveAnnoReview(...value)}"
                         @open-modal="(value)=>{modalBox_open(...value)}"
                         @update-anno="(value)=>{updateOneAnno(value)}"
@@ -301,7 +336,7 @@
                   <task-card
                     v-for="task in [spDB.task(task_id)]"
                     :task="task"
-                    :db="dbBasic"
+                    :db="spDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                   ></task-card>
                 </div>
@@ -327,7 +362,7 @@
                 <div class="col-12" v-for="entry in [spDB.entry(anno.entry)]">
                   <entry-card
                     :entry="entry"
-                    :db="dbBasic"
+                    :db="spDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-entry="(value)=>{updateOneEntry(value)}"
                   ></entry-card>
@@ -357,7 +392,7 @@
                   <task-card
                     v-for="task in [spDB.task(anno.task)]"
                     :task="task"
-                    :db="dbBasic"
+                    :db="spDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                   ></task-card>
                   <button
@@ -400,7 +435,7 @@
                 <div class="col-12" v-for="entry in [spDB.entry(task.entry)]">
                   <entry-card
                     :entry="entry"
-                    :db="dbBasic"
+                    :db="spDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-entry="(value)=>{updateOneEntry(value)}"
                   ></entry-card>
@@ -413,7 +448,7 @@
                       <anno-card
                         v-for="anno in [spDB.anno(anno_id)]"
                         :anno="anno"
-                        :db="dbBasic"
+                        :db="spDB"
                         :key="anno.id"
                         @submit-review="(value)=>{saveAnnoReview(...value)}"
                         @open-modal="(value)=>{modalBox_open(...value)}"
@@ -448,7 +483,7 @@
             v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-editor']"
           >
             <user-editor
-              :db="dbBasic"
+              :db="spDB"
               :box="modalBox"
               :user="modalBox.data?.kwargs"
               @check-error-on-save="alertBox.pushAlert('存在错误，请检查！', 'warning')"
@@ -461,7 +496,7 @@
             v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-importer']"
           >
             <user-importer
-              :db="dbBasic"
+              :db="spDB"
               :box="modalBox"
               @check-error-on-save="(value)=>{alertBox.pushAlert('存在错误，请检查！', 'warning', null, value)}"
               @save="async(value)=>{ctrl.started=false; let messages = await makeNewUsers(value); let resultText='执行结果：\n'+messages.join('\n'); modalBox_open('confirm', {desc: resultText, action: ()=>{}, closetext: '关闭', confirmtext: '知道了'} );}"
@@ -627,7 +662,7 @@
                   <task-card
                     v-for="task in [spDB.task(anno.task)]"
                     :task="task"
-                    :db="dbBasic"
+                    :db="spDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                   ></task-card>
                 </div>
@@ -635,7 +670,7 @@
                 <div class="col-12" v-for="entry in [spDB.entry(anno.entry)]">
                   <entry-card
                     :entry="entry"
-                    :db="dbBasic"
+                    :db="spDB"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-entry="(value)=>{updateOneEntry(value)}"
                   ></entry-card>
@@ -644,7 +679,7 @@
                 <div class="col-12">
                   <anno-card
                     :anno="anno"
-                    :db="dbBasic"
+                    :db="spDB"
                     @submit-review="(value)=>{saveAnnoReview(...value)}"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-anno="(value)=>{updateOneAnno(value)}"

@@ -304,19 +304,19 @@ class Sp22FN {
   // 处理 topic 历史遗留混乱 用于 find()
   static topic_tags(topic) {
     if (Sp22FN.lls.ll0.includes(topic)) {
-      return ll0;
+      return Sp22FN.lls.ll0;
     };
     if (Sp22FN.lls.ll1.includes(topic)) {
-      return ll1;
+      return Sp22FN.lls.ll1;
     };
     if (Sp22FN.lls.ll2.includes(topic)) {
-      return ll2;
+      return Sp22FN.lls.ll2;
     };
     if (Sp22FN.lls.ll3.includes(topic)) {
-      return ll3;
+      return Sp22FN.lls.ll3;
     };
     if (Sp22FN.lls.ll4.includes(topic)) {
-      return ll4;
+      return Sp22FN.lls.ll4;
     };
     return [topic];
   }
