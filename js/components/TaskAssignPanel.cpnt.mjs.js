@@ -10,7 +10,7 @@ import { dateString, foolCopy } from '../util.mjs.js';
 import assign_tasks from '../assign_tasks_new.mjs.js';
 
 const TaskAssignPanel = {
-  props: ["functions", "db", "settings", "frg", "alertBox", "modalBox", "backend", "saver"],
+  props: ["functions", "db", "settings", "frg", "alertBox", "modalBox", "backend", "saver", "show"],
   emits: [],
   component: {
   },
@@ -385,7 +385,7 @@ const TaskAssignPanel = {
     };
 
 
-    return () => [
+    return () => h("div", { 'class': "container", }, [
       h("div", { 'class': "row align-items-center my-2", }, [
         // h("div", { 'class': "col col-12", }, [
         //   h("p", { 'class': "text-danger" }, ["开发中，存在严重 BUG ，请勿使用！！！"], ),
@@ -598,7 +598,7 @@ const TaskAssignPanel = {
             ], )) : ''
         ]) : null,
       ], ),
-    ];
+    ]);
   },
 };
 

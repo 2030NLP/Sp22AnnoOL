@@ -201,6 +201,7 @@
 
         <task-assign-panel
           :show="ctrl.tab == TABS.taskAssign && isMaster(ctrl.currentUser)"
+          v-show="ctrl.tab == TABS.taskAssign && isMaster(ctrl.currentUser)"
           :functions="Sp22FN"
           :db="spDB"
           :settings="ctrl"
