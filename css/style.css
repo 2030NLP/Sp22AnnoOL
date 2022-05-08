@@ -3,8 +3,16 @@
 
 
 
+    .bg-gray-200 {
+      background-color: #e9ecef;
+      background-color: $gray-200;
+    }
+
     .cursor-pointer {
       cursor: pointer;
+    }
+    .cursor-help {
+      cursor: help;
     }
     .pre-wrap {
       white-space: pre-wrap;

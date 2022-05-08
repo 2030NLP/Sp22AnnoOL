@@ -253,8 +253,9 @@
             <!-- 替换前原文区 结束 -->
             <!-- 便捷选择操作区 开始 -->
             <div class="row my-2" v-show="selection.array.length" id="convenient-ctrl">
-              <div class="col col-12 col-lg-12">
+              <div class="col col-12 col-lg-12 d-flex justify-content-end">
                 <button v-if=" 'multiSpans' == (currentStep.mode) && currentStep?.props?.addBtn" type="button" @click="currentStep?.props?.data.tokenarrays.push(selection.array)" class="btn btn-sm my-1 me-1" :class="`btn-outline-primary`">{{ currentStep.props.addBtn.text }}</button>
+                <button type="button" @click="tokenSelector.clear(getTokenList())" class="btn btn-sm my-1 me-1" :class="`btn-outline-info`">清除选区</button>
                 <button
                   type="button"
                   class="btn btn-sm my-1 me-1"
@@ -268,7 +269,6 @@
                   :class="`btn-outline-info btn-copy-selection`"
                   :data-clipboard-text="tokenSelector.selectedOriginText(getTokenList())"
                 >拷贝选区（2）</button>
-                <button type="button" @click="tokenSelector.clear(getTokenList())" class="btn btn-sm my-1 me-1" :class="`btn-outline-info`">清除选区</button>
               </div>
             </div>
             <!-- 便捷选择操作区 结束 -->
@@ -279,339 +279,23 @@
 
 
 
-          <!-- 0228之前的旧版功能区 开始 -->
+          <!-- 功能区 开始 -->
           <div class="col col-12 col-lg-5 my-2" id="func-ctrl">
-
-            <!-- 结束模块 开始 -->
-            <div class="row" v-show = "('interlude'==currentStep.mode&&currentStep?.props?.showResults)||'finalResult'==(currentStep.mode)" __v-if=" 'finalResult'==(currentStep.mode)" :data-mode="currentStep.mode">
-              <!-- 指导语 -->
-              <div class="col col-12 my-1" v-if="'finalResult'==(currentStep.mode)&&currentStep?.props?.instruction">
-                <div>{{ currentStep?.props?.instruction }}</div>
-              </div>
-
-              <div class="col col-12 my-1">
-                <!-- 取消按钮 -->
-                <button
-                  type="button"
-                  v-if="'finalResult'==(currentStep.mode)&&currentStep?.props?.cancelBtn"
-                  @click="stepCtrl.cancelStep(currentStep.props.cancelBtn.go)"
-                  class="btn btn-sm my-1 me-1"
-                  :class="`btn-${currentStep.props.cancelBtn.style}`"
-                >{{ currentStep.props.cancelBtn.text }}</button>
-                <!-- 重置按钮 -->
-                <button
-                  type="button"
-                  v-if="'finalResult'==(currentStep.mode)&&currentStep?.props?.canReset"
-                  @click="stepCtrl.resetStep(currentStep.props.resetBtn.go)"
-                  class="btn btn-sm my-1 me-1"
-                  :class="`btn-${currentStep.props.resetBtn.style}`"
-                >{{ currentStep.props.resetBtn.text }}</button>
-                <!-- 下一条按钮 -->
-                <!-- <button
-                  type="button"
-                  v-if="'finalResult'==(currentStep.mode)&&currentStep?.props?.nextBtn"
-                  @click="ioC.goIdx(ctrl.currentIdx+1)"
-                  class="btn btn-sm my-1 me-1"
-                  :class="`btn-${currentStep.props.nextBtn.style}`"
-                >{{ currentStep.props.nextBtn.text }}</button> -->
-              </div>
-              <!-- 网络版专用按钮 开始 -->
-              <!-- <div class="col col-12 my-1">
-                <button
-                  type="button"
-                  v-if="'finalResult'==(currentStep.mode)"
-                  @click="bEU.next(example)"
-                  class="btn btn-sm my-1 me-4"
-                  :class="`btn-danger`"
-                >不保存并前往下一条</button>
-              </div> -->
-              <div class="col col-12 my-1">
-                <!-- <button
-                  type="button"
-                  v-if="'finalResult'==(currentStep.mode)"
-                  @click="bEU.save(example)"
-                  class="btn btn-sm my-1 me-1"
-                  :class="`btn-success`"
-                >保存</button> -->
-                <!-- <button
-                  type="button"
-                  v-if="'finalResult'==(currentStep.mode)"
-                  @click="bEU.saveAndNext(example)"
-                  class="btn btn-sm my-1 me-1"
-                  :class="`btn-primary`"
-                >保存并前往下一条</button> -->
-                <button
-                  type="button"
-                  v-if="'finalResult'==(currentStep.mode)"
-                  @click="bEU.saveAndNext(example)"
-                  class="btn btn-sm my-1 me-1"
-                  :class="`btn-success`"
-                >保存并继续</button>
-              </div>
-              <!-- 网络版专用按钮 结束 -->
-            </div>
-            <!-- 结束模块 结束 -->
-
-
-            <!-- 选值模块 开始 -->
-            <div class="row" v-if="['selectValue'].includes(currentStep.mode)" :data-mode="currentStep.mode">
-              <!-- 指导语 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.instruction">
-                <div>{{ currentStep?.props?.instruction }}</div>
-              </div>
-              <!-- 选项按钮 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.optionBtns">
-                <template v-for="btn in currentStep.props.optionBtns">
-                  <button :key="btn.text" type="button" v-on:click="stepCtrl.goRefStep(btn.go, btn.data)" class="btn btn-sm my-1 me-1" :class="`btn-${btn.style}`">{{ btn.text }}</button><br v-if="false"/>
-                </template>
-              </div>
-              <!-- 完成按钮 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.okBtn">
-                <button type="button" @click="stepCtrl.goRefStep(currentStep.props.okBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn.style}`">{{ currentStep.props.okBtn.text }}</button>
-              </div>
-              <!-- 重置按钮 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.canReset">
-                <button type="button" @click="stepCtrl.resetStep(currentStep.props.resetBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.resetBtn.style}`">{{ currentStep.props.resetBtn.text }}</button>
-              </div>
-            </div>
-            <!-- 选值模块 结束 -->
-
-
-            <!-- 幕间模块 开始 -->
-            <div class="row" v-if="['interlude'].includes(currentStep.mode)" :data-mode="currentStep.mode">
-              <!-- 指导语 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.instruction">
-                <div>{{ currentStep?.props?.instruction }}</div>
-              </div>
-              <!-- 选项按钮 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.optionBtns">
-                <button v-for="btn in currentStep.props.optionBtns" :key="btn.text" type="button" @click="stepCtrl.goRefStep(btn.go, btn.data)" class="btn btn-sm my-1 me-1" :class="`btn-${btn.style}`">{{ btn.text }}</button>
-              </div>
-              <!-- 完成按钮 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.okBtn">
-                <button type="button" @click="stepCtrl.goRefStep(currentStep.props.okBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn.style}`">{{ currentStep.props.okBtn.text }}</button>
-              </div>
-              <!-- 重置按钮 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.canReset">
-                <button type="button" @click="stepCtrl.resetStep(currentStep.props.resetBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.resetBtn.style}`">{{ currentStep.props.resetBtn.text }}</button>
-              </div>
-            </div>
-            <!-- 幕间模块 结束 -->
-
-
-            <!-- 初始模块 开始 -->
-            <div class="row" v-if=" 'root'==(currentStep.mode)" :data-mode="currentStep.mode">
-              <!-- 指导语 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.instruction">
-                <div>{{ currentStep?.props?.instruction }}</div>
-              </div>
-              <!-- 开始按钮 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.startBtn">
-                <button type="button" @click="stepCtrl.cancelStep(currentStep.props.startBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.startBtn.style}`">{{ currentStep.props.startBtn.text }}</button>
-              </div>
-            </div>
-            <!-- 初始模块 结束 -->
-
-
-
-            <!-- multiSpans 模式 开始 -->
-            <div class="row" v-if=" 'multiSpans' == (currentStep.mode)" :data-mode="currentStep.mode">
-              <!-- 指导语 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.instruction">
-                <div>{{ currentStep?.props?.instruction }}</div>
-              </div>
-              <!-- --- -->
-              <div class="col col-12 my-1">
-                <!-- addBtn -->
-                <button v-if="currentStep?.props?.addBtn" type="button" @click="currentStep?.props?.data.tokenarrays.push(selection.array);tokenSelector.clear(getTokenList());" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.addBtn.style}`" :disabled="selection.array.length<1">{{ currentStep.props.addBtn.text }}</button>
-                <!-- clearBtn -->
-                <button v-if="currentStep?.props?.clearBtn" type="button" @click="tokenSelector.clear(getTokenList())" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.clearBtn.style}`">{{ currentStep.props.clearBtn.text }}</button>
-              </div>
-              <!-- 已选列表 开始 -->
-              <div class="col col-12 my-1" v-if="currentStep?.props?.listTitle">
-                <div>{{ currentStep?.props?.listTitle }}</div>
-              </div>
-              <div class="col col-12 my-1" v-if="['multiSpans'].includes(currentStep.mode)">
-                <div class="card">
-                  <div class="card-body">
-                    <bs-badge
-                      class="rounded-pill m-1"
-                      v-for="(tokenarray, idx) in currentStep.props.data.tokenarrays"
-                      :key="idx"
-                      :can-remove="true"
-                      @remove="()=>{stepCtrl.deleteFromTokenarrays(currentStep, idx)}"
-                    >
-                      <span v-for="tokenIdx in tokenarray" >{{ getReplacedToken(tokenIdx) }}</span>
-                    </bs-badge>
-                    <!-- <span class="badge rounded-pill bg-light text-dark m-1" v-for="tokenarray in currentStep.props.data.tokenarrays"><span v-for="tokenIdx in tokenarray">{{ getReplacedToken(tokenIdx) }}</span></span> -->
-                  </div>
-                </div>
-              </div>
-              <div class="col col-12 my-1" v-if="currentStep.props.data.tokenarrays.length<2&&currentStep?.props?.lengthTip">
-                <div>{{ currentStep?.props?.lengthTip }}</div>
-              </div>
-              <!-- 已选列表 结束 -->
-              <!-- --- -->
-              <div class="col col-12 my-1">
-                <!-- okBtn -->
-                <button v-if="currentStep?.props?.okBtn" type="button" @click="stepCtrl.handleMultiSpans(currentStep.props.okBtn.go, currentStep.props.data);tokenSelector.clear(getTokenList());" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn.style}`" :disabled="currentStep.props.data.tokenarrays.length<2">{{ currentStep.props.okBtn.text }}</button>
-                <!-- cleanBtn 弃用 -->
-                <!-- <button v-if="currentStep?.props?.cleanBtn" type="button" @click="cleanSpans" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.clearBtn.style}`">{{ currentStep.props.cleanBtn.text }}</button> -->
-                <!-- cancelBtn -->
-                <button v-if="currentStep?.props?.cancelBtn" type="button" @click="stepCtrl.cancelStep(currentStep.props.cancelBtn.go);tokenSelector.clear(getTokenList());" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.cancelBtn.style}`">{{ currentStep.props.cancelBtn.text }}</button>
-              </div>
-            </div>
-            <!-- multiSpans 模式 结束 -->
-
-            <!-- add模式开始 -->
-            <div class="row" v-if=" 'add' == (currentStep.mode)" :data-mode="currentStep.mode">
-              <!-- 指导语 -->
-              <div class="col col-12 my-1" v-if="!selection.array.length&&currentStep?.props?.selectInstruction">
-                <div>{{ currentStep?.props?.selectInstruction }}</div>
-              </div>
-              <div class="col col-12 my-1" v-if="selection.array.length&&currentStep?.props?.selectedTitle">
-                <div>{{ currentStep?.props?.selectedTitle }}<span>“<span v-for="tokenIdx in [selection.array[0]]">{{ getReplacedToken(tokenIdx) }}</span>”</span><!-- <sub>{{selection.array}}</sub> --></div>
-              </div>
-              <template v-if="selection.array.length">
-                <!-- 选边指导语 -->
-                <div class="col col-12 my-1">
-                  <div v-if="currentStep?.props?.sideInstruction">{{ currentStep?.props?.sideInstruction }}</div>
-                </div>
-                <!-- 选框区 -->
-                <div class="col col-12 my-1">
-                  <select class="form-select form-select-sm" v-model="currentStep.props.data.side">
-                    <option  v-for="(option, index) in currentStep?.props?.options" :key="index" :value="option.value">{{ option.text }}</option>
-                  </select>
-                </div>
-                <!-- 添加内容指导语 -->
-                <div class="col col-12 my-1">
-                  <div v-if="currentStep?.props?.addInstruction">{{ currentStep?.props?.addInstruction }}</div>
-                </div>
-                <!-- 文本区 -->
-                <div class="col col-12 my-1">
-                  <input class="form-control form-control-sm" type="text" v-model="currentStep.props.data.target" :placeholder="currentStep?.props?.addInstruction ?? ''">
-                </div>
-              </template>
-              <div class="col col-12 my-1">
-                <!-- okBtn -->
-                <button v-if="currentStep?.props?.okBtn" type="button" @click="stepCtrl.handleWord(currentStep.props.okBtn.go, currentStep.props.data)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn.style}`" :disabled="(!selection.array.length)||(!currentStep.props.data.target.length)">{{ currentStep.props.okBtn.text }}</button>
-                <!-- cancelBtn -->
-                <button v-if="currentStep?.props?.cancelBtn" type="button" @click="stepCtrl.cancelStep(currentStep.props.cancelBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.cancelBtn.style}`">{{ currentStep.props.cancelBtn.text }}</button>
-              </div>
-
-            </div>
-            <!-- add模式结束 -->
-
-            <!-- modify模式开始 -->
-            <div class="row" v-if=" 'modify' == (currentStep.mode)" :data-mode="currentStep.mode">
-              <!-- 指导语 -->
-              <div class="col col-12 my-1" v-if="!selection.array.length&&currentStep?.props?.selectInstruction">
-                <div>{{ currentStep?.props?.selectInstruction }}</div>
-              </div>
-              <div class="col col-12 my-1" v-if="selection.array.length&&currentStep?.props?.selectedTitle">
-                <div>{{ currentStep?.props?.selectedTitle }}<span>“<span v-for="tokenIdx in [selection.array[0]]">{{ getReplacedToken(tokenIdx) }}</span>”</span><!-- <sub>{{selection.array}}</sub> --></div>
-              </div>
-              <template v-if="selection.array.length">
-                <!-- 指导语 -->
-                <div class="col col-12 my-1">
-                  <div v-if="currentStep?.props?.instruction">{{ currentStep?.props?.instruction }}</div>
-                </div>
-                <!-- 文本区 -->
-                <div class="col col-12 my-1">
-                  <input class="form-control form-control-sm" type="text" v-model="currentStep.props.data.target" :placeholder="currentStep?.props?.instruction ?? ''">
-                </div>
-              </template>
-              <div class="col col-12 my-1">
-                <!-- okBtn -->
-                <button v-if="currentStep?.props?.okBtn" type="button" @click="stepCtrl.handleWord(currentStep.props.okBtn.go, currentStep.props.data)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn.style}`" :disabled="(!selection.array.length)||(!currentStep.props.data.target.length)">{{ currentStep.props.okBtn.text }}</button>
-                <!-- cancelBtn -->
-                <button v-if="currentStep?.props?.cancelBtn" type="button" @click="stepCtrl.cancelStep(currentStep.props.cancelBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.cancelBtn.style}`">{{ currentStep.props.cancelBtn.text }}</button>
-              </div>
-
-            </div>
-            <!-- modify模式结束 -->
-
-
-            <!-- delete模式开始 -->
-            <div class="row" v-if=" 'delete' == (currentStep.mode)" :data-mode="currentStep.mode">
-              <!-- 指导语 -->
-              <div class="col col-12 my-1" v-if="!selection.array.length&&currentStep?.props?.selectInstruction">
-                <div>{{ currentStep?.props?.selectInstruction }}</div>
-              </div>
-              <div class="col col-12 my-1" v-if="selection.array.length&&currentStep?.props?.selectedTitle">
-                <div>{{ currentStep?.props?.selectedTitle }}<span>“<span v-for="tokenIdx in [selection.array[0]]">{{ getReplacedToken(tokenIdx) }}</span>”</span><!-- <sub>{{selection.array}}</sub> --></div>
-              </div>
-              <div class="col col-12 my-1">
-                <!-- okBtn -->
-                <button v-if="currentStep?.props?.okBtn" type="button" @click="stepCtrl.handleWord(currentStep.props.okBtn.go, currentStep.props.data)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn.style}`" :disabled="(!selection.array.length)">{{ currentStep.props.okBtn.text }}</button>
-                <!-- cancelBtn -->
-                <button v-if="currentStep?.props?.cancelBtn" type="button" @click="stepCtrl.cancelStep(currentStep.props.cancelBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.cancelBtn.style}`">{{ currentStep.props.cancelBtn.text }}</button>
-              </div>
-
-            </div>
-            <!-- delete模式结束 -->
-
-            <!-- choose 或 text 模式开始 -->
-            <div class="row" v-if="['choose', 'text'].includes(currentStep.mode)" :data-mode="currentStep.mode">
-              <!-- 已选片段 -->
-              <div class="col col-12 my-1" v-if="!selection.array.length&&currentStep?.props?.selectInstruction">
-                <div>{{ currentStep?.props?.selectInstruction }}</div>
-              </div>
-              <!-- 已选片段 -->
-              <div class="col col-12 my-1" v-if="selection.array.length&&currentStep?.props?.selectedTitle">
-                <div>{{ currentStep?.props?.selectedTitle }}<span>“<span v-for="tokenIdx in selection.array">{{ getReplacedToken(tokenIdx) }}</span>”</span><!-- <sub>{{selection.array}}</sub> --></div>
-              </div>
-
-              <template v-if="selection.array.length||currentStep?.props?.canSkipSelection">
-                <!-- 指导语 -->
-                <div class="col col-12 my-1">
-                  <div v-if="currentStep?.props?.instruction">{{ currentStep?.props?.instruction }}</div>
-                </div>
-                <!-- 选框区 -->
-                <div class="col col-12 my-1" v-if="currentStep.mode=='choose'">
-                  <select class="form-select form-select-sm" v-model="currentStep.props.data.withText">
-                    <option  v-for="(option, index) in currentStep?.props?.options" :key="index" :value="option">{{ option }}</option>
-                  </select>
-                </div>
-                <!-- 文本区 -->
-                <div class="col col-12 my-1" v-if="currentStep.mode=='text'">
-                  <input class="form-control form-control-sm" type="text" v-model="currentStep.props.data.withText" :placeholder="currentStep?.props?.instruction ?? ''">
-                </div>
-              </template>
-
-              <template v-if="!selection.array.length&&currentStep?.props?.qitainstruction">
-                <!-- 指导语 -->
-                <div class="col col-12 my-1">
-                  <div v-if="currentStep?.props?.instruction">{{ currentStep?.props?.qitainstruction }}</div>
-                </div>
-                <!-- 文本区 -->
-                <div class="col col-12 my-1" v-if="currentStep.mode=='text'">
-                  <input class="form-control form-control-sm" type="text" v-model="currentStep.props.data.withText" :placeholder="currentStep?.props?.qitainstruction ?? ''">
-                </div>
-              </template>
-
-              <!-- 按钮区 -->
-              <div class="col col-12 my-1">
-                <!-- okBtn -->
-                <button v-if="currentStep?.props?.okBtn" type="button" @click="stepCtrl.handleChooseOrText(currentStep.props.okBtn.go, currentStep.props.data)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn.style}`" :disabled="(!currentStep?.props?.canSkipSelection&&!selection.array.length)||(!currentStep?.props?.canSkipText&&!currentStep.props.data.withText.length)">{{ currentStep.props.okBtn.text }}</button>
-                <button v-if="currentStep?.props?.okBtn1" type="button" @click="stepCtrl.handleQita(currentStep.props.okBtn1.go, currentStep.props.data)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.okBtn1.style}`" :disabled="(!currentStep.props.data.withText.length)">{{ currentStep.props.okBtn1.text }}</button>
-                <!-- cancelBtn -->
-                <button v-if="currentStep?.props?.cancelBtn" type="button" @click="stepCtrl.cancelStep(currentStep.props.cancelBtn.go)" class="btn btn-sm my-1 me-1" :class="`btn-${currentStep.props.cancelBtn.style}`">{{ currentStep.props.cancelBtn.text }}</button>
-              </div>
-
-              <template v-if="selection.array.length&&currentStep.mode=='text'&&currentStep.ref=='handleErrorString'">
-                <!-- 220330：对于修改字符错误的情形，添加区域显示修改后的完整的文本 -->
-                <div class="col col-12 my-1">修改后的完整文本为：</div>
-                <div class="col col-12 my-1">
-                  <div class="text-muted small"><span>{{ modifiedText.sideL }}</span><span class="text-danger fw-bold">{{ modifiedText.sideM }}</span><span>{{ modifiedText.sideR }}</span></div>
-                </div>
-              </template>
-
-            </div>
-            <!-- choose 或 text 模式结束 -->
-
+            <annotator
+              :step="currentStep"
+              :engine="'web'"
+              :token-selector="tokenSelector"
+              :step-ctrl="stepCtrl"
+              :tokens="example?.material?.tokenList"
+              :modified-text="modifiedText"
+              :selection="selection"
+              :alert-box="alertBox"
+              @web-next="bEU.next(example)"
+              @web-save="bEU.save(example)"
+              @web-save-and-next="bEU.saveAndNext(example)"
+            ></annotator>
           </div>
-          <!-- 0228之前的旧版功能区 结束 -->
+          <!-- 功能区 结束 -->
         </div>
 
         <!-- 标注结果展示模块 开始 -->

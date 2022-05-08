@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0503-0234";
+const APP_VERSION = "22-0507-2152";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -440,6 +440,9 @@ the_app.component('token-list-p', TokenListP);
 import FunctionalArea from './components/FunctionalArea.cpnt.mjs.js';
 the_app.component('functional-area', FunctionalArea);
 
+
+import TheAnnotator from './components/TheAnnotator.cpnt.mjs.js';
+the_app.component('annotator', TheAnnotator);
 
 import ResultsDisplay from './components/Annotator/ResultsDisplay.cpnt.mjs.js';
 the_app.component('results-display', ResultsDisplay);

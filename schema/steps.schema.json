@@ -1,14 +1,491 @@
 {
   "name": "SpaCE2022",
-  "version": "220503v0",
+  "version": "220507v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
-    "第2期": "220503v0",
+    "第2期": "220507v1",
     "第3期": null,
     "精标": null
   },
   "using": "第2期",
+  "第2期": {
+    "startStep": "start",
+    "endStep": "end",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "",
+          "canReset": true,
+          "resetBtn": {
+            "text": "清空并重新标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "cancelBtn": {
+            "text": "增加标注",
+            "go": "start",
+            "style": "outline-primary"
+          },
+          "nextBtn": {
+            "text": "下一条",
+            "style": "outline-primary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "开始",
+        "mode": "selectValue",
+        "props": {
+          "instruction": "这段话符合下述哪些/哪种情形？",
+          "optionBtns": [
+            {
+              "text": "并无异常",
+              "data": {
+                "label": "ExceptionNotFound",
+                "desc": "这段话不存在异常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "不适合用于计算机空间语义理解",
+              "go": "handleReasonOther",
+              "style": "outline-dark"
+            },
+            {
+              "text": "存在异常",
+              "style": "outline-danger",
+              "go": "makeReason"
+            }
+          ]
+        }
+      },
+      "handleReasonOther": {
+        "ref": "handleReasonOther",
+        "name": "处理归因：其他",
+        "mode": "text",
+        "props": {
+          "canSkipSelection": true,
+          "canSkipText": true,
+          "selectInstruction": "请在文中划选相关文本片段",
+          "selectedTitle": "当前选中的文本片段是：",
+          "instruction": "请填写不适合用于计算机空间语义理解的具体原因",
+          "data": {
+            "label": "ReasonOther",
+            "desc": "不适合用于计算机空间语义理解",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "makeReason": {
+        "ref": "makeReason",
+        "name": "处理异常归因",
+        "mode": "SpaCE2022_Task2",
+        "props": {
+          "strings": {
+            "instruction": "这段话存在哪种/哪些问题？",
+            "selectInstruction": "请在文中选择文本",
+            "insertInstruction": "将选中的文本填入此处"
+          },
+          "data": {
+            "hidden": true,
+            "items": []
+          },
+          "options": [
+            {
+              "text": "搭配不当",
+              "style": "outline-danger",
+              "actualMode": "doubleSpans",
+              "data": {
+                "parentMode": "SpaCE2022_Task2",
+                "actualMode": "doubleSpans",
+                "displayMode": "multiSpans",
+                "label": "ReasonImproperCollocation",
+                "desc": "搭配不当",
+                "tokenarrays": []
+              },
+              "slots": [{"type": "select"}, {"type": "solid-text", "value": "与"}, {"type": "select"}, {"type": "solid-text", "value": "搭配不当"}]
+            },
+            {
+              "text": "语义冲突",
+              "style": "outline-danger",
+              "actualMode": "doubleSpans",
+              "data": {
+                "parentMode": "SpaCE2022_Task2",
+                "actualMode": "doubleSpans",
+                "displayMode": "multiSpans",
+                "label": "ReasonSemanticConflict",
+                "desc": "语义冲突",
+                "tokenarrays": []
+              },
+              "slots": [{"type": "select"}, {"type": "solid-text", "value": "与"}, {"type": "select"}, {"type": "solid-text", "value": "语义冲突"}]
+            },
+            {
+              "text": "与常识或背景信息不符",
+              "style": "outline-danger",
+              "actualMode": "spanWithComment",
+              "data": {
+                "parentMode": "SpaCE2022_Task2",
+                "actualMode": "spanWithComment",
+                "displayMode": "text",
+                "label": "ReasonAgainstCommenSense",
+                "desc": "与常识或背景信息不符",
+                "on": [],
+                "withText": ""
+              },
+              "slots": [{"type": "select"}, {"type": "solid-text", "value": "不符合常识或背景信息："}, {"type": "input-text"}]
+            }
+          ],
+          "okBtn": {
+            "text": "完成",
+            "go": "end",
+            "style": "outline-success"
+          },
+          "resetBtn": {
+            "text": "重置",
+            "style": "outline-danger"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "outline-dark"
+          }
+        }
+      }
+    }
+  },
+  "第2期_旧版": {
+    "startStep": "start",
+    "endStep": "end",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "",
+          "canReset": true,
+          "resetBtn": {
+            "text": "清空并重新标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "cancelBtn": {
+            "text": "修改或增加标注",
+            "go": "start",
+            "style": "outline-primary"
+          },
+          "nextBtn": {
+            "text": "下一条",
+            "style": "outline-primary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "开始",
+        "mode": "selectValue",
+        "props": {
+          "instruction": "这段话符合下述哪些/哪种情形？",
+          "optionBtns": [
+            {
+              "text": "搭配不当",
+              "go": "handleReasonImproperCollocation",
+              "style": "outline-danger"
+            },
+            {
+              "text": "语义冲突",
+              "go": "handleReasonSemanticConflict",
+              "style": "outline-danger"
+            },
+            {
+              "text": "与常识或背景信息不符",
+              "go": "handleReasonAgainstCommenSense",
+              "style": "outline-danger"
+            },
+            {
+              "text": "并无异常",
+              "data": {
+                "label": "ExceptionNotFound",
+                "desc": "这段话不存在异常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "不适合用于计算机空间语义理解",
+              "go": "handleReasonOther",
+              "style": "outline-dark"
+            }
+          ],
+          "okBtn": {
+            "text": "完成",
+            "go": "end",
+            "style": "outline-success"
+          },
+          "canReset": true,
+          "resetBtn": {
+            "text": "重置",
+            "go": "start",
+            "style": "outline-dark"
+          }
+        }
+      },
+      "handleReasonImproperCollocation": {
+        "ref": "handleReasonImproperCollocation",
+        "name": "处理归因：搭配不当",
+        "mode": "multiSpans",
+        "props": {
+          "instruction": "请在文中依次划选造成搭配不当的全部文本片段。选择完成后，可将其加入列表。",
+          "listTitle": "造成搭配不当的文本片段有：",
+          "lengthTip": "提示：请至少选择2个片段",
+          "data": {
+            "label": "ReasonImproperCollocation",
+            "desc": "搭配不当",
+            "tokenarrays": []
+          },
+          "addBtn": {
+            "text": "将所选片段加入列表",
+            "style": "primary"
+          },
+          "clearBtn": {
+            "text": "清除选区",
+            "style": "info"
+          },
+          "cleanBtn": {
+            "text": "清除已选片段",
+            "style": "light"
+          },
+          "okBtn": {
+            "text": "不再添加，完成",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleReasonSemanticConflict": {
+        "ref": "handleReasonSemanticConflict",
+        "name": "处理归因：语义冲突",
+        "mode": "multiSpans",
+        "props": {
+          "instruction": "请在文中依次划选造成语义冲突的全部文本片段。选择完成后，可将其加入列表。",
+          "listTitle": "造成语义冲突的文本片段有：",
+          "lengthTip": "提示：请至少选择2个片段",
+          "data": {
+            "label": "ReasonSemanticConflict",
+            "desc": "语义冲突",
+            "tokenarrays": []
+          },
+          "addBtn": {
+            "text": "将所选片段加入列表",
+            "style": "primary"
+          },
+          "clearBtn": {
+            "text": "清除选区",
+            "style": "info"
+          },
+          "cleanBtn": {
+            "text": "清除已选片段",
+            "style": "light"
+          },
+          "okBtn": {
+            "text": "不再添加，完成",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleReasonAgainstCommenSense": {
+        "ref": "handleReasonAgainstCommenSense",
+        "name": "处理归因：与常识或背景信息不符",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "请在文中划选有问题的文本片段",
+          "selectedTitle": "当前选中的文本片段是：",
+          "instruction": "请填写该片段所不符合的常识或背景信息",
+          "data": {
+            "label": "ReasonAgainstCommenSense",
+            "desc": "与常识或背景信息不符",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "handleReasonOther": {
+        "ref": "handleReasonOther",
+        "name": "处理归因：其他",
+        "mode": "text",
+        "props": {
+          "canSkipSelection": true,
+          "canSkipText": true,
+          "selectInstruction": "请在文中划选相关文本片段",
+          "selectedTitle": "当前选中的文本片段是：",
+          "instruction": "请填写不适合用于计算机空间语义理解的具体原因",
+          "data": {
+            "label": "ReasonOther",
+            "desc": "不适合用于计算机空间语义理解",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      }
+    }
+  },
+  "第1期": {
+    "startStep": "start",
+    "endStep": "end",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "标注已完成。",
+          "canReset": true,
+          "resetBtn": {
+            "text": "清空并重新标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "nextBtn": {
+            "text": "下一条",
+            "style": "outline-primary"
+          },
+          "__cancelBtn": {
+            "text": "返回并补充标注",
+            "go": "start",
+            "style": "outline-secondary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "评估材料的空间关系",
+        "mode": "selectValue",
+        "props": {
+          "instruction": "从空间语义理解的角度看，这段话 ___________ 。",
+          "optionBtns": [
+            {
+              "text": "完全正常",
+              "data": {
+                "label": "fine",
+                "desc": "这段话完全正常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "尚能说通",
+              "data": {
+                "label": "someFine",
+                "desc": "这段话尚能说通"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "比较牵强",
+              "data": {
+                "label": "someBad",
+                "desc": "这段话比较牵强"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "显然异常",
+              "data": {
+                "label": "bad",
+                "desc": "这段话显然异常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "不适合用于计算机空间语义理解",
+              "go": "leaveComment",
+              "style": "outline-dark"
+            }
+          ]
+        }
+      },
+      "leaveComment": {
+        "ref": "leaveComment",
+        "name": "填写备注",
+        "mode": "text",
+        "props": {
+          "selectInstruction": "若涉及具体片段，请在文中划选",
+          "canSkipSelection": true,
+          "canSkipText": true,
+          "selectedTitle": "当前选中了：",
+          "instruction": "请填写不适合用于计算机空间语义理解的原因（选填）",
+          "data": {
+            "isDropping": true,
+            "label": "other",
+            "desc": "导致不适合用于计算机空间语义理解的原因是：",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      }
+    }
+  },
   "清洗": {
     "startStep": "start",
     "endStep": "end",
@@ -201,322 +678,6 @@
           "data": {
             "label": "otherError",
             "desc": "存在问题：",
-            "on": [],
-            "withText": ""
-          },
-          "okBtn": {
-            "text": "确定",
-            "go": "end",
-            "style": "success"
-          },
-          "cancelBtn": {
-            "text": "取消",
-            "go": "start",
-            "style": "light"
-          }
-        }
-      }
-    }
-  },
-  "第1期": {
-    "startStep": "start",
-    "endStep": "end",
-    "steps": {
-      "end": {
-        "ref": "end",
-        "name": "标注结果",
-        "mode": "finalResult",
-        "props": {
-          "instruction": "标注已完成。",
-          "canReset": true,
-          "resetBtn": {
-            "text": "清空并重新标注",
-            "go": "start",
-            "style": "outline-danger"
-          },
-          "nextBtn": {
-            "text": "下一条",
-            "style": "outline-primary"
-          },
-          "__cancelBtn": {
-            "text": "返回并补充标注",
-            "go": "start",
-            "style": "outline-secondary"
-          }
-        }
-      },
-      "start": {
-        "ref": "start",
-        "name": "评估材料的空间关系",
-        "mode": "selectValue",
-        "props": {
-          "instruction": "从空间语义理解的角度看，这段话 ___________ 。",
-          "optionBtns": [
-            {
-              "text": "完全正常",
-              "data": {
-                "label": "fine",
-                "desc": "这段话完全正常"
-              },
-              "go": "end",
-              "style": "outline-primary"
-            },
-            {
-              "text": "尚能说通",
-              "data": {
-                "label": "someFine",
-                "desc": "这段话尚能说通"
-              },
-              "go": "end",
-              "style": "outline-primary"
-            },
-            {
-              "text": "比较牵强",
-              "data": {
-                "label": "someBad",
-                "desc": "这段话比较牵强"
-              },
-              "go": "end",
-              "style": "outline-primary"
-            },
-            {
-              "text": "显然异常",
-              "data": {
-                "label": "bad",
-                "desc": "这段话显然异常"
-              },
-              "go": "end",
-              "style": "outline-primary"
-            },
-            {
-              "text": "不适合用于计算机空间语义理解",
-              "go": "leaveComment",
-              "style": "outline-dark"
-            }
-          ]
-        }
-      },
-      "leaveComment": {
-        "ref": "leaveComment",
-        "name": "填写备注",
-        "mode": "text",
-        "props": {
-          "selectInstruction": "若涉及具体片段，请在文中划选",
-          "canSkipSelection": true,
-          "canSkipText": true,
-          "selectedTitle": "当前选中了：",
-          "instruction": "请填写不适合用于计算机空间语义理解的原因（选填）",
-          "data": {
-            "isDropping": true,
-            "label": "other",
-            "desc": "导致不适合用于计算机空间语义理解的原因是：",
-            "on": [],
-            "withText": ""
-          },
-          "okBtn": {
-            "text": "确定",
-            "go": "end",
-            "style": "success"
-          },
-          "cancelBtn": {
-            "text": "取消",
-            "go": "start",
-            "style": "light"
-          }
-        }
-      }
-    }
-  },
-  "第2期": {
-    "startStep": "start",
-    "endStep": "end",
-    "steps": {
-      "end": {
-        "ref": "end",
-        "name": "标注结果",
-        "mode": "finalResult",
-        "props": {
-          "instruction": "",
-          "canReset": true,
-          "resetBtn": {
-            "text": "清空并重新标注",
-            "go": "start",
-            "style": "outline-danger"
-          },
-          "cancelBtn": {
-            "text": "修改或增加标注",
-            "go": "start",
-            "style": "outline-primary"
-          },
-          "nextBtn": {
-            "text": "下一条",
-            "style": "outline-primary"
-          }
-        }
-      },
-      "start": {
-        "ref": "start",
-        "name": "开始",
-        "mode": "selectValue",
-        "props": {
-          "instruction": "这段话符合下述哪些/哪种情形？",
-          "optionBtns": [
-            {
-              "text": "搭配不当",
-              "go": "handleReasonImproperCollocation",
-              "style": "outline-danger"
-            },
-            {
-              "text": "语义冲突",
-              "go": "handleReasonSemanticConflict",
-              "style": "outline-danger"
-            },
-            {
-              "text": "不符合常识",
-              "go": "handleReasonAgainstCommenSense",
-              "style": "outline-danger"
-            },
-            {
-              "text": "并无异常",
-              "data": {
-                "label": "ExceptionNotFound",
-                "desc": "这段话不存在异常"
-              },
-              "go": "end",
-              "style": "outline-primary"
-            },
-            {
-              "text": "不适合用于计算机空间语义理解",
-              "go": "handleReasonOther",
-              "style": "outline-dark"
-            }
-          ],
-          "okBtn": {
-            "text": "完成",
-            "go": "end",
-            "style": "outline-success"
-          },
-          "canReset": true,
-          "resetBtn": {
-            "text": "重置",
-            "go": "start",
-            "style": "outline-dark"
-          }
-        }
-      },
-      "handleReasonImproperCollocation": {
-        "ref": "handleReasonImproperCollocation",
-        "name": "处理归因：搭配不当",
-        "mode": "multiSpans",
-        "props": {
-          "instruction": "请在文中依次划选造成搭配不当的全部文本片段。选择完成后，可将其加入列表。",
-          "listTitle": "造成搭配不当的文本片段有：",
-          "lengthTip": "提示：请至少选择2个片段",
-          "data": {
-            "label": "ReasonImproperCollocation",
-            "desc": "搭配不当",
-            "tokenarrays": []
-          },
-          "addBtn": {
-            "text": "将所选片段加入列表",
-            "style": "primary"
-          },
-          "clearBtn": {
-            "text": "清除选区",
-            "style": "info"
-          },
-          "cleanBtn": {
-            "text": "清除已选片段",
-            "style": "light"
-          },
-          "okBtn": {
-            "text": "不再添加，完成",
-            "go": "end",
-            "style": "success"
-          },
-          "cancelBtn": {
-            "text": "取消",
-            "go": "start",
-            "style": "light"
-          }
-        }
-      },
-      "handleReasonSemanticConflict": {
-        "ref": "handleReasonSemanticConflict",
-        "name": "处理归因：语义冲突",
-        "mode": "multiSpans",
-        "props": {
-          "instruction": "请在文中依次划选造成语义冲突的全部文本片段。选择完成后，可将其加入列表。",
-          "listTitle": "造成语义冲突的文本片段有：",
-          "lengthTip": "提示：请至少选择2个片段",
-          "data": {
-            "label": "ReasonSemanticConflict",
-            "desc": "语义冲突",
-            "tokenarrays": []
-          },
-          "addBtn": {
-            "text": "将所选片段加入列表",
-            "style": "primary"
-          },
-          "clearBtn": {
-            "text": "清除选区",
-            "style": "info"
-          },
-          "cleanBtn": {
-            "text": "清除已选片段",
-            "style": "light"
-          },
-          "okBtn": {
-            "text": "不再添加，完成",
-            "go": "end",
-            "style": "success"
-          },
-          "cancelBtn": {
-            "text": "取消",
-            "go": "start",
-            "style": "light"
-          }
-        }
-      },
-      "handleReasonAgainstCommenSense": {
-        "ref": "handleReasonAgainstCommenSense",
-        "name": "处理归因：不符合常识",
-        "mode": "text",
-        "props": {
-          "selectInstruction": "请在文中划选不符合常识的文本片段",
-          "selectedTitle": "当前选中的不符合常识的文本片段是：",
-          "instruction": "请填写该片段所不符合的常识",
-          "data": {
-            "label": "ReasonAgainstCommenSense",
-            "desc": "不符合常识",
-            "on": [],
-            "withText": ""
-          },
-          "okBtn": {
-            "text": "确定",
-            "go": "end",
-            "style": "success"
-          },
-          "cancelBtn": {
-            "text": "取消",
-            "go": "start",
-            "style": "light"
-          }
-        }
-      },
-      "handleReasonOther": {
-        "ref": "handleReasonOther",
-        "name": "处理归因：其他",
-        "mode": "text",
-        "props": {
-          "canSkipSelection": true,
-          "canSkipText": true,
-          "selectInstruction": "请在文中划选相关文本片段",
-          "selectedTitle": "当前选中的文本片段是：",
-          "instruction": "请填写不适合用于计算机空间语义理解的具体原因",
-          "data": {
-            "label": "ReasonOther",
-            "desc": "不适合用于计算机空间语义理解",
             "on": [],
             "withText": ""
           },
