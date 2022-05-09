@@ -75,7 +75,8 @@ const assign_tasks = async (pack, lo) => {
   if (topic==null) {return [];};
   topic = topic_regulation(topic);
   // 用户只有 id 有用，其他没用，不过得先筛选一下
-  let user_ids = users.filter(user => topic_regulation(user.currTask)==topic).map(user=>user.id);
+  // let user_ids = users.filter(user => topic_regulation(user.currTask)==topic).map(user=>user.id);
+  let user_ids = users.map(user=>user.id);
   if (user_ids.length==0||(entries.length==0&&tasks.length==0)) {return [];};
 
   // 记录哪些任务发生了变化
