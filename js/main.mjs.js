@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0507-2152";
+const APP_VERSION = "22-0509-1650";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -155,6 +155,8 @@ const RootComponent = {
       },
       newThings: {
         theUser: {},
+        begun: false,
+        //
         topic: "",
         lastEID: null,
         //
@@ -376,6 +378,18 @@ const RootComponent = {
     ||(appData?.newThings?.theUser?.role??[]).includes('manager')
     ||(appData?.newThings?.theUser?.role??[]).includes('admin');
 
+
+
+
+    const setTask = async (topicLabel) => {
+      let succeed = await bEU.setTask(appData?.newThings?.theUser, topicLabel);
+      if (succeed) {
+        await store.set(`${APP_NAME}:theUser`, appData?.newThings?.theUser);
+        // location.reload();
+      }
+    };
+
+
     return {
       //
       win,
@@ -426,6 +440,8 @@ const RootComponent = {
       topic_regulation,
       //
       isChecker,
+      //
+      setTask,
       //
     };
   },

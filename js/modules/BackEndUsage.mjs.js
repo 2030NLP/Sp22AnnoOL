@@ -1,4 +1,4 @@
-// modifiedAt: 2022-03-15
+// modifiedAt: 2022-05-09
 
 import { dateString, timeString, foolCopy } from '../util.mjs.js';
 
@@ -498,6 +498,42 @@ class BackEndUsage {
     if (result) {
       await this.next(content);
     };
+  }
+
+
+
+
+
+  async saveUserToCloud(user, newUser) {
+    if (user.id != null) {newUser.id = user.id;};
+    if (user.token != null) {newUser.token = user.token;};
+    try {
+      let resp = await this.backEnd.updateUser(newUser);
+      if (resp.data?.code!=200) {
+        this.pushAlert(`用户 ${user?.name} 更新失败【${resp.data.msg}】`, 'danger', 5000, resp);
+        return false;
+      };
+      Object.assign(user, resp.data.data);
+
+      this.pushAlert(`用户 ${user?.name} 更新成功`, 'success');
+      return true;
+    } catch(error) {
+      this.pushAlert(`用户 ${user?.name} 更新时出错【${error}】`, 'danger', 5000, error);
+      return false;
+    };
+  }
+
+  async setTask(user, topicLabel) {
+    if (user.currTask==topicLabel) {
+      this.pushAlert(`${user.name} 的任务本来就是 ${topicLabel}`, 'warning', 5000);
+      return;
+    };
+    let newUser = foolCopy({
+      id: user.id,
+      currTask: topicLabel,
+    });
+    let succeed = await this.saveUserToCloud(user, newUser);
+    return succeed;
   }
 
 

@@ -56,6 +56,14 @@
           <div class="navbar-nav">
             <span class="nav-link">#{{ctrl.currentWorkerId??""}} {{ctrl.currentWorker??""}}</span>
             <a class="nav-link" href="./menu" target="_blank">文档</a>
+            <a class="nav-link" href="#" @click="()=>{setTask('t1')}"
+              v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
+              :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
+            >切换到 task1</a>
+            <a class="nav-link" href="#" @click="()=>{setTask('t2')}"
+              v-if="newThings.begun && newThings?.theUser?.currTask!='t2'"
+              :if="newThings.begun && newThings?.theUser?.currTask!='t2'"
+            >切换到 task2</a>
             <!-- <a class="nav-link" href="#">配置</a> -->
             <!-- <a class="nav-link" href="#" @click="ctrl.currentPage='setup'" v-if="isChecker()">准备</a> -->
             <!-- <a class="nav-link" href="#" @click="ctrl.currentPage='anno'" v-if="isChecker()">标注</a> -->
@@ -132,7 +140,7 @@
             <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
-              @click="()=>{bEU.begin()}"
+              @click="()=>{bEU.begin();newThings.begun=true;}"
               title="开始标注"
             >开始标注</button>
             <!-- <button

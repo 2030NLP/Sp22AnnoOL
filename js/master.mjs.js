@@ -868,6 +868,18 @@ const RootComponent = {
       };
     };
 
+    const setTask = async (user, topicLabel) => {
+      if (user.currTask==topicLabel) {
+        alertBox.pushAlert(`${user.name} 的任务本来就是 ${topicLabel}`, 'warning', 5000);
+        return;
+      };
+      let newUser = foolCopy({
+        id: user.id,
+        currTask: topicLabel,
+      });
+      await saveUpdatedUser(user, newUser);
+    };
+
 
     const setAsQuitted = async (user) => {
       if (user.quitted) {
