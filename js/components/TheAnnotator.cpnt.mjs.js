@@ -3,7 +3,7 @@ import BsBadge from './bs/BsBadge.cpnt.mjs.js';
 
 export default {
   props: ["step", "engine", "tokenSelector", "stepCtrl", "tokens", "selection", "alertBox", "modifiedText"],
-  emits: ["yy", "xx"],
+  emits: ["web-next", "web-save", "web-save-and-next", "ok", "start", "clean", "cancel", "reset", "next", "add-to-list", "clear-selection", "option"],
   component: {
     BsBadge,
   },
@@ -517,9 +517,9 @@ export default {
         if (!hasReplacedToken) {
           alertBox.pushAlert('似乎没有覆盖造成异常的关键片段，最好再检查一下', 'warning', 5000);
         };
-        if (hasIntersection) {
-          alertBox.pushAlert('某条标注中的两个文本片段存在交集，请确认无误再保存', 'warning', 5000);
-        };
+        // if (hasIntersection) {
+        //   alertBox.pushAlert('某条标注中的两个文本片段存在交集，请确认无误再保存', 'warning', 5000);
+        // };
         return checkResult;
       };
 
@@ -591,7 +591,15 @@ export default {
                       'onRemove': (event)=>{
                         touchSlot(optIdx, slotIdx).tokenarray = null;
                       },
-                    }, [text])]);
+                    }, [
+                      text, selection_length.value ? h("span", {
+                        class: ["bagde-close-btn", "ms-2", "cursor-pointer", "text-muted"],
+                        onClick: ()=>{
+                          touchSlot(optIdx, slotIdx).tokenarray = [...touchSlot(optIdx, slotIdx).tokenarray, ...props.selection.array];
+                          clearSelector();
+                        },
+                      }, ["➕"]) : null,
+                    ])]);
                   };
                 };
                 if (slot.type=="input-text") {return h("textarea", {

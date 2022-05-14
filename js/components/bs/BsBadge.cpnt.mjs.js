@@ -4,7 +4,7 @@ export default {
   props: ["bgStyle", "textStyle", "canRemove", "canClose"],
   emits: ["close"],
   setup(props, ctx) {
-    return () => h("span", {
+    const node = () => h("span", {
       class: [
         "badge",
         `bg-${props.bgStyle??"light"}`,
@@ -18,7 +18,11 @@ export default {
           ctx.emit("close");
           ctx.emit("remove");
         },
-      }, ["X"]) : null,
+      }, ["✖️"]) : null,
     ]);
+    // console.log("---");
+    // console.log(node());
+    // console.log("---");
+    return node;
   },
 };

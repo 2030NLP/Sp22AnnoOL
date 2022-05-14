@@ -481,7 +481,7 @@ const TaskAssignPanel = {
         h("div", { 'class': "col col-12 col-sm-6 col-lg-4 my-2", }, [
           h("div", { 'class': "form-check form-switch",
           'title': `通常大家在标注时要分配新任务的话，选「否」；\n如果要总地进行下一轮分配，通常选「是」`, }, [
-            h("input", { 'class': "form-check-input", 'type': "checkbox", 'role': "switch", 'value': assignData.settings.retrieve, 'onChange': (e)=>{assignData.settings.retrieve=e.target.value}}, [], ),
+            h("input", { 'class': "form-check-input", 'type': "checkbox", 'role': "switch", 'checked': assignData.settings.retrieve, 'onChange': (e)=>{assignData.settings.retrieve=e.target.checked}}, [], ),
             h("label", { 'class': "form-check-label",}, [`是否收回未完成的任务（${assignData.settings.retrieve?'是':'否'}）`], ),
           ], ),
         ], ),
