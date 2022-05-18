@@ -120,18 +120,22 @@ const AnnoCard = {
             h('span', {
                 'title': JSON.stringify(this.anno?.content?.review),
                 'class': ["badge text-wrap my-1 me-2",
-                  this.anno?.content?.review?.accept?
-                  ('bg-light border border-success text-success'):
-                  (this.anno?.content?.review?.checked?
-                    'bg-danger border border-danger text-light':
-                    'bg-light border border-danger text-danger')
+                  this.anno?.content?.review?.accept
+                    ?(this.anno?.content?.review?.checked
+                      ?'bg-warning border border-warning bg-opacity-25 text-success'
+                      :'bg-light border border-success text-success')
+                    :(this.anno?.content?.review?.checked
+                      ?'bg-warning border border-warning bg-opacity-25 text-danger'
+                      :'bg-light border border-danger text-danger')
                 ],
               },
               [
                 this.anno?.content?.review?.reviewer?.name??"",
                 this.anno?.content?.review?.accept?'审批通过':'审批不通过',' ',
                 this.anno?.content?.review?.comment?`「${this.anno?.content?.review?.comment}」`:null,' ',
-                this.anno?.content?.review?.accept?null:this.anno?.content?.review?.checked?`标注者已处理`:'标注者尚未处理',
+                this.anno?.content?.review?.accept
+                  ?(this.anno?.content?.review?.checked?`标注者有所修改`:null)
+                  :(this.anno?.content?.review?.checked?`标注者已处理`:'标注者尚未处理'),
               ],
             ),
           ] : [

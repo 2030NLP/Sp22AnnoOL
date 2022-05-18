@@ -16,6 +16,8 @@
   <title>空间关系理解数据标注 2022</title>
 
   <link href="css/bootstrap_5.1.3_.min.css" rel="stylesheet">
+  <link href="css/bootstrap-icons_1.8.2_.css" rel="stylesheet">
+  <!-- <link href="css/tabler-icons_1.68.0_.min.css" rel="stylesheet"> -->
 
   <link href="css/style.css" rel="stylesheet">
 
@@ -226,61 +228,64 @@
         <div class="row mt-0 mb-2 __align-items-center" id="page-main-editor--main">
           <!-- 内容区 开始 -->
           <div class="col col-12 col-lg-7 my-1">
-            <!-- 替换后文本区 开始 -->
-            <div
-              id="material-replaced"
-              class="row my-1 material-area user-select-none"
-              :class="{'show-notice': shouldShowNotice(), 'admin': shouldBeAdmin()}"
-            >
-              <token-list-p
-                :tokens="getTokenList()"
-                :showreplaced="true"
-                @tkn-down="(value)=>{tokenSelector.onMouseDown(value.token, value.event, getTokenList());}"
-                @tkn-enter="(value)=>{tokenSelector.onMouseEnter(value.token, getTokenList());}"
-                @tkn-out="(value)=>{tokenSelector.onMouseOut(value.token);}"
-                @tkn-up="(value)=>{tokenSelector.onMouseUp(value.token, getTokenList());}"
-              ></token-list-p>
-            </div>
-            <!-- 替换后文本区 结束 -->
-            <!-- 替换前原文区 开始 -->
-            <div
-              id="material-origin"
-              class="row my-1 material-area user-select-none"
-              v-show="ctrl.showOrigin"
-              :data-show="ctrl.showOrigin"
-            >
-              <token-list-p
-                :tokens="getTokenList()"
-                :showreplaced="false"
-                @tkn-down="(value)=>{tokenSelector.onMouseDown(value.token, value.event, getTokenList());}"
-                @tkn-enter="(value)=>{tokenSelector.onMouseEnter(value.token, getTokenList());}"
-                @tkn-out="(value)=>{tokenSelector.onMouseOut(value.token);}"
-                @tkn-up="(value)=>{tokenSelector.onMouseUp(value.token, getTokenList());}"
-              ></token-list-p>
-            </div>
-            <!-- 替换前原文区 结束 -->
-            <!-- 便捷选择操作区 开始 -->
-            <div class="row my-2" v-show="selection.array.length" id="convenient-ctrl">
-              <div class="col col-12 col-lg-12 d-flex justify-content-end">
-                <button v-if=" 'multiSpans' == (currentStep.mode) && currentStep?.props?.addBtn" type="button" @click="currentStep?.props?.data.tokenarrays.push(selection.array)" class="btn btn-sm my-1 me-1" :class="`btn-outline-primary`">{{ currentStep.props.addBtn.text }}</button>
-                <button type="button" @click="tokenSelector.clear(getTokenList())" class="btn btn-sm my-1 me-1" :class="`btn-outline-info`">清除选区</button>
-                <button
-                  type="button"
-                  class="btn btn-sm my-1 me-1"
-                  :class="`btn-outline-info btn-copy-selection`"
-                  :data-clipboard-text="tokenSelector.selectedReplacedText(getTokenList())"
-                >拷贝选区{{ctrl.showOrigin ? "（1）" : ""}}</button>
-                <button
-                  type="button"
-                  v-show="ctrl.showOrigin"
-                  class="btn btn-sm my-1 me-1"
-                  :class="`btn-outline-info btn-copy-selection`"
-                  :data-clipboard-text="tokenSelector.selectedOriginText(getTokenList())"
-                >拷贝选区（2）</button>
-              </div>
-            </div>
-            <!-- 便捷选择操作区 结束 -->
+            <div class="position-sticky top-0 start-0">
 
+              <!-- 替换后文本区 开始 -->
+              <div
+                id="material-replaced"
+                class="row my-1 material-area user-select-none"
+                :class="{'show-notice': shouldShowNotice(), 'admin': shouldBeAdmin()}"
+              >
+                <token-list-p
+                  :tokens="getTokenList()"
+                  :showreplaced="true"
+                  @tkn-down="(value)=>{tokenSelector.onMouseDown(value.token, value.event, getTokenList());}"
+                  @tkn-enter="(value)=>{tokenSelector.onMouseEnter(value.token, getTokenList());}"
+                  @tkn-out="(value)=>{tokenSelector.onMouseOut(value.token);}"
+                  @tkn-up="(value)=>{tokenSelector.onMouseUp(value.token, getTokenList());}"
+                ></token-list-p>
+              </div>
+              <!-- 替换后文本区 结束 -->
+              <!-- 替换前原文区 开始 -->
+              <div
+                id="material-origin"
+                class="row my-1 material-area user-select-none"
+                v-show="ctrl.showOrigin"
+                :data-show="ctrl.showOrigin"
+              >
+                <token-list-p
+                  :tokens="getTokenList()"
+                  :showreplaced="false"
+                  @tkn-down="(value)=>{tokenSelector.onMouseDown(value.token, value.event, getTokenList());}"
+                  @tkn-enter="(value)=>{tokenSelector.onMouseEnter(value.token, getTokenList());}"
+                  @tkn-out="(value)=>{tokenSelector.onMouseOut(value.token);}"
+                  @tkn-up="(value)=>{tokenSelector.onMouseUp(value.token, getTokenList());}"
+                ></token-list-p>
+              </div>
+              <!-- 替换前原文区 结束 -->
+              <!-- 便捷选择操作区 开始 -->
+              <div class="row my-2" v-show="selection.array.length" id="convenient-ctrl">
+                <div class="col col-12 col-lg-12 d-flex justify-content-end">
+                  <button v-if=" 'multiSpans' == (currentStep.mode) && currentStep?.props?.addBtn" type="button" @click="currentStep?.props?.data.tokenarrays.push(selection.array)" class="btn btn-sm my-1 me-1" :class="`btn-outline-primary`">{{ currentStep.props.addBtn.text }}</button>
+                  <button type="button" @click="tokenSelector.clear(getTokenList())" class="btn btn-sm my-1 me-1" :class="`btn-outline-info`">清除选区</button>
+                  <button
+                    type="button"
+                    class="btn btn-sm my-1 me-1"
+                    :class="`btn-outline-info btn-copy-selection`"
+                    :data-clipboard-text="tokenSelector.selectedReplacedText(getTokenList())"
+                  >拷贝选区{{ctrl.showOrigin ? "（1）" : ""}}</button>
+                  <button
+                    type="button"
+                    v-show="ctrl.showOrigin"
+                    class="btn btn-sm my-1 me-1"
+                    :class="`btn-outline-info btn-copy-selection`"
+                    :data-clipboard-text="tokenSelector.selectedOriginText(getTokenList())"
+                  >拷贝选区（2）</button>
+                </div>
+              </div>
+              <!-- 便捷选择操作区 结束 -->
+
+            </div>
           </div>
           <!-- 内容区 结束 -->
 
@@ -309,8 +314,8 @@
         <!-- 标注结果展示模块 开始 -->
         <div class="row mt-2 mb-1 carded" id="annotations-area">
           <div class="col col-12 my-1" v-show="example?.review?.accept!=null">
-            <span class="badge text-wrap my-1 me-2" :class="example?.review?.accept ? 'bg-success text-light' : example?.review?.checked ? 'bg-warning text-dark' : 'bg-danger text-light'">
-              <span>{{example?.review?.accept ? '审核通过' : example?.review?.checked ? '等待复审' : '审核未通过，请修改！'}}</span>
+            <span class="badge text-wrap my-1 me-2" :class="example?.review?.accept ? (example?.review?.checked ? 'bg-warning bg-opacity-25 text-dark' : 'bg-success text-light') : (example?.review?.checked ? 'bg-warning bg-opacity-25 text-dark' : 'bg-danger text-light')">
+              <span>{{example?.review?.accept ? (example?.review?.checked ? '等待复审' : '审核通过') : (example?.review?.checked ? '等待复审' : '审核未通过，请修改！')}}</span>
               <span v-show="example?.review?.comment">（{{example?.review?.comment}}）</span>
             </span>
           </div>

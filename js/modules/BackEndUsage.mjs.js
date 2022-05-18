@@ -407,10 +407,10 @@ class BackEndUsage {
   async save(content) {
     try {
 
-      if (this.ewp.example?.review?.accept) {
-        this.pushAlert(`审核已通过的标注不可再修改！`, 'warning');
-        return;
-      };
+      // if (this.ewp.example?.review?.accept) {
+      //   this.pushAlert(`审核已通过的标注不可再修改！`, 'warning');
+      //   return;
+      // };
 
       if (!this.ewp.example._ctrl?.timeLog?.length) {
         this.ewp.example._ctrl.timeLog = [];

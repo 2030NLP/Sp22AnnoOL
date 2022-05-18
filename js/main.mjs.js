@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0514-2320";
+const APP_VERSION = "22-0518-1100";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -32,6 +32,7 @@ import {
   // onUpdated,
   createApp as Vue_createApp,
   watch,
+  // h,
 } from './modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
 // import { timeString, foolCopy } from './util.mjs.js';
@@ -442,6 +443,9 @@ const RootComponent = {
       isChecker,
       //
       setTask,
+      //
+      // h,
+      reactive,
       //
     };
   },
