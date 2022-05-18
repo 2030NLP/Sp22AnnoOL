@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0518-1100";
+const APP_VERSION = "22-0518-1150";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -386,7 +386,7 @@ const RootComponent = {
       let succeed = await bEU.setTask(appData?.newThings?.theUser, topicLabel);
       if (succeed) {
         await store.set(`${APP_NAME}:theUser`, appData?.newThings?.theUser);
-        // location.reload();
+        location.reload();
       }
     };
 
