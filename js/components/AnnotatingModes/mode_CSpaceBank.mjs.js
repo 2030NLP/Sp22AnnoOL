@@ -249,6 +249,302 @@ export default (__pack) => {
 
   // ========== ========== ========== ========== ========== ========== ========== ==========
 
+  // 实体操作区
+  const annotatingSectionOfEntities = () => div({'class': "vstack gap-2 my-1"}, [
+    div({'class': "h5 mt-3 mb-1"}, ["实体"]),
+
+    divWrap([
+      div({'class': "d-flex gap-1 justify-content-around"}, [
+        lightBtn(bi("box"), "实体预分析", null, {
+          'class': "w-100",
+          'onClick': ()=>{analysisEntities()},
+        }),
+      ]),
+    ], null, {'class': {'d-none': modeData.entities?.length}}),
+
+    ...modeData.entities.map((entity, idx) => divWrap([
+
+      // 基本展示
+      div({'class': "input-group input-group-sm"}, [
+        span({'class': "input-group-text text-muted"}, [idx]),
+        div({'class': "form-control d-inline-block text-center"}, entitySpan(entity)),
+        !entity.__ctrl_show_more
+        ? btn({'title': "更多操作", 'onClick': ()=>{
+          entity.__ctrl_show_more=true;}}, [bi("three-dots")], "outline-secondary")
+        : btn({'title': "收起更多操作", 'onClick': ()=>{
+          entity.__ctrl_show_more=undefined;
+          entity.__ctrl_show_add_coref=undefined;
+          entity.__ctrl_show_add_member=undefined;}}, [bi("caret-up")], "outline-secondary"),
+      ]),
+
+      // 基础操作
+      div({'class': ["btn-toolbar justify-content-around gap-1 mx-1", {'d-none': !entity.__ctrl_show_more}]}, [
+        lightBtn(bi("boxes"), "设为群体", "将此实体标记为复数实体构成的群体", {
+          'class': {'d-none': entity.plural},
+          'onClick': ()=>{entity.plural=true}}),
+        lightBtn(bi("record2"), "设为个体", "将此实体标记为单数实体", {
+          'class': {'d-none': !entity.plural},
+          'onClick': ()=>{entity.plural=undefined; entity.members=undefined;}}),
+        lightBtn(bi("plus-circle"), "添加成员", "为群体添加成员", {
+          'class': {'d-none': !entity.plural},
+          'onClick': ()=>{
+            localData.__selected_entity_idx=undefined;
+            entity.__ctrl_show_add_coref=undefined;
+            entity.__ctrl_show_add_member=true;}}),
+        lightBtn(bi("toggle-off"), "设为不完整", "将此复数实体的成员清单标记为不完整", {
+          'class': {'d-none': !entity.plural||!entity.filled},
+          'onClick': ()=>{entity.filled=false}}),
+        lightBtn(bi("toggle-on"), "设为完整", "将此复数实体的成员清单标记为完整", {
+          'class': {'d-none': !entity.plural||entity.filled},
+          'onClick': ()=>{entity.filled=true}}),
+        lightBtn([bi("--sun"), `#...#`], "设为现实实体", "将此实体标记为现实实体", {
+          'class': {'d-none': !entity.fictive},
+          'onClick': ()=>{entity.fictive=undefined}}),
+        lightBtn([bi("--moon"), `$...$`], "设为虚拟实体", "将此实体标记为虚拟实体", {
+          'class': {'d-none': entity.fictive},
+          'onClick': ()=>{entity.fictive=true}}),
+        lightBtn(bi("diagram-2"), "添加共指", null, {
+          'class': {'d-none': false},
+          'onClick': ()=>{
+            localData.__selected_entity_idx=undefined;
+            entity.__ctrl_show_add_member=undefined;
+            entity.__ctrl_show_add_coref=true;}}),
+      ]),
+
+      // 已共指的实体
+      div({'class': ["px-2", {'d-none': !entity.__ctrl_show_add_coref}]}, [
+        div({'class': "input-group input-group-sm"}, [
+          span({'class': "input-group-text text-muted"}, ["已共指"]),
+          div({'class': "form-control d-inline-block text-center"}, (entity.corefs??[]).map(
+            (corefIdx, ixx) => h(BsBadge, {
+              'class': "m-1 text-wrap text-break",
+              'canRemove': true,
+              'onRemove': (event)=>{
+                entity.corefs.splice(ixx, 1);
+              },
+            }, entitySpan(modeData.entities[corefIdx]))
+          )),
+        ]),
+      ]),
+
+      // 给实体添加共指
+      div({'class': ["px-2", {'d-none': !entity.__ctrl_show_add_coref}]}, [
+        div({'class': "input-group input-group-sm"}, [
+          span({'class': "input-group-text text-muted"}, ["待操作"]),
+          h("select", {
+            'class': "form-select form-select-sm text-center",
+            'value': localData.__selected_entity_idx,
+            'onChange': (event)=>{localData.__selected_entity_idx = event.target.value},
+            'title': "请选择要操作的实体",
+          }, [
+            modeData.entities.map((ett, jdx) => (jdx!=idx&&!entity.corefs?.includes?.(+jdx)) ? h(
+              "option", {'key': jdx, 'value': jdx,}, entitySpan(ett)
+            ) : null),
+          ]),
+          btn({'title': "加入", 'onClick': ()=>{
+            if (entity.corefs==null) {entity.corefs=[]};
+            if (localData.__selected_entity_idx && !entity.corefs.includes(+localData.__selected_entity_idx)) {
+              // console.log(`${entity.corefs}`, `${localData.__selected_entity_idx}`);
+              entity.corefs.push(+localData.__selected_entity_idx);
+            };
+          }}, [bi("plus-lg")], "outline-secondary"),
+          btn({'title': "完成", 'onClick': ()=>{
+            entity.corefs?.sort?.();
+            entity.__ctrl_show_add_coref=undefined;
+            localData.__selected_entity_idx=undefined;
+          }}, [bi("check2")], "outline-secondary"),
+        ]),
+      ]),
+
+      // 复数实体已有的成员
+      div({'class': ["px-2", {'d-none': !entity.__ctrl_show_add_member}]}, [
+        div({'class': "input-group input-group-sm"}, [
+          span({'class': "input-group-text text-muted"}, ["已加入"]),
+          div({'class': "form-control d-inline-block text-center"}, (entity.members??[]).map(
+            (memberIdx, ixx) => h(BsBadge, {
+              'class': "m-1 text-wrap text-break",
+              'canRemove': true,
+              'onRemove': (event)=>{
+                entity.members.splice(ixx, 1);
+              },
+            }, entitySpan(modeData.entities[memberIdx]))
+          )),
+        ]),
+      ]),
+
+      // 给复数实体添加成员
+      div({'class': ["px-2", {'d-none': !entity.__ctrl_show_add_member}]}, [
+        div({'class': "input-group input-group-sm"}, [
+          span({'class': "input-group-text text-muted"}, ["待操作"]),
+          h("select", {
+            'class': "form-select form-select-sm text-center",
+            'value': localData.__selected_entity_idx,
+            'onChange': (event)=>{localData.__selected_entity_idx = event.target.value},
+            'title': "请选择要操作的实体",
+          }, [
+            modeData.entities.map((ett, jdx) => (jdx!=idx&&!entity.members?.includes?.(+jdx)) ? h(
+              "option", {'key': jdx, 'value': jdx,}, entitySpan(ett)
+            ) : null),
+          ]),
+          btn({'title': "加入", 'onClick': ()=>{
+            if (entity.members==null) {entity.members=[]};
+            if (localData.__selected_entity_idx && !entity.members.includes(+localData.__selected_entity_idx)) {
+              // console.log(`${entity.members}`, `${localData.__selected_entity_idx}`);
+              entity.members.push(+localData.__selected_entity_idx);
+            };
+          }}, [bi("plus-lg")], "outline-secondary"),
+          btn({'title': "完成", 'onClick': ()=>{
+            entity.members?.sort?.();
+            entity.__ctrl_show_add_member=undefined;
+            localData.__selected_entity_idx=undefined;
+          }}, [bi("check2")], "outline-secondary"),
+        ]),
+      ]),
+
+      // 整体操作
+      div({'class': ["btn-toolbar justify-content-around gap-1 mx-1", {'d-none': !entity.__ctrl_show_more||entity.__ctrl_show_add_member||entity.__ctrl_show_add_coref}]}, [
+        // lightBtn(bi("input-cursor-text"), "填入"),
+        lightBtn(bi("textarea-t"), "填入选中的片段", "将选中的片段的文本填入槽中", {
+          'class': {'d-none': !v(selection_length)},
+          'onClick': ()=>{
+            entity.text = idxesToText(props.selection?.array);
+            entity.tknIdxes = props.selection?.array;
+            clearSelector();
+          }}),
+        lightBtn(bi("input-cursor"), "补全不连续文本", null, {
+          'class': {'d-none': !v(selection_length)},
+          'onClick': ()=>{
+            entity.text = `${entity.text}${"+"}${idxesToText(props.selection?.array)}`;
+            entity.tknIdxes = [...entity.tknIdxes, ...props.selection?.array];
+            clearSelector();
+          }}),
+        lightBtn(bi("trash3"), "删除", null, {'onClick': ()=>{deleteEntity(idx)}}),
+      ]),
+
+      entity.__ctrl_show_more ? div() : null,
+    ], idx)),
+
+    divWrap([
+      div({'class': "d-flex gap-1 justify-content-around"}, [
+        lightBtn(bi("plus-square"), "新增", null, {
+          'class': "w-100",
+          'onClick': ()=>{
+            makeNewEntity();
+          },
+        }),
+        modeData.entities?.length ? lightBtn(bi("sort-down-alt"), "排序", "按照文本中出现的顺序排序", {
+          'class': "w-100",
+          'onClick': ()=>{
+            sortEntities();
+          },
+        }) : null,
+        // lightBtn(bi("plus-square-dotted"), "新增隐含实体"),
+      ]),
+    ]),
+
+  ]);
+
+  // ========== ========== ========== ========== ========== ========== ========== ==========
+
+  const makeNewEvent = () => {
+    if (selection_length) {
+      modeData.events.push({
+        text: idxesToText(props.selection?.array),
+        tknIdxes: props.selection?.array,
+      });
+      clearSelector();
+      return;
+    };
+    modeData.events.push({});
+  };
+
+  const sortEvents = () => {
+    //
+    let ll = modeData.events.map((entity, idx)=>[idx, entity?.tknIdxes?.[0]]);
+    ll.sort((a, b)=>(a[1]??-1)-(b[1]??-1));
+    let pp = ll.map((pair, newIdx)=>[pair[0], newIdx]);
+    const map = Object.fromEntries(pp);
+    console.log(map);
+    //
+    modeData.events.sort((a, b)=>(a?.tknIdxes?.[0]??-1)-(b?.tknIdxes?.[0]??-1));
+    reindexEntities(map);
+  };
+
+  // 事件操作区
+  const annotatingSectionOfEvents = () => div({'class': "vstack gap-2 my-1"}, [
+    div({'class': "h5 mt-3 mb-1"}, ["事件"]),
+
+    divWrap([
+      div({'class': "d-flex gap-1 justify-content-around"}, [
+        lightBtn(bi("film"), "事件预分析", null, {
+          'class': "w-100",
+          'onClick': ()=>{analysisEvents()},
+        }),
+      ]),
+    ], null, {'class': {'d-none': modeData.events?.length}}),
+
+    divWrap([
+      div({'class': "d-flex gap-1 justify-content-around"}, [
+        lightBtn(bi("plus-square"), "新增"),
+      ]),
+    ]),
+
+    divWrap([
+      div({'class': "d-flex gap-1 justify-content-around"}, [
+        lightBtn(bi("plus-square"), "新增", null, {
+          'class': "w-100",
+          'onClick': ()=>{
+            makeNewEvent();
+          },
+        }),
+        modeData.entities?.length ? lightBtn(bi("sort-down-alt"), "排序", "按照文本中出现的顺序排序", {
+          'class': "w-100",
+          'onClick': ()=>{
+            sortEvents();
+          },
+        }) : null,
+        // lightBtn(bi("plus-square-dotted"), "新增隐含实体"),
+      ]),
+    ]),
+
+  ]);
+
+  // ========== ========== ========== ========== ========== ========== ========== ==========
+
+  // 空间关系操作区
+  const annotatingSectionOfRelations = () => div({'class': "vstack gap-2 my-1"}, [
+    div({'class': "h5 mt-3 mb-1"}, ["空间关系"]),
+
+    divWrap([
+      div({'class': "d-flex gap-1 justify-content-around"}, [
+        lightBtn(bi("layers"), "空间关系预分析"),
+      ]),
+    ]),
+
+    divWrap([
+      div({'class': "input-group input-group-sm"}, [
+        span({'class': "input-group-text text-muted"}, ["#"]),
+        div({'class': "form-control d-inline-block text-center"}, ["#"]),
+        btn({'title': "更多操作"}, [bi("three-dots")], "outline-secondary"),
+      ]),
+      div({'class': "btn-toolbar justify-content-end gap-1 px-1 mb-1"}, [
+        btn({'class': "btn-sm"}, [bi("upload"), " ", "保存1"], "light"),
+        btn({'class': "btn-sm"}, [bi("upload"), " ", "保存"], "light"),
+        btn({'class': "btn-sm"}, [bi("upload"), " ", "保存"], "light"),
+        btn({'class': "btn-sm"}, [bi("upload"), " ", "保存"], "light"),
+      ]),
+    ]),
+
+    divWrap([
+      div({'class': "d-flex gap-1 justify-content-around"}, [
+        lightBtn(bi("plus-square"), "新增空间关系"),
+      ]),
+    ]),
+
+  ]);
+
+  // ========== ========== ========== ========== ========== ========== ========== ==========
+
   return () => {
     return [
       // ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------
@@ -258,273 +554,9 @@ export default (__pack) => {
 
       // 主体
       div({ 'class': "container", }, [
-
-        // ---------- ---------- ---------- ----------
-
-        // 实体操作区
-        div({'class': "vstack gap-2 my-1"}, [
-          div({'class': "h5 mt-3 mb-1"}, ["实体"]),
-
-          divWrap([
-            div({'class': "d-flex gap-1 justify-content-around"}, [
-              lightBtn(bi("box"), "实体预分析", null, {
-                'class': "w-100",
-                'onClick': ()=>{analysisEntities()},
-              }),
-            ]),
-          ], null, {'class': {'d-none': modeData.entities?.length}}),
-
-          ...modeData.entities.map((entity, idx) => divWrap([
-
-            // 基本展示
-            div({'class': "input-group input-group-sm"}, [
-              span({'class': "input-group-text text-muted"}, [idx]),
-              div({'class': "form-control d-inline-block text-center"}, entitySpan(entity)),
-              !entity.__ctrl_show_more
-              ? btn({'title': "更多操作", 'onClick': ()=>{
-                entity.__ctrl_show_more=true;}}, [bi("three-dots")], "outline-secondary")
-              : btn({'title': "收起更多操作", 'onClick': ()=>{
-                entity.__ctrl_show_more=undefined;
-                entity.__ctrl_show_add_coref=undefined;
-                entity.__ctrl_show_add_member=undefined;}}, [bi("caret-up")], "outline-secondary"),
-            ]),
-
-            // 基础操作
-            div({'class': ["btn-toolbar justify-content-around gap-1 mx-1", {'d-none': !entity.__ctrl_show_more}]}, [
-              lightBtn(bi("boxes"), "设为群体", "将此实体标记为复数实体构成的群体", {
-                'class': {'d-none': entity.plural},
-                'onClick': ()=>{entity.plural=true}}),
-              lightBtn(bi("record2"), "设为个体", "将此实体标记为单数实体", {
-                'class': {'d-none': !entity.plural},
-                'onClick': ()=>{entity.plural=undefined; entity.members=undefined;}}),
-              lightBtn(bi("plus-circle"), "添加成员", "为群体添加成员", {
-                'class': {'d-none': !entity.plural},
-                'onClick': ()=>{
-                  localData.__selected_entity_idx=undefined;
-                  entity.__ctrl_show_add_coref=undefined;
-                  entity.__ctrl_show_add_member=true;}}),
-              lightBtn(bi("toggle-off"), "设为不完整", "将此复数实体的成员清单标记为不完整", {
-                'class': {'d-none': !entity.plural||!entity.filled},
-                'onClick': ()=>{entity.filled=false}}),
-              lightBtn(bi("toggle-on"), "设为完整", "将此复数实体的成员清单标记为完整", {
-                'class': {'d-none': !entity.plural||entity.filled},
-                'onClick': ()=>{entity.filled=true}}),
-              lightBtn([bi("--sun"), `#...#`], "设为现实实体", "将此实体标记为现实实体", {
-                'class': {'d-none': !entity.fictive},
-                'onClick': ()=>{entity.fictive=undefined}}),
-              lightBtn([bi("--moon"), `$...$`], "设为虚拟实体", "将此实体标记为虚拟实体", {
-                'class': {'d-none': entity.fictive},
-                'onClick': ()=>{entity.fictive=true}}),
-              lightBtn(bi("diagram-2"), "添加共指", null, {
-                'class': {'d-none': false},
-                'onClick': ()=>{
-                  localData.__selected_entity_idx=undefined;
-                  entity.__ctrl_show_add_member=undefined;
-                  entity.__ctrl_show_add_coref=true;}}),
-            ]),
-
-            // 已共指的实体
-            div({'class': ["px-2", {'d-none': !entity.__ctrl_show_add_coref}]}, [
-              div({'class': "input-group input-group-sm"}, [
-                span({'class': "input-group-text text-muted"}, ["已共指"]),
-                div({'class': "form-control d-inline-block text-center"}, (entity.corefs??[]).map(
-                  (corefIdx, ixx) => h(BsBadge, {
-                    'class': "m-1 text-wrap text-break",
-                    'canRemove': true,
-                    'onRemove': (event)=>{
-                      entity.corefs.splice(ixx, 1);
-                    },
-                  }, entitySpan(modeData.entities[corefIdx]))
-                )),
-              ]),
-            ]),
-
-            // 给实体添加共指
-            div({'class': ["px-2", {'d-none': !entity.__ctrl_show_add_coref}]}, [
-              div({'class': "input-group input-group-sm"}, [
-                span({'class': "input-group-text text-muted"}, ["待操作"]),
-                h("select", {
-                  'class': "form-select form-select-sm text-center",
-                  'value': localData.__selected_entity_idx,
-                  'onChange': (event)=>{localData.__selected_entity_idx = event.target.value},
-                  'title': "请选择要操作的实体",
-                }, [
-                  modeData.entities.map((ett, jdx) => (jdx!=idx&&!entity.corefs?.includes?.(+jdx)) ? h(
-                    "option", {'key': jdx, 'value': jdx,}, entitySpan(ett)
-                  ) : null),
-                ]),
-                btn({'title': "加入", 'onClick': ()=>{
-                  if (entity.corefs==null) {entity.corefs=[]};
-                  if (localData.__selected_entity_idx && !entity.corefs.includes(+localData.__selected_entity_idx)) {
-                    // console.log(`${entity.corefs}`, `${localData.__selected_entity_idx}`);
-                    entity.corefs.push(+localData.__selected_entity_idx);
-                  };
-                }}, [bi("plus-lg")], "outline-secondary"),
-                btn({'title': "完成", 'onClick': ()=>{
-                  entity.corefs?.sort?.();
-                  entity.__ctrl_show_add_coref=undefined;
-                  localData.__selected_entity_idx=undefined;
-                }}, [bi("check2")], "outline-secondary"),
-              ]),
-            ]),
-
-            // 复数实体已有的成员
-            div({'class': ["px-2", {'d-none': !entity.__ctrl_show_add_member}]}, [
-              div({'class': "input-group input-group-sm"}, [
-                span({'class': "input-group-text text-muted"}, ["已加入"]),
-                div({'class': "form-control d-inline-block text-center"}, (entity.members??[]).map(
-                  (memberIdx, ixx) => h(BsBadge, {
-                    'class': "m-1 text-wrap text-break",
-                    'canRemove': true,
-                    'onRemove': (event)=>{
-                      entity.members.splice(ixx, 1);
-                    },
-                  }, entitySpan(modeData.entities[memberIdx]))
-                )),
-              ]),
-            ]),
-
-            // 给复数实体添加成员
-            div({'class': ["px-2", {'d-none': !entity.__ctrl_show_add_member}]}, [
-              div({'class': "input-group input-group-sm"}, [
-                span({'class': "input-group-text text-muted"}, ["待操作"]),
-                h("select", {
-                  'class': "form-select form-select-sm text-center",
-                  'value': localData.__selected_entity_idx,
-                  'onChange': (event)=>{localData.__selected_entity_idx = event.target.value},
-                  'title': "请选择要操作的实体",
-                }, [
-                  modeData.entities.map((ett, jdx) => (jdx!=idx&&!entity.members?.includes?.(+jdx)) ? h(
-                    "option", {'key': jdx, 'value': jdx,}, entitySpan(ett)
-                  ) : null),
-                ]),
-                btn({'title': "加入", 'onClick': ()=>{
-                  if (entity.members==null) {entity.members=[]};
-                  if (localData.__selected_entity_idx && !entity.members.includes(+localData.__selected_entity_idx)) {
-                    // console.log(`${entity.members}`, `${localData.__selected_entity_idx}`);
-                    entity.members.push(+localData.__selected_entity_idx);
-                  };
-                }}, [bi("plus-lg")], "outline-secondary"),
-                btn({'title': "完成", 'onClick': ()=>{
-                  entity.members?.sort?.();
-                  entity.__ctrl_show_add_member=undefined;
-                  localData.__selected_entity_idx=undefined;
-                }}, [bi("check2")], "outline-secondary"),
-              ]),
-            ]),
-
-            // 整体操作
-            div({'class': ["btn-toolbar justify-content-around gap-1 mx-1", {'d-none': !entity.__ctrl_show_more||entity.__ctrl_show_add_member||entity.__ctrl_show_add_coref}]}, [
-              // lightBtn(bi("input-cursor-text"), "填入"),
-              lightBtn(bi("textarea-t"), "填入选中的片段", "将选中的片段的文本填入槽中", {
-                'class': {'d-none': !v(selection_length)},
-                'onClick': ()=>{
-                  entity.text = idxesToText(props.selection?.array);
-                  entity.tknIdxes = props.selection?.array;
-                  clearSelector();
-                }}),
-              lightBtn(bi("input-cursor"), "补全不连续文本", null, {
-                'class': {'d-none': !v(selection_length)},
-                'onClick': ()=>{
-                  entity.text = `${entity.text}${"+"}${idxesToText(props.selection?.array)}`;
-                  entity.tknIdxes = [...entity.tknIdxes, ...props.selection?.array];
-                  clearSelector();
-                }}),
-              lightBtn(bi("trash3"), "删除", null, {'onClick': ()=>{deleteEntity(idx)}}),
-            ]),
-
-            entity.__ctrl_show_more ? div() : null,
-          ], idx)),
-
-          divWrap([
-            div({'class': "d-flex gap-1 justify-content-around"}, [
-              lightBtn(bi("plus-square"), "新增", null, {
-                'class': "w-100",
-                'onClick': ()=>{
-                  makeNewEntity();
-                },
-              }),
-              modeData.entities?.length ? lightBtn(bi("sort-down-alt"), "排序", "按照文本中出现的顺序排序", {
-                'class': "w-100",
-                'onClick': ()=>{
-                  sortEntities();
-                },
-              }) : null,
-              // lightBtn(bi("plus-square-dotted"), "新增隐含实体"),
-            ]),
-          ]),
-
-        ]),
-
-        // ---------- ---------- ---------- ----------
-
-        // 事件操作区
-        div({'class': "vstack gap-2 my-1"}, [
-          div({'class': "h5 mt-3 mb-1"}, ["事件"]),
-
-          divWrap([
-            div({'class': "d-flex gap-1 justify-content-around"}, [
-              lightBtn(bi("film"), "事件预分析", null, {
-                'class': "w-100",
-                'onClick': ()=>{analysisEvents()},
-              }),
-            ]),
-          ], null, {'class': {'d-none': modeData.events?.length}}),
-
-          divWrap([
-            div({'class': "input-group input-group-sm"}, [
-              span({'class': "input-group-text text-muted"}, ["#"]),
-              div({'class': "form-control d-inline-block text-center"}, ["#"]),
-              btn({'title': "更多操作"}, [bi("three-dots")], "outline-secondary"),
-            ]),
-            div({'class': "btn-toolbar justify-content-end gap-1 px-1 mb-1"}, [
-              btn({'class': "btn-sm"}, [bi("upload"), ` ${"添加角色"}`], "light"),
-              btn({'class': "btn-sm"}, [bi("trash3"), ` ${"删除"}`], "light"),
-            ]),
-          ]),
-
-          divWrap([
-            div({'class': "d-flex gap-1 justify-content-around"}, [
-              lightBtn(bi("plus-square"), "新增事件"),
-            ]),
-          ]),
-
-        ]),
-
-        // ---------- ---------- ---------- ----------
-
-        // 空间关系操作区
-        div({'class': "vstack gap-2 my-1"}, [
-          div({'class': "h5 mt-3 mb-1"}, ["空间关系"]),
-
-          divWrap([
-            div({'class': "d-flex gap-1 justify-content-around"}, [
-              lightBtn(bi("layers"), "空间关系预分析"),
-            ]),
-          ]),
-
-          divWrap([
-            div({'class': "input-group input-group-sm"}, [
-              span({'class': "input-group-text text-muted"}, ["#"]),
-              div({'class': "form-control d-inline-block text-center"}, ["#"]),
-              btn({'title': "更多操作"}, [bi("three-dots")], "outline-secondary"),
-            ]),
-            div({'class': "btn-toolbar justify-content-end gap-1 px-1 mb-1"}, [
-              btn({'class': "btn-sm"}, [bi("upload"), " ", "保存1"], "light"),
-              btn({'class': "btn-sm"}, [bi("upload"), " ", "保存"], "light"),
-              btn({'class': "btn-sm"}, [bi("upload"), " ", "保存"], "light"),
-              btn({'class': "btn-sm"}, [bi("upload"), " ", "保存"], "light"),
-            ]),
-          ]),
-
-          divWrap([
-            div({'class': "d-flex gap-1 justify-content-around"}, [
-              lightBtn(bi("plus-square"), "新增空间关系"),
-            ]),
-          ]),
-
-        ]),
-
+        annotatingSectionOfEntities(),
+        annotatingSectionOfEvents(),
+        annotatingSectionOfRelations(),
       ]),
 
       // ---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------

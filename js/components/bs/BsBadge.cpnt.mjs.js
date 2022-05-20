@@ -7,6 +7,8 @@ export default {
     const node = () => h("span", {
       class: [
         "badge",
+        "text-wrap",
+        "text-break",
         `bg-${props.bgStyle??"light"}`,
         `text-${props.textStyle??"dark"}`,
       ],
