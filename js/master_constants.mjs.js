@@ -1,6 +1,6 @@
 // 基本信息 变量
 export const APP_NAME = "Sp22-Anno-Master";
-export const APP_VERSION = "22-0518-1956";
+export const APP_VERSION = "22-0525-1325";
 
 // 开发环境 和 生产环境 的 控制变量
 export const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;

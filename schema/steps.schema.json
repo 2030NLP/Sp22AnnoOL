@@ -1,14 +1,275 @@
 {
   "name": "SpaCE2022",
-  "version": "220507v1",
+  "version": "220525v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
-    "第2期": "220507v1",
-    "第3期": null,
-    "精标": null
+    "第2期": "220525v1",
+    "第2期R": "220525v1",
+    "精标": "220525v1"
   },
   "using": "第2期",
+  "精标": {
+    "其实是": "精标",
+    "startStep": "start",
+    "endStep": "end",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "",
+          "canReset": true,
+          "resetBtn": {
+            "text": "清空并重新标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "__cancelBtn": {
+            "text": "增加标注",
+            "go": "start",
+            "style": "outline-primary"
+          },
+          "nextBtn": {
+            "text": "下一条",
+            "style": "outline-primary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "处理异常归因",
+        "mode": "CSpaceBank",
+        "props": {
+          "strings": {
+            "instruction": "请按照 CSpaceBank 标注规范进行标注。",
+            "entities": "实体清单",
+            "events": "事件清单",
+            "relations": "空间关系清单",
+            "eddEvent": "添加事件",
+            "eddRelation": "添加空间关系",
+            "entityType": "实体类型",
+            "relationType": "关系类型",
+            "__________": "__________"
+          },
+          "data": {
+            "hidden": true,
+            "items": []
+          },
+          "options": [
+            {
+              "text": "语义冲突",
+              "style": "outline-danger",
+              "actualMode": "doubleSpans",
+              "data": {
+                "parentMode": "CSpaceBank",
+                "actualMode": "doubleSpans",
+                "displayMode": "multiSpans",
+                "label": "ReasonSemanticConflict",
+                "desc": "语义冲突",
+                "tokenarrays": []
+              },
+              "slots": [{"type": "select"}, {"type": "solid-text", "value": "与"}, {"type": "select"}, {"type": "solid-text", "value": "语义冲突"}]
+            }
+          ],
+          "okBtn": {
+            "text": "完成",
+            "go": "end",
+            "style": "outline-success"
+          },
+          "resetBtn": {
+            "text": "重置",
+            "style": "outline-danger"
+          },
+          "__cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "outline-dark"
+          }
+        }
+      }
+    }
+  },
+  "第2期R": {
+    "startStep": "start",
+    "endStep": "end",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "",
+          "canReset": true,
+          "resetBtn": {
+            "text": "清空并重新标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "cancelBtn": {
+            "text": "增加标注",
+            "go": "start",
+            "style": "outline-primary"
+          },
+          "nextBtn": {
+            "text": "下一条",
+            "style": "outline-primary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "开始",
+        "mode": "selectValue",
+        "props": {
+          "instruction": "这段话符合下述哪些/哪种情形？",
+          "optionBtns": [
+            {
+              "text": "并无异常",
+              "data": {
+                "label": "ExceptionNotFound",
+                "desc": "这段话不存在异常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            {
+              "text": "不适合用于计算机空间语义理解",
+              "go": "handleReasonOther",
+              "style": "outline-dark"
+            },
+            {
+              "text": "存在异常",
+              "style": "outline-danger",
+              "go": "makeReason"
+            }
+          ]
+        }
+      },
+      "handleReasonOther": {
+        "ref": "handleReasonOther",
+        "name": "处理归因：其他",
+        "mode": "text",
+        "props": {
+          "canSkipSelection": true,
+          "canSkipText": true,
+          "selectInstruction": "请在文中划选相关文本片段",
+          "selectedTitle": "当前选中的文本片段是：",
+          "instruction": "请填写不适合用于计算机空间语义理解的具体原因",
+          "data": {
+            "label": "ReasonOther",
+            "desc": "不适合用于计算机空间语义理解",
+            "on": [],
+            "withText": ""
+          },
+          "okBtn": {
+            "text": "确定",
+            "go": "end",
+            "style": "success"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "light"
+          }
+        }
+      },
+      "makeReason": {
+        "ref": "makeReason",
+        "name": "处理异常归因",
+        "mode": "SpaCE2022_Task2R",
+        "props": {
+          "strings": {
+            "instruction": "这段话存在的问题是：",
+            "selectInstruction": "请在文中选择文本",
+            "insertInstruction": "将选中的文本填入此处"
+          },
+          "data": {
+            "hidden": true,
+            "items": []
+          },
+          "options": [
+            {
+              "text": "搭配不当",
+              "style": "outline-danger",
+              "actualMode": "doubleSpans",
+              "data": {
+                "parentMode": "SpaCE2022_Task2R",
+                "actualMode": "doubleSpans",
+                "displayMode": "multiSpans",
+                "label": "ReasonImproperCollocation",
+                "desc": "搭配不当",
+                "tokenarrays": [],
+                "names": []
+              },
+              "slots": [
+                {"type": "select", "placeholder": "text1"},
+                {"type": "solid-text", "value": "与"},
+                {"type": "select", "placeholder": "text2"},
+                {"type": "solid-text", "value": "搭配不当"}]
+            },
+            {
+              "text": "语义冲突",
+              "style": "outline-danger",
+              "actualMode": "doubleSpans",
+              "data": {
+                "parentMode": "SpaCE2022_Task2R",
+                "actualMode": "doubleSpans",
+                "displayMode": "multiSpans",
+                "label": "ReasonSemanticConflict",
+                "desc": "语义冲突",
+                "tokenarrays": [],
+                "names": []
+              },
+              "slots": [
+                {"type": "select", "placeholder": "S1"},
+                {"type": "select", "placeholder": "P1"},
+                {"type": "select", "placeholder": "E1"},
+                {"type": "solid-text", "value": "与"},
+                {"type": "select", "placeholder": "S2"},
+                {"type": "select", "placeholder": "P2"},
+                {"type": "select", "placeholder": "E2"},
+                {"type": "solid-text", "value": "语义冲突"}]
+            },
+            {
+              "text": "与常识或背景信息不符",
+              "style": "outline-danger",
+              "actualMode": "spanWithComment",
+              "data": {
+                "parentMode": "SpaCE2022_Task2R",
+                "actualMode": "spanWithComment",
+                "displayMode": "multiSpans",
+                "label": "ReasonAgainstCommenSense",
+                "desc": "与常识或背景信息不符",
+                "tokenarrays": [],
+                "names": []
+              },
+              "slots": [
+                {"type": "select", "placeholder": "S"},
+                {"type": "select", "placeholder": "P"},
+                {"type": "select", "placeholder": "E"},
+                {"type": "solid-text", "value": "不符合常识或背景信息"}]
+            }
+          ],
+          "okBtn": {
+            "text": "完成",
+            "go": "end",
+            "style": "outline-success"
+          },
+          "resetBtn": {
+            "text": "重置",
+            "style": "outline-danger"
+          },
+          "cancelBtn": {
+            "text": "取消",
+            "go": "start",
+            "style": "outline-dark"
+          }
+        }
+      }
+    }
+  },
   "第2期": {
     "startStep": "start",
     "endStep": "end",

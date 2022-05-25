@@ -45,6 +45,7 @@ const TaskAssignPanel = {
       {value: "清洗", desc: "清洗"},
       {value: "第1期", desc: "第1期"},
       {value: "第2期", desc: "第2期"},
+      {value: "第2期R", desc: "第2期R"},
       {value: "归因", desc: "归因"},
       {value: "精标", desc: "精标"},
     ];

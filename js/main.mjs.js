@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0518-1956";
+const APP_VERSION = "22-0525-1325";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
@@ -36,6 +36,8 @@ import {
 } from './modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
 // import { timeString, foolCopy } from './util.mjs.js';
+import Sp22FN from './sp22fn.mjs.js';
+
 import BaseSaver from './modules/BaseSaver.mjs.js';
 import TheReader from './modules/TheReader.mjs.js';
 import AlertBox from './modules/AlertBox.mjs.js';
@@ -252,30 +254,9 @@ const RootComponent = {
 
 
 
-    const ll0 = ['t0', '第0期', '清洗', '0', 'clean', 'check'];
-    const ll1 = ['t1', '第1期', '正确性', '1'];
-    const ll2 = ['t2', '第2期', '同义性', '2'];
-    const ll3 = ['t3', '第3期', '归因', '3', 'reason'];
-    const ll4 = ['t4', '第4期', '精标', '4', 'detail'];
-
     // 处理 topic 历史遗留混乱 用于 Task task.topic
     const topic_regulation = (topic) => {
-      if (ll0.includes(topic)) {
-        return '清洗';
-      };
-      if (ll1.includes(topic)) {
-        return '第1期';
-      };
-      if (ll2.includes(topic)) {
-        return '第2期';
-      };
-      if (ll3.includes(topic)) {
-        return '归因';
-      };
-      if (ll4.includes(topic)) {
-        return '精标';
-      };
-      return topic;
+      return Sp22FN.topic_regulation(topic);
     }
 
 
@@ -284,7 +265,8 @@ const RootComponent = {
       let wrap;
       try {
         let response = await anAxios.request({
-          url: "schema/steps.schema.json",
+          url: `schema/steps.schema.json?x=${Math.ceil(Math.random()*999999999)}`,
+          headers: {'Cache-Cotrol': 'no-cache'},
           method: 'get',
         });
         wrap = (response.data);

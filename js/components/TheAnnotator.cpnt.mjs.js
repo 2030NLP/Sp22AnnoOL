@@ -1,9 +1,11 @@
 import {  reactive, computed, onMounted, h  } from './VueShadow.mjs.js';
+import { CMR } from './Shadow.mjs.js';
 import BsBadge from './bs/BsBadge.cpnt.mjs.js';
 import gen_editModeSection from './AnnotatingModes/mode_edit.mjs.js';
 import gen_commentModeSection from './AnnotatingModes/mode_comment.mjs.js';
 import gen_multiSpansModeSection from './AnnotatingModes/mode_multiSpans.mjs.js';
 import gen_SpaCE2022_Task2_ModeSection from './AnnotatingModes/mode_SpaCE2022_Task2.mjs.js';
+import gen_SpaCE2022_Task2R_ModeSection from './AnnotatingModes/mode_SpaCE2022_Task2R.mjs.js';
 import gen_CSpaceBank_ModeSection from './AnnotatingModes/mode_CSpaceBank.mjs.js';
 
 export default {
@@ -187,6 +189,7 @@ export default {
       generalButtonsDiv,
 
       __LODASH: _,
+      CMR,
     };
 
 
@@ -196,6 +199,7 @@ export default {
     const multiSpansModeSection = gen_multiSpansModeSection(__pack);
 
     const theSpaCE2022_Task2_ModeSection = gen_SpaCE2022_Task2_ModeSection(__pack);
+    const theSpaCE2022_Task2R_ModeSection = gen_SpaCE2022_Task2R_ModeSection(__pack);
     const theCSpaceBank_ModeSection = gen_CSpaceBank_ModeSection(__pack);
 
     return () => div({ 'class': "row", 'data-mode': mode.value, }, [
@@ -203,6 +207,7 @@ export default {
       ...(modeMatch("choose", "text") ? commentModeSection() : []),
       ...(modeMatch("multiSpans") ? multiSpansModeSection() : []),
       ...(modeMatch("SpaCE2022_Task2") ? theSpaCE2022_Task2_ModeSection() : []),
+      ...(modeMatch("SpaCE2022_Task2R") ? theSpaCE2022_Task2R_ModeSection() : []),
       ...(modeMatch("CSpaceBank") ? theCSpaceBank_ModeSection() : []),
 
       // 指导语

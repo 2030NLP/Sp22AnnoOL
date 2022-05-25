@@ -256,7 +256,8 @@ class Sp22FN {
   static lls = {
     ll0: ['t0', 'task0', '第0期', '清洗', '0', 'clean', 'check'],
     ll1: ['t1', 'task1', '第1期', '正确性', '1'],
-    ll2: ['t2', 'task2', '第2期', '同义性', '2'],
+    ll2: ['t2', 'task2', '第2期', '2'],
+    ll2r: ['t2r', 'task2r', 'Task2R', '第2期r', '第2期R', '2r', '2R'],
     ll3: ['t3', 'task3', '第3期', '归因', '3', 'reason'],
     ll4: ['t4', 'task4', '第4期', '精标', '4', 'detail'],
   };
@@ -271,6 +272,9 @@ class Sp22FN {
     };
     if (Sp22FN.lls.ll2.includes(topic)) {
       return '第2期';
+    };
+    if (Sp22FN.lls.ll2r.includes(topic)) {
+      return '第2期R';
     };
     if (Sp22FN.lls.ll3.includes(topic)) {
       return '归因';
@@ -292,6 +296,9 @@ class Sp22FN {
     if (Sp22FN.lls.ll2.includes(topic)) {
       return 't2';
     };
+    if (Sp22FN.lls.ll2r.includes(topic)) {
+      return 't2r';
+    };
     if (Sp22FN.lls.ll3.includes(topic)) {
       return 't3';
     };
@@ -311,6 +318,9 @@ class Sp22FN {
     };
     if (Sp22FN.lls.ll2.includes(topic)) {
       return Sp22FN.lls.ll2;
+    };
+    if (Sp22FN.lls.ll2r.includes(topic)) {
+      return Sp22FN.lls.ll2r;
     };
     if (Sp22FN.lls.ll3.includes(topic)) {
       return Sp22FN.lls.ll3;

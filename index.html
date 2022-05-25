@@ -65,7 +65,15 @@
             <a class="nav-link" href="#" @click="()=>{setTask('t2')}"
               v-if="newThings.begun && newThings?.theUser?.currTask!='t2'"
               :if="newThings.begun && newThings?.theUser?.currTask!='t2'"
-            >切换到 task2</a>
+            >切换到 旧版task2</a>
+            <a class="nav-link" href="#" @click="()=>{setTask('t2r')}"
+              v-if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
+              :if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
+            >切换到 新版task2</a>
+            <a class="nav-link" href="#" @click="()=>{setTask('t4')}"
+              v-if="newThings.begun && newThings?.theUser?.currTask!='t4'"
+              :if="newThings.begun && newThings?.theUser?.currTask!='t4'"
+            >切换到 精标</a>
             <!-- <a class="nav-link" href="#">配置</a> -->
             <!-- <a class="nav-link" href="#" @click="ctrl.currentPage='setup'" v-if="isChecker()">准备</a> -->
             <!-- <a class="nav-link" href="#" @click="ctrl.currentPage='anno'" v-if="isChecker()">标注</a> -->
@@ -227,7 +235,7 @@
 
         <div class="row mt-0 mb-2 __align-items-center" id="page-main-editor--main">
           <!-- 内容区 开始 -->
-          <div class="col col-12 col-lg-7 my-1">
+          <div class="col col-12 col-lg-6 col-xl-7 my-1">
             <div class="position-sticky top-0 start-0">
 
               <!-- 替换后文本区 开始 -->
@@ -293,7 +301,7 @@
 
 
           <!-- 功能区 开始 -->
-          <div class="col col-12 col-lg-5 my-2" id="func-ctrl">
+          <div class="col col-12 col-lg-6 col-xl-5 my-2" id="func-ctrl">
             <annotator
               :step="currentStep"
               :engine="'web'"
