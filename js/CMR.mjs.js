@@ -1,7 +1,9 @@
 class CMR {
-  // version: 0.5.0.220522
+  // version: 0.5.0.220525
   constructor() {
     this.prefabs = [];
+    this.types = {};
+    this.labels = {};
     this.interface = {};
     this.objects = [];
     this.nextId = 0;
@@ -40,6 +42,17 @@ class CMR {
   deleteObject(objId) {
     const idx = this.objects.findIndex(obj => obj._id==objId);
     this.objects.splice(idx, 1);
+  }
+
+  assignDefinitions(definitions) {
+    for(let def of definitions) {
+      if (def['_type']=="@Type") {
+        this.types[def['refName']] = def;
+      };
+      if (def['_type']=="@Label") {
+        this.labels[def['face']] = def;
+      };
+    };
   }
 }
 

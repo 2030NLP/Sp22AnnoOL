@@ -106,7 +106,7 @@ const genModeSection = (__pack) => {
       outter:
       for (let item of items) {
         const slots = item?.slots?.filter?.(it=>it)??[];
-        if ((slots?.length??0)<2) {jj2 = false; break outter;};
+        if ((slots?.length??0)<(item.minimal??0)) {jj2 = false; break outter;};
         for (let slot of slots??[]) {
           if ('tokenarray' in slot && !slot.tokenarray?.length) {jj2 = false; break outter;};
           if ('withText' in slot && !slot.withText?.length) {jj2 = false; break outter;};
@@ -128,6 +128,7 @@ const genModeSection = (__pack) => {
         for (let slot of slots??[]) {
           if ('tokenarray' in slot && slot.tokenarray?.length) {
             tokenarrays.push(slot.tokenarray);
+            // 存在交集的情况，现在不管了
             if (tokenarrays.length>1) {
               let aa = tokenarrays.at(-1);
               let bb = tokenarrays.at(-2);
@@ -135,6 +136,7 @@ const genModeSection = (__pack) => {
                 hasIntersection = true;
               };
             };
+            // 检查没有高亮词或没覆盖key的情况
             for (let tokenIdx of slot.tokenarray) {
               let token = props.tokens[tokenIdx];
               if (!!token?.to?.word?.length) {
@@ -199,6 +201,7 @@ const genModeSection = (__pack) => {
                 // console.log(event.target.checked);
                 let shouldTake = event.target.checked;
                 touchOptionItem(optIdx).shouldTake = shouldTake;
+                touchOptionItem(optIdx).minimal = shouldTake ? option.minimal??0 : undefined;
               },
             })),
             ...option?.slots?.map?.((slot, slotIdx)=>{

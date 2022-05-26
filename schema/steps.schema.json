@@ -203,6 +203,7 @@
                 "tokenarrays": [],
                 "names": []
               },
+              "minimal": 2,
               "slots": [
                 {"type": "select", "placeholder": "text1"},
                 {"type": "solid-text", "value": "与"},
@@ -222,6 +223,7 @@
                 "tokenarrays": [],
                 "names": []
               },
+              "minimal": 4,
               "slots": [
                 {"type": "select", "placeholder": "S1"},
                 {"type": "select", "placeholder": "P1"},
@@ -245,6 +247,7 @@
                 "tokenarrays": [],
                 "names": []
               },
+              "minimal": 2,
               "slots": [
                 {"type": "select", "placeholder": "S"},
                 {"type": "select", "placeholder": "P"},

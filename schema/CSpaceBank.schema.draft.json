@@ -1,0 +1,604 @@
+{
+  "namespace": "CSpaceBank",
+  "label_sets": {
+    "实体虚实性": ["虚", "实"],
+    "时间限定符": ["时间", "开始前", "结束后"],
+    "距离限定符": ["远", "近", "缩短", "加长"],
+    "成员间关系": ["^", "|"],
+    "语义角色键": [
+      "施事", "共同施事", "当事", "间接当事",
+      "受事", "系事", "与事", "结果", "对象", "内容",
+      "工具", "材料", "方式", "原因", "目的",
+      "事量", "旧量", "新量", "范围",
+      "起点", "终点", "路径", "方向",
+      "处所", "起始", "结束", "时点", "时段"]},
+  "object_types": [
+
+    {"name": "空间实体", "slots": [
+      {"name": "是否是虚拟的", "ctrls": ["布尔"], "default": false, "required": true},
+      {"name": "是否自成处所", "ctrls": ["布尔"], "init": false},
+      {"name": "是否为指称", "ctrls": ["布尔"], "init": false},
+      {"name": "是否是名称", "ctrls": ["布尔"], "init": false},
+      {"name": "原文片段", "ctrls": ["多个原文片段"], "init": [], "required": true}
+    ]},
+
+    {"name": "事件", "slots": [
+      {"name": "原文片段", "ctrls": ["单个原文片段"], "init": [], "required": true},
+      {"name": "施事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "共同施事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "当事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "间接当事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "受事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "系事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "与事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "结果", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "对象", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "内容", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "工具", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "材料", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "方式", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "原因", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "目的", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "事量", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "旧量", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "新量", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "范围", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "起点", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "终点", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "路径", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "方向", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "处所", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "起始", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "结束", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "时点", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+      {"name": "时段", "ctrls": ["单个对象", "单个原文片段"], "reusable": true}
+    ]},
+
+    {"name": "角色引用", "slots": [
+      {"name": "所属事件",
+        "ctrls": [
+          {"type": "单个对象", "config": {"filter": {"type": "事件"}}}]},
+      {"name": "角色",
+        "ctrls": [
+          {"type": "单个标签", "config": {"set": "语义角色键"}}],
+        "required": true}
+    ]},
+
+    {"name": "合集", "slots": [
+      {"name": "成员类型", "ctrls": ["单个类型"], "required": true},
+      {"name": "成员清单", "ctrls": ["多个对象"], "init": [], "required": true},
+      {"name": "成员间关系",
+        "ctrls": [{"type": "单个标签", "config": {"set": "成员间关系"}}],
+        "default": {"set": "成员间关系", "spec": "^"}, "required": true}
+    ]},
+
+    {"name": "位置特征", "slots": [
+      {"name": "介词", "ctrls": ["原文片段"]},
+      {"name": "参照实体", "ctrls": [
+        {"type": "单个对象", "config": {
+          "filter": {
+            "$or": [
+              {"type": "空间实体"},
+              {"type": "合集", "成员类型": "空间实体"},
+              {"type": "角色引用"}]
+          }}}]},
+      {"name": "方位词", "ctrls": ["原文片段"]}
+    ]},
+
+    {"name": "方向特征", "slots": [
+      {"name": "参照实体", "ctrls": [
+        {"type": "单个对象", "config": {
+          "filter": {
+            "$or": [
+              {"type": "空间实体"},
+              {"type": "合集", "成员类型": "空间实体"},
+              {"type": "角色引用"}]
+          }}}]},
+      {"name": "介词", "ctrls": ["原文片段"]},
+      {"name": "方位词", "ctrls": ["原文片段"]}
+    ]},
+
+    {"name": "朝向特征", "slots": [
+      {"name": "介词", "ctrls": ["原文片段"]},
+      {"name": "参照实体", "ctrls": [
+        {"type": "单个对象", "config": {
+          "filter": {
+            "$or": [
+              {"type": "空间实体"},
+              {"type": "合集", "成员类型": "空间实体"},
+              {"type": "角色引用"}]
+          }}}]},
+      {"name": "方位词", "ctrls": ["原文片段"]}
+    ]},
+
+    {"name": "时间（相对于事件）", "slots": [
+      {"name": "参照事件", "ctrls": [
+        {"type": "单个对象", "config": {
+          "filter": {
+            "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
+          }}}], "required": true},
+      {"name": "类型",
+        "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}],
+        "default": {"set": "时间限定符", "spec": "时间"}, "required": true},
+      {"name": "线索文本", "ctrls": ["原文片段"]}
+    ]},
+
+    {"name": "特征命题", "slots": [
+      {"name": "被描述的实体", "ctrls": [
+        {"type": "单个对象", "config": {
+          "filter": {
+            "$or": [
+              {"type": "空间实体"},
+              {"type": "合集", "成员类型": "空间实体"},
+              {"type": "角色引用"}]
+          }}}]},
+      {"name": "依附的事件", "ctrls": [
+        {"type": "单个对象", "config": {
+          "filter": {
+            "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
+          }}}]},
+      {"name": "特征", "ctrls": [
+        {"type": "单个对象", "config": {
+          "filter": {
+            "$or": [{"type": "位置特征"}, {"type": "方向特征"}, {"type": "朝向特征"}]
+          }}}]},
+      {"name": "时间", "ctrls": ["时间（相对于事件）", "原文片段"]}
+    ]}
+
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  "_types": {
+    "SpEntity": {
+      "fields": {"fictive": {}, "dummy": {}, "spans": {}}
+    },
+    "Span": {
+      "fields": {"text": {}, "tknIdxes": {}, "role": {}}
+    },
+    "RoleSpan": {
+      "fields": {"text": {}, "tknIdxes": {}, "role": {}}
+    },
+    "Mark": {
+      "fields": {"mark": {}}
+    },
+  },
+
+  "entities": [
+    {"ettidx": 0, "_text": "史婆婆", "_tknIdxes": [], "_type": "", "_coRef": []},
+    {"ettidx": 1, "_text": "我", "_tknIdxes": [], "_type": "", "_coRef": [0]}
+  ],
+  "events": [],
+  "relations": [],
+
+
+  "_completed": false,
+  "_standard": {"name": "CSpaceBank", "version": "22.0515.00"}
+}
+
+
+{"_type": "@Span", "text": "史婆婆", "tknIdxes": []}
+{"_type": "@RoleSpan", "text": "史婆婆", "tknIdxes": [], "role": null}
+{"_type": "@RoleSpan", "text": "在", "tknIdxes": [], "role": "prep"}
+{"_type": "@Mark", "mark": "##"}
+
+
+
+
+
+
+
+
+
+"%谓词%"
+
+"#实体#"
+
+
+"离合", "+"
+
+
+
+
+
+
+
+
+
+"论旨角色"
+  "核心角色": { "parentConcepts": ["论旨角色"] }
+  "外围角色": { "parentConcepts": ["论旨角色"] }
+
+    "主体": { "parentConcepts": ["核心角色"] }
+      "施事": { "parentConcepts": ["主体"] }
+      "共同施事": { "parentConcepts": ["主体"] }
+      "当事": { "parentConcepts": ["主体"] }
+      "间接当事": { "parentConcepts": ["主体"] }
+
+    "客体": { "parentConcepts": ["核心角色"] }
+      "受事": { "parentConcepts": ["客体"] }
+      "系事": { "parentConcepts": ["客体"] }
+      "与事": { "parentConcepts": ["客体"] }
+      "结果": { "parentConcepts": ["客体"] }
+      "对象": { "parentConcepts": ["客体"] }
+      "内容": { "parentConcepts": ["客体"] }
+
+    "工具": { "parentConcepts": ["外围角色"] }
+    "材料": { "parentConcepts": ["外围角色"] }
+    "方式": { "parentConcepts": ["外围角色"] }
+    "原因": { "parentConcepts": ["外围角色"] }
+    "目的": { "parentConcepts": ["外围角色"] }
+    "事量": { "parentConcepts": ["外围角色"] }
+      "旧量": { "parentConcepts": ["事量"] }
+      "新量": { "parentConcepts": ["事量"] }
+    "范围": { "parentConcepts": ["外围角色"] }
+
+    "空间": { "parentConcepts": ["外围角色"] }
+      "起点": { "parentConcepts": ["空间"] }
+      "终点": { "parentConcepts": ["空间"] }
+      "路径": { "parentConcepts": ["空间"] }
+      "方向": { "parentConcepts": ["空间"] }
+      "处所": { "parentConcepts": ["空间"] }
+
+    "时间": { "parentConcepts": ["外围角色"] }
+      "起始": { "parentConcepts": ["时间"] }
+      "结束": { "parentConcepts": ["时间"] }
+      "时点": { "parentConcepts": ["时间"] }
+      "时段": { "parentConcepts": ["时间"] }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+  "_type": "@Type",
+  "name": "实体",
+  "slots": [
+  ]
+},
+{
+  "_type": "@Type",
+  "name": "事件",
+  "slots": [
+  ]
+},
+{
+  "_type": "@Type",
+  "name": "方位标",
+  "slots": [
+  ]
+},
+{
+  "_type": "@Type",
+  "name": "介词",
+  "slots": [
+  ]
+},
+
+
+
+{
+  "_type": "@Frame",
+  "name": "整体-部分关系",
+  "slots": [
+    {"name": "整体", "require": {"_type": "@CSpaceBank.空间实体"}},
+    {"name": "部分", "require": {"_type": "@CSpaceBank.空间实体"}}
+  ]
+},
+{
+  "_type": "@Frame",
+  "name": "相对于空间实体的位置",
+  "slots": [
+    {"name": "空间实体", "require": {"_type": "@CSpaceBank.空间实体"}}
+  ]
+},
+{
+  "_type": "@Frame",
+  "name": "相对于空间实体和方位标的位置",
+  "slots": [
+    {"name": "空间实体", "require": {"_type": "@CSpaceBank.空间实体"}},
+    {"name": "方位标", "require": {"_type": "@CSpaceBank.方位标"}}
+  ]
+},
+{
+  "_type": "@Frame",
+  "name": "方向1",
+  "slots": [
+    {"name": "介词", "require": {"_type": "@CSpaceBank.介词"}},
+    {"name": "方位标", "require": {"_type": "@CSpaceBank.方位标"}}
+  ]
+},
+{
+  "_type": "@Frame",
+  "name": "方向2",
+  "slots": [
+    {"name": "空间实体", "require": {"_type": "@CSpaceBank.空间实体"}},
+    {"name": "介词", "require": {"_type": "@CSpaceBank.介词"}},
+    {"name": "方位标", "require": {"_type": "@CSpaceBank.方位标"}}
+  ]
+},
+{
+  "_type": "@Frame",
+  "name": "方向3",
+  "slots": [
+    {"name": "空间实体", "require": {"_type": "@CSpaceBank.空间实体"}},
+  ]
+},
+{
+  "_type": "@Frame",
+  "name": "朝向",
+  "slots": [
+    {"name": "空间实体", "require": {"_type": "@CSpaceBank.空间实体"}},
+    {"name": "介词", "require": {"_type": "@CSpaceBank.介词"}},
+    {"name": "方位标", "require": {"_type": "@CSpaceBank.方位标"}}
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+"处所"
+"起点"
+"终点"
+  "空间实体"
+  "空间实体##方位词"
+
+"方向"
+  "<介词>方位词"
+  "空间实体<介词>方位词"
+  "空间实体"
+
+"朝向"
+  "<介词>方位词"
+  "<介词>空间实体"
+
+"形状/*姿态*/"
+"形状(空间实体)"
+"形状(<空间实体,...>)"
+
+"路径"
+  "形状"
+  "空间实体"
+  "<空间实体1, 空间实体2, ...>"
+  "路径:走廊"
+
+"距离"
+  "远", "定性距离", "长"
+  "近", "定性距离", "短"
+  "量值", "定量距离"
+  "缩短", "距离变化", "短"
+  "加长", "距离变化", "长"
+
+"时间"
+  "模糊时间值"
+  "精确时间值"
+  "处所.时间"
+  "起点.时间"
+  "终点.时间"
+  "方向.时间"
+  "朝向.时间"
+  "xx.时间"
+  "事件时间"
+  "事件开始前"
+  "事件结束后"
+  "%谓词%.时间"
+  "%谓词%.开始前"
+  "%谓词%.结束后"
+
+"事件"
+  "%动词%"
+
+
+
+
+
+{"时间定位": {
+  "主体": "",
+  "要定位的角色": "起点"
+}}
+
+
+{
+  "_type": "@CMR.Annotator.Span",
+  "_id": "",
+  "_refSpans": [],
+}
+
+
+{
+  "_type": "@CSpaceBank.Entity",
+  "_id": "",
+  "_refSpans": [],
+  "fictive": false,
+  "plural": true,
+  "members": ["#"],
+  "filled": false,
+}
+
+
+{
+  "_type": "@CSpaceBank.SpLocation",
+  "_id": "",
+  "_clueSpans": [],
+  "landmark": "#",
+  "spSelector": "@",
+}
+
+
+{
+  "_type": "@CSpaceBank.Event",
+  "_id": "",
+  "_clueSpans": [],
+}
+
+
+{
+  "_type": "@CSpaceBank.SpRelation",
+  "_id": "",
+  "实体": "#汉堡#",
+  "事件": "%吃%",
+  "角色": "位置",
+  "值": "桌##上",
+  "时间": {
+    "参照": "%吃%",
+    "类型": "开始前",
+  },
+}
+
+
+
+
+
+
+
+{"_type": "@CSB.Mark", "face": "%", "desc": "谓词包裹", "ref": ""}
+{"_type": "@CSB.Mark", "face": "#", "desc": "现实实体包裹", "ref": ""}
+{"_type": "@CSB.Mark", "face": "$", "desc": "虚拟实体包裹", "ref": ""}
+{"_type": "@CSB.Mark", "face": "##", "desc": "词分隔", "ref": ""}
+{"_type": "@CSB.Mark", "face": ":", "desc": "键值对内分隔", "ref": ""}
+{"_type": "@CSB.Mark", "face": ",", "desc": "键值对间分隔", "ref": ""}
+{"_type": "@CSB.Mark", "face": "[", "desc": "列表始", "ref": ""}
+{"_type": "@CSB.Mark", "face": "]", "desc": "列表末", "ref": ""}
+{"_type": "@CSB.Mark", "face": "<", "desc": "路径值节点或介词始", "ref": ""}
+{"_type": "@CSB.Mark", "face": ">", "desc": "路径值节点或介词末", "ref": ""}
+{"_type": "@CSB.Mark", "face": "(", "desc": "函数参数始", "ref": ""}
+{"_type": "@CSB.Mark", "face": ")", "desc": "函数参数末", "ref": ""}
+{"_type": "@CSB.Mark", "face": ".", "desc": "子值", "ref": ""}
+{"_type": "@CSB.Mark", "face": "+", "desc": "拼接", "ref": ""}
+{"_type": "@CSB.Mark", "face": "~", "desc": "非", "ref": ""}
+{"_type": "@CSB.Mark", "face": "^", "desc": "与", "ref": ""}
+{"_type": "@CSB.Mark", "face": "|", "desc": "或", "ref": ""}
+{"_type": "@CSB.Mark", "face": ">", "desc": "大于", "ref": ""}
+{"_type": "@CSB.Mark", "face": "<", "desc": "小于", "ref": ""}
+{"_type": "@CSB.Mark", "face": "@", "desc": "引用符，相当于取别名", "ref": ""}
+
+
+
+
+
+
+{"": "文本片段", "": "Span", "slots": [
+  {"key": "textRef"},
+  {"key": "idxes"},
+]}
+
+
+
+{"": "Condition", "slots": [
+  {"key": "mode", "validation": {"type": "oneInNamedCollection", "collection": [
+    {"name": "selfSlotValue_EQ", "definition": {}},
+    {"name": "selfSlotValue_NE", "definition": {}},
+    {"name": "selfSlotValue_GTE", "definition": {}},
+    {"name": "selfSlotValue_GT", "definition": {}},
+    {"name": "selfSlotValue_LTE", "definition": {}},
+    {"name": "selfSlotValue_LT", "definition": {}},
+    {"name": "selfSlotValue_IN", "definition": {}},
+    {"name": "selfSlotValue_NIN", "definition": {}},
+    {"name": "selfSlot_Exists", "definition": {}},
+    {"name": "selfSlot_Defined", "definition": {}}
+  ]}},
+  {"key": "spec"},
+]}
+
+
+
+{"": "Property", "slots": [
+  {"key": "key"},
+  {"key": "default"},
+  {"key": "isRequired"},
+  {"key": "isComputed"},
+  {"key": "validation"},
+  {"key": "initialValue"},
+  {"key": "existingCondition"},
+  {"key": "requiredCondition"},
+]}
+
+{"": "Collection", "": [
+  {"key": "countable", "validation": {"type": "Boolean"}, "default": true},
+  {"key": "sequential", "validation": {"type": "Boolean"}, "default": true},
+  {"key": "sequential", "validation": {"type": "Boolean"}, "default": true},
+  {}
+]}
+
+
+
+{"": "实体", "": "Entity", "slots": [
+  {"key": "fictive", "validation": {"type": "Boolean"}, "default": false},
+  {"key": "plural", "validation": {"type": "Boolean"}, "default": false},
+  {"key": "members", "validation": {"type": "Collection"},
+    "existingCondition": {
+      "type": "Condition",
+      "mode": "@selfSlotValue_EQ", "key": "plural", "value": true}},
+  {"key": "filled", "validation": {"type": "Boolean"}},
+  {"key": "corefs", "validation": {"type": "Collection", ""}}
+]}
+
+
+{"": "CoRef"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
