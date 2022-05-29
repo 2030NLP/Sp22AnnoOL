@@ -33,8 +33,8 @@ export default {
 
       const displayDesc = (annot)=>{
         return ([
-          ( annot.desc ? h("span", { class: "mx-1", title: `${annot.label}` }, [`${annot.desc}`]) :
-            annot.label ? h("span", { class: "mx-1" }, [`${annot.label}`]) :
+          ( annot.desc ? h("span", { class: "mx-1 fw-normal", title: `${annot.label}` }, [`${annot.desc}`]) :
+            annot.label ? h("span", { class: "mx-1 fw-normal" }, [`${annot.label}`]) :
             null),
         ]);
       };
@@ -42,16 +42,16 @@ export default {
       const displayIdxArray = (annot)=>{
         return ([
           ...(annot.tokenarrays ? annot.tokenarrays.map(
-            idxes => h("span", { class: "mx-1" }, ["“", idxesToText(idxes), "”"])
+            idxes => h("span", { class: "mx-1" }, [/*"“",*/ idxesToText(idxes), " ", /*"”"*/])
           ) : annot.ons ? annot.ons.map(
-            idxes => h("span", { class: "mx-1" }, ["“", idxesToText(idxes), "”"])
+            idxes => h("span", { class: "mx-1" }, [/*"“",*/ idxesToText(idxes), " ", /*"”"*/])
           ) : []),
         ]);
       };
 
       const displayWithText = (annot)=>{
         return ([
-          (annot.withText ? h("span", { class: "mx-1" }, [annot.withText]) : null),
+          (annot.withText ? h("span", { class: "mx-1 fw-normal" }, [annot.withText]) : null),
         ]);
       };
 

@@ -15,6 +15,14 @@ const genModeSection = (__pack) => {
   } = __pack;
 
   return () => {
+
+    const ha = (children, href, title, targetBlank) => {
+      targetBlank = targetBlank?(!!targetBlank):true;
+      return h("a", {
+        'href': href??"#",
+        'title': title??"",
+      }, children);
+    };
     // 目前包括两种 actualMode:
     //   doubleSpans, spanWithComment
     // 各种指导语写在 step_props.value?.strings 对象里，通过 someKeyString 函数调用
@@ -284,6 +292,12 @@ const genModeSection = (__pack) => {
 
           ]));
         })),
+      ]),
+
+      //
+      div({'class': "text-muted small"}, [
+        h("p", null, ["标注前，请仔细阅读 ", ha("最新标注规范", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide.html"), " 以及 ", ha("FQA", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html"), " 。"]),
+        h("p", null, ["若遇到较难判断的情况，首先请看 ", ha("几种特殊现象的处理方式", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html#5-几种特殊现象的处理方式"), " ，若仍难以判断，请在群中提问讨论，谢谢。"]),
       ]),
 
       // 通用结束按钮区
