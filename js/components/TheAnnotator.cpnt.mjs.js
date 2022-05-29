@@ -8,11 +8,14 @@ import gen_SpaCE2022_Task2_ModeSection from './AnnotatingModes/mode_SpaCE2022_Ta
 import gen_SpaCE2022_Task2R_ModeSection from './AnnotatingModes/mode_SpaCE2022_Task2R.mjs.js';
 import gen_CSpaceBank_ModeSection from './AnnotatingModes/mode_CSpaceBank.mjs.js';
 
+import CmrUI from './AnnotatingCMR/CmrUI.cpnt.mjs.js';
+
 export default {
   props: ["step", "engine", "tokenSelector", "stepCtrl", "tokens", "selection", "alertBox", "modifiedText"],
   emits: ["web-next", "web-save", "web-save-and-next", "ok", "start", "clean", "cancel", "reset", "next", "add-to-list", "clear-selection", "option"],
   component: {
     BsBadge,
+    CmrUI,
   },
   setup(props, ctx) {
 
@@ -208,6 +211,8 @@ export default {
       ...(modeMatch("multiSpans") ? multiSpansModeSection() : []),
       ...(modeMatch("SpaCE2022_Task2") ? theSpaCE2022_Task2_ModeSection() : []),
       ...(modeMatch("SpaCE2022_Task2R") ? theSpaCE2022_Task2R_ModeSection() : []),
+
+      (modeMatch("CSpaceBank") ? h(CmrUI) : []),
       ...(modeMatch("CSpaceBank") ? theCSpaceBank_ModeSection() : []),
 
       // 指导语

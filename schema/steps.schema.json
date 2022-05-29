@@ -1,16 +1,15 @@
 {
   "name": "SpaCE2022",
-  "version": "220525v1",
+  "version": "220527v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
-    "第2期R": "220525v1",
+    "第2期R": "220527v1",
     "精标": "220525v1"
   },
   "using": "第2期",
   "精标": {
-    "其实是": "精标",
     "startStep": "start",
     "endStep": "end",
     "steps": {
@@ -224,6 +223,7 @@
                 "names": []
               },
               "minimal": 4,
+              "针对性处理": "语义冲突数量限制",
               "slots": [
                 {"type": "select", "placeholder": "S1"},
                 {"type": "select", "placeholder": "P1"},

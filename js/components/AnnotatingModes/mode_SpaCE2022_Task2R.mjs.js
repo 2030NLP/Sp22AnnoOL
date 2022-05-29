@@ -121,6 +121,7 @@ const genModeSection = (__pack) => {
       let hasReplacedToken = false;
       let hasHighlightedToken = false;
       let hasIntersection = false;
+      const 针对性处理标记清单 = [];
       // outter:
       for (let item of items) {
         const slots = item?.slots?.filter?.(it=>it)??[];
@@ -156,6 +157,14 @@ const genModeSection = (__pack) => {
             };
           };
         };
+        if (item.针对性处理=="语义冲突数量限制") {
+          if (tokenarrays.length < 4) {
+            针对性处理标记清单.push("语义冲突片段少于4");
+          };
+          if (tokenarrays.length == 5) {
+            针对性处理标记清单.push("语义冲突片段等于5");
+          };
+        };
       };
       if (!hasHighlightedToken) {
         alertBox.pushAlert('选中的范围内没有出现高亮词，请检查', 'warning', 5000);
@@ -164,6 +173,15 @@ const genModeSection = (__pack) => {
       };
       if (!hasReplacedToken) {
         alertBox.pushAlert('似乎没有覆盖造成异常的关键片段，最好再检查一下', 'warning', 5000);
+      };
+      if (针对性处理标记清单.includes("语义冲突片段少于4")) {
+        alertBox.pushAlert('语义冲突类选中的文本片段数量不足，请检查', 'warning', 5000);
+        checkResult=false;
+        // return checkResult;
+      };
+      if (针对性处理标记清单.includes("语义冲突片段等于5")) {
+        alertBox.pushAlert('语义冲突类选中的文本片段数量不太正常，请检查', 'warning', 5000);
+        // return checkResult;
       };
       // if (hasIntersection) {
       //   alertBox.pushAlert('某条标注中的两个文本片段存在交集，请确认无误再保存', 'warning', 5000);
