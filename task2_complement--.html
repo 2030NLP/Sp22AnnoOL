@@ -1,0 +1,505 @@
+<!doctype html>
+<html style='font-size:16px !important'>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+
+<style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; --title-bar-height:20px; }
+.mac-os-11 { --title-bar-height:28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; inset: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-fences-adv-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+  .typora-export-show-outline .typora-export-sidebar { display: none; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.6; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+.md-expand mark .md-meta { opacity: 0.3 !important; }
+mark .md-meta { color: rgb(0, 0, 0); }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-fences.md-fences-math { font-size: 1em; }
+.md-fences-advanced:not(.md-focus) { padding: 0px; white-space: nowrap; border: 0px; }
+.md-fences-advanced:not(.md-focus) { background: inherit; }
+.typora-export-show-outline .typora-export-content { max-width: 1440px; margin: auto; display: flex; flex-direction: row; }
+.typora-export-sidebar { width: 300px; font-size: 0.8rem; margin-top: 80px; margin-right: 18px; }
+.typora-export-show-outline #write { --webkit-flex:2; flex: 2 1 0%; }
+.typora-export-sidebar .outline-content { position: fixed; top: 0px; max-height: 100%; overflow: hidden auto; padding-bottom: 30px; padding-top: 60px; width: 300px; }
+@media screen and (max-width: 1024px) {
+  .typora-export-sidebar, .typora-export-sidebar .outline-content { width: 240px; }
+}
+@media screen and (max-width: 800px) {
+  .typora-export-sidebar { display: none; }
+}
+.outline-content li, .outline-content ul { margin-left: 0px; margin-right: 0px; padding-left: 0px; padding-right: 0px; list-style: none; }
+.outline-content ul { margin-top: 0px; margin-bottom: 0px; }
+.outline-content strong { font-weight: 400; }
+.outline-expander { width: 1rem; height: 1.42857rem; position: relative; display: table-cell; vertical-align: middle; cursor: pointer; padding-left: 4px; }
+.outline-expander::before { content: ""; position: relative; font-family: Ionicons; display: inline-block; font-size: 8px; vertical-align: middle; }
+.outline-item { padding-top: 3px; padding-bottom: 3px; cursor: pointer; }
+.outline-expander:hover::before { content: ""; }
+.outline-h1 > .outline-item { padding-left: 0px; }
+.outline-h2 > .outline-item { padding-left: 1em; }
+.outline-h3 > .outline-item { padding-left: 2em; }
+.outline-h4 > .outline-item { padding-left: 3em; }
+.outline-h5 > .outline-item { padding-left: 4em; }
+.outline-h6 > .outline-item { padding-left: 5em; }
+.outline-label { cursor: pointer; display: table-cell; vertical-align: middle; text-decoration: none; color: inherit; }
+.outline-label:hover { text-decoration: underline; }
+.outline-item:hover { border-color: rgb(245, 245, 245); background-color: var(--item-hover-bg-color); }
+.outline-item:hover { margin-left: -28px; margin-right: -28px; border-left: 28px solid transparent; border-right: 28px solid transparent; }
+.outline-item-single .outline-expander::before, .outline-item-single .outline-expander:hover::before { display: none; }
+.outline-item-open > .outline-item > .outline-expander::before { content: ""; }
+.outline-children { display: none; }
+.info-panel-tab-wrapper { display: none; }
+.outline-item-open > .outline-children { display: block; }
+.typora-export .outline-item { padding-top: 1px; padding-bottom: 1px; }
+.typora-export .outline-item:hover { margin-right: -8px; border-right: 8px solid transparent; }
+.typora-export .outline-expander::before { content: "+"; font-family: inherit; top: -1px; }
+.typora-export .outline-expander:hover::before, .typora-export .outline-item-open > .outline-item > .outline-expander::before { content: "−"; }
+.typora-export-collapse-outline .outline-children { display: none; }
+.typora-export-collapse-outline .outline-item-open > .outline-children, .typora-export-no-collapse-outline .outline-children { display: block; }
+.typora-export-no-collapse-outline .outline-expander::before { content: "" !important; }
+.typora-export-show-outline .outline-item-active > .outline-item .outline-label { font-weight: 700; }
+.md-inline-math-container mjx-container { zoom: 0.95; }
+
+
+html {
+	font-size: 19px;
+}
+
+html, body {
+	margin: auto;
+	background: #fefefe;
+	-webkit-font-smoothing: antialiased;
+}
+body {
+	font-family: "Vollkorn", Palatino, Times;
+	color: #333;
+	line-height: 1.4;
+	text-align: justify;
+}
+
+#write {
+	max-width: 960px;
+	margin: 0 auto;
+	margin-bottom: 2em;
+	line-height: 1.53;
+	padding-top: 40px;
+}
+
+@media only screen and (min-width: 1400px) {
+	#write {
+		max-width: 1100px;
+	}
+}
+
+@media print {
+	html {
+		font-size: 13px;
+	}
+}
+
+/* Typography
+-------------------------------------------------------- */
+
+#write>h1:first-child,
+h1 {
+	margin-top: 1.6em;
+	font-weight: normal;
+}
+
+h1 {
+	font-size:3em;
+}
+
+h2 {
+	margin-top:2em;
+	font-weight: normal;
+}
+
+h3 {
+	font-weight: normal;
+	font-style: italic;
+	margin-top: 3em;
+}
+
+h1, 
+h2, 
+h3{
+	text-align: center;
+}
+
+h2:after{
+	border-bottom: 1px solid #2f2f2f;
+    content: '';
+    width: 100px;
+    display: block;
+    margin: 0 auto;
+    height: 1px;
+}
+
+h1+h2, h2+h3 {
+	margin-top: 0.83em;
+}
+
+p,
+.mathjax-block {
+	margin-top: 0;
+	-webkit-hypens: auto;
+	-moz-hypens: auto;
+	hyphens: auto;
+}
+ul {
+	list-style: square;
+	padding-left: 1.2em;
+}
+ol {
+	padding-left: 1.2em;
+}
+blockquote {
+	margin-left: 1em;
+	padding-left: 1em;
+	border-left: 1px solid #ddd;
+}
+code,
+pre {
+	font-family: "Consolas", "Menlo", "Monaco", monospace, serif;
+	font-size: .9em;
+	background: white;
+}
+.md-fences{
+	margin-left: 1em;
+	padding-left: 1em;
+	border: 1px solid #ddd;
+	padding-bottom: 8px;
+	padding-top: 6px;
+	margin-bottom: 1.5em;
+}
+
+a {
+	color: #2484c1;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+a img {
+	border: none;
+}
+h1 a,
+h1 a:hover {
+	color: #333;
+	text-decoration: none;
+}
+hr {
+	color: #ddd;
+	height: 1px;
+	margin: 2em 0;
+	border-top: solid 1px #ddd;
+	border-bottom: none;
+	border-left: 0;
+	border-right: 0;
+}
+.ty-table-edit {
+	background: #ededed;
+    padding-top: 4px;
+}
+table {
+	margin-bottom: 1.333333rem
+}
+table th,
+table td {
+	padding: 8px;
+	line-height: 1.333333rem;
+	vertical-align: top;
+	border-top: 1px solid #ddd
+}
+table th {
+	font-weight: bold
+}
+table thead th {
+	vertical-align: bottom
+}
+table caption+thead tr:first-child th,
+table caption+thead tr:first-child td,
+table colgroup+thead tr:first-child th,
+table colgroup+thead tr:first-child td,
+table thead:first-child tr:first-child th,
+table thead:first-child tr:first-child td {
+	border-top: 0
+}
+table tbody+tbody {
+	border-top: 2px solid #ddd
+}
+
+.task-list{
+	padding:0;
+}
+
+.md-task-list-item {
+	padding-left: 1.6rem;
+}
+
+.md-task-list-item > input:before {
+	content: '\221A';
+	display: inline-block;
+	width: 1.33333333rem;
+  	height: 1.6rem;
+	vertical-align: middle;
+	text-align: center;
+	color: #ddd;
+	background-color: #fefefe;
+}
+
+.md-task-list-item > input:checked:before,
+.md-task-list-item > input[checked]:before{
+	color: inherit;
+}
+.md-tag {
+	color: inherit;
+	font: inherit;
+}
+#write pre.md-meta-block {
+	min-height: 35px;
+	padding: 0.5em 1em;
+}
+#write pre.md-meta-block {
+	white-space: pre;
+	background: #f8f8f8;
+	border: 0px;
+	color: #999;
+	
+	width: 100vw;
+	max-width: calc(100% + 60px);
+	margin-left: -30px;
+	border-left: 30px #f8f8f8 solid;
+	border-right: 30px #f8f8f8 solid;
+
+	margin-bottom: 2em;
+	margin-top: -1.3333333333333rem;
+	padding-top: 26px;
+	padding-bottom: 10px;
+	line-height: 1.8em;
+	font-size: 0.9em;
+	font-size: 0.76em;
+	padding-left: 0;
+}
+.md-img-error.md-image>.md-meta{
+	vertical-align: bottom;
+}
+#write>h5.md-focus:before {
+	top: 2px;
+}
+
+.md-toc {
+	margin-top: 40px;
+}
+
+.md-toc-content {
+	padding-bottom: 20px;
+}
+
+.outline-expander:before {
+	color: inherit;
+	font-size: 14px;
+	top: auto;
+	content: "\f0da";
+	font-family: FontAwesome;
+}
+
+.outline-expander:hover:before,
+.outline-item-open>.outline-item>.outline-expander:before {
+  	content: "\f0d7";
+}
+
+/** source code mode */
+#typora-source {
+	font-family: Courier, monospace;
+    color: #6A6A6A;
+}
+
+.html-for-mac #typora-sidebar {
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+
+.cm-s-typora-default .cm-header, 
+.cm-s-typora-default .cm-property,
+.CodeMirror.cm-s-typora-default div.CodeMirror-cursor {
+	color: #428bca;
+}
+
+.cm-s-typora-default .cm-atom, .cm-s-typora-default .cm-number {
+	color: #777777;
+}
+
+.typora-node .file-list-item-parent-loc, 
+.typora-node .file-list-item-time, 
+.typora-node .file-list-item-summary {
+	font-family: arial, sans-serif;
+}
+
+.md-task-list-item>input {
+    margin-left: -1.3em;
+    margin-top: calc(1rem - 12px);
+}
+
+.md-mathjax-midline {
+	background: #fafafa;
+}
+
+.md-fences .code-tooltip {
+	bottom: -2em !important;
+}
+
+.dropdown-menu .divider {
+	border-color: #e5e5e5;
+}
+
+
+</style><title>Task2_工作指南_补充说明20220527V2</title>
+</head>
+<body class='typora-export os-windows'><div class='typora-export-content'>
+<div id='write'  class=''><p>&nbsp;</p><h2 id='task2工作指南补充说明'><strong><span>Task2_工作指南补充说明</span></strong></h2><p>&nbsp;</p><div class='md-toc' mdtype='toc'><p class="md-toc-content" role="list"><span role="listitem" class="md-toc-item md-toc-h2" data-ref="n2"><a class="md-toc-inner" href="#task2工作指南补充说明"><strong>Task2_工作指南补充说明</strong></a></span><span role="listitem" class="md-toc-item md-toc-h4" data-ref="n9"><a class="md-toc-inner" href="#1-搭配不当"><strong>1.</strong> <strong>搭配不当</strong></a></span><span role="listitem" class="md-toc-item md-toc-h4" data-ref="n34"><a class="md-toc-inner" href="#2-语义冲突"><strong>2. 语义冲突</strong></a></span><span role="listitem" class="md-toc-item md-toc-h4" data-ref="n70"><a class="md-toc-inner" href="#3-不符合常识或背景信息"><strong>3. 不符合常识或背景信息</strong></a></span><span role="listitem" class="md-toc-item md-toc-h4" data-ref="n112"><a class="md-toc-inner" href="#4-选项之间的区别"><strong>4. 选项之间的区别</strong></a></span><span role="listitem" class="md-toc-item md-toc-h4" data-ref="n143"><a class="md-toc-inner" href="#5-其他说明"><strong>5.</strong> <strong>其他说明</strong></a></span></p></div><p>&nbsp;</p><p>&nbsp;</p><p><span>        在空间语义异常归因任务（task2）中，对于“搭配不当”“语义冲突”“不符合常识或背景信息”这三个归因类型，该如何选择？下面通过举例，展示了一些典型的场景，请标注人员在标注中注意：碰到同类情况，应采取同样的处理方式，以使得标注数据达到最大程度的内部一致性。</span></p><p>&nbsp;</p><h4 id='1-搭配不当'><strong><span>1.</span></strong><span> </span><strong><span>搭配不当</span></strong></h4><ul><li><p><span>定义：在不考虑上下文的情况下，两个相邻语言单元搭配起来很别扭，一般不这样使用。</span></p></li><li><p><span>判断方法：选取两个异常片段后，请读⼀读这两个异常片段搭配一起构成的表述，单独看这个表述是不是可以说得通。如果说不通，一般就可以归入搭配不当；如果说得通（即便是在比较少见的情形中能说通），则不应该归因为搭配不当，而应该考虑“语义冲突”或者“不符合常识或背景信息”。</span></p></li><li><p><span>标注示例（每个例子都有正确标注与错误标注的对比呈现）</span></p><ul><li><p><font style="font-family:楷体"><span>示例1 她放开他，他便沉入黑水</span><font color="red"><strong><span>前</span></strong></font><span>,他就像一个幽灵隐退到非物质的飞机里去了。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“搭配不当”，搭配不当片段为“黑水”与“前”。</span></p><p><strong><span>正确标注</span></strong><span>：归因为“搭配不当”，搭配不当片段为“沉入”与“黑水前”。</span></p><p><strong><span>解释</span></strong><span>：“黑水”与“前”单独看有可能搭配使用。这里错误的原因是“沉入”与“黑水前”无法搭配。正确的用法是“沉入”与“黑水里”之间搭配。</span></p><p><em><span>注意：这个例子也可以归入“不符合常识或背景信息”，这时候异常文本片段的选取，不同于归入“搭配不当”时的文本片段，参见示例13。</span></em></p></li><li><p><font style="font-family:楷体"><span>示例2 “赶快，你得赶快。”做丈夫的说，他迅速地把这个美国人推进壁炉旁边的一个大碗橱</span><font color="red"><strong><span>上</span></strong></font><span>，“砰”的一声 ，关上橱门。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“搭配不当”，搭配不当片段为“大碗橱”与“上”。</span></p><p><strong><span>正确标注</span></strong><span>：归因为“搭配不当”，搭配不当片段为“推进”与“大碗橱上”。（这个句子异常的原因也可以归入与常识不符。但同样需要注意：具体的异常文本片段描述，需要遵循规范要求。下同）</span></p><p><strong><span>解释</span></strong><span>： “大碗橱”与“上”单独看有可能搭配使用。这里主要原因是“推进”与“大碗橱上”无法搭配。正确的用法是“推进”与“大碗橱里”之间搭配。</span></p></li><li><p><font style="font-family:楷体"><span>示例3 他们继续向前走去，李光头和宋钢伤痕累累，拉板车的人也是满脸血迹。接下去的路上仍然有很多人围上来，两个孩子不敢再哭了，拉板车的也不再说话。两个孩子一边走着，一边回头小心翼翼地看看拉板车的人，看到他的汗水在脸上的血迹里流，宋钢脱</span><font color="red"><strong><span>上</span></strong></font><span>自己的汗衫。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“搭配不当”，搭配不当片段为“宋钢脱”与“上”。</span></p><p><strong><span>正确标注</span></strong><span>：归因为“搭配不当”，搭配不当的片段为“脱”与“上”。（也可以归入“不符合常识或背景信息”）</span></p><p><mark><strong><span>注意：</span></strong><span>当归为“不符合常识或背景信息”时，“不符合常识或背景信息”的片段应该包括完整的S-P-E三要素，示例13中不符合常识或背景信息的三要素：S:汗衫，P:上，E:脱。</span></mark></p></li></ul></li></ul><h4 id='2-语义冲突'><strong><span>2. 语义冲突</span></strong></h4><ul><li><p><span>定义：句中有两处空间信息有冲突。可以是相邻语言成分，也可以是不相邻的语言成分。这两处空间信息必须对应着两个相对完整的事件。</span></p></li><li><p><span>判断方法：在描述存在冲突的两个空间信息时，要求关于空间语义的描述包含</span><strong><span>S-P-E三要素</span></strong><span>(详见task2指南文档中的术语定义)。在实际句子中，这三个要素可能其中有的要素会有省略情况，但标注者在选取语义冲突的文本片段时，应尽量把S-P-E三要素填写完整（</span><span style="background:#f9eda6;"><span>即句中有三个要素，就不能只填两个，有两个就不能只填一个</span></span><span>）。</span><span style="background:#f9eda6;"><span>具体表达语义冲突的两个文本，分别记作&lt;S1，P1，E1&gt;和&lt;S2，P2，E2&gt;，一般来说，这6个要素信息中，只有对应的一组元素不同，其他两组元素相同。例如P1跟P2的内容不同，语义有冲突，而S1和S2，E1和E2的内容相同</span></span><span>。</span></p></li><li><p><span>例子</span></p><ul><li><p><font style="font-family:楷体"><span>示例4 1946年，中共中央将她们救出并送至延安。瞿独伊的女儿李晓云说: 母亲在监狱</span><font color="red"><strong><span>里</span></strong></font><span>就申请入党，到延安后正式加入了中国共产党。组织表示，瞿独伊没有预备期，因为她在监狱</span><font color="red"><strong><span>旁</span></strong></font><span>就已经经受住了考验。&quot;</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为：“P1:监狱里”与“P2:监狱旁”。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为：“S1:瞿独伊，P1:在监狱里”与“S2:瞿独伊，P2:在监狱旁”。</span></span></p><p><mark><strong><span>注意1：</span></strong><span>实体S在句中可能不止一种表达形式。具体选择哪个成分来表达S，遵循规则是：「专有名词&gt;普通名词&gt;代词」( &gt; 表示优先级高于 )。在示例4中，S1和S2都用专有名词“瞿独伊”来表述，而不是句中跟“瞿独伊”同指的代词“她”。</span></mark></p><p><mark><strong><span>注意2：</span></strong><span>示例4中E1和E2未填写。实际上句中出现了表达E1和E2的事件谓词，分别是“申请入党”和“经受住了考验”，它们表述不同的事件，但对于S的空间信息P没有影响，并不构成冲突对立，因此，在归因时不需要描述。这样的处理方式，也符合上面提出的原则：&lt;S1，P1，E1&gt;与&lt;S2，P2，E2&gt;中，只有一组对应的要素构成冲突，其他两组要素一般是一致的。此例中E1和E2都为空，满足形式一致的要求。</span></mark></p></li><li><p><font style="font-family:楷体"><span>示例5 2月4日，医院开始收治病人。医生们在里面忙救人，戴着口罩的张玉星和文静在医院</span><font color="red"><strong><span>里</span></strong></font><span>收拾，他们要用一天时间，把</span><font color="red"><strong><span>外面</span></strong></font><span>的建筑材料全部清理干净。20多个小时没合过眼，最后腰都直不起来。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为：“P1:医院里”与“P2:外面”。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为：“S1:建筑材料，P1:在医院里”与“S2:建筑材料，P2:医院外面”。</span></span></p><p><strong><span>解释</span></strong><span>：例5的情况跟例4类似。空间实体S为“建筑材料”（S1跟S2相同），相关的事件，表面形式不同，E1为”收拾“，E2为”清理干净“，但实际上意思是相同的，而且，E1和E2对于S的空间信息P没有影响。按照上面提及的规则，标注时仅给出S1、P1和S2、P2即可，E1和E2可以为空。这样P1和P2形成冲突对立，另外两个要素S1与S2、E1与E2则保持一致。</span></p></li><li><p><font style="font-family:楷体"><span>示例6 练习者身体侧向弹力带呈半跪姿，右腿在前，双手握弹力带置于头顶右上方，距离略宽于肩，右臂伸直;双臂向左侧腰际下拉弹力带，至</span><font color="red"><strong><span>左侧</span></strong></font><span>手臂伸直后，再伸直</span><font color="red"><strong><span>左侧</span></strong></font><span>手臂。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为：“S1:手臂，P1:左侧”与“S2:手臂，P2:左侧”。</span></p><p><span> </span><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为：“S1:手臂，E1:伸直后”与“S2:手臂，E2:再伸直”。</span></span></p><p><strong><span>解释</span></strong><span>：错误标注中，S1，P1和S2，P2的形式完全一样，并不构成冲突。正确标注则表示：这段话中的空间语义异常，是事件E1和E2之间的对立冲突，而不是方位信息P的冲突。因此标注中包含空间实体S(左侧手臂)及与空间实体相关的事件E(伸直)两个要素。</span><mark><span>多数情况下，E是动词、动词词组。在这个例子中，则形成冲突的不是E中的核心动词，而是事件时间信息相关的成分，E1和E2的核心动词都是“伸直”，但时间信息有冲突，E1是“伸直后”，E2是“再伸直”。手臂不能在伸直后再伸直。</span></mark><span>&gt;</span></p></li><li><p><font style="font-family:楷体"><span>示例7 那天他穿的是一件棕色的外衣，站在那儿一动不动，像一根树干。一只小松鼠跑来了，顺着他的腿往上爬，一直爬到肩膀</span><font color="red"><strong><span>下</span></strong></font><span>。小松鼠蹲在他的肩膀</span><font color="red"><strong><span>上</span></strong></font><span>，左看看，右看看，还翘着小尾巴，跟树上的妈妈打招呼。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“搭配不当”，搭配不当的片段为“肩膀”与“上”。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为：“S1:小松鼠，P1:到肩膀下”与“S2:小松鼠，P2:在他的肩膀上”。</span></span></p><p><mark><strong><span>注意</span></strong><span>1：</span><strong><span>原文中方位信息如果伴随有介词成分，则介词成分应填入P中。P1“到肩膀下”中的“到”，P2“在他的肩膀上”中的“在”，都是介词，应填入P中。例7中，P1和P2不应只填“肩膀下”和“肩膀上”</span></strong><span>。</span></mark></p><p><mark><strong><span>注意2：</span></strong><span>示例7中E1和E2未填写。实际上句中出现了表达E1和E2的事件谓词，分别是“爬”和“蹲”，它们表述不同的事件，但对于S的空间信息P没有影响，并不构成冲突对立，因此，在归因时不需要描述。这样的处理方式，也符合上面提出的原则：&lt;S1，P1，E1&gt;与&lt;S2，P2，E2&gt;中，只有一组对应的要素构成冲突，其他两组要素一般是一致的。此例中E1和E2都为空，满足形式一致的要求。</span></mark></p></li><li><p><font style="font-family:楷体"><span>示例8 一方池塘中，污水随着齿轮的搅动上下翻涌;另一池</span><font color="red"><strong><span>外</span></strong></font><span>，清澈的水流从池中汩汩而出，流入旁边的山涧 里，滋润夹岸花草;对岸，几处民宿白墙灰顶，点缀在绿水青山间;聆听是鸟语啁啾，呼吸有山风甘醇 --1月9日，记者采访江西省南昌市湾里区太平镇一处半山腰上的污水处理厂，被这里的景象震惊。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为：“P1:池外”和“P2:池中，E2:汩汩而出”。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为：“S1:水流，P1:池外，E1:汩汩而出”和“S2:水流，P2:从池中，E2:汩汩而出”。</span></span></p><p><mark><span>解释：例8中有异常的文本片段是“另一池外，清澈的水流从池中汩汩而出”。这段话对应的空间信息是有冲突的。具体的冲突在于，空间实体S是“水流”，这段话中既包含了“水流在池外”的语义，又包含了“水流在池中”的语义。这两个语义是对立冲突的。上面给出的正确标注，就反映了这种冲突。其中S1和S2，E1和E2形式上保持一致。P1和P2不同，构成冲突。</span></mark></p></li></ul></li></ul><h4 id='3-不符合常识或背景信息'><strong><span>3. 不符合常识或背景信息</span></strong></h4><ul><li><p><span>定义：句中有一个空间语义，违反常识，或者违反句子相关的具体的背景信息。常识或背景信息一般是字面上没有的信息，是字面外的信息，有时需要在字面信息基础上借助推理来获得。</span></p></li><li><p><span>判断方法：判断所选取片段对应的场景是否符合常识，分别填入空间实体、空间方位和空间义相关事件这三个要素(</span><strong><span>S-P-E要素</span></strong><span>)。</span></p></li><li><p><span>例子</span></p><ul><li><p><font style="font-family:楷体"><span>示例9 他信步而行，走了半天，又到了长江</span><font color="red"><strong><span>里边</span></strong></font><span>，沿着江边大路，向下游行去。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“搭配不当”，搭配不当片段为“长江”和“里边”。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“不符合常识或背景信息”， 异常片段为：“S:他，P:到长江里边，E:走”。</span></span></p></li><li><p><font style="font-family:楷体"><span>示例10 衬衣</span><font color="red"><strong><span>四面</span></strong></font><span>还有一件外衣。</span></font></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“不符合常识或背景信息”， 异常片段为：“S:外衣，P:衬衣四面，E:有”。</span></span></p><p><mark><strong><span>注意：</span></strong><span>P不能只填写“里面”，只有依附在某个名词上边，才能够明确表述清楚空间实体的位置。</span></mark></p></li><li><p><font style="font-family:楷体"><span>示例11 我拉着柳青的手，再进五号院，上三楼，进我的实验室。柳青坐在靠窗的办公桌上，我坐她对面，我给她一个五百毫升的玻璃烧杯，也给我自己一个五百毫升的玻璃烧杯，从冰箱</span><font color="red"><strong><span>外</span></strong></font><span>拿出七十度的医用酒精，各倒了小半烧杯。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“搭配不当”，搭配不当的片段为“冰箱”和“外”。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“不符合常识或背景信息”，异常片段为：“S:医用酒精，P:从冰箱外，E: 拿出”。</span></span></p></li><li><p><font style="font-family:楷体"><span>示例12 杨宁把脚泡在山泉水</span><font color="red"><strong><span>后</span></strong></font><span>，感觉一阵清凉。暮然抬头，望见西瓜铺在秋天的田地里，已经有拳头那么大。它们伸头探脑地连成一大片，已是一派丰收的景象。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“不符合常识或背景信息”，异常片段为：“P:后”。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“不符合常识或背景信息”，异常片段为：“S:脚，P:在山泉水后，E:泡”。</span></span></p></li><li><p><font style="font-family:楷体"><span>示例13 她放开他，他便沉入黑水</span><font color="red"><strong><span>前</span></strong></font><span>，他就像一个幽灵隐退到非物质的飞机里去了。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“不符合常识或背景信息”，异常片段为：“P:前”。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“不符合常识或背景信息”，异常片段为：“S:他，P:黑水前，E: 沉入”。</span></span></p></li><li><p><font style="font-family:楷体"><span>示例14 上海市嘉定区人民检察院检察员沈文文、被告人赵兰海到庭参加诉讼公诉机关指控，2020年11月18日19时40分许，被告人赵兰海酒后驾驶号牌号码为苏A8XXXX的小型轿车沿本区外冈镇外钱公路由西向东行驶至</span><font color="red"><strong><span>边</span></strong></font><span>青松公路后右转，至外青松公路、外钱公路南约100处，被民警查获。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“不符合常识或背景信息”，“边青松公路”与常识或背景信息不符：上海市嘉定区不存在“边青松公路”，正确名称为“外青松公路”。</span></p><p><strong><span>注意：</span></strong><span>在判断空间语义异常时，</span><strong><span>不用</span></strong><span>考虑跟专名相关的事实性错误。在这个句子中，只需要考虑其他错误原因。</span></p></li><li><p><font style="font-family:楷体"><span>示例15 打开西宁的卫星遥感地图，南川河、北川河、西川河从</span><font color="red"><strong><span>北</span></strong></font><span>、北、西三方汇入，在城区形成湟水河，自西向东穿城而过。西宁这座城市，也在群山中沿着水系拓展。</span></font></p><p><strong><span>错误标注</span></strong><span>：归因为“不存在异常”。</span></p><p><strong><span>错误标注</span></strong><span>：归因为“语义冲突”，语义冲突的片段为“北”和“北”。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“不符合常识或背景信息”，异常片段为：“S:南川河，P:从北，E:汇入”。</span></span></p><p><strong><span>解释：</span></strong></p><p><span>	</span><span>1）标注者选择“不存在异常”，可能是认为这句话中的信息涉及到专业领域知识。但是，需要强调的是，这个句子中的问题，不需要借助专业知识，仅从字面上也可以察觉到（按照常识去推理）。</span></p><p><span>	</span><span>2) 3个空间语义相关事件融合到一个小句中表达：南川河、北川河、西川河从北、北、西三方汇入。空间语义相关事件1：南川河从北汇入; 空间语义相关事件2：北川河从北汇入; 空间语义相关事件3：西川河从西汇入。显然，是空间语义相关事件1违反常识（事实）：南川河应该是从南汇入。</span></p></li></ul></li></ul><h4 id='4-选项之间的区别'><strong><span>4. 选项之间的区别</span></strong></h4><ul><li><p><span>“语义冲突”与“不符合常识或背景信息”的区别</span></p><ul><li><p><span>区别：</span></p><p><span>1）存在语义冲突的文本片段在有空间语义异常的文本中可以直接找到；常识或背景信息则是字面上没有的信息，是文本外的信息，有时候需要借助推理才能获得。</span></p><p><span>2）语义冲突：文本内能找到两处可对比的空间语义相关事件的描述（事件语义要素越完整越好）。不符合常识：文本能找到一处空间语义相关事件的描述，该事件中的语义要素不满足谓词所代表的空间语义相关事件对语义要素的要求。</span></p></li><li><p><span>例子</span></p><p><font style="font-family:楷体"><span>示例16 保罗的眼睛湿润了。他下了车，把小弟弟抱进了车</span><font color="red"><strong><span>外</span></strong></font><span>，那个男孩眼睛里闪着喜悦的光芒，也坐了进去，他们三个人一起过了一个难忘的夜晚。</span></font></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“</span><strong><span>不符合常识或背景信息</span></strong><span>”，异常片段为：“S:小弟弟，P:车外，E:抱进”。</span></span></p><p><strong><span>解释</span></strong><span>：小弟抱进了车外：“车外”不满足“抱进”事件的方位语义要素的要求。相关的常识：抱进必须进入一个空间内，而不可能是空间外。</span></p><p><font style="font-family:楷体"><span>示例17 周游叫住他，就让他在房间里给林红打电话……宋刚说在房间</span><font color="red"><strong><span>旁</span></strong></font><span>打电话会影响周边看电视剧的</span></font><span>。</span></p><p><strong><span>错误标注</span></strong><span>：归因为”在房间旁打电话“与“</span><strong><span>常识或背景信息不符</span></strong><span>”。具体的常识或背景信息描述是：</span><em><span>前文都是”在房间里“，这里也应该是在房间里</span></em><span>。</span></p><p><span style="background:#f9eda6;"><strong><span>正确标注</span></strong><span>：归因为“</span><strong><span>语义冲突</span></strong><span>”，语义冲突的片段为：“S1:宋刚，P1:在房间里，E1:打电话”与“S2:宋刚，P2:在房间旁，E2:打电话”。</span></span></p><p><mark><strong><span>注意：</span></strong><span>E 可以是单个动词，也可以是动词词组。至于用什么语言形式来表达，以描述清楚事件的基本性质为准。他打电话。其中“打电话”是E，表达了基本清楚的事件。检验方式是：我们可以说发生了一个“打电话”事件。在这个例子中，“打”不能独立指称事件，我们不能说发生了一个“打”事件，来表达“打电话”这个事情。</span></mark></p><p><strong><span>解释</span></strong><span>：这段话中存在异常的原因是有两个文本片段语义冲突，即“他在房间里给林红打电话”与“宋刚在房间旁打电话”冲突。这两个片段都是这段话字面上可以找到的，不需要到字面外，通过读者的常识、认知和推理来获取，因此，这段空间语义异常的原因，不应归入“不符合常识或背景信息”这个类型，而是文中存在两处有语义冲突的片段。</span></p><p><span>换言之，标注者如果可以</span><strong><span>根据上下文信息</span></strong><span>，而不是字面外的常识或背景信息，来做出判断，就不需要选择归因为“不符合常识或背景信息”。</span></p></li></ul></li><li><p><span>“搭配不当”与“语义冲突”的区别</span></p><ul><li><span>区别：“搭配不当”两个文本片段一般是相邻关系；“语义冲突”的两个文本片段则可能距离较远。参见上文的示例1-3，示例4。</span></li></ul></li><li><p><span style="background:#f9eda6;"><span>“搭配不当”与“不符合常识或背景信息”的区别</span></span ></p><ul><li><span style="background:#f9eda6;"><span>区别：不符合常识指不符合生活常识，不包括不符合</span><strong><span>语言常识</span></strong><span>。生活常识就是人在生活中积累的关于世界（自然界、人类社会等）的经验。这里的“</span><strong><span>背景信息</span></strong><span>”指没有在文本中出现，可以从文本中表述的内容推知的相关信息。</span></span><span> </span></li></ul></li></ul><h4 id='5-其他说明'><strong><span>5.</span></strong><span> </span><strong><span>其他说明</span></strong></h4><ul><li><p><span>关于选择多个原因的参考标准</span></p><ul><li><span>参照task2标注指南的</span><strong><span>多选适用情形</span></strong><span>进行判断；</span></li><li><span>如果觉得一个选项不足以说明问题，需要从多个角度来说明造成异常的原因，则多选；</span></li><li><span>如果觉得有多个选项都可能适用，都有道理，难以决定选取哪一个不选哪一个，则多选。</span></li></ul></li><li><p><span style="background:#f9eda6;"><span>“不适合用于计算机空间语义理解”有可能跟异常归因选项共存</span></span></p><ul><li><p><span style="background:#f9eda6;"><strong><span>适用情形</span></strong><span>：一个句子</span><strong><span>整体上</span></strong><span>有空间语义，但是句中有一处或多处跟分词错误相关的片段（一般含有方位词成分）与其前后相邻文本片段，存在“搭配不当”的问题。这种情况下，标注者需要先选择“搭配不当”，标识出搭配不当之处。然后再点选“不适合用于计算机空间语义理解”。这种标注方式意味着：</span><strong><span>并不是</span></strong><span>整句都不适合用于计算机空间语义理解，而是表示：句中某个特定位置的错误，导致搭配不当，不适合用于计算机空间语义理解任务。</span></span></p><p><font style="font-family:楷体"><span>示例18 将摇船</span><font color="red"><strong><span>后</span></strong></font><span>高后</span><mark><span>低支</span></mark><span>在近水之地，一人在旁将金沙一撮箕一撮箕地倒入摇箩中。</span></font></p><p><strong><span>标注：</span></strong><span> “后高”与“后低支”搭配不当和“不适合用于计算 机空间语义理解”。</span></p><p><strong><span>注意：</span></strong><span>这里“低支”被错分为一个词。处理原则为：对于这类存在分词错误的句子，跟分词错误相关的片段（一般含有方位词成分）与其前后相邻文本片段，存在“搭配不当”的问题。先标注搭配不当，再选择“不适合用于计算机空间语义理解”，两个选项都要标注。</span></p></li></ul></li><li><p><span>标注时选定的异常片段，要确保该片段在语法上是独立的单位，在语义上有完整性</span></p><ul><li><p><span style="background:#f9eda6;"><span>独立语法结构不需要从“语法学知识”的角度去判断。从纯粹的自然语感角度判断就可以了。</span>
+<span>比如“北京大学学生会”是一个独立的语法结构。但“北京大”不是，“大学学”不是，“学学生”也不是。一个文本片段在一定的上下文语境中，是不是一个独立的单位，是很容易判断的。</span></span></p></li><li><p><span>例如：“把头藏到翅膀”与“里面” 搭配不当。这个归因中，“把头藏到翅膀”不是独立的语法单位，语义不完整、不清楚。两个存在冲突的异常片段应选择“把头”与“藏到翅膀里面”。其中“把头”是一个介词词组，语法上是独立的单位。“藏到翅膀里面”是一个动词词组，语法上也是独立的单位。这两个独立的语法单位，语义也相对完整。</span>
+<strong><span>注意</span></strong><span>：独立的单位不要求一定能单说，而是指该单位是一个完整的词或词组。前面错误标注的片段中“把头藏到翅膀”就不是一个独立的语法单位，因为“到翅膀”这个片段，“到”是介词，后面要求跟一个处所词或处所性的名词词组组合，不能直接跟普通名词“翅膀”组合，“到翅膀”是不完整的无法独立的词组，必须借助方位成分，形成“到翅膀上”“到翅膀里”等，才成为一个独立的词组。</span></p></li><li><p><span style="background:#f9eda6;"><span>几种特殊结构或现象的处理方式</span></span></p><ul><li><p><span style="background:#f9eda6;"><span>实体并列</span></span></p><p><font style="font-family:楷体"><span>示例19 这时我看到那个司机也跳到拖拉机上去了，他在车斗里坐下来后还在朝我哈哈大笑。我看到他手里抱着的是我那个红色的背包。他把我的背包抢走了。背包</span><font color="red"><strong><span>后</span></strong></font><span>有</span><mark><span>我的衣服和我的钱，还有食品和书</span></mark><span>。 </span></font></p><p><span style="background:#f9eda6;"><strong><span>标注：</span></strong><span> 归因为“</span><strong><span>不符合常识或背景信息</span></strong><span>”，异常片段为：“S:</span><mark><span>我的衣服</span></mark><span>，P:背包后，E:有”。</span></span></p><p><strong><span>注意：</span></strong><span>如果空间实体是由并列结构构成的，空间实体S不用列全，只写一个即可。</span></p></li><li><p><span style="background:#f9eda6;"><span>排比句</span></span></p><p><font style="font-family:楷体"><span>示例20 饭桌</span><strong><span>上</span></strong><span>的非遗美食、校园</span><strong><span>里</span></strong><span>的非遗课堂、商场</span><strong><span>里</span></strong><span>的非遗文创、公园</span><font color="red"><strong><span>后</span></strong></font><span>的非遗活动、舞台</span><strong><span>上</span></strong><span>的非遗演出……广州市民总能在日常生活中感受非遗之美。 </span></font></p><p><strong><span>标注：</span></strong><span> 归因为“语义冲突”，语义冲突的片段为：“S1:非遗活动，P1:公园后”与“S2:非遗美食，P2:饭桌上”。</span></p><p><strong><span>注意：</span></strong><span>单独看“公园后的非遗活动”，是可以成立的。但是，放在一连串的排比句中，“公园后的非遗活动”因为其表达的是不常见的场景，跟其他常见的空间场景，就形成了明显的冲突。</span></p></li><li><p><span style="background:#f9eda6;"><span>虚拟</span></span></p><p><font style="font-family:楷体"><span>示例21 我的脑海里忽然涌现出这样一幅画面:那些扶贫干部从我的书稿</span><strong><span>里</span></strong><span>站了起来，那些参加南昌起义的战士也从照片</span><font color="red"><strong><span>旁</span></strong></font><span>走了出来，他们在南昌的星空</span><strong><span>下</span></strong><span>相遇了。我自己就像一位通信员，为今天的英雄和昨天的英雄送信，而他们的信上写着同样的字眼:奋斗、初心、使命、牺牲、美好、幸福…… </span></font></p><p><span style="background:#f9eda6;"><strong><span>标注：</span></strong><span> 归因为“语义冲突”，语义冲突的片段为：“S1:扶贫干部，P1:从我的书稿里，E1:站了起来”与“S2:战士，P2:从照片旁，E2:走了出来”。</span></span></p><p><strong><span>注意1：</span></strong><span>该例子具有排比性质，排比项提供了一个约束条件：句子中大部分场景都是大概率、常规空间场景，但有一个空间场景是小概率，不常见的空间场景，因而显得比较异常。</span></p><p><mark><strong><span>注意2：</span></strong><span>这个例子中&lt;S1，P1，E1&gt;与&lt;S2，P2，E2&gt;整体上而不是其中某一组对应要素构成冲突，因此在语义冲突片段描述中，不需要遵守&lt;S1，P1，E1&gt;与&lt;S2，P2，E2&gt;中只有一组对应要素构成冲突（不同），其他两组要素一般一致的原则。</span><strong><span>即这里的S1与S2，P1与P2，E1与E2全部不相同</span></strong><span>。</span></mark></p></li><li><p><span style="background:#f9eda6;"><span>“不符合常识或背景信息”--</span><mark><font size="3"><span>违反言语行为常识</span></font></mark></span></p><p><font style="font-family:楷体"><span>示例22 客人小心翼翼递过去一张字条。贝多芬戴上眼镜专注地凝视了一会儿:“好，你们</span><mark><span>竟敢</span></mark><span>到兽穴</span><font color="red"><strong><span>外</span></strong></font><span>来抓老狮子的毛。&quot;他说，虽然严肃，但脸上浮现出善良的微笑，“你们很勇敢……可是你们不容易了解我，也很难使我听懂你们的话。过来坐在我旁边，你们知道我听不见的。&quot;</span></font></p><p><span style="background:#f9eda6;"><strong><span>标注：</span></strong><span> 归因为“不符合常识或背景信息”，异常片段为：“S:你们，P:到兽穴外，E:竟敢抓老狮子的毛 ”。</span></span></p><p><strong><span>注意：</span></strong><span>这个异常，主要原因是“竟敢”这个超预期副词的影响。如果没有“竟敢”，说“你们到兽穴外抓老狮子的毛”，本身的空间义是说得通的。</span><strong><span>这个例子说明，有的异常属于违反“言语行为常识” ，跟一般违反“生活常识”的异常不完全一样。</span></strong></p><p><span>这个例子相关的生活常识是：到兽穴里抓老狮子的毛最危险，而到兽穴外抓老狮子的毛没有到最危险的程度。如果说“一个人竟敢做最危险的事，难以想象”，这是比较正常的说法。但如果一个人做的不是最危险的事，只是做普通的，比较危险的事，那么，用“竟敢”来表达“难以想象”，就不正常了。</span></p></li></ul></li></ul></li></ul><p><font style="font-family:微软雅黑"><font size="2"><span>文档最近更新时间：2022-05-27</span></font></font></p><p><font style="font-family:微软雅黑"><font size="2"><span>北京大学SpaCE2022评测任务课题组 </span></font></font></p><p><font style="font-family:微软雅黑"><font size="2"><span>本项目得到国家科技创新2030“新一代人工智能”重大项目——“以自然语言为核心的语义理解理论、模型与方法”（项目号：2020AAA0106701）支持。</span></font></font></p></div></div>
+</body>
+</html>
