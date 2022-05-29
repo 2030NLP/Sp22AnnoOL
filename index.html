@@ -63,17 +63,22 @@
               :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
             >切换到 task1</a>
             <a class="nav-link" href="#" @click="()=>{setTask('t2')}"
-              v-if="newThings.begun && newThings?.theUser?.currTask!='t2'"
-              :if="newThings.begun && newThings?.theUser?.currTask!='t2'"
+              v-if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
+              :if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
             >切换到 旧版task2</a>
             <a class="nav-link" href="#" @click="()=>{setTask('t2r')}"
               v-if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
               :if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
-            >切换到 新版task2</a>
+            >切换到 task2</a>
             <a class="nav-link" href="#" @click="()=>{setTask('t4')}"
-              v-if="newThings.begun && newThings?.theUser?.currTask!='t4'"
-              :if="newThings.begun && newThings?.theUser?.currTask!='t4'"
+              v-if="newThings.begun && newThings?.theUser?.currTask!='t4' && isChecker()"
+              :if="newThings.begun && newThings?.theUser?.currTask!='t4' && isChecker()"
             >切换到 精标</a>
+            <a class="nav-link" href="#" @click="()=>{}"
+              v-if="isChecker()"
+              :if="isChecker()"
+              title="管理员可以看到 旧版 task2 和 精标，普通标注员看不到"
+            ><small>备注</small></a>
             <!-- <a class="nav-link" href="#">配置</a> -->
             <!-- <a class="nav-link" href="#" @click="ctrl.currentPage='setup'" v-if="isChecker()">准备</a> -->
             <!-- <a class="nav-link" href="#" @click="ctrl.currentPage='anno'" v-if="isChecker()">标注</a> -->

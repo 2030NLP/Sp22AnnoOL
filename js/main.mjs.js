@@ -1,7 +1,7 @@
 
 // 基本信息 变量
 const APP_NAME = "Sp22-Anno";
-const APP_VERSION = "22-0527-1520";
+const APP_VERSION = "22-0529-1934";
 const PROJ_DESC = "SpaCE2022";
 const PROJ_PREFIX = "Sp22";
 
