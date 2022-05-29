@@ -297,7 +297,10 @@ const genModeSection = (__pack) => {
       //
       div({'class': "text-muted small"}, [
         h("p", null, ["标注前，请仔细阅读 ", ha("最新标注规范", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide.html"), " 以及 ", ha("FQA", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html"), " 。"]),
-        h("p", null, ["若遇到较难判断的情况，首先请看 ", ha("几种特殊现象的处理方式", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html#5-几种特殊现象的处理方式"), " ，若仍难以判断，请在群中提问讨论，谢谢。"]),
+        h("p", null, ["要点提示："]),
+        h("p", null, ["① S-P-E 三要素不需要按照原文顺序排列，拼接后的句子不需要通顺。"]),
+        h("p", null, ["② S空间实体是与P、E直接关联的实体，而不一定是主语和施事，如“小明把课本放到桌上”中的S是“课本”而不是“小明”。"]),
+        h("p", null, ["③ 若遇到较难判断的情况，首先请看 ", ha("几种特殊现象的处理方式", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html#5-几种特殊现象的处理方式"), " ，若仍难以判断，请在群中提问讨论，谢谢。"]),
       ]),
 
       // 通用结束按钮区

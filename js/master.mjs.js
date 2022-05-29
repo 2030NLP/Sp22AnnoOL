@@ -680,7 +680,7 @@ const RootComponent = {
     });
 
     const sortUserAnnos = (user) => {
-      userAnnos.list = lo.sortBy(user.allAnnos.map(it=>spDB.anno(it)), [annoSortFn, it=>(-it?.batch)]);
+      userAnnos.list = lo.sortBy((user?.allAnnos??[]).map(it=>spDB.anno(it)), [annoSortFn, it=>(-it?.batch)]);
     };
 
     const annoSortFn = (anno) => {
