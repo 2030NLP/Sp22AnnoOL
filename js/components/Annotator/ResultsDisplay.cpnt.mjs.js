@@ -140,7 +140,7 @@ export default {
       (props.annotations?.map?.(
         annot=>[
           !annot.hidden ? h(BsBadge, {
-            class: [props.eachClass, {'d-none': annot.hidden}],
+            class: [props.eachClass, {'d-none': annot.hidden}, "lh-base"],
             key: annot.idx,
             title: props.showTitleDetail ? JSON.stringify(annot) : null,
             'data-mode': annot.mode,

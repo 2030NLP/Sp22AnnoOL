@@ -5,6 +5,32 @@ import {
 } from './VueShadow.mjs.js';
 import { CMR } from './Shadow.mjs.js';
 
+const ha = (children, href, title, targetBlank) => {
+  targetBlank = targetBlank?(!!targetBlank):true;
+  return h("a", {
+    'href': href??"#",
+    'title': title??"",
+    'target': targetBlank?'_blank':undefined,
+  }, children);
+};
+const muted = text => span({'class': "text-muted"}, text);
+const lightBtn = (icon, text, title, attrs) => {
+  attrs = attrs ?? {};
+  attrs['class']=["btn-sm", attrs.class];
+  attrs['title']=title??text;
+  // return btn({'class': "btn-sm", title: title??text}, [icon, icon?" ":null, muted(text)], "outline-secondary");
+  return btn(attrs, [icon, icon?" ":null, muted(text)], "----light");
+};
+const bi = (name) => {
+  return h("i", {'class': ["bi", `bi-${name??'square'}`]});
+};  // https://icons.getbootstrap.com/
+const ti = (name) => {
+  return h("i", {'class': ["ti", `ti-${name??'square'}`]});
+};  // https://tabler-icons.io
+const vr = () => h("div", {'class': "vr"});
+
+
+
 const 设计 = `
 
 `;
@@ -88,7 +114,7 @@ const editorDefault = {
 
 const PropertyItem = {
   props: ['slot', 'data'],
-  emits: [],
+  emits: ['set-property'],
   component: {
     editorDefault,
   },
@@ -125,6 +151,7 @@ const PropertyItem = {
       // console.log([slotSettings, data]);
       newDataWrap['data'][slotSettings?.['name']??"未知字段"] = data;
       localData.currentStage = stages['①呈现数据内容'];
+      ctx.emit('set-property', newDataWrap['data']);
     };
     const onCancel = () => {
       localData.currentStage = stages['①呈现数据内容'];
@@ -214,13 +241,17 @@ const PropertyItem = {
 
 const ObjectPanel = {
   props: ['data', 'typeDef'],
-  emits: ['save', 'delete', 'close'],
+  emits: ['save-object', 'delete-object', 'close-object'],
   component: {
     PropertyItem,
   },
   setup(props, ctx) {
 
     const localData = reactive({});
+
+    const localObjectShadow = reactive({
+      'data': JSON.parse(JSON.stringify(props?.['data']??{})),
+    });
 
     const getSlotData = (slot) => {
       let slotName = slot.name??"__";
@@ -230,17 +261,27 @@ const ObjectPanel = {
 
     const slots = computed(() => (props?.typeDef?.slots??[]));
 
+    const onSetProperty = (xx) => {
+      Object.assign(localObjectShadow.data, xx);
+    };
+
     return () => div({'class': "border p-2"}, [
       `${props?.typeDef?.name??"未知类型"}`,
 
-      v(slots).map(slot => h(PropertyItem, {
+      objectFace(localObjectShadow.data),
+
+      v(slots).map((slot, idx) => h(PropertyItem, {
+        'key': idx,
         "data": getSlotData(slot),
         "slot": slot,
+        "onSetProperty": (xx)=>{onSetProperty(xx);},
       })),
 
       btn({
         'class': "btn-sm",
-        'onClick': ()=>{},
+        'onClick': ()=>{
+          ctx.emit("save-object", localObjectShadow.data);
+        },
         'disabled': false,
       }, "保存", "outline-secondary"),
 
@@ -268,16 +309,72 @@ const ObjectPanelList = {
   },
   setup(props, ctx) {
     return () => div({
-      'class': "border p-2",
-    }, props['objects'].map(obj => h(ObjectPanel, {
+      'class': "vstack gap-2",
+    }, props['objects'].map((obj, idx) => h(ObjectPanel, {
+      "key": idx,
       "data": obj['data'],
       "typeDef": obj['typeDef'],
+      "onSaveObject": (obj)=>{
+        console.log(obj);
+      },
     })));
   },
 };
 
 
+const AllObjectsPanel = {
+  props: ['objects'],
+  emits: [],
+  component: {},
+  setup(props, ctx) {
+    return () => div({'class': "vstack gap-2 my-1"}, [
+      div({'class': "h6 mt-3 mb-1"}, ["所有标注对象"]),
 
+      // 陈列盒子
+      div({
+        'class': "__ratio __ratio-21x9 border rounded",
+        'style': "min-height: 1.5em; max-height: 5em;"
+      }, div({'class': "p-1 overflow-auto"}, [
+        div({'class': "d-flex flex-wrap gap-1"}, [
+          ...(props['objects']??[])
+            .filter(it=>it["_type"]!=TpSpan)
+            .map((obj, idx) => btn({'key': idx, 'class': "btn-sm", 'title': JSON.stringify(obj, null, 2)}, [
+              // obj._type,
+              objectFace(obj),
+            ], "light")),
+        ]),
+      ])),
+
+      // 工具
+      div({'class': "btn-toolbar __hstack gap-1"}, [
+        div({'class': "btn-group btn-group-sm"}, [
+          lightBtn(bi("sort-down-alt"), "排序", "按照文本中出现的顺序排序", {
+            'onClick': ()=>{
+              // sortObjects();
+            },
+          }),
+          lightBtn(bi("bar-chart-steps"), "预分析", null, {
+            'onClick': ()=>{
+              // analysisEntities();
+              // analysisEvents();
+              // sortObjects();
+            },
+          }),
+          lightBtn(bi("plus-circle"), "新增", null, {
+            'onClick': ()=>{
+            },
+          }),
+          lightBtn(bi("bug"), "debug", null, {
+            'onClick': ()=>{
+              console.log(props['objects']);
+            },
+          }),
+        ]),
+      ]),
+
+    ]);
+  },
+};
 
 
 
@@ -287,42 +384,50 @@ export default {
   props: [],
   emits: [],
   component: {
+    AllObjectsPanel,
     ObjectPanelList,
   },
   setup(props, ctx) {
-    return () => div({'class': "border p-2"}, h(ObjectPanelList, {
-      'objects': [
-        {
-          "typeDef": {"name": "时间（相对于事件）", "slots": [
-            {"name": "参照事件", "ctrls": [
-              {"type": "单个对象", "config": {
-                "filter": {
-                  "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
-                }}},
-              "多个对象"
-            ], "required": true},
-            {"name": "类型",
-              "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}],
-              "default": {"set": "时间限定符", "spec": "时间"}, "required": true},
-            {"name": "线索文本", "ctrls": ["原文片段"]}
-          ]},
-        },
-        {
-          "typeDef": {"name": "时间（相对于事件）", "slots": [
-            {"name": "参照事件", "ctrls": [
-              {"type": "单个对象", "config": {
-                "filter": {
-                  "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
-                }}},
-              "多个对象"
-            ], "required": true},
-            {"name": "类型",
-              "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}],
-              "default": {"set": "时间限定符", "spec": "时间"}, "required": true},
-            {"name": "线索文本", "ctrls": ["原文片段"]}
-          ]},
-        },
-      ],
-    }));
+    return () => div({'class': "--border --p-2 my-1"}, [
+      div({'class': ""}, [
+        "请按照 ",
+        ha("CSpaceBank 标注规范"),
+        " 进行标注。"]),
+      h(AllObjectsPanel, null, []),
+      h(ObjectPanelList, {
+        'objects': [
+          {
+            "typeDef": {"name": "时间（相对于事件）", "slots": [
+              {"name": "参照事件", "ctrls": [
+                {"type": "单个对象", "config": {
+                  "filter": {
+                    "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
+                  }}},
+                "多个对象"
+              ], "required": true},
+              {"name": "类型",
+                "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}],
+                "default": {"set": "时间限定符", "spec": "时间"}, "required": true},
+              {"name": "线索文本", "ctrls": ["原文片段"]}
+            ]},
+          },
+          {
+            "typeDef": {"name": "时间（相对于事件）", "slots": [
+              {"name": "参照事件", "ctrls": [
+                {"type": "单个对象", "config": {
+                  "filter": {
+                    "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
+                  }}},
+                "多个对象"
+              ], "required": true},
+              {"name": "类型",
+                "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}],
+                "default": {"set": "时间限定符", "spec": "时间"}, "required": true},
+              {"name": "线索文本", "ctrls": ["原文片段"]}
+            ]},
+          },
+        ],
+      }),
+    ]);
   },
 };

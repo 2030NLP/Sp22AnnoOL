@@ -40,6 +40,14 @@ const genModeSection = (__pack) => {
         step_props.value.data.items[optIdx]={};
       };
     };
+    const getOptionItem = (optIdx) => {
+      return step_props.value?.data?.items?.[optIdx];
+    };
+    const touchOptionItem = (optIdx) => {
+      ensureOptionItem(optIdx);
+      return getOptionItem(optIdx);
+    };
+
     const ensureSlot = (optIdx, slotIdx) => {
       ensureOptionItem(optIdx);
       if (!('slots' in step_props.value.data.items[optIdx])) {
@@ -49,13 +57,6 @@ const genModeSection = (__pack) => {
         step_props.value.data.items[optIdx].slots[slotIdx]={};
       };
     };
-    const getOptionItem = (optIdx) => {
-      return step_props.value?.data?.items?.[optIdx];
-    };
-    const touchOptionItem = (optIdx) => {
-      ensureOptionItem(optIdx);
-      return getOptionItem(optIdx);
-    };
     const getSlot = (optIdx, slotIdx) => {
       return step_props.value?.data?.items?.[optIdx]?.slots?.[slotIdx];
     };
@@ -63,10 +64,11 @@ const genModeSection = (__pack) => {
       ensureSlot(optIdx, slotIdx);
       return getSlot(optIdx, slotIdx);
     };
-    // const setSlot = (optIdx, slotIdx, data) => {
-    //   ensureSlot(optIdx, slotIdx);
-    //   step_props.value.data.items[optIdx].slots[slotIdx] = data;
-    // };
+    const setSlot = (optIdx, slotIdx, value) => {
+      ensureSlot(optIdx, slotIdx);
+      step_props.value.data.items[optIdx].slots[slotIdx] = value;
+    };
+
     const 已填 = (optIdx, slotIdx) => {
       return null != getSlot(optIdx, slotIdx)?.tokenarray;
     };
@@ -248,7 +250,7 @@ const genModeSection = (__pack) => {
                     'title': step_props.value?.strings?.[selection_length.value?'insertInstruction':null],
                     'disabled': !touchOptionItem(optIdx).shouldTake,
                   }, touchOptionItem(optIdx).shouldTake ? h(BsBadge, {
-                    'class': ["rounded-pill m-1", {
+                    'class': ["rounded-pill m-1 text-wrap text-break", "lh-base", {
                       "cursor-help": !selection_length.value,
                     }],
                     'title': step_props.value?.strings?.[selection_length.value?'insertInstruction':'selectInstruction'],
@@ -263,10 +265,11 @@ const genModeSection = (__pack) => {
                 if (已填(optIdx, slotIdx)&&touchOptionItem(optIdx).shouldTake) {
                   let text = idxesToText(getSlot(optIdx, slotIdx)?.tokenarray??[]);
                   return div({'class': "form-control d-inline-block text-center text-break", 'key': slotIdx}, [h(BsBadge, {
-                    'class': "rounded-pill m-1 text-wrap text-break",
+                    'class': ["rounded-pill m-1 text-wrap text-break", "lh-base"],
                     'canRemove': true,
                     'onRemove': (event)=>{
                       touchSlot(optIdx, slotIdx).tokenarray = null;
+                      setSlot(optIdx, slotIdx, null);
                     },
                   }, [
                     text, selection_length.value ? h("span", {

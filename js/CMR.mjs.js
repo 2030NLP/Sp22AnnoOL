@@ -1,5 +1,5 @@
 class CMR {
-  // version: 0.5.0.220525
+  // version: 0.5.0.220530
   constructor() {
     this.prefabs = [];
     this.types = {};
