@@ -138,7 +138,7 @@ export default {
 
     return () => h("div", { },
       (props.annotations?.map?.(
-        annot=>[
+        (annot, idx)=>[
           !annot.hidden ? h(BsBadge, {
             class: [props.eachClass, {'d-none': annot.hidden}, "lh-base"],
             key: annot.idx,
@@ -147,6 +147,7 @@ export default {
             'data-label': annot.label,
             canClose: props.canClose,
             onClose: props.canClose ? (()=>{
+              annot._idx_to_delete = idx;
               ctx.emit("close", annot);
             }) : (()=>{}),
           }, makeChildren(annot)) : null,

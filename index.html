@@ -62,10 +62,10 @@
               v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
               :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
             >切换到 task1</a>
-            <a class="nav-link" href="#" @click="()=>{setTask('t2')}"
+            <!-- <a class="nav-link" href="#" @click="()=>{setTask('t2')}"
               v-if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
               :if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
-            >切换到 旧版task2</a>
+            >切换到 旧版task2</a> -->
             <a class="nav-link" href="#" @click="()=>{setTask('t2r')}"
               v-if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
               :if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
@@ -345,9 +345,9 @@
               :show-sub="false"
               :show-index="false"
               :show-title-detail="false"
-              :can-close="false"
+              :can-close="true"
               :wrap="true"
-              @close="(annot)=>{win.console.log(annot)}"
+              @close="(annot)=>{win.console.log(annot);example.annotations.splice(annot._idx_to_delete,1);alertBox.pushAlert('别忘了保存', 'warning')}"
             ></results-display>
           </div>
         </div>
