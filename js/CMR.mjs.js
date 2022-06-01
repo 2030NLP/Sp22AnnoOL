@@ -1,3 +1,14 @@
+
+const uuid = () => {
+  // Author: Abhishek Dutta, 12 June 2020
+  // License: CC0 (https://creativecommons.org/choose/zero/)
+   let temp_url = URL.createObjectURL(new Blob());
+   let uuid_s = temp_url.toString();
+   let uuid = uuid_s.substr(uuid_s.lastIndexOf('/') + 1);  // remove prefix (e.g. blob:null/, blob:www.test.com/, ...)
+   URL.revokeObjectURL(temp_url);
+   return uuid;
+}
+
 class CMR {
   // version: 0.5.0.220530
   constructor() {
@@ -12,6 +23,7 @@ class CMR {
       "#": "#",
       "$": "$",
     };
+    this.uuid = uuid();
   }
   dict() {
     return Object.fromEntries(this.objects.map(obj => [obj._id, obj]));
@@ -44,6 +56,8 @@ class CMR {
     this.objects.splice(idx, 1);
   }
 
+
+
   assignDefinitions(definitions) {
     for(let def of definitions) {
       if (def['_type']=="@Type") {
@@ -54,6 +68,31 @@ class CMR {
       };
     };
   }
+
+
+
+  initDefinition(definition) {
+    // 各种类型的定义
+
+    for (let [kk, ll] of definition['label_sets']) {
+      for (let vv of ll) {
+        let label = {
+          'domain': kk,
+          'face': vv,
+        };
+        if (definition['namespace']) {label['namespace'] = definition['namespace'];};
+      };
+    };
+
+  }
+
+  initData(data) {
+    // 标注结果，各种对象
+  }
+
+
+
+
 }
 
 export default CMR;

@@ -102,6 +102,9 @@ class StepControl {
     this.ewp.example.annotations = [];
     this.cancelStep(ref);
   }
+  // async continueStep(ref) {
+  //   await this.goRefStep(ref, null);
+  // }
 
   dealWithData(data, fn) {
     if (!this?.ewp?.example?.annotations?.length) {

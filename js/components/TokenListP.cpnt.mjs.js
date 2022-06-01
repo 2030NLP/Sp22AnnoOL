@@ -41,7 +41,15 @@ const TokenListP = {
             'right-space': true,
             'should-notice': token.word=='前'||token.word=='后',
           },
-          'title' : this.showtitle ? `idx: ${token.idx}\npos: ${token.pos}${token?.to?.word?.length?'\norigin: '+token.word:''}` : null,
+          'title' : this.showtitle ? `idx: ${
+            token.idx
+          }\npos: ${
+            token.pos
+          }${
+            token?.to?.word?.length?'\norigin: '+token.word:''
+          }${
+            token?.from?.word?.length?'\nfrom: '+token.from.word:''
+          }` : null,
           'data-title' : `idx: ${token.idx}\npos: ${token.pos}${token?.to?.word?.length?'\norigin: '+token.word:''}`,
           'data-idx' : token.idx,
           'data-pos' : token.pos,
@@ -51,15 +59,18 @@ const TokenListP = {
           'data-in-list' : this.inList(token),
           'data-selecting' : token?._ctrl?.selecting,
           'data-selected' : token?._ctrl?.selected,
-          'data-replaced' : token?.to?.word?.length ? true : false,
+          'data-replaced' : token?.to?.word?.length ? true : token?.from!=null ? true : false,
           'data-word' : token.word,
           'data-to-word' : token?.to?.word,
+          'data-from-word' : token?.from?.word,
           'onMousedown' : (evt)=>{this.onTknDown(token, evt)},
           'onMouseenter' : (evt)=>{this.onTknEnter(token, evt)},
           'onMouseout' : (evt)=>{this.onTknOut(token, evt)},
           'onMouseup' : (evt)=>{this.onTknUp(token, evt)},
         }, [
-          this.showreplaced ? (token?.to?.word ?? token.word) : (token.word),
+          this.showreplaced ? (token?.to?.word ?? token.word)
+            : this.showfrom ? (token?.from?.word ?? token.word)
+            : (token.word),
         ],
       )),
     );

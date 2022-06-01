@@ -658,6 +658,73 @@ class Sp22FN {
     return report;
   }
 
+
+
+
+
+  static 将按词切分的语料格式转成按字切分的语料格式但没有id = (it) => {
+    // 将按词切分的语料格式转成按字切分的语料格式但没有id
+    let pp = {
+      version: version,
+      createdAt: JSON.parse(JSON.stringify(new Date())),
+      对应词化id: it.id,
+      tokenType: "char",
+      id: undefined,
+    };
+    let oo = Object.assign(JSON.parse(JSON.stringify(it)), pp);
+    let oldTokens = it?.content?.material?.tokenList??[];
+    let newTokens = [];
+    let nextNewIdx = 0;
+    for (let oldToken of oldTokens) {
+      let newTokenTemplate = {
+        pos: oldToken.pos,
+        autoEntity: oldToken.autoEntity,
+        autoSpatial: oldToken.autoSpatial,
+        word_idx: oldToken.idx,
+      };
+      let oldWord = "";
+      if (oldToken.to==null) {
+        newTokenTemplate.replaced = false;
+        oldWord = oldToken.word;
+      } else {
+        newTokenTemplate.replaced = true;
+        oldWord = oldToken.to.word;
+      };
+
+      for (let ii in oldWord) {
+        let newToken = JSON.parse(JSON.stringify(newTokenTemplate));
+
+        newToken.seg = (oldWord.length==1)?"S"
+          :(oldWord.length-1==ii)?"E"
+          :(0==ii)?"B"
+          :"M";
+
+        newToken.word = oldWord[ii];
+
+        newToken.ii = +ii;
+        newToken.idx = nextNewIdx;
+        nextNewIdx++;
+
+        if (newToken.replaced) {
+          if (oldToken?.to?.word?.length == oldToken?.word?.length) {
+            newToken.from = {word: oldToken.word[ii]};
+          } else {
+            if (newToken.seg=="B") {
+              newToken.from = {word: oldToken.word};
+            } else {
+              newToken.from = {word: ""};
+            };
+          };
+        };
+
+        newTokens.push(newToken);
+      };
+
+    };
+    oo.content.material.tokenList = newTokens;
+    return oo;
+  };
+
 }
 
 export default Sp22FN;

@@ -9,6 +9,18 @@
     "精标": "220525v1"
   },
   "using": "第2期",
+
+
+
+
+
+
+
+
+
+
+
+
   "精标": {
     "startStep": "start",
     "endStep": "end",
@@ -19,77 +31,84 @@
         "mode": "finalResult",
         "props": {
           "instruction": "",
-          "canReset": true,
-          "resetBtn": {
-            "text": "清空并重新标注",
+          "continueBtn": {
+            "text": "继续完善标注",
             "go": "start",
-            "style": "outline-danger"
-          },
-          "__cancelBtn": {
-            "text": "增加标注",
-            "go": "start",
-            "style": "outline-primary"
-          },
-          "nextBtn": {
-            "text": "下一条",
             "style": "outline-primary"
           }
         }
       },
       "start": {
         "ref": "start",
-        "name": "处理异常归因",
+        "name": "开始",
         "mode": "CSpaceBank",
         "props": {
-          "strings": {
-            "instruction": "请按照 CSpaceBank 标注规范进行标注。",
-            "entities": "实体清单",
-            "events": "事件清单",
-            "relations": "空间关系清单",
-            "eddEvent": "添加事件",
-            "eddRelation": "添加空间关系",
-            "entityType": "实体类型",
-            "relationType": "关系类型",
-            "__________": "__________"
-          },
-          "data": {
-            "hidden": true,
-            "items": []
-          },
-          "options": [
-            {
-              "text": "语义冲突",
-              "style": "outline-danger",
-              "actualMode": "doubleSpans",
-              "data": {
-                "parentMode": "CSpaceBank",
-                "actualMode": "doubleSpans",
-                "displayMode": "multiSpans",
-                "label": "ReasonSemanticConflict",
-                "desc": "语义冲突",
-                "tokenarrays": []
-              },
-              "slots": [{"type": "select"}, {"type": "solid-text", "value": "与"}, {"type": "select"}, {"type": "solid-text", "value": "语义冲突"}]
-            }
-          ],
-          "okBtn": {
-            "text": "完成",
-            "go": "end",
-            "style": "outline-success"
-          },
-          "resetBtn": {
-            "text": "重置",
-            "style": "outline-danger"
-          },
-          "__cancelBtn": {
-            "text": "取消",
-            "go": "start",
-            "style": "outline-dark"
+          "go": "end",
+          "strings": {},
+          "data": {},
+
+          "definition": {
+
+            "namespace": "CSpaceBank",
+
+            "label_sets": {
+              "实体虚实性": ["虚", "实"],
+              "时间限定符": ["时间", "开始前", "结束后"],
+              "距离限定符": ["远", "近", "缩短", "加长"],
+              "成员间关系": ["^", "|"],
+              "事件算子": ["~"],
+              "语义角色键": [
+                "施事", "共同施事", "当事", "间接当事",
+                "受事", "系事", "与事", "结果", "对象", "内容",
+                "工具", "材料", "方式", "原因", "目的",
+                "事量", "旧量", "新量", "范围",
+                "起点", "终点", "路径", "方向",
+                "处所", "起始", "结束", "时点", "时段"
+              ]
+            },
+
+            "object_types": []
+
           }
+
         }
       }
     }
   },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   "第2期R": {
     "startStep": "start",
     "endStep": "end",
@@ -223,7 +242,7 @@
                 "names": []
               },
               "minimal": 4,
-              "针对性处理": "语义冲突数量限制",
+              "针对性处理": ["语义冲突数量限制", "检查P是否为单字"],
               "slots": [
                 {"type": "select", "placeholder": "S1"},
                 {"type": "select", "placeholder": "P1"},
@@ -248,6 +267,7 @@
                 "names": []
               },
               "minimal": 2,
+              "针对性处理": ["检查P是否为单字"],
               "slots": [
                 {"type": "select", "placeholder": "S"},
                 {"type": "select", "placeholder": "P"},

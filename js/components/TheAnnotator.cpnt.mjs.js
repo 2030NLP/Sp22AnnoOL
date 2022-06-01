@@ -128,6 +128,7 @@ export default {
       const fnDict = {
         ok: (go)=>{ctx.emit('ok', go)},
         start: (go)=>{ctx.emit('start', go)},
+        continue: (go)=>{ctx.emit('continue', go)},
         // clean: (go)=>{ctx.emit('clean', go)},
         cancel: (go)=>{ctx.emit('cancel', go)},
         reset: (go)=>{ctx.emit('reset', go)},
@@ -136,6 +137,7 @@ export default {
       const disableDict = {
         ok: ()=>false,
         start: ()=>false,
+        continue: ()=>false,
         // clean: ()=>false,
         cancel: ()=>false,
         reset: ()=>false,
@@ -151,6 +153,7 @@ export default {
       return div({ 'class': "col col-12 my-1", }, [
         someBtn(step_props.value?.okBtn, fnDict['ok'], "完成", disableDict['ok']()),
         someBtn(step_props.value?.startBtn, fnDict['start'], "开始", disableDict['start']()),
+        someBtn(step_props.value?.continueBtn, fnDict['continue'], "继续完善", disableDict['continue']()),
         // someBtn(step_props.value?.cleanBtn, fnDict['clean'], "清除", disableDict['clean']()),
         someBtn(step_props.value?.cancelBtn, fnDict['cancel'], "取消", disableDict['cancel']()),
         someBtn(step_props.value?.resetBtn, fnDict['reset'], "重置", disableDict['reset']()),
@@ -212,8 +215,15 @@ export default {
       ...(modeMatch("SpaCE2022_Task2") ? theSpaCE2022_Task2_ModeSection() : []),
       ...(modeMatch("SpaCE2022_Task2R") ? theSpaCE2022_Task2R_ModeSection() : []),
 
-      (modeMatch("CSpaceBank") ? h(CmrUI) : []),
-      ...(modeMatch("CSpaceBank") ? theCSpaceBank_ModeSection() : []),
+      (modeMatch("CSpaceBank") ? h(CmrUI, {
+        'tokenSelector': props.tokenSelector,
+        'selection': props.selection,
+        'stepCtrl': props.stepCtrl,
+        'alertBox': props.alertBox,
+        'step': props.step,
+        'stepProps': step_props.value,
+      }) : null),
+      // ...(modeMatch("CSpaceBank") ? theCSpaceBank_ModeSection() : []),
 
       // 指导语
       // finalResult 模式
@@ -245,6 +255,7 @@ export default {
       modeMatch("finalResult", "selectValue", "interlude", "root") ? generalButtonsDiv({
         'cancel': ()=>{stepCtrl.cancelStep(step_props.value?.cancelBtn?.go)},
         'start': ()=>{stepCtrl.cancelStep(step_props.value?.startBtn?.go)},
+        'continue': ()=>{stepCtrl.cancelStep(step_props.value?.continueBtn?.go)},
         'reset': ()=>{stepCtrl.resetStep(step_props.value?.resetBtn?.go)},
         'next': ()=>{stepCtrl.nextStep(step_props.value?.nextBtn?.go)},
         'ok': ()=>{stepCtrl.goRefStep(step_props.value?.okBtn?.go)},

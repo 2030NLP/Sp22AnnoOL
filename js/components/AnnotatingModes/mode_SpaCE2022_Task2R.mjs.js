@@ -168,13 +168,26 @@ const genModeSection = (__pack) => {
             };
           };
         };
-        if (item.针对性处理=="语义冲突数量限制") {
+        if (item?.针对性处理?.includes?.("语义冲突数量限制")) {
           if (tokenarrays.length < 4) {
             针对性处理标记清单.push("语义冲突片段少于4");
           };
           if (tokenarrays.length == 5) {
             针对性处理标记清单.push("语义冲突片段等于5");
           };
+        };
+        if (item?.针对性处理?.includes?.("检查P是否为单字")) {
+          console.log(slots);
+          let names = slots.map(slot=>slot.name);
+          for (let ii in names) {
+            let name = names[ii];
+            if (['P', 'P1', 'P2'].includes(name)) {
+              if (idxesToText(slots[ii].tokenarray)?.length==1) {
+                针对性处理标记清单.push("P为单字");
+              };
+            };
+          };
+          //
         };
       };
       if (!hasHighlightedToken) {
@@ -194,6 +207,10 @@ const genModeSection = (__pack) => {
         alertBox.pushAlert('语义冲突类选中的文本片段数量不太正常，请检查', 'warning', 5000);
         // return checkResult;
       };
+      if (针对性处理标记清单.includes("P为单字")) {
+        alertBox.pushAlert('P 只有一个字，不太正常，请检查', 'warning', 5000);
+        // return checkResult;
+      };
       // if (hasIntersection) {
       //   alertBox.pushAlert('某条标注中的两个文本片段存在交集，请确认无误再保存', 'warning', 5000);
       // };
@@ -205,6 +222,8 @@ const genModeSection = (__pack) => {
       someKeyString("instruction"),
 
       // options 列出了每个选项的情况
+      // option.minimal  -- 最少填几个槽
+      // option.针对性处理  -- 针对性处理记号数组
       // option.actualMode  -- 实际模式
       // option.data  -- 最后要保存的数据形式
       //   根据 option.data.displayMode 来决定提供什么样的数据格式
@@ -231,6 +250,7 @@ const genModeSection = (__pack) => {
                 let shouldTake = event.target.checked;
                 touchOptionItem(optIdx).shouldTake = shouldTake;
                 touchOptionItem(optIdx).minimal = shouldTake ? option.minimal??0 : undefined;
+                touchOptionItem(optIdx).针对性处理 = shouldTake ? option.针对性处理??[] : undefined;
               },
             })),
             ...option?.slots?.map?.((slot, slotIdx)=>{
@@ -302,9 +322,11 @@ const genModeSection = (__pack) => {
       div({'class': "text-muted small"}, [
         h("p", null, ["标注前，请仔细阅读 ", ha("最新标注规范", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide.html"), " 以及 ", ha("常见问题解答FQA", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html"), " 。"]),
         h("p", null, ["要点提示："]),
-        h("p", null, ["① S空间实体是与 P、E 直接关联的实体，而不一定是主语和施事，如“小明把课本放到桌上”中，如果 P 和 E 分别是“到桌上”和“放”，那么 S 应该是“课本”而不是“小明”。"]),
-        h("p", null, ["② 填写S的优先级为：专有名词 > 普通名词 > 代词。比如如果语料中有表示同一实体的专有名词“小明”和代词“他”，且 P、E 语法上直接关联的成分是“他”，那么此时 S 处应填“小明”而不应填“他”。"]),
-        h("p", null, ["③ 若遇到较难判断的情况，首先请看 ", ha("几种特殊现象的处理方式", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html#5-几种特殊现象的处理方式"), " ，若仍难以判断，请在群中提问讨论，谢谢。"]),
+        h("p", null, ["① 填写标准不是把 S-P-E 拼成一句通顺的话，而是要说清楚 S 是什么，P 在哪儿，E 在干什么。"]),
+        h("p", null, ["② S 空间实体是与 P、E 直接关联的实体，而不一定是主语和施事，如“小明把课本放到桌上”中，如果 P 和 E 分别是“到桌上”和“放”，那么 S 应该是“课本”而不是“小明”。"]),
+        h("p", null, ["③ P 应该描述完整的空间方位信息，通常 ", span({'class': "fw-bold"}, "不应该"), " 只有一个方位词。常见的表达形式请看 ", ha("此处", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide_main.html#212-空间实体的方位-p"), " 。"]),
+        h("p", null, ["④ 填写 S 的优先级为：专有名词 > 普通名词 > 代词。比如如果语料中有表示同一实体的专有名词“小明”和代词“他”，且 P、E 语法上直接关联的成分是“他”，那么此时 S 处应填“小明”而不应填“他”。"]),
+        h("p", null, ["⑤ 若遇到较难判断的情况，首先请看 ", ha("几种特殊现象的处理方式", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement_main.html#5-几种特殊现象的处理方式"), " ，若仍难以判断，请在群中提问讨论，谢谢。"]),
       ]),
 
       // 通用结束按钮区
