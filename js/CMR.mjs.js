@@ -12,9 +12,8 @@ const uuid = () => {
 class CMR {
   // version: 0.5.0.220530
   constructor() {
-    this.prefabs = [];
-    this.types = {};
-    this.labels = {};
+    this.typeDict = {};
+    this.labels = [];
     this.interface = {};
     this.objects = [];
     this.nextId = 0;
@@ -70,24 +69,67 @@ class CMR {
   }
 
 
+  typeOf(object) {
+    let typeFace = object['_type'] ?? object['type'] ?? "";
+    typeFace = typeFace.replace(/^@+/g, "");
+    return this.typeDict[typeFace] ?? {};
+  }
+
+
+  assignObject(object) {
+    this.makeNewObject(object);
+  }
+
+
+  assignObjects(objects) {
+    for (let object of objects) {
+      this.assignObject(object);
+    };
+  }
+
+
+  assignType(type) {
+    if (type.name!=null) {
+      this.typeDict[type.name] = type;
+    };
+  }
+
+
+  assignTypes(types) {
+    for (let type of types) {
+      this.assignType(type);
+    };
+  }
+
+
+  assignLabelSet(label_set, definition) {
+    let [kk, ll] = label_set;
+    for (let vv of ll) {
+      let label = {
+        'domain': kk,
+        'face': vv,
+      };
+      if (definition['namespace']) {label['namespace'] = definition['namespace'];};
+      this.labels.push(label);
+    };
+  }
+
+  assignLabelSets(label_sets, definition) {
+    for (let label_set of label_sets) {
+      this.assignLabelSet(label_set, definition);
+    };
+  }
+
 
   initDefinition(definition) {
     // 各种类型的定义
-
-    for (let [kk, ll] of definition['label_sets']) {
-      for (let vv of ll) {
-        let label = {
-          'domain': kk,
-          'face': vv,
-        };
-        if (definition['namespace']) {label['namespace'] = definition['namespace'];};
-      };
-    };
-
+    this.assignLabelSets(definition?.['label_sets']??[], definition);
+    this.assignTypes(definition?.['object_types']??[], definition);
   }
 
   initData(data) {
     // 标注结果，各种对象
+    this.assignObjects(data?.['objects']??[]);
   }
 
 

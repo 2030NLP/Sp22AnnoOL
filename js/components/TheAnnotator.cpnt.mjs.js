@@ -11,7 +11,7 @@ import gen_CSpaceBank_ModeSection from './AnnotatingModes/mode_CSpaceBank.mjs.js
 import CmrUI from './AnnotatingCMR/CmrUI.cpnt.mjs.js';
 
 export default {
-  props: ["step", "engine", "tokenSelector", "stepCtrl", "tokens", "selection", "alertBox", "modifiedText"],
+  props: ["example", "step", "engine", "tokenSelector", "stepCtrl", "tokens", "selection", "alertBox", "modifiedText"],
   emits: ["web-next", "web-save", "web-save-and-next", "ok", "start", "clean", "cancel", "reset", "next", "add-to-list", "clear-selection", "option"],
   component: {
     BsBadge,
@@ -220,6 +220,7 @@ export default {
         'selection': props.selection,
         'stepCtrl': props.stepCtrl,
         'alertBox': props.alertBox,
+        'example': props.example,
         'step': props.step,
         'stepProps': step_props.value,
       }) : null),

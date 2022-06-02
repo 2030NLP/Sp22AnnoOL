@@ -443,8 +443,8 @@ const AllObjectsPanel = {
       // 陈列盒子
       div({
         'class': "__ratio __ratio-21x9 border rounded overflow-auto",
-        'style': "min-height: 1.5em; max-height: 5em;"
-      }, div({'class': "p-1 overflow-auto"}, [
+        'style': "min-height: 1.5em; max-height: 12em;"
+      }, div({'class': "p-1"}, [
         div({'class': "d-flex flex-wrap gap-1"}, [
           ...(props['objectWraps']??[])
             .map((objWrap, idx) => btn({
@@ -562,7 +562,7 @@ const FinalButtonGroup = {
 
 
 export default {
-  props: ['tokenSelector', 'selection', 'stepCtrl', 'alertBox', 'step', 'stepProps'],
+  props: ['tokenSelector', 'selection', 'stepCtrl', 'alertBox', 'example', 'step', 'stepProps'],
   emits: ['save', 'reset'],
   component: {
     AllObjectsPanel,
@@ -574,62 +574,49 @@ export default {
   setup(props, ctx) {
     const reactiveCMR = reactive(new CMR);
     const init = () => {
+
       reactiveCMR.initDefinition(props?.['stepProps']?.['definition']);
-      reactiveCMR.initData(props?.['stepProps']?.['data']);
+      const existedData = props?.['example']?.['annotations']?.filter?.(it=>it.mode==step.mode)?.[0]?.['objects']??[];
+      reactiveCMR.initData({'objects': [...existedData, {'type': "时间（相对于事件）"}, {'type': "时间（相对于事件）"}]});
+
     };
 
-    const localData = {
-      'objectWraps': [
-        {
-          "typeDef": {"name": "时间（相对于事件）", "icon-bi": "clock", "slots": [
-            {"name": "参照事件", "ctrls": [
-              {"type": "单个对象", "config": {
-                "filter": {
-                  "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
-                }}},
-              "多个对象"
-            ], "required": true},
-            {"name": "类型",
-              "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}],
-              "default": {"set": "时间限定符", "spec": "时间"}, "required": true},
-            {"name": "线索文本", "ctrls": ["原文片段"]}
-          ]},
-        },
-        {
-          "typeDef": {"name": "时间（相对于事件）", "icon-bi": "clock", "slots": [
-            {"name": "参照事件", "ctrls": [
-              {"type": "单个对象", "config": {
-                "filter": {
-                  "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
-                }}},
-              "多个对象"
-            ], "required": true},
-            {"name": "类型",
-              "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}],
-              "default": {"set": "时间限定符", "spec": "时间"}, "required": true},
-            {"name": "线索文本", "ctrls": ["原文片段"]}
-          ]},
-        },
-      ],
-    };
+    const localData = reactive({
+      'showDict': {},
+    });
 
+    const objectWraps = computed(()=>{
+      const that = reactiveCMR.objects.map(obj=>({
+        '_id': obj['_id'],
+        'data': obj,
+        'typeDef': reactiveCMR.typeOf(obj),
+        'show': localData['showDict'][obj['_id']],
+      }));
+      return that;
+    });
+
+    onMounted(()=>{
+      console.log(props);
+      init();
+    });
 
     return () => div({'class': "--border --p-2 my-1 vstack gap-2"}, [
       div({'class': ""}, [
         "请按照 ",
         ha("CSpaceBank 标注规范"),
-        " 进行标注。"]),
+        " 进行标注。",
+      ]),
 
       // h(StartButtonGroup),
 
       h(AllObjectsPanel, {
-        'objectWraps': localData.objectWraps,
-        'onShowObjectWrap': (objWrap)=>{objWrap['show']=true;},
+        'objectWraps': v(objectWraps),
+        'onShowObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=true;},
       }, []),
 
       h(ObjectPanelList, {
-        'objectWraps': localData.objectWraps,
-        'onHideObjectWrap': (objWrap)=>{objWrap['show']=false;},
+        'objectWraps': v(objectWraps),
+        'onHideObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=false;},
       }),
 
       h(ResultPanel),

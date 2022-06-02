@@ -1,5 +1,16 @@
 
-import { APP_NAME, APP_VERSION, DEVELOPING, API_BASE_DEV_LOCAL, DEV_HOSTS, API_BASE_DEV, API_BASE_PROD, API_BASE } from './master_constants.mjs.js';
+// 基本信息 变量
+const APP_NAME = "Sp22-Anno-Master";
+
+import {
+  APP_VERSION,
+  DEVELOPING,
+  API_BASE_DEV_LOCAL,
+  DEV_HOSTS,
+  API_BASE_DEV,
+  API_BASE_PROD,
+  API_BASE
+} from './master_constants.mjs.js';
 
 // 引入依赖的模块
 
