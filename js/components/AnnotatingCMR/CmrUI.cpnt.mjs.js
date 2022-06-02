@@ -81,9 +81,9 @@ const objectFace = (object) => {
 
 
 
-
-
-const editorDefault = {
+// 🆓🆓🆓🆓🆓🆓
+// 缺省控件
+const EditorDefault = {
   props: ['ctrl'],
   emits: ['confirm', 'cancel'],
   component: {},
@@ -118,14 +118,15 @@ const editorDefault = {
     ]);
   },
 };
+// 缺省控件 结束
 
-
-
+// 🔯🔯🔯🔯🔯🔯
+// 单个字段
 const PropertyItem = {
   props: ['slot', 'data'],
   emits: ['set-property'],
   component: {
-    editorDefault,
+    EditorDefault,
   },
   setup(props, ctx) {
     const stages = {
@@ -176,23 +177,25 @@ const PropertyItem = {
       return ctrl;
     };
 
+    // 挑选相应的控件组件
     const ctrlComponent = (ctrl) => {
       ctrl = fixCtrl(ctrl);
       const ctrlComponentMap = {
-        '单个原文片段': editorDefault,
-        '单个标签': editorDefault,
-        '单个对象': editorDefault,
-        '多个原文片段': editorDefault,
-        '多个标签': editorDefault,
-        '多个对象': editorDefault,
-        '布尔值': editorDefault,
-        '数值': editorDefault,
+        '单个原文片段': EditorDefault,
+        '单个标签': EditorDefault,
+        '单个对象': EditorDefault,
+        '多个原文片段': EditorDefault,
+        '多个标签': EditorDefault,
+        '多个对象': EditorDefault,
+        '布尔值': EditorDefault,
+        '数值': EditorDefault,
       };
       if (ctrl['type'] in ctrlComponentMap) {
         return ctrlComponentMap[ctrl['type']];
       };
-      return editorDefault;
+      return EditorDefault;
     };
+    // 挑选相应的控件组件 结束
 
 
     const currentCtrl = computed(()=>(
@@ -202,7 +205,7 @@ const PropertyItem = {
     ));
 
 
-
+    // 单个字段 渲染
     return () => div({'class': "--border p-0 hstack gap-1 align-items-center justify-content-around"}, [
       div({
         'class': [
@@ -265,10 +268,13 @@ const PropertyItem = {
       //
       : null,
     ]);
+    // 单个字段 渲染 结束
   },
 };
+// 单个字段 结束
 
-
+// 🔯🔯🔯🔯🔯🔯
+// 单个对象的编辑窗口
 const ObjectPanel = {
   props: ['data', 'typeDef'],
   emits: ['save-object', 'clone-object', 'reset-object', 'delete-object', 'close-object'],
@@ -281,57 +287,86 @@ const ObjectPanel = {
       'data': JSON.parse(JSON.stringify(props?.['data']??{})),
     });
 
-    const getSlotData = (slot) => {
-      let slotName = slot.name??"__";
-      let value = props['data']?.[slotName]??null;
-      return value;
-    };
-
     const slots = computed(() => (props?.typeDef?.slots??[]));
+
+    const slotDict = computed(() => {
+      let dict = {};
+      for (let slot of v(slots)) {
+        if (slot.name) {
+          dict[slot.name] = slot;
+        }
+      };
+      return dict;
+    });
+
+    const fields = computed(() => {
+      let kkvvs = Object.entries(localObjectShadow.data);
+      let slotDictV = v(slotDict);
+      return kkvvs.filter(kkvv => kkvv[0] in slotDictV).map(kkvv => {
+        let [kk, vv] = kkvv;
+        return slotDictV[kk];
+      });
+    });
 
     const onSetProperty = (xx) => {
       Object.assign(localObjectShadow.data, xx);
     };
 
-    return () => div({
-      'class': "card bg-light border gap-1 overflow-auto shadow-sm",
-      // 'style': "box-shadow: rgba(0, 0, 0, 0.075) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.075) 0px 1px 4px 0px;",
-    }, [
-      div({
+    const getFieldData = (slot) => {
+      let slotName = slot?.name??"__";
+      let value = props['data']?.[slotName]??null;
+      return value;
+    };
+
+    const 标题栏 = () => {
+      return div({
         'class': [
           "text-center small",
           "hstack gap-1 px-2 py-1 justify-content-between",
           "text-muted --bg-opacity-75 --bg-secondary border-bottom --border-secondary",
         ],
       }, [
+
+        // 类型标题
         div({'class': "hstack gap-2"}, [
           props?.typeDef?.['icon-bi'] ? bi(props?.typeDef?.['icon-bi']) : null,
           span({'class': "--user-select-none"}, `${props?.typeDef?.name??"未知类型"}`),
         ]),
+
+        // 关闭按钮
         btn({
           'class': "btn-sm px-1 py-0",
           'onClick': ()=>{
             ctx.emit("close-object", localObjectShadow.data);
           },
         }, bi("x-lg"), "--outline-danger"),
-      ]),
-      div({
+      ]);
+    };
+
+    const 数据呈现 = () => {
+      return div({
         'class': "mx-2 my-1",
       }, [
         div({'class': "py-1 px-2 rounded --border text-center bg-white --bg-opacity-25"}, [
           objectFace(localObjectShadow.data),
         ]),
-      ]),
+      ]);
+    };
 
-      div({
+    const 字段列表 = () => {
+      return div({
         'class': "vstack gap-1 px-2 py-1"
       }, [
-        v(slots).map((slot, idx) => h(PropertyItem, {
+
+        // 已有字段
+        v(fields).map((field, idx) => h(PropertyItem, {
           'key': idx,
-          'data': getSlotData(slot),
-          'slot': slot,
+          'data': getFieldData(field),
+          'field': field,
           'onSetProperty': (xx)=>{onSetProperty(xx);},
         })),
+
+        // 添加字段
         div({'class': "--border p-0 hstack gap-1 align-items-center justify-content-around"}, [
           div({
             'class': [
@@ -350,12 +385,12 @@ const ObjectPanel = {
               'title': "执行添加",
             }, bi("plus-lg"), "outline-secondary"),
           ]),
-
         ]),
-      ]),
+      ]);
+    };
 
-
-      div({
+    const 总体操作 = () => {
+      return div({
         'class': "hstack gap-2 p-2 justify-content-end",
       }, [
 
@@ -391,11 +426,24 @@ const ObjectPanel = {
           },
           'disabled': false,
         }, [bi("trash3"), "删除"], "--outline-secondary"),
-      ]),
+      ]);
+    };
+
+    return () => div({
+      'class': "card bg-light border gap-1 overflow-auto shadow-sm",
+      // 'style': "box-shadow: rgba(0, 0, 0, 0.075) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.075) 0px 1px 4px 0px;",
+    }, [
+      标题栏(),
+      数据呈现(),
+      字段列表(),
+      总体操作(),
     ]);
   },
 };
+// 单个对象的编辑窗口 结束
 
+// 🔯🔯🔯🔯🔯🔯
+// 众多对象编辑窗口的列表
 const ObjectPanelList = {
   props: ['objectWraps'],
   emits: ['save-object', 'clone-object', 'reset-object', 'delete-object', 'hide-object-wrap'],
@@ -430,11 +478,13 @@ const ObjectPanelList = {
     ]);
   },
 };
+// 众多对象编辑窗口的列表 结束
 
-
+// 🔯🔯🔯🔯🔯🔯
+// 所有对象陈列盒子
 const AllObjectsPanel = {
   props: ['objectWraps'],
-  emits: ['sort-objects', 'analyze-objects', 'add-object', 'do-debug', 'show-object-wrap'],
+  emits: ['sort-objects', 'analyze-objects', 'add-object', 'do-debug', 'show-object-wrap', 'hide-object-wrap'],
   component: {},
   setup(props, ctx) {
     return () => div({'class': "vstack gap-2 my-1"}, [
@@ -449,15 +499,17 @@ const AllObjectsPanel = {
           ...(props['objectWraps']??[])
             .map((objWrap, idx) => btn({
               'key': idx,
-              'class': "btn-sm",
+              'class': ["btn-sm"],
               'title': JSON.stringify(objWrap, null, 2),
               'onClick': ()=>{
-                ctx.emit("show-object-wrap", objWrap);
+                let x = objWrap['show']
+                  ?(ctx.emit("hide-object-wrap", objWrap))
+                  :(ctx.emit("show-object-wrap", objWrap));
               },
             }, [
               // objWrap._type,
               objectFace(objWrap),
-            ], "light")),
+            ], objWrap['show']?"outline-primary":"light")),
         ]),
       ])),
 
@@ -491,8 +543,10 @@ const AllObjectsPanel = {
     ]);
   },
 };
+// 所有对象陈列盒子 结束
 
-
+// 🔯🔯🔯🔯🔯🔯
+// 标注结果盒子
 const ResultPanel = {
   props: [],
   emits: [],
@@ -503,8 +557,10 @@ const ResultPanel = {
     ]);
   },
 };
+// 标注结果盒子 结束
 
-
+// 🔯🔯🔯🔯🔯🔯
+// 开始操作按钮组
 const StartButtonGroup = {
   props: [],
   emits: ['save-to-cloud', 'reset-from-cloud'],
@@ -526,8 +582,10 @@ const StartButtonGroup = {
     ]);
   }
 };
+// 开始操作按钮组 结束
 
-
+// 🔯🔯🔯🔯🔯🔯
+// 最终操作按钮组
 const FinalButtonGroup = {
   props: [],
   emits: ['save', 'ok', 'reset', 'clean'],
@@ -558,9 +616,10 @@ const FinalButtonGroup = {
     ]);
   }
 };
+// 最终操作按钮组 结束
 
-
-
+// 🔯🔯🔯🔯🔯🔯
+// 整个组件
 export default {
   props: ['tokenSelector', 'selection', 'stepCtrl', 'alertBox', 'example', 'step', 'stepProps'],
   emits: ['save', 'reset'],
@@ -611,6 +670,7 @@ export default {
 
       h(AllObjectsPanel, {
         'objectWraps': v(objectWraps),
+        'onHideObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=false;},
         'onShowObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=true;},
       }, []),
 
@@ -637,3 +697,4 @@ export default {
     ]);
   },
 };
+// 整个组件 结束
