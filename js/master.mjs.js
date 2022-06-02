@@ -1018,6 +1018,11 @@ const RootComponent = {
     const theDB = spDB;
 
     return {
+
+      APP_NAME,
+      APP_VERSION,
+
+      //
       win,
       lo,
       mkd,

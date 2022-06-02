@@ -14,6 +14,14 @@ const genModeSection = (__pack) => {
     __LODASH,
   } = __pack;
 
+  const idxesToToken = (idxes) => {
+    idxes = idxes??[];
+    if (!props.tokens?.length) {
+      return [];
+    };
+    return idxes.map(idx => props.tokens[idx]?.to ?? props.tokens[idx] ?? {});
+  };
+
   return () => {
 
     const ha = (children, href, title, targetBlank) => {
@@ -195,8 +203,17 @@ const genModeSection = (__pack) => {
           for (let ii in names) {
             let name = names[ii];
             if (['P', 'P1', 'P2'].includes(name)) {
-              if (idxesToText(slots[ii].tokenarray)?.length==1) {
-                针对性处理标记清单.push("P为单字");
+              for (let token of idxesToToken(slots[ii].tokenarray)) {
+                if (["v", "--dv"].includes(token?.pos)) {
+                  针对性处理标记清单.push("P含动词");
+                };
+              };
+            };
+            if (['E', 'E1', 'E2'].includes(name)) {
+              for (let token of idxesToToken(slots[ii].tokenarray)) {
+                if (["f", "--f"].includes(token?.pos)) {
+                  针对性处理标记清单.push("E含方位词");
+                };
               };
             };
           };
@@ -206,7 +223,6 @@ const genModeSection = (__pack) => {
       if (!hasHighlightedToken) {
         alertBox.pushAlert('选中的范围内没有出现高亮词，请检查', 'warning', 5000);
         checkResult=false;
-        // return checkResult;
       };
       if (!hasReplacedToken) {
         alertBox.pushAlert('似乎没有覆盖造成异常的关键片段，最好再检查一下', 'warning', 5000);
@@ -214,15 +230,18 @@ const genModeSection = (__pack) => {
       if (针对性处理标记清单.includes("语义冲突片段少于4")) {
         alertBox.pushAlert('语义冲突类选中的文本片段数量不足，请检查', 'warning', 5000);
         checkResult=false;
-        // return checkResult;
       };
       if (针对性处理标记清单.includes("语义冲突片段等于5")) {
-        alertBox.pushAlert('语义冲突类选中的文本片段数量不太正常，请检查', 'warning', 5000);
-        // return checkResult;
+        alertBox.pushAlert('语义冲突类选中的文本片段数量不太正常，请确认操作无误再保存', 'warning', 5000);
       };
       if (针对性处理标记清单.includes("P为单字")) {
-        alertBox.pushAlert('P 只有一个字，不太正常，请检查', 'warning', 5000);
-        // return checkResult;
+        alertBox.pushAlert('P 只有一个字，不太正常，请确认操作无误再保存', 'warning', 5000);
+      };
+      if (针对性处理标记清单.includes("P含动词")) {
+        alertBox.pushAlert('P 含有动词，是不是和 E 填反了？建议检查一下，确认操作无误再保存', 'info', 5000);
+      };
+      if (针对性处理标记清单.includes("E含方位词")) {
+        alertBox.pushAlert('E 含有方位词，是不是和 P 填反了？建议检查一下，确认操作无误再保存', 'info', 5000);
       };
       // if (hasIntersection) {
       //   alertBox.pushAlert('某条标注中的两个文本片段存在交集，请确认无误再保存', 'warning', 5000);

@@ -5,12 +5,11 @@ import {
   watch,
   h,
 } from '../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
-import { APP_NAME, APP_VERSION } from '../master_constants.mjs.js';
 import { dateString, foolCopy } from '../util.mjs.js';
 import assign_tasks from '../assign_tasks_new.mjs.js';
 
 const TaskAssignPanel = {
-  props: ["functions", "db", "settings", "frg", "alertBox", "modalBox", "backend", "saver", "show"],
+  props: ["functions", "db", "settings", "frg", "alertBox", "modalBox", "backend", "saver", "show", "appInfo"],
   emits: [],
   component: {
   },
@@ -32,7 +31,7 @@ const TaskAssignPanel = {
         };
         if (me) {
           ctrl.currentUser = me;
-          await props.frg.setItem(`${APP_NAME}:currentUser`, foolCopy(ctrl.currentUser));
+          await props.frg.setItem(`${props.appInfo.name}:currentUser`, foolCopy(ctrl.currentUser));
         };
       };
     };
@@ -349,11 +348,11 @@ const TaskAssignPanel = {
 
 
     const saveBasic = async () => {
-      await props.frg.setItem(`${APP_NAME}:assignData_settings`, foolCopy(assignData.settings));
+      await props.frg.setItem(`${props.appInfo.name}:assignData_settings`, foolCopy(assignData.settings));
     };
 
     const loadBasic = async () => {
-      let stored_assignData_settings = await props.frg.getItem(`${APP_NAME}:assignData_settings`);
+      let stored_assignData_settings = await props.frg.getItem(`${props.appInfo.name}:assignData_settings`);
       if (stored_assignData_settings != null) {
         assignData.settings = stored_assignData_settings;
       };
