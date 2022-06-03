@@ -314,25 +314,6 @@ const ObjectPanel = {
       'showDeleteConfirmModal': false,
     });
 
-    const 重置确认框 = () => confirmModal(
-      localData,
-      "showResetConfirmModal",
-      "确定要重置此对象吗？将会恢复到此次编辑前的状态。",
-      ()=>{
-        ctx.emit("reset-object", localObjectShadow.data);
-        localObjectShadow.data = JSON.parse(JSON.stringify(props?.['data']??{}));
-      },
-    );
-
-    const 删除确认框 = () => confirmModal(
-      localData,
-      "showDeleteConfirmModal",
-      "确定要删除此对象吗？",
-      ()=>{
-        ctx.emit("delete-object", localObjectShadow.data);
-      },
-    );
-
     const slots = computed(() => (props?.typeDef?.slots??[]));
 
     const slotDict = computed(() => {
@@ -506,6 +487,25 @@ const ObjectPanel = {
       ]);
     };
 
+    const 重置确认框 = () => confirmModal(
+      localData,
+      "showResetConfirmModal",
+      "确定要重置此对象吗？将会恢复到上次保存的状态。",
+      ()=>{
+        ctx.emit("reset-object", localObjectShadow.data);
+        localObjectShadow.data = JSON.parse(JSON.stringify(props?.['data']??{}));
+      },
+    );
+
+    const 删除确认框 = () => confirmModal(
+      localData,
+      "showDeleteConfirmModal",
+      "确定要删除此对象吗？",
+      ()=>{
+        ctx.emit("delete-object", localObjectShadow.data);
+      },
+    );
+
     return () => div({
       'class': "card bg-light border gap-1 overflow-auto shadow-sm",
       // 'style': "box-shadow: rgba(0, 0, 0, 0.075) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.075) 0px 1px 4px 0px;",
@@ -538,7 +538,7 @@ const ObjectPanelList = {
     }, [
       div({'class': "h6 mt-3 mb-1"}, ["正在标注的对象"]),
       props['objectWraps'].map((objWrap, idx) => objWrap?.['show'] ? h(ObjectPanel, {
-        'key': idx,
+        'key': objWrap?.data?._id??objWrap?.data?.id,
         'data': objWrap['data'],
         'typeDef': objWrap['typeDef'],
         'onSaveObject': (object)=>{
@@ -565,10 +565,14 @@ const ObjectPanelList = {
 // 🔯🔯🔯🔯🔯🔯
 // 所有对象陈列盒子
 const AllObjectsPanel = {
-  props: ['objectWraps'],
+  props: ['objectWraps', 'typeNames'],
   emits: ['sort-objects', 'analyze-objects', 'add-object', 'do-debug', 'show-object-wrap', 'hide-object-wrap'],
   component: {},
   setup(props, ctx) {
+    const localData = reactive({
+      'typeNameToAdd': {},
+      'showAddObjectControl': false,
+    });
     return () => div({'class': "vstack gap-2 my-1"}, [
       div({'class': "h6 mt-3 mb-1"}, ["所有标注对象"]),
 
@@ -580,7 +584,7 @@ const AllObjectsPanel = {
         div({'class': "d-flex flex-wrap gap-1"}, [
           ...(props['objectWraps']??[])
             .map((objWrap, idx) => btn({
-              'key': idx,
+              'key': objWrap?.data?._id??objWrap?.data?.id,
               'class': ["btn-sm"],
               'title': JSON.stringify(objWrap, null, 2),
               'onClick': ()=>{
@@ -596,29 +600,53 @@ const AllObjectsPanel = {
       ])),
 
       // 工具
-      div({'class': "btn-toolbar __hstack gap-1"}, [
+      div({'class': "btn-toolbar __hstack gap-1 justify-content-end"}, [
         div({'class': "btn-group btn-group-sm"}, [
-          lightBtn(bi("sort-down-alt"), "排序", "按照文本中出现的顺序排序", {
-            'onClick': ()=>{
-              ctx.emit("sort-objects");
-            },
-          }),
-          lightBtn(bi("bar-chart-steps"), "预分析", null, {
-            'onClick': ()=>{
-              ctx.emit("analyze-objects");
-            },
-          }),
+          // lightBtn(bi("sort-down-alt"), "排序", "按照文本中出现的顺序排序", {
+          //   'onClick': ()=>{
+          //     ctx.emit("sort-objects");
+          //   },
+          // }),
+          // lightBtn(bi("bar-chart-steps"), "预分析", null, {
+          //   'onClick': ()=>{
+          //     ctx.emit("analyze-objects");
+          //   },
+          // }),
           lightBtn(bi("plus-circle"), "新增", null, {
             'onClick': ()=>{
-              ctx.emit("add-object");
+              localData.showAddObjectControl = !localData.showAddObjectControl;
             },
           }),
-          lightBtn(bi("bug"), "debug", null, {
+          // lightBtn(bi("bug"), "debug", null, {
+          //   'onClick': ()=>{
+          //     ctx.emit("do-debug");
+          //     console.log(props['objectWraps']);
+          //   },
+          // }),
+        ]),
+      ]),
+
+      // 新增操作区
+      div({'class': ["hstack gap-1", {"d-none": !localData.showAddObjectControl}]}, [
+        div({'class': "input-group input-group-sm"}, [
+          h("select", {
+            'class': "form-select text-center",
+            'onChange': (event)=>{
+              localData.typeNameToAdd = event?.target?.value;
+            },
+            'value': localData.typeNameToAdd,
+          }, [
+            ...[props?.typeNames??[]].map(typeName=>h("option", {
+              'value': typeName,
+            }, [typeName])),
+          ]),
+          btn({
             'onClick': ()=>{
-              ctx.emit("do-debug");
-              console.log(props['objectWraps']);
+              ctx.emit("add-object", localData.typeNameToAdd);
+              localData.showAddObjectControl = false;
             },
-          }),
+            'title': "执行添加",
+          }, bi("plus-lg"), "outline-secondary"),
         ]),
       ]),
 
@@ -740,6 +768,10 @@ export default {
       return that;
     });
 
+    const typeNames = computed(()=>{
+      return reactiveCMR.types.map(it=>it.name);
+    });
+
     onMounted(()=>{
       console.log(props);
       init();
@@ -763,12 +795,21 @@ export default {
 
       h(AllObjectsPanel, {
         'objectWraps': v(objectWraps),
+        'typeNames': v(typeNames),
         'onHideObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=false;},
         'onShowObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=true;},
+        'onAddObject': (typeName)=>{
+          const newObject = reactiveCMR.makeNewObjectWithType(typeName);
+          localData.showDict[newObject._id] = true;
+        },
       }, []),
 
       h(ObjectPanelList, {
         'objectWraps': v(objectWraps),
+        'onCloneObject': (object)=>{
+          const newObject = reactiveCMR.cloneObject(object);
+          localData.showDict[newObject._id] = true;
+        },
         'onDeleteObject': (object)=>{onDeleteObject(object);},
         'onSaveObject': (object)=>{onSaveObject(object);},
         'onHideObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=false;},

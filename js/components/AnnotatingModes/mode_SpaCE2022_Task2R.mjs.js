@@ -365,7 +365,7 @@ const genModeSection = (__pack) => {
 
       //
       div({'class': "text-muted small"}, [
-        h("p", null, ["标注前，请仔细阅读 ", ha("最新标注规范", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide.html"), " 以及 ", ha("常见问题解答FQA", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html"), " 。"]),
+        h("p", null, ["标注前，请仔细阅读 ", ha("最新标注规范", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide.html"), " 以及 ", ha("常见问题解答FAQ", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html"), " 。"]),
         h("p", null, ["要点提示："]),
         h("p", null, ["① 不要求 S-P-E 可以拼成一句通顺的话，重点是说清楚 S（什么）、P（在哪里）和 E（干什么）。尤其注意 ", span({'class': "fw-bold"}, "P 是 Place，E 是 Event，填写时切勿颠倒"), "（如“挂在墙上”应填写“P: 在墙上，E: 挂”）。"]),
         h("p", null, ["② S 空间实体是被 P、E 直接描述了空间信息的实体，而不一定是主语和施事，如“小明把课本放到桌上”中，如果 P 和 E 分别是“到桌上”和“放”，那么 S 应该是“课本”而不是“小明”。“小明”虽然和“放”也有关联，但他的空间信息没有被表达。"]),

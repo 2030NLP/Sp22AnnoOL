@@ -26,7 +26,7 @@ class CMR {
     this.uuid = uuid();
   }
   get types() {
-    Object.values(this.typeDict);
+    return Object.values(this.typeDict);
   }
   get objectDict() {
     return Object.fromEntries(this.objects.map(obj => [obj._id??obj.id, obj]));
@@ -55,16 +55,35 @@ class CMR {
 
   makeNewObject(bud) {
     let obj = Object.assign({}, JSON.parse(JSON.stringify(bud)));
+    // obj._isNew = true;
     obj._id = this.nextId;
     this.nextId++;
     this.objects.push(obj);
     return obj;
   }
 
+  makeNewObjectWithType(typeName) {
+    let bud = {
+      type: typeName,
+    };
+    let type = this.typeDict[typeName]??{};
+    for (let slot of (type.solts??[])) {
+      if (slot.required && slot.name) {
+        bud[slot.name] = slot.default??slot.init??null;
+      };
+    };
+    return this.makeNewObject(bud);
+  }
+
+  cloneObject(bud) {
+    return this.makeNewObject(bud);
+  }
+
 
 
   updateObject(obj) {
     this.deleteObject(obj);
+    // obj._isNew = false;
     this.objects.push(obj);
   }
 
@@ -72,7 +91,12 @@ class CMR {
     this.deleteObjectById(obj._id??obj.id);
   }
   deleteObjectById(objId) {
-    const idx = this.objects.findIndex(obj => obj._id==objId);
+    let idx = this.objects.findIndex(obj => obj._id==objId);
+    if (idx==-1) {
+      idx = this.objects.findIndex(obj => obj.id==objId);
+    };
+    if (idx==-1) {return;};
+    console.log(idx);
     this.objects.splice(idx, 1);
   }
 
