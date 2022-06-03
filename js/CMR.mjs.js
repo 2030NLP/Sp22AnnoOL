@@ -82,9 +82,18 @@ class CMR {
 
 
   updateObject(obj) {
-    this.deleteObject(obj);
+    // 旧方法
+    // this.deleteObject(obj);
     // obj._isNew = false;
-    this.objects.push(obj);
+    // this.objects.push(obj);
+
+    // 新方法
+    let old = this.objectDict[obj._id??obj.id];
+    for (let key in old) {
+      if (['_id', 'id'].includes(key)) {continue};
+      delete old.key;
+    };
+    Object.assign(old, obj);
   }
 
   deleteObject(obj) {

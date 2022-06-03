@@ -114,6 +114,7 @@ const UserListPanel = {
                   'class': "form-select form-select-sm",
                   'onChange': (event) => {
                     localData.selectedBatchName = event?.target?.value;
+                    计算审核量();
                   },
                 }, [
                   h("option", {
@@ -130,9 +131,9 @@ const UserListPanel = {
 
               h("div", { 'class': "__d-inline-block align-middle my-1 me-2", }, [
                 "全部已审", " ", localData.总审核量文本, h("br"),
-                "此批已审", " ", localData.此批审核量文本, h("br"),
-                "此批审核通过率达0.9以上的人员的比例", " ", localData.审核完美率文本, h("br"),
-                "此批初审通过率达0.9以上的人员的比例", " ", localData.初审完美率文本,
+                `${localData.selectedBatchName} 已审`, " ", localData.此批审核量文本, h("br"),
+                `${localData.selectedBatchName} 审核通过率达0.9以上的人员的比例`, " ", localData.审核完美率文本, h("br"),
+                `${localData.selectedBatchName} 初审通过率达0.9以上的人员的比例`, " ", localData.初审完美率文本,
               ]),
               h("button", {
                 'type': "button",

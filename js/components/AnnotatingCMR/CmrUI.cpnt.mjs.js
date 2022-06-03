@@ -180,9 +180,9 @@ const PropertyItem = {
     };
     const onConfirm = (value) => {
       let key = props['slot']?.['name']??"未知字段";
-      newDataWrap['data'][key] = value;
+      newDataWrap['data'] = value;
       localData.currentStage = stages['①呈现数据内容'];
-      ctx.emit('set-property', {[key]: newDataWrap['data'][key]});
+      ctx.emit('set-property', {[key]: newDataWrap['data']});
     };
     const onCancel = () => {
       localData.currentStage = stages['①呈现数据内容'];
@@ -531,7 +531,7 @@ const ObjectPanelList = {
   },
   setup(props, ctx) {
     const shouldShow = computed(()=>{
-      return props?.['objectWraps']?.filter?.(it=>it.show)?.length;
+      return props?.['objectWraps']?.filter?.(it=>it?.show)?.length;
     });
     return () => div({
       'class': ["vstack gap-3", {"d-none": !v(shouldShow)}],
@@ -712,7 +712,7 @@ const FinalButtonGroup = {
         'class': "btn-sm",
         'onClick': ()=>{ctx.emit('save');},
         'title': "将未完成的标注暂时保存到云端，并记录这条标注处于「未完成」的状态。",
-      }, "保存", "primary"),
+      }, "暂时保存", "primary"),
       btn({
         'class': "btn-sm",
         'onClick': ()=>{ctx.emit('ok');},
@@ -749,13 +749,31 @@ export default {
     const init = () => {
 
       reactiveCMR.initDefinition(props?.['stepProps']?.['definition']);
-      const existedData = props?.['example']?.['annotations']?.filter?.(it=>it.mode==step.mode)?.[0]?.['objects']??[];
+      const existedData = props?.['example']?.['annotations']?.filter?.(it=>it.mode==props?.step?.mode)?.[0]?.['objects']??[];
       reactiveCMR.initData({'objects': [...existedData, {'type': "时间（相对于事件）"}, {'type': "时间（相对于事件）"}]});
 
     };
 
+    const 最终按钮区 = () => h(FinalButtonGroup, {
+      'onDebug': ()=>{
+        console.log(reactiveCMR);
+      },
+      'onSave': ()=>{
+        props['example']['annotations'] = props['example']['annotations']?.filter?.(it=>it.mode!=props?.step?.mode);
+        props['example']['annotations'].push({});
+      },
+      'onOk': ()=>{
+        props?.stepCtrl?.goRefStep?.(props?.stepProps?.go);
+      },
+      'onReset': ()=>{
+        init();
+      },
+      'onClean': ()=>{},
+    });
+
     const localData = reactive({
       'showDict': {},
+      'showList': [],
     });
 
     const objectWraps = computed(()=>{
@@ -763,9 +781,25 @@ export default {
         '_id': obj['_id'],
         'data': obj,
         'typeDef': reactiveCMR.typeOf(obj),
-        'show': localData['showDict'][obj['_id']],
+        'show': localData['showList'].includes(obj['_id']),
       }));
       return that;
+    });
+
+    const objectsToShow = computed(()=>{
+      const nodes = localData['showList'].map(id=>{
+        let obj = reactiveCMR.objectDict[id];
+        if (obj!=null) {
+          const that = {
+            '_id': id,
+            'data': obj,
+            'typeDef': reactiveCMR.typeOf(obj),
+            'show': true,
+          };
+          return that;
+        };
+      });
+      return nodes??null;
     });
 
     const typeNames = computed(()=>{
@@ -784,6 +818,48 @@ export default {
       reactiveCMR.deleteObject(object);
     };
 
+    const show = (id) => {
+      localData['showDict'][id]=true;
+      if (!localData['showList'].includes(id)) {
+        localData['showList'].push(id);
+      };
+    };
+
+    const hide = (id) => {
+      localData['showDict'][id]=false;
+      if (localData['showList'].includes(id)) {
+        localData['showList'] = localData['showList'].filter(it=>it!=id);
+      };
+    };
+
+    const 所有对象面板 = () => h(AllObjectsPanel, {
+      'objectWraps': v(objectWraps),
+      'typeNames': v(typeNames),
+      'onHideObjectWrap': (objWrap)=>{
+        hide(objWrap['_id']);
+      },
+      'onShowObjectWrap': (objWrap)=>{
+        show(objWrap['_id']);
+      },
+      'onAddObject': (typeName)=>{
+        const newObject = reactiveCMR.makeNewObjectWithType(typeName);
+        show(newObject._id);
+      },
+    }, []);
+
+    const 单个对象面板列表 = () => h(ObjectPanelList, {
+      'objectWraps': v(objectsToShow),
+      'onCloneObject': (object)=>{
+        const newObject = reactiveCMR.cloneObject(object);
+        show(newObject._id);
+      },
+      'onDeleteObject': (object)=>{onDeleteObject(object);},
+      'onSaveObject': (object)=>{onSaveObject(object);},
+      'onHideObjectWrap': (objWrap)=>{
+        hide(objWrap['_id']);
+      },
+    });
+
     return () => div({'class': "--border --p-2 my-1 vstack gap-2"}, [
       div({'class': ""}, [
         "请按照 ",
@@ -792,46 +868,10 @@ export default {
       ]),
 
       // h(StartButtonGroup),
-
-      h(AllObjectsPanel, {
-        'objectWraps': v(objectWraps),
-        'typeNames': v(typeNames),
-        'onHideObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=false;},
-        'onShowObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=true;},
-        'onAddObject': (typeName)=>{
-          const newObject = reactiveCMR.makeNewObjectWithType(typeName);
-          localData.showDict[newObject._id] = true;
-        },
-      }, []),
-
-      h(ObjectPanelList, {
-        'objectWraps': v(objectWraps),
-        'onCloneObject': (object)=>{
-          const newObject = reactiveCMR.cloneObject(object);
-          localData.showDict[newObject._id] = true;
-        },
-        'onDeleteObject': (object)=>{onDeleteObject(object);},
-        'onSaveObject': (object)=>{onSaveObject(object);},
-        'onHideObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=false;},
-      }),
-
+      所有对象面板(),
+      单个对象面板列表(),
       h(ResultPanel),
-
-      h(FinalButtonGroup, {
-        'onSave': ()=>{},
-        'onOk': ()=>{
-          props?.stepCtrl?.goRefStep?.(props?.stepProps?.go);
-        },
-        'onReset': ()=>{
-          init();
-        },
-        'onClean': ()=>{},
-        'onDebug': ()=>{
-          console.log(reactiveCMR);
-        },
-      }),
-
-
+      最终按钮区(),
 
     ]);
   },

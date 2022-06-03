@@ -40,11 +40,17 @@ export default {
       };
 
       const displayIdxArray = (annot)=>{
+        const name = (ii) => {
+          if (annot?.names?.length) {
+            return h("span", { class: "mx-1 fw-normal text-muted" }, annot?.names?.[ii]);
+          };
+          return null;
+        };
         return ([
           ...(annot.tokenarrays ? annot.tokenarrays.map(
-            idxes => h("span", { class: "mx-1" }, [/*"“",*/ idxesToText(idxes), " ", /*"”"*/])
+            (idxes, ii) => h("span", { class: "mx-1" }, [name(ii), /*"“",*/ idxesToText(idxes), " ", /*"”"*/])
           ) : annot.ons ? annot.ons.map(
-            idxes => h("span", { class: "mx-1" }, [/*"“",*/ idxesToText(idxes), " ", /*"”"*/])
+            (idxes, ii) => h("span", { class: "mx-1" }, [name(ii), /*"“",*/ idxesToText(idxes), " ", /*"”"*/])
           ) : []),
         ]);
       };
