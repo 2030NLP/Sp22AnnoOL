@@ -14,7 +14,7 @@ const genModeSection = (__pack) => {
     __LODASH,
   } = __pack;
 
-  const idxesToToken = (idxes) => {
+  const idxesToTokens = (idxes) => {
     idxes = idxes??[];
     if (!props.tokens?.length) {
       return [];
@@ -184,14 +184,15 @@ const genModeSection = (__pack) => {
             针对性处理标记清单.push("语义冲突片段等于5");
           };
         };
-        if (item?.针对性处理?.includes?.("检查P是否为单字")) {
+        if (item?.针对性处理?.includes?.("检查P是否为纯方位词")) {
           console.log(slots);
           let names = slots.map(slot=>slot.name);
           for (let ii in names) {
             let name = names[ii];
             if (['P', 'P1', 'P2'].includes(name)) {
-              if (idxesToText(slots[ii].tokenarray)?.length==1) {
-                针对性处理标记清单.push("P为单字");
+              let poses = Array.from(new Set(idxesToTokens(slots[ii].tokenarray).map(it=>it.pos)));
+              if (poses.length==1&&["f"].includes(poses[0])) {
+                针对性处理标记清单.push("P为纯方位词");
               };
             };
           };
@@ -203,14 +204,14 @@ const genModeSection = (__pack) => {
           for (let ii in names) {
             let name = names[ii];
             if (['P', 'P1', 'P2'].includes(name)) {
-              for (let token of idxesToToken(slots[ii].tokenarray)) {
+              for (let token of idxesToTokens(slots[ii].tokenarray)) {
                 if (["v", "--dv"].includes(token?.pos)) {
                   针对性处理标记清单.push("P含动词");
                 };
               };
             };
             if (['E', 'E1', 'E2'].includes(name)) {
-              for (let token of idxesToToken(slots[ii].tokenarray)) {
+              for (let token of idxesToTokens(slots[ii].tokenarray)) {
                 if (["f", "--f"].includes(token?.pos)) {
                   针对性处理标记清单.push("E含方位词");
                 };
@@ -234,14 +235,14 @@ const genModeSection = (__pack) => {
       if (针对性处理标记清单.includes("语义冲突片段等于5")) {
         alertBox.pushAlert('语义冲突类选中的文本片段数量不太正常，请确认操作无误再保存', 'warning', 5000);
       };
-      if (针对性处理标记清单.includes("P为单字")) {
-        alertBox.pushAlert('P 只有一个字，不太正常，请确认操作无误再保存', 'warning', 5000);
+      if (针对性处理标记清单.includes("P为纯方位词")) {
+        alertBox.pushAlert('P 只含方位词，不太符合规范，请确认操作无误再保存', 'warning', 5000);
       };
       if (针对性处理标记清单.includes("P含动词")) {
-        alertBox.pushAlert('P 含有动词，是不是和 E 填反了？建议检查一下，确认操作无误再保存', 'info', 5000);
+        alertBox.pushAlert('P 含有动词，是不是和 E 填反了？建议检查一下，确认操作无误再保存', 'warning', 5000);
       };
       if (针对性处理标记清单.includes("E含方位词")) {
-        alertBox.pushAlert('E 含有方位词，是不是和 P 填反了？建议检查一下，确认操作无误再保存', 'info', 5000);
+        alertBox.pushAlert('E 含有方位词，是不是和 P 填反了？建议检查一下，确认操作无误再保存', 'warning', 5000);
       };
       // if (hasIntersection) {
       //   alertBox.pushAlert('某条标注中的两个文本片段存在交集，请确认无误再保存', 'warning', 5000);
@@ -317,7 +318,7 @@ const genModeSection = (__pack) => {
                         },
                       }, [
                         selection_length.value
-                          ? `填入${slot.placeholder??""} ⤵️`
+                          ? `填入${ slot.placeholder ? ' '+slot.placeholder : ""} ⤵️`
                           : `💬${ slot.placeholder ? ' '+slot.placeholder : ""}`
                       ])
                       : span({'class': "text-muted"}, `${slot.placeholder??""}`)

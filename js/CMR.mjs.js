@@ -14,8 +14,9 @@ class CMR {
   constructor() {
     this.typeDict = {};
     this.labels = [];
-    this.interface = {};
     this.objects = [];
+    // this.prefabs = [];
+    // this.interface = {};
     this.nextId = 0;
     this.symbols = {
       "@": "@",
@@ -24,18 +25,22 @@ class CMR {
     };
     this.uuid = uuid();
   }
-  dict() {
-    return Object.fromEntries(this.objects.map(obj => [obj._id, obj]));
+  get types() {
+    Object.values(this.typeDict);
   }
-  typeObjects(type) {
-    return this.objects.filter(obj => obj._type==type);
+  get objectDict() {
+    return Object.fromEntries(this.objects.map(obj => [obj._id??obj.id, obj]));
   }
+  get _nextId() {
+    return Math.max(...(this.objects.map(it=>+(it._id??it.id)).filter(it=>!isNaN(it))))+1;
+  }
+
   get(gid) {
     if (typeof(gid)!="string") {return gid};
     const map = {
-      [this.symbols["@"]]: (id) => this.prefabs.find(obj => obj._id==id),
-      [this.symbols["#"]]: (id) => this.objects.find(obj => obj._id==id),
-      [this.symbols["$"]]: (id) => this.interface?.[id] ?? null,
+      // [this.symbols["@"]]: (id) => this.prefabs.find(obj => obj._id==id),
+      [this.symbols["#"]]: (id) => this.objectDict[id],
+      // [this.symbols["$"]]: (id) => this.interface?.[id] ?? null,
     };
     // console.log(gid);
     if (gid?.[0] in map) {
@@ -43,6 +48,11 @@ class CMR {
     };
     return map[this.symbols["#"]](gid);
   }
+
+  typeObjects(type) {
+    return this.objects.filter(obj => obj._type==type);
+  }
+
   makeNewObject(bud) {
     let obj = Object.assign({}, JSON.parse(JSON.stringify(bud)));
     obj._id = this.nextId;
@@ -50,7 +60,18 @@ class CMR {
     this.objects.push(obj);
     return obj;
   }
-  deleteObject(objId) {
+
+
+
+  updateObject(obj) {
+    this.deleteObject(obj);
+    this.objects.push(obj);
+  }
+
+  deleteObject(obj) {
+    this.deleteObjectById(obj._id??obj.id);
+  }
+  deleteObjectById(objId) {
     const idx = this.objects.findIndex(obj => obj._id==objId);
     this.objects.splice(idx, 1);
   }

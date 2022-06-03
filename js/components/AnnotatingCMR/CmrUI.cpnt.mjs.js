@@ -1,9 +1,11 @@
 import {
   reactive, computed, onMounted, h,
+  // Transition,
+  Teleport,
   v,
   div, span, btn
 } from './VueShadow.mjs.js';
-import { CMR } from './Shadow.mjs.js';
+import { CMR, BS } from './Shadow.mjs.js';
 
 const ha = (children, href, title, targetBlank) => {
   targetBlank = targetBlank?(!!targetBlank):true;
@@ -28,6 +30,22 @@ const ti = (name) => {
   return h("i", {'class': ["ti", `ti-${name??'square'}`]});
 };  // https://tabler-icons.io
 const vr = () => h("div", {'class': "vr"});
+
+
+const modal = (attrs, children, to, disabled) => h(Teleport, {
+  'to': to??"body",
+  'disabled': disabled??false,
+}, h(BS.Modal, attrs, children));
+
+const confirmModal = (dataWrap, showName, text, onConfirm, onHide) => modal({
+  'show': dataWrap[showName],
+  'needconfirm': true,
+  'onConfirm': ()=>{(onConfirm??(()=>{}))();dataWrap[showName]=false;},
+  'onHide': ()=>{(onHide??(()=>{}))();dataWrap[showName]=false;},
+}, {
+  default: div({}, text),
+}, "body");
+
 
 
 
@@ -157,11 +175,14 @@ const PropertyItem = {
       };
       return;
     };
-    const onConfirm = (slotSettings, data) => {
-      // console.log([slotSettings, data]);
-      newDataWrap['data'][slotSettings?.['name']??"未知字段"] = data;
+    const onDelete = () => {
+      ctx.emit('delete-property');
+    };
+    const onConfirm = (value) => {
+      let key = props['slot']?.['name']??"未知字段";
+      newDataWrap['data'][key] = value;
       localData.currentStage = stages['①呈现数据内容'];
-      ctx.emit('set-property', newDataWrap['data']);
+      ctx.emit('set-property', {[key]: newDataWrap['data'][key]});
     };
     const onCancel = () => {
       localData.currentStage = stages['①呈现数据内容'];
@@ -225,7 +246,7 @@ const PropertyItem = {
             span({'class': "align-middle"}, dataFace(newDataWrap['data'])),
           ]),
           true ? btn({
-            'onClick': ()=>{},
+            'onClick': ()=>{onDelete()},
             'title': "删除"
           }, bi("trash3"), "outline-secondary") : null,
           btn({
@@ -260,7 +281,7 @@ const PropertyItem = {
       ? [
         h(ctrlComponent(v(currentCtrl)), {
           'ctrl': v(currentCtrl),
-          'onConfirm': (data)=>{onConfirm(props['slot'], data);},
+          'onConfirm': (value)=>{onConfirm(value);},
           'onCancel': ()=>{onCancel();},
         }),
       ]
@@ -287,6 +308,31 @@ const ObjectPanel = {
       'data': JSON.parse(JSON.stringify(props?.['data']??{})),
     });
 
+    const localData = reactive({
+      'fieldToAdd': "",
+      'showResetConfirmModal': false,
+      'showDeleteConfirmModal': false,
+    });
+
+    const 重置确认框 = () => confirmModal(
+      localData,
+      "showResetConfirmModal",
+      "确定要重置此对象吗？将会恢复到此次编辑前的状态。",
+      ()=>{
+        ctx.emit("reset-object", localObjectShadow.data);
+        localObjectShadow.data = JSON.parse(JSON.stringify(props?.['data']??{}));
+      },
+    );
+
+    const 删除确认框 = () => confirmModal(
+      localData,
+      "showDeleteConfirmModal",
+      "确定要删除此对象吗？",
+      ()=>{
+        ctx.emit("delete-object", localObjectShadow.data);
+      },
+    );
+
     const slots = computed(() => (props?.typeDef?.slots??[]));
 
     const slotDict = computed(() => {
@@ -300,22 +346,40 @@ const ObjectPanel = {
     });
 
     const fields = computed(() => {
+      let v_slotDict = v(slotDict);
       let kkvvs = Object.entries(localObjectShadow.data);
-      let slotDictV = v(slotDict);
-      return kkvvs.filter(kkvv => kkvv[0] in slotDictV).map(kkvv => {
+      let that = kkvvs.filter(kkvv => kkvv[0] in v_slotDict).map(kkvv => {
         let [kk, vv] = kkvv;
-        return slotDictV[kk];
+        return v_slotDict[kk];
       });
+      // console.log(that);
+      return that;
+    });
+
+    const moreFields = computed(() => {
+      let that = [];
+      for (let slot of v(slots)) {
+        if (slot.name && !(slot.name in localObjectShadow.data)) {
+          that.push(slot);
+        };
+      };
+      return that;
     });
 
     const onSetProperty = (xx) => {
       Object.assign(localObjectShadow.data, xx);
     };
+    const onDeleteProperty = (fieldName) => {
+      localObjectShadow.data[fieldName] = undefined;
+      delete localObjectShadow.data[fieldName];
+    };
 
-    const getFieldData = (slot) => {
-      let slotName = slot?.name??"__";
-      let value = props['data']?.[slotName]??null;
-      return value;
+    const addField = (fieldName) => {
+      if (!fieldName.length) {return;};
+      if (fieldName in localObjectShadow.data) {return;};
+      Object.assign(localObjectShadow.data, {
+        [fieldName]: slotDict?.[fieldName]?.default ?? slotDict?.[fieldName]?.init ?? {},
+      });
     };
 
     const 标题栏 = () => {
@@ -361,13 +425,14 @@ const ObjectPanel = {
         // 已有字段
         v(fields).map((field, idx) => h(PropertyItem, {
           'key': idx,
-          'data': getFieldData(field),
-          'field': field,
+          'data': localObjectShadow?.data?.[field?.name],
+          'slot': field,
           'onSetProperty': (xx)=>{onSetProperty(xx);},
+          'onDeleteProperty': ()=>{onDeleteProperty(field?.name??"");},
         })),
 
         // 添加字段
-        div({'class': "--border p-0 hstack gap-1 align-items-center justify-content-around"}, [
+        v(moreFields).length ? div({'class': "--border p-0 hstack gap-1 align-items-center justify-content-around"}, [
           div({
             'class': [
               "w-25",
@@ -377,15 +442,28 @@ const ObjectPanel = {
           }, "添加字段"),
 
           div({'class': "input-group input-group-sm"}, [
-            h("select", {'class': "form-select text-center"}, [
-              h("option"),
+            h("select", {
+              'class': "form-select text-center",
+              'onChange': (event)=>{
+                localData.fieldToAdd = event?.target?.value;
+              },
+              'value': localData.fieldToAdd,
+            }, [
+              h("option", {
+                'value': localData.fieldToAdd,
+              }, "<请选择>"),
+              ...v(moreFields).map(field=>h("option", {
+                'value': field.name,
+              }, [field.name])),
             ]),
             btn({
-              'onClick': ()=>{},
+              'onClick': ()=>{
+                addField(localData.fieldToAdd);
+              },
               'title': "执行添加",
             }, bi("plus-lg"), "outline-secondary"),
           ]),
-        ]),
+        ]) : null,
       ]);
     };
 
@@ -413,8 +491,7 @@ const ObjectPanel = {
         btn({
           'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
           'onClick': ()=>{
-            ctx.emit("reset-object", localObjectShadow.data);
-            localObjectShadow.data = JSON.parse(JSON.stringify(props?.['data']??{}));
+            localData.showResetConfirmModal=true;
           },
           'disabled': false,
         }, [bi("arrow-repeat"), "重置"], "--outline-secondary"),
@@ -422,7 +499,7 @@ const ObjectPanel = {
         btn({
           'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
           'onClick': ()=>{
-            ctx.emit("delete-object", localObjectShadow.data);
+            localData.showDeleteConfirmModal=true;
           },
           'disabled': false,
         }, [bi("trash3"), "删除"], "--outline-secondary"),
@@ -437,6 +514,8 @@ const ObjectPanel = {
       数据呈现(),
       字段列表(),
       总体操作(),
+      重置确认框(),
+      删除确认框(),
     ]);
   },
 };
@@ -451,8 +530,11 @@ const ObjectPanelList = {
     ObjectPanel,
   },
   setup(props, ctx) {
+    const shouldShow = computed(()=>{
+      return props?.['objectWraps']?.filter?.(it=>it.show)?.length;
+    });
     return () => div({
-      'class': "vstack gap-3",
+      'class': ["vstack gap-3", {"d-none": !v(shouldShow)}],
     }, [
       div({'class': "h6 mt-3 mb-1"}, ["正在标注的对象"]),
       props['objectWraps'].map((objWrap, idx) => objWrap?.['show'] ? h(ObjectPanel, {
@@ -588,12 +670,16 @@ const StartButtonGroup = {
 // 最终操作按钮组
 const FinalButtonGroup = {
   props: [],
-  emits: ['save', 'ok', 'reset', 'clean'],
+  emits: ['save', 'ok', 'reset', 'clean', 'debug'],
   component: {},
   setup(props, ctx) {
     return () => div({
       'class': "hstack gap-2 my-3 justify-content-end",
     }, [
+      btn({
+        'class': "btn-sm",
+        'onClick': ()=>{ctx.emit('debug');},
+      }, "DEBUG", "outline-secondary"),
       btn({
         'class': "btn-sm",
         'onClick': ()=>{ctx.emit('save');},
@@ -659,6 +745,13 @@ export default {
       init();
     });
 
+    const onSaveObject = (object) => {
+      reactiveCMR.updateObject(object);
+    };
+    const onDeleteObject = (object) => {
+      reactiveCMR.deleteObject(object);
+    };
+
     return () => div({'class': "--border --p-2 my-1 vstack gap-2"}, [
       div({'class': ""}, [
         "请按照 ",
@@ -676,6 +769,8 @@ export default {
 
       h(ObjectPanelList, {
         'objectWraps': v(objectWraps),
+        'onDeleteObject': (object)=>{onDeleteObject(object);},
+        'onSaveObject': (object)=>{onSaveObject(object);},
         'onHideObjectWrap': (objWrap)=>{localData['showDict'][objWrap['_id']]=false;},
       }),
 
@@ -690,6 +785,9 @@ export default {
           init();
         },
         'onClean': ()=>{},
+        'onDebug': ()=>{
+          console.log(reactiveCMR);
+        },
       }),
 
 
