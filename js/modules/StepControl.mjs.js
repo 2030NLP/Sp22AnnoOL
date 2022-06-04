@@ -106,10 +106,10 @@ class StepControl {
   //   await this.goRefStep(ref, null);
   // }
 
-  async 排他并保存(data) {
+  async 排他处理(data) {
     this.ewp.example.annotations = this.ewp.example.annotations?.filter?.(it=>it.mode!=this.currentStep.mode);
     const idxes = this.ewp.example.annotations.map(it=>it.idx).filter(it=>!isNaN(+it));
-    let idx = Math.max(...idxes)+1;
+    let idx = JSON.parse(JSON.stringify(Math.max(...idxes)+1)) ?? 0;
     if (data==null) {data={};};
     data.idx = idx;
     data.mode = this.currentStep.mode;
@@ -117,7 +117,7 @@ class StepControl {
   }
 
   async 排他并保存Step(ref, data) {
-    await this.排他并保存(data);
+    await this.排他处理(data);
     await this.goRefStep(ref);
     // props['example']['annotations'] = props['example']['annotations']?.filter?.(it=>it.mode!=props?.step?.mode);
     // // props['example']['annotations'].push({mode: props?.step?.mode});

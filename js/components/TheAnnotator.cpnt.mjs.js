@@ -11,7 +11,7 @@ import gen_SpaCE2022_Task2R_ModeSection from './AnnotatingModes/mode_SpaCE2022_T
 import CmrUI from './AnnotatingCMR/CmrUI.cpnt.mjs.js';
 
 export default {
-  props: ["example", "step", "engine", "tokenSelector", "stepCtrl", "tokens", "selection", "alertBox", "modifiedText"],
+  props: ["example", "backendUsage", "step", "engine", "tokenSelector", "stepCtrl", "tokens", "selection", "alertBox", "modifiedText"],
   emits: ["web-next", "web-save", "web-save-and-next", "ok", "start", "clean", "cancel", "reset", "next", "add-to-list", "clear-selection", "option"],
   component: {
     BsBadge,
@@ -221,12 +221,14 @@ export default {
         'stepCtrl': props.stepCtrl,
         'alertBox': props.alertBox,
         'example': props.example,
+        'backendUsage': props.backendUsage,
         'step': props.step,
         'stepProps': step_props.value,
-        'onSave': (data)=>{
-          props.stepCtrl.排他并保存(data);
+        onSave: (data)=>{
+          props.stepCtrl.排他处理(data);
+          props.backendUsage.save(props.example);
         },
-        'onOk': (data)=>{
+        onOk: (data)=>{
           props.stepCtrl.排他并保存Step(step_props?.value?.go, data);
         },
       }) : null),

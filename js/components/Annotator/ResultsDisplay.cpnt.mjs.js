@@ -142,24 +142,38 @@ export default {
       ]);
     };
 
+    const makeDisplay = (annot, idx) => {
+      if (annot.mode=="CSpaceBank") {return theCSpaceBankResultDisplay(annot, idx);};
+      return [
+        !annot.hidden ? h(BsBadge, {
+          class: [props.eachClass, {'d-none': annot.hidden}, "lh-base"],
+          key: annot.idx,
+          title: props.showTitleDetail ? JSON.stringify(annot) : null,
+          'data-mode': annot.mode,
+          'data-label': annot.label,
+          canClose: props.canClose,
+          onClose: props.canClose ? (()=>{
+            annot._idx_to_delete = idx;
+            ctx.emit("close", annot);
+          }) : (()=>{}),
+        }, makeChildren(annot)) : null,
+        !annot.hidden&&props.wrap ? h("br") : null,
+      ];
+    };
+
+    const theCSpaceBankResultDisplay = (annot, idx) => {
+      const result = h('div', {'class': [
+        "border", "rounded",
+        "overflow-auto",
+        "p-2", "my-2",
+      ]}, [JSON.stringify([annot, idx])]);
+      return result;
+    };
+
     return () => h("div", { },
-      (props.annotations?.map?.(
-        (annot, idx)=>[
-          !annot.hidden ? h(BsBadge, {
-            class: [props.eachClass, {'d-none': annot.hidden}, "lh-base"],
-            key: annot.idx,
-            title: props.showTitleDetail ? JSON.stringify(annot) : null,
-            'data-mode': annot.mode,
-            'data-label': annot.label,
-            canClose: props.canClose,
-            onClose: props.canClose ? (()=>{
-              annot._idx_to_delete = idx;
-              ctx.emit("close", annot);
-            }) : (()=>{}),
-          }, makeChildren(annot)) : null,
-          !annot.hidden&&props.wrap ? h("br") : null,
-        ] ?? []).flat()
-      )
+      props.annotations?.map?.(
+        (annot, idx)=>makeDisplay(annot, idx) ?? []
+      ).flat()
     );
 
   },
