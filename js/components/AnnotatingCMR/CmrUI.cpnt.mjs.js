@@ -759,21 +759,46 @@ export default {
         console.log(reactiveCMR);
       },
       'onSave': ()=>{
-        props['example']['annotations'] = props['example']['annotations']?.filter?.(it=>it.mode!=props?.step?.mode);
-        props['example']['annotations'].push({});
+        ctx.emit('save', {'haha': 'onSave'});
       },
       'onOk': ()=>{
-        props?.stepCtrl?.goRefStep?.(props?.stepProps?.go);
+        ctx.emit('ok', {'haha': 'onOk'});
       },
       'onReset': ()=>{
-        init();
+        localData.showResetConfirmModal=true;
       },
-      'onClean': ()=>{},
+      'onClean': ()=>{
+        localData.showCleanConfirmModal=true;
+      },
     });
+
+    const 重置确认框 = () => confirmModal(
+      localData,
+      "showResetConfirmModal",
+      "确定要重置所有标注数据吗？将会恢复到上次保存的状态。",
+      ()=>{
+        ctx.emit("reset-data", {});
+        init();
+        // reactiveCMR.reset();
+      },
+    );
+
+    const 清空确认框 = () => confirmModal(
+      localData,
+      "showCleanConfirmModal",
+      "确定要清空所有标注数据吗？该操作无法撤销。",
+      ()=>{
+        ctx.emit("clean-data", {});
+        // init();
+        reactiveCMR.reset();
+      },
+    );
 
     const localData = reactive({
       'showDict': {},
       'showList': [],
+      'showResetConfirmModal': false,
+      'showCleanConfirmModal': false,
     });
 
     const objectWraps = computed(()=>{
@@ -872,6 +897,8 @@ export default {
       单个对象面板列表(),
       h(ResultPanel),
       最终按钮区(),
+      重置确认框(),
+      清空确认框(),
 
     ]);
   },

@@ -35,6 +35,8 @@ class CMR {
     return Math.max(...(this.objects.map(it=>+(it._id??it.id)).filter(it=>!isNaN(it))))+1;
   }
 
+  reset() {}
+
   get(gid) {
     if (typeof(gid)!="string") {return gid};
     const map = {

@@ -6,7 +6,7 @@ import gen_commentModeSection from './AnnotatingModes/mode_comment.mjs.js';
 import gen_multiSpansModeSection from './AnnotatingModes/mode_multiSpans.mjs.js';
 import gen_SpaCE2022_Task2_ModeSection from './AnnotatingModes/mode_SpaCE2022_Task2.mjs.js';
 import gen_SpaCE2022_Task2R_ModeSection from './AnnotatingModes/mode_SpaCE2022_Task2R.mjs.js';
-import gen_CSpaceBank_ModeSection from './AnnotatingModes/mode_CSpaceBank.mjs.js';
+// import gen_CSpaceBank_ModeSection from './AnnotatingModes/mode_CSpaceBank.mjs.js';
 
 import CmrUI from './AnnotatingCMR/CmrUI.cpnt.mjs.js';
 
@@ -206,7 +206,7 @@ export default {
 
     const theSpaCE2022_Task2_ModeSection = gen_SpaCE2022_Task2_ModeSection(__pack);
     const theSpaCE2022_Task2R_ModeSection = gen_SpaCE2022_Task2R_ModeSection(__pack);
-    const theCSpaceBank_ModeSection = gen_CSpaceBank_ModeSection(__pack);
+    // const theCSpaceBank_ModeSection = gen_CSpaceBank_ModeSection(__pack);
 
     return () => div({ 'class': "row", 'data-mode': mode.value, }, [
       ...(modeMatch("add", "modify", "delete") ? editModeSection() : []),
@@ -223,6 +223,12 @@ export default {
         'example': props.example,
         'step': props.step,
         'stepProps': step_props.value,
+        'onSave': (data)=>{
+          props.stepCtrl.排他并保存(data);
+        },
+        'onOk': (data)=>{
+          props.stepCtrl.排他并保存Step(step_props?.value?.go, data);
+        },
       }) : null),
       // ...(modeMatch("CSpaceBank") ? theCSpaceBank_ModeSection() : []),
 

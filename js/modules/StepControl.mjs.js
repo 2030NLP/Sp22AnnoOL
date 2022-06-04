@@ -106,12 +106,31 @@ class StepControl {
   //   await this.goRefStep(ref, null);
   // }
 
+  async 排他并保存(data) {
+    this.ewp.example.annotations = this.ewp.example.annotations?.filter?.(it=>it.mode!=this.currentStep.mode);
+    const idxes = this.ewp.example.annotations.map(it=>it.idx).filter(it=>!isNaN(+it));
+    let idx = Math.max(...idxes)+1;
+    if (data==null) {data={};};
+    data.idx = idx;
+    data.mode = this.currentStep.mode;
+    this.ewp.example.annotations.push(data);
+  }
+
+  async 排他并保存Step(ref, data) {
+    await this.排他并保存(data);
+    await this.goRefStep(ref);
+    // props['example']['annotations'] = props['example']['annotations']?.filter?.(it=>it.mode!=props?.step?.mode);
+    // // props['example']['annotations'].push({mode: props?.step?.mode});
+    // props?.stepCtrl?.goRefStep?.(props?.stepProps?.go, {});
+  }
+
   dealWithData(data, fn) {
     if (!this?.ewp?.example?.annotations?.length) {
       this.ewp.example.annotations = [];
     };
     // 按照 schema 补充必要的数据字段
-    let idx = this.ewp.example.annotations.length;
+    const idxes = this.ewp.example.annotations.map(it=>it.idx).filter(it=>it!=null&&!isNaN(+it));
+    let idx = Math.max(...idxes)+1;
     data.idx = idx;
     data.mode = this.currentStep.mode;
 
