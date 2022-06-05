@@ -1,9 +1,10 @@
-import { h } from '../../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
+import { h, computed } from '../../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
 export default {
-  props: ["bgStyle", "textStyle", "canRemove", "canClose"],
+  props: ["bgStyle", "textStyle", "canRemove", "canClose", "closeIcon", "removeIcon"],
   emits: ["close"],
   setup(props, ctx) {
+    const closeIcon = computed(()=>props.closeIcon??props.removeIcon??"x");
     const node = () => h("span", {
       class: [
         "badge",
@@ -20,7 +21,7 @@ export default {
           ctx.emit("close");
           ctx.emit("remove");
         },
-      }, ["✖️"]) : null,
+      }, [closeIcon.value]) : null,
     ]);
     // console.log("---");
     // console.log(node());

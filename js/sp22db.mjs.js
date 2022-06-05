@@ -322,6 +322,9 @@ class Sp22DB {
     if (!this.lo.isArray(user.doneTasks)) {
       user.doneTasks = [];
     };
+
+    // TODO: 区分 needCompletion 的 annot 到底是否 completed
+
     user.doneTasks.push(anno.task);
     user.doneTasks = this.lo.uniq(user.doneTasks);
 

@@ -333,6 +333,7 @@ const genModeSection = (__pack) => {
                       touchSlot(optIdx, slotIdx).tokenarray = null;
                       setSlot(optIdx, slotIdx, null);
                     },
+                    'removeIcon': "删",
                   }, [
                     slot.placeholder ? span({
                       'class': "text-muted me-2",
@@ -343,7 +344,7 @@ const genModeSection = (__pack) => {
                         touchSlot(optIdx, slotIdx).tokenarray = [...touchSlot(optIdx, slotIdx).tokenarray, ...props.selection.array];
                         clearSelector();
                       },
-                    }, ["➕"]) : null,
+                    }, ["添"]) : null,
                   ])]);
                 };
               };

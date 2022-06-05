@@ -698,35 +698,53 @@ const StartButtonGroup = {
 // 最终操作按钮组
 const FinalButtonGroup = {
   props: [],
-  emits: ['save', 'ok', 'reset', 'clean', 'debug'],
+  emits: ['save', 'ok', 'reset', 'clean', 'debug', 'go-prev', 'go-next'],
   component: {},
   setup(props, ctx) {
     return () => div({
-      'class': "hstack gap-2 my-3 justify-content-end",
+      'class': "hstack gap-2 my-3 justify-content-between flex-wrap",
     }, [
-      btn({
-        'class': "btn-sm",
-        'onClick': ()=>{ctx.emit('debug');},
-      }, "DEBUG", "outline-secondary"),
-      btn({
-        'class': "btn-sm",
-        'onClick': ()=>{ctx.emit('save');},
-        'title': "将未完成的标注暂时保存到云端，并记录这条标注处于「未完成」的状态。",
-      }, "暂时保存", "primary"),
-      btn({
-        'class': "btn-sm",
-        'onClick': ()=>{ctx.emit('ok');},
-        'title': "保存并提交，记为「完成」状态。",
-      }, "完成", "success"),
-      btn({
-        'class': "btn-sm",
-        'onClick': ()=>{ctx.emit('reset');},
-        'title': "重置为上次保存时的状态。",
-      }, "重置", "warning"),
-      btn({
-        'class': "btn-sm",
-        'onClick': ()=>{ctx.emit('clean');},
-      }, "清空", "danger"),
+      div({
+        'class': "hstack gap-2 justify-content-end flex-wrap",
+      }, [
+        btn({
+          'class': "btn-sm",
+          'onClick': ()=>{ctx.emit('save');},
+          'title': "将未完成的标注暂时保存到云端，并记录这条标注处于「未完成」的状态。",
+        }, "暂时保存", "primary"),
+        btn({
+          'class': "btn-sm",
+          'onClick': ()=>{ctx.emit('ok');},
+          'title': "保存并提交，记为「完成」状态。",
+        }, "完成并保存", "success"),
+        btn({
+          'class': "btn-sm",
+          'onClick': ()=>{ctx.emit('reset');},
+          'title': "重置为上次保存时的状态。",
+        }, "重置", "warning"),
+        btn({
+          'class': "btn-sm",
+          'onClick': ()=>{ctx.emit('clean');},
+        }, "清空", "danger"),
+        btn({
+          'class': "btn-sm",
+          'onClick': ()=>{ctx.emit('debug');},
+        }, "DEBUG", "outline-secondary"),
+      ]),
+      div({
+        'class': "hstack gap-2 justify-content-end flex-wrap",
+      }, [
+        btn({
+          'class': "btn-sm",
+          'onClick': ()=>{ctx.emit('go-prev');},
+          'title': "不会保存",
+        }, "上一条", "outline-secondary"),
+        btn({
+          'class': "btn-sm",
+          'onClick': ()=>{ctx.emit('go-next');},
+          'title': "不会保存",
+        }, "下一条", "outline-secondary"),
+      ]),
     ]);
   }
 };
@@ -735,7 +753,7 @@ const FinalButtonGroup = {
 // 🔯🔯🔯🔯🔯🔯
 // 整个组件
 export default {
-  props: ['tokenSelector', 'selection', 'stepCtrl', 'alertBox', 'example', 'step', 'stepProps'],
+  props: ['tokenSelector', 'selection', 'stepCtrl', 'alertBox', 'example', 'step', 'stepProps', 'go-prev', 'go-next'],
   emits: ['save', 'reset'],
   component: {
     AllObjectsPanel,
@@ -747,11 +765,19 @@ export default {
   setup(props, ctx) {
     const reactiveCMR = reactive(new CMR);
     const init = () => {
-
       reactiveCMR.initDefinition(props?.['stepProps']?.['definition']);
-      const existedData = props?.['example']?.['annotations']?.filter?.(it=>it.mode==props?.step?.mode)?.[0]?.['objects']??[];
-      reactiveCMR.initData({'objects': [...existedData, {'type': "时间（相对于事件）"}, {'type': "时间（相对于事件）"}]});
+      const existedObjects =
+        props?.['example']?.['annotations']
+          ?.filter?.(it=>it.mode==props?.step?.mode)
+          ?.[0]?.['data']?.['objects']??[];
+      reactiveCMR.initData({'objects': existedObjects});
+    };
 
+    const makeOutputData = () => {
+      const data = {
+        'objects': JSON.parse(JSON.stringify(reactiveCMR.objects)),
+      };
+      return data;
     };
 
     const 最终按钮区 = () => h(FinalButtonGroup, {
@@ -759,16 +785,32 @@ export default {
         console.log(reactiveCMR);
       },
       'onSave': ()=>{
-        ctx.emit('save', {'haha': 'onSave'});
+        const data = {
+          'needCompletion': true,
+          'completed': false,
+          'data': makeOutputData(),
+        };
+        ctx.emit('save', data);
       },
       'onOk': ()=>{
-        ctx.emit('ok', {'haha': 'onOk'});
+        const data = {
+          'needCompletion': true,
+          'completed': true,
+          'data': makeOutputData(),
+        };
+        ctx.emit('save', data);
       },
       'onReset': ()=>{
         localData.showResetConfirmModal=true;
       },
       'onClean': ()=>{
         localData.showCleanConfirmModal=true;
+      },
+      'onGoPrev': ()=>{
+        ctx.emit('go-prev');
+      },
+      'onGoNext': ()=>{
+        ctx.emit('go-next');
       },
     });
 

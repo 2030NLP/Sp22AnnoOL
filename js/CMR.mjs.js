@@ -128,7 +128,7 @@ class CMR {
   typeOf(object) {
     let typeFace = object['_type'] ?? object['type'] ?? "";
     typeFace = typeFace.replace(/^@+/g, "");
-    return this.typeDict[typeFace] ?? {};
+    return this.typeDict[typeFace] ?? {'name': typeFace};
   }
 
 

@@ -116,14 +116,6 @@ class StepControl {
     this.ewp.example.annotations.push(data);
   }
 
-  async 排他并保存Step(ref, data) {
-    await this.排他处理(data);
-    await this.goRefStep(ref);
-    // props['example']['annotations'] = props['example']['annotations']?.filter?.(it=>it.mode!=props?.step?.mode);
-    // // props['example']['annotations'].push({mode: props?.step?.mode});
-    // props?.stepCtrl?.goRefStep?.(props?.stepProps?.go, {});
-  }
-
   dealWithData(data, fn) {
     if (!this?.ewp?.example?.annotations?.length) {
       this.ewp.example.annotations = [];

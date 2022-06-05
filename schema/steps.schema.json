@@ -23,7 +23,7 @@
 
   "精标": {
     "startStep": "start",
-    "endStep": "end",
+    "endStep": "start",
     "steps": {
       "end": {
         "ref": "end",

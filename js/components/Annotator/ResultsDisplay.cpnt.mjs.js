@@ -151,6 +151,7 @@ export default {
           title: props.showTitleDetail ? JSON.stringify(annot) : null,
           'data-mode': annot.mode,
           'data-label': annot.label,
+          'closeIcon': "删",
           canClose: props.canClose,
           onClose: props.canClose ? (()=>{
             annot._idx_to_delete = idx;

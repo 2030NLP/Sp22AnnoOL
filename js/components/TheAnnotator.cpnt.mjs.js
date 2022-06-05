@@ -228,8 +228,11 @@ export default {
           props.stepCtrl.排他处理(data);
           props.backendUsage.save(props.example);
         },
-        onOk: (data)=>{
-          props.stepCtrl.排他并保存Step(step_props?.value?.go, data);
+        onGoPrev: (data)=>{
+          props.backendUsage.prev(props.example);
+        },
+        onGoNext: (data)=>{
+          props.backendUsage.next(props.example);
         },
       }) : null),
       // ...(modeMatch("CSpaceBank") ? theCSpaceBank_ModeSection() : []),
