@@ -68,6 +68,126 @@
             ],
 
             "object_types": [
+
+              {"name": "空间实体", "slots": [
+                {"name": "是否是虚拟的", "ctrls": ["布尔值"], "default": false, "required": true},
+                {"name": "是否自成处所", "ctrls": ["布尔值"], "init": false},
+                {"name": "是否为指称", "ctrls": ["布尔值"], "init": false},
+                {"name": "是否是名称", "ctrls": ["布尔值"], "init": false},
+                {"name": "原文片段", "ctrls": ["多个原文片段"], "init": [], "required": true}
+              ]},
+
+              {"name": "事件", "slots": [
+                {"name": "原文片段", "ctrls": ["单个原文片段"], "init": [], "required": true},
+                {"name": "施事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "共同施事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "当事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "间接当事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "受事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "系事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "与事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "结果", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "对象", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "内容", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "工具", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "材料", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "方式", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "原因", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "目的", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "事量", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "旧量", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "新量", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "范围", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "起点", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "终点", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "路径", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "方向", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "处所", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "起始", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "结束", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "时点", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
+                {"name": "时段", "ctrls": ["单个对象", "单个原文片段"], "reusable": true}
+              ]},
+          
+              {"name": "角色引用", "slots": [
+                {"name": "所属事件",
+                  "ctrls": [
+                    {"type": "单个对象", "config": {"filter": {"type": "事件"}}}]},
+                {"name": "角色",
+                  "ctrls": [
+                    {"type": "单个标签", "config": {"set": "语义角色键"}}],
+                  "required": true}
+              ]},
+          
+              {"name": "合集", "slots": [
+                {"name": "成员类型", "ctrls": ["单个类型"], "required": true},
+                {"name": "成员清单", "ctrls": ["多个对象"], "init": [], "required": true},
+                {"name": "成员间关系",
+                  "ctrls": [{"type": "单个标签", "config": {"set": "成员间关系"}}],
+                  "default": {"set": "成员间关系", "spec": "^"}, "required": true}
+              ]},
+          
+              {"name": "位置特征", "slots": [
+                {"name": "介词", "ctrls": ["原文片段"]},
+                {"name": "参照实体", "ctrls": [
+                  {"type": "单个对象", "config": {
+                    "filter": {
+                      "$or": [
+                        {"type": "空间实体"},
+                        {"type": "合集", "成员类型": "空间实体"},
+                        {"type": "角色引用"}]
+                    }}}]},
+                {"name": "方位词", "ctrls": ["原文片段"]}
+              ]},
+          
+              {"name": "方向特征", "slots": [
+                {"name": "参照实体", "ctrls": [
+                  {"type": "单个对象", "config": {
+                    "filter": {
+                      "$or": [
+                        {"type": "空间实体"},
+                        {"type": "合集", "成员类型": "空间实体"},
+                        {"type": "角色引用"}]
+                    }}}]},
+                {"name": "介词", "ctrls": ["原文片段"]},
+                {"name": "方位词", "ctrls": ["原文片段"]}
+              ]},
+          
+              {"name": "朝向特征", "slots": [
+                {"name": "介词", "ctrls": ["原文片段"]},
+                {"name": "参照实体", "ctrls": [
+                  {"type": "单个对象", "config": {
+                    "filter": {
+                      "$or": [
+                        {"type": "空间实体"},
+                        {"type": "合集", "成员类型": "空间实体"},
+                        {"type": "角色引用"}]
+                    }}}]},
+                {"name": "方位词", "ctrls": ["原文片段"]}
+              ]},
+          
+              {"name": "特征命题", "slots": [
+                {"name": "被描述的实体", "ctrls": [
+                  {"type": "单个对象", "config": {
+                    "filter": {
+                      "$or": [
+                        {"type": "空间实体"},
+                        {"type": "合集", "成员类型": "空间实体"},
+                        {"type": "角色引用"}]
+                    }}}]},
+                {"name": "依附的事件", "ctrls": [
+                  {"type": "单个对象", "config": {
+                    "filter": {
+                      "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
+                    }}}]},
+                {"name": "特征", "ctrls": [
+                  {"type": "单个对象", "config": {
+                    "filter": {
+                      "$or": [{"type": "位置特征"}, {"type": "方向特征"}, {"type": "朝向特征"}]
+                    }}}]},
+                {"name": "时间", "ctrls": ["时间（相对于事件）", "原文片段"]}
+              ]},
+
               {
                 "name": "时间（相对于事件）",
                 "icon-bi": "clock",

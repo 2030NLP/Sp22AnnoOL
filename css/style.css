@@ -3,9 +3,13 @@
 
 
 
+
+    a {cursor: pointer;}
+
+
     .bg-gray-200 {
       background-color: #e9ecef;
-      background-color: $gray-200;
+      /* background-color: $gray-200; */
     }
 
     .cursor-pointer {
@@ -124,7 +128,7 @@
 
 
 
-    #material-replaced, #material-origin, #convenient-ctrl {}
+    /* #material-replaced, #material-origin, #convenient-ctrl {} */
     .carded {
       padding: 0.5em 0.25em;
       border: 1px solid #eee;
@@ -291,17 +295,17 @@
 
 
     /*名词 autoEntity为True*/
-    .material-area span.token[data-auto-entity=true][data-pos=n] {
+    /* .material-area span.token[data-auto-entity=true][data-pos=n] { */
       /*color: #0d6efd;*/
-    }
-    .material-area span.token[data-auto-entity=true][data-pos=ns] {
+    /* } */
+    /* .material-area span.token[data-auto-entity=true][data-pos=ns] { */
       /*color: #0d6efd;*/
       /*border-bottom: 1px #0d6efd solid;*/
-    }
-    .material-area span.token[data-auto-entity=true][data-pos=nr] {
+    /* } */
+    /* .material-area span.token[data-auto-entity=true][data-pos=nr] { */
       /*color: #0d6efd;*/
       /*border-bottom: 1px #0d6efd dotted;*/
-    }
+    /* } */
 
     /*其他实体词，不存在*/
     /*.material-area span.token[data-auto-entity=true] {*/

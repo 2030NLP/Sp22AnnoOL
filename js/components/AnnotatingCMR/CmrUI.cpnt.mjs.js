@@ -1,11 +1,14 @@
 import {
   reactive, computed, onMounted, h,
+  provide, inject,
   // Transition,
   Teleport,
   v,
   div, span, btn
 } from './VueShadow.mjs.js';
 import { CMR, BS } from './Shadow.mjs.js';
+
+import CmrDisplay from './CmrDisplay.cpnt.mjs.js';
 
 const ha = (children, href, title, targetBlank) => {
   targetBlank = targetBlank?(!!targetBlank):true;
@@ -56,11 +59,11 @@ const 设计 = `
 
 
 const ctrlTypeFaceFnMap = {
-  '单个原文片段': (boy)=>{},
-  '单个标签': (boy)=>{},
-  '单个对象': (boy)=>{},
-  '多个原文片段': (boy)=>{},
-  '多个标签': (boy)=>{},
+  '单个原文片段': (boy)=>span({}, JSON.stringify(boy)),
+  '单个标签': (boy)=>span({}, JSON.stringify(boy)),
+  '单个对象': (boy)=>span({}, JSON.stringify(boy)),
+  '多个原文片段': (boy)=>span({}, JSON.stringify(boy)),
+  '多个标签': (boy)=>span({}, JSON.stringify(boy)),
   '多个对象': (boyList, joint)=>{
     const dogs = boyList.map(boy=>ctrlTypeFaceFnMap['单个对象'](boy));
     let girls = [];
@@ -72,8 +75,8 @@ const ctrlTypeFaceFnMap = {
     };
     return girls;
   },
-  '布尔值': (boy)=>JSON.stringify(boy),
-  '数值': (boy)=>JSON.stringify(boy),
+  '布尔值': (boy)=>(boy?.value?(span({'class': "text-success"}, "true")):(span({'class': "text-danger"}, "false"))),
+  '数值': (boy)=>span({'class': "text-primary"}, boy?.value),
 };
 
 const dataFace = (cat) => {
@@ -91,9 +94,44 @@ const objectFace = (object) => {
   if (object.type in objectTypeFaceFnMap) {
     return objectTypeFaceFnMap[object.type](object);
   };
-  return JSON.stringify(object);
+  return JSON.stringify(object?.data??object);
 };
 
+
+
+
+
+
+const fixCtrl = (ctrl) => {
+  if (typeof(ctrl)=="string") {
+    ctrl = {
+      'type': ctrl,
+    };
+  };
+  // console.log(ctrl);
+  return ctrl;
+};
+// 挑选相应的控件组件
+const ctrlComponent = (ctrl) => {
+  ctrl = fixCtrl(ctrl);
+  // console.log(['props', props]);
+  // console.log(['ctrl', ctrl]);
+  const ctrlComponentMap = {
+    '单个原文片段': EditorDefault,
+    '单个标签': EditorDefault,
+    '单个对象': EditorDefault,
+    '多个原文片段': EditorDefault,
+    '多个标签': EditorDefault,
+    '多个对象': EditorDefault,
+    '布尔值': EditorBool,
+    '数值': EditorDefault,
+  };
+  if (ctrl['type'] in ctrlComponentMap) {
+    return ctrlComponentMap[ctrl['type']];
+  };
+  return EditorDefault;
+};
+// 挑选相应的控件组件 结束
 
 
 
@@ -138,6 +176,97 @@ const EditorDefault = {
 };
 // 缺省控件 结束
 
+
+
+// 🆓🆓🆓🆓🆓🆓
+// 布尔值控件
+const EditorBool = {
+  props: ['ctrl'],
+  emits: ['confirm', 'cancel'],
+  component: {},
+  setup(props, ctx) {
+    return () => div({'class': "input-group input-group-sm"}, [
+      div({'class': "form-control d-inline-block text-center"}, [
+        div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, [
+          btn({
+            'class': "btn-sm px-1 py-0",
+            'onClick': ()=>{
+              ctx.emit("confirm", true);
+              // console.log("confirm");
+            },
+            'title': "true",
+          }, [bi("check"), " ", "true"], "outline-success"),
+          btn({
+            'class': "btn-sm px-1 py-0",
+            'onClick': ()=>{
+              ctx.emit("confirm", false);
+              // console.log("confirm");
+            },
+            'title': "false",
+          }, [bi("x"), " ", "false"], "outline-danger"),
+        ]),
+      ]),
+      btn({
+        'onClick': ()=>{
+          ctx.emit("cancel");
+          // console.log("cancel");
+        },
+        'title': "取消",
+      }, bi("arrow-90deg-left"), "outline-secondary"),
+    ]);
+  },
+};
+// 布尔值控件 结束
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // 🔯🔯🔯🔯🔯🔯
 // 单个字段
 const PropertyItem = {
@@ -145,6 +274,7 @@ const PropertyItem = {
   emits: ['set-property'],
   component: {
     EditorDefault,
+    EditorBool,
   },
   setup(props, ctx) {
     const stages = {
@@ -188,36 +318,6 @@ const PropertyItem = {
       localData.currentStage = stages['①呈现数据内容'];
     };
 
-    const fixCtrl = (ctrl) => {
-      if (typeof(ctrl)=="string") {
-        ctrl = {
-          'type': ctrl,
-        };
-      };
-      // console.log(ctrl);
-      return ctrl;
-    };
-
-    // 挑选相应的控件组件
-    const ctrlComponent = (ctrl) => {
-      ctrl = fixCtrl(ctrl);
-      const ctrlComponentMap = {
-        '单个原文片段': EditorDefault,
-        '单个标签': EditorDefault,
-        '单个对象': EditorDefault,
-        '多个原文片段': EditorDefault,
-        '多个标签': EditorDefault,
-        '多个对象': EditorDefault,
-        '布尔值': EditorDefault,
-        '数值': EditorDefault,
-      };
-      if (ctrl['type'] in ctrlComponentMap) {
-        return ctrlComponentMap[ctrl['type']];
-      };
-      return EditorDefault;
-    };
-    // 挑选相应的控件组件 结束
-
 
     const currentCtrl = computed(()=>(
       fixCtrl(
@@ -243,7 +343,10 @@ const PropertyItem = {
       ? [
         div({'class': "input-group input-group-sm"}, [
           div({'class': "form-control d-inline-block text-center"}, [
-            span({'class': "align-middle"}, dataFace(newDataWrap['data'])),
+            span({'class': "align-middle"}, dataFace({
+              value: newDataWrap['data'],
+              type: v(currentCtrl)?.type,
+            })),
           ]),
           true ? btn({
             'onClick': ()=>{onDelete()},
@@ -636,7 +739,7 @@ const AllObjectsPanel = {
             },
             'value': localData.typeNameToAdd,
           }, [
-            ...[props?.typeNames??[]].map(typeName=>h("option", {
+            ...(props?.typeNames??[]).map(typeName=>h("option", {
               'value': typeName,
             }, [typeName])),
           ]),
@@ -658,12 +761,30 @@ const AllObjectsPanel = {
 // 🔯🔯🔯🔯🔯🔯
 // 标注结果盒子
 const ResultPanel = {
-  props: [],
-  emits: [],
-  component: {},
+  props: ['annotation'],
+  emits: ['update'],
+  component: {
+    CmrDisplay,
+  },
   setup(props, ctx) {
+    const reactiveCMR = inject('reactiveCMR', ()=>({}));
     return () => div({'class': "vstack gap-2 my-1"}, [
-      div({'class': "h6 mt-3 mb-1"}, ["标注结果预览"]),
+      div({'class': "hstack mt-3 mb-1 gap-2"}, [
+        div({'class': "h6 m-0"}, ["标注结果预览"]),
+        lightBtn(bi("arrow-repeat"), "刷新", null, {
+          // 'class': "mt-3 mb-1",
+          'onClick': ()=>{
+            ctx.emit('update');
+          },
+        }),
+      ]),
+      // 陈列盒子
+      div({
+        'class': "__ratio __ratio-21x9 border rounded overflow-auto",
+        'style': "min-height: 1.5em; max-height: 12em;"
+      }, div({'class': "p-1"}, div({
+        'class': "d-flex flex-wrap gap-1"
+      }, h(CmrDisplay, {'annotation': props?.['annotation']}))))
     ]);
   },
 };
@@ -764,6 +885,7 @@ export default {
   },
   setup(props, ctx) {
     const reactiveCMR = reactive(new CMR);
+    provide('reactiveCMR', reactiveCMR);
     const init = () => {
       reactiveCMR.initDefinition(props?.['stepProps']?.['definition']);
       const existedObjects =
@@ -841,7 +963,12 @@ export default {
       'showList': [],
       'showResetConfirmModal': false,
       'showCleanConfirmModal': false,
+      'displayData': {},
     });
+
+    const updateDisplay = () => {
+      localData['displayData'] = makeOutputData();
+    };
 
     const objectWraps = computed(()=>{
       const that = reactiveCMR.objects.map(obj=>({
@@ -874,8 +1001,9 @@ export default {
     });
 
     onMounted(()=>{
-      console.log(props);
+      // console.log(props);
       init();
+      updateDisplay();
     });
 
     const onSaveObject = (object) => {
@@ -927,6 +1055,11 @@ export default {
       },
     });
 
+    const 结果预览面板 = () => h(ResultPanel, {
+      'annotation': localData['displayData'],
+      'onUpdate': ()=>{updateDisplay();},
+    });
+
     return () => div({'class': "--border --p-2 my-1 vstack gap-2"}, [
       div({'class': ""}, [
         "请按照 ",
@@ -937,7 +1070,7 @@ export default {
       // h(StartButtonGroup),
       所有对象面板(),
       单个对象面板列表(),
-      h(ResultPanel),
+      结果预览面板(),
       最终按钮区(),
       重置确认框(),
       清空确认框(),

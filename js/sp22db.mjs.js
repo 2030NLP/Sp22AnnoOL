@@ -323,10 +323,19 @@ class Sp22DB {
       user.doneTasks = [];
     };
 
-    // TODO: 区分 needCompletion 的 annot 到底是否 completed
+    // 区分 needCompletion 的 annot 到底是否 completed
+    let done = true;
+    for (let annot of anno?.content?.annotations??[]) {
+      if (annot.needCompletion&&!annot.completed) {
+        done=false;
+        break;
+      };
+    };
 
-    user.doneTasks.push(anno.task);
-    user.doneTasks = this.lo.uniq(user.doneTasks);
+    if (done) {
+      user.doneTasks.push(anno.task);
+      user.doneTasks = this.lo.uniq(user.doneTasks);
+    };
 
     this.updateModified();
   }

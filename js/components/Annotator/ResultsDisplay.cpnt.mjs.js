@@ -1,5 +1,6 @@
 import { h } from '../../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 import BsBadge from '../bs/BsBadge.cpnt.mjs.js';
+import CmrDisplay from '../AnnotatingCMR/CmrDisplay.cpnt.mjs.js';
 
 // <results-display
 //   class="col col-12 col-lg-12"
@@ -19,6 +20,7 @@ export default {
   emits: ["close"],
   component: {
     BsBadge,
+    CmrDisplay,
   },
   setup(props, ctx) {
 
@@ -143,11 +145,13 @@ export default {
     };
 
     const makeDisplay = (annot, idx) => {
-      if (annot.mode=="CSpaceBank") {return theCSpaceBankResultDisplay(annot, idx);};
+      if (annot.mode=="CSpaceBank") {
+        return [theCSpaceBankResultDisplay(annot, idx)];
+      };
       return [
         !annot.hidden ? h(BsBadge, {
           class: [props.eachClass, {'d-none': annot.hidden}, "lh-base"],
-          key: annot.idx,
+          key: annot.idx??`idx-${idx}`,
           title: props.showTitleDetail ? JSON.stringify(annot) : null,
           'data-mode': annot.mode,
           'data-label': annot.label,
@@ -163,11 +167,16 @@ export default {
     };
 
     const theCSpaceBankResultDisplay = (annot, idx) => {
-      const result = h('div', {'class': [
-        "border", "rounded",
-        "overflow-auto",
-        "p-2", "my-2",
-      ]}, [JSON.stringify([annot, idx])]);
+      const result = h('div', {
+        'class': [
+          "border", "rounded",
+          "overflow-auto",
+          "p-2", "my-2",
+        ]
+      }, h(CmrDisplay, {
+        'key': annot.idx??`idx-${idx}`,
+        'annotation': annot?.['data'],
+      }));
       return result;
     };
 

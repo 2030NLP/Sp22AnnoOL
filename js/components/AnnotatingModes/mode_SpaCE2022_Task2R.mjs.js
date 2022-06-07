@@ -159,13 +159,13 @@ const genModeSection = (__pack) => {
             // 检查没有高亮词或没覆盖key的情况
             for (let tokenIdx of slot.tokenarray) {
               let token = props.tokens[tokenIdx];
-              if (!!token?.to?.word?.length) {
+              if ((!!token?.to?.word?.length)||(!!token?.from?.word?.length)) {
                 hasReplacedToken = true;
               };
               let isAutoSpatial = token?.autoSpatial&&["f", "s", "dv"].includes?.(token?.pos);
               const list = ["快速", "迅速", "急速", "缓慢", "慢速", "低速", "快快", "慢慢", "缓缓", "到处", "处处", "四处", "随处", "一起", "一齐", "单独", "独自", "健步", "缓步", "大步", "小步", "单向", "双向", "当场", "就近", "当面", "正面", "中途", "顺路", "向", "到", "往", "自", "朝", "在", "距", "经", "从", "由", "沿", "沿着", "朝着", "向着", "对着", "顺着", "通过"];
               const inList = (token) => {
-                let word = token?.to?.word ?? token?.word;
+                let word = token?.from?.whole ?? token?.to?.word ?? token?.word;
                 return list.includes(word);
               };
               let isInList = inList(token)&&["p", "d"].includes?.(token?.pos);

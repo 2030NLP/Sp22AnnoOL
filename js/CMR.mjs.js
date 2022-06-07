@@ -69,7 +69,7 @@ class CMR {
       type: typeName,
     };
     let type = this.typeDict[typeName]??{};
-    for (let slot of (type.solts??[])) {
+    for (let slot of (type.slots??[])) {
       if (slot.required && slot.name) {
         bud[slot.name] = slot.default??slot.init??null;
       };

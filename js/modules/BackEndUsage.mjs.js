@@ -103,7 +103,7 @@ class BackEndUsage {
   }
 
   updateProgress() {
-    this.data.ctrl.doneNum = this.data.tasks.filter(it=>it.valid||it.dropped).length ?? 0;
+    this.data.ctrl.doneNum = this.data.tasks.filter(it=>it.done&&(it.valid||it.dropped)).length ?? 0;
     this.data.ctrl.totalNum = this.data.tasks.length ?? 1;
     this.data.ctrl.donePct = `${Math.min(100, this.data.ctrl.doneNum / this.data.ctrl.totalNum * 100)}%`;
   }
@@ -226,9 +226,9 @@ class BackEndUsage {
 
   async connect() {
     // this.pushAlert("connect 开始", 'secondary');
-    console.log(this);
+    // console.log(this);
     try {
-      console.log(this);
+      // console.log(this);
       let resp = await this.backEnd.getMe();
       if (errorHappened(resp?.data?.err)) {
         this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
@@ -332,7 +332,7 @@ class BackEndUsage {
     try {
       let aa = this.pushAlert("正在获取任务列表，请稍等……", "info", 99999999);
       let resp = await this.backEnd.getWorkList();
-      console.log(resp);
+      // console.log(resp);
       this.removeAlert(aa);
       // if (errorHappened(resp?.data?.err)) {
       //   this.pushAlert(`【发生错误】${resp?.data?.err}`, 'danger');
@@ -340,17 +340,24 @@ class BackEndUsage {
       // };
       let work_list = resp?.data?.data ?? [];
       work_list = this.lo.shuffle(work_list);
-      console.debug(work_list);
+      // console.debug(work_list);
       let task_btn_list = [];
       for (let work of work_list) {
         let task = work.task;
         let anno = work?.anno;
+        let done = anno?.content?.annotations?.length ? true : false
+        for (let annot of anno?.content?.annotations??[]) {
+          if (annot.needCompletion&&!annot.completed) {
+            done=false;
+            break;
+          };
+        };
         let task_btn = {
           id: task.id,
           entryId: task.entry,
           batchName: task.batchName ?? "",
           batch: task.batch ?? 0,
-          done: anno?.content?.annotations?.length ? true : false,
+          done: done,
           rejectedTP: anno?.content?.review?.accept===false ? 3 : anno?.content?.review?.accept===true ? 1 : 2,
           checked: anno?.content?.review?.checked,
           valid: anno && !anno?.dropped && !anno?.skipped ? true : false,
@@ -377,7 +384,7 @@ class BackEndUsage {
   }
 
   async updateUser(user) {
-    console.log(user);
+    // console.log(user);
     let it = {
       worker: user.name,
       workerId: user.id,
@@ -453,6 +460,15 @@ class BackEndUsage {
         this.data.tasks[content?._info?.btn_idx].valid = false;
         this.data.tasks[content?._info?.btn_idx].dropped = true;
       };
+      let done = anno_wrap?.annotations?.length ? true : false
+      for (let annot of anno_wrap?.annotations??[]) {
+        if (annot.needCompletion&&!annot.completed) {
+          done=false;
+          break;
+        };
+      };
+      this.data.tasks[content?._info?.btn_idx].done = done;
+      this.updateProgress();
       return true;
     } catch (error) {
       this.pushAlert(error, 'danger');

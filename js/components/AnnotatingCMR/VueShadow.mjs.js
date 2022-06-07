@@ -10,6 +10,7 @@ import {
   createApp as Vue_createApp,
   watch,
   h,
+  provide, inject,
   Transition,
   Teleport,
 } from '../../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
@@ -49,6 +50,7 @@ export {
   Vue_createApp,
   watch,
   h,
+  provide, inject,
   Transition,
   Teleport,
 
