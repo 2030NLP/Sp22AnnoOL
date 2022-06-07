@@ -269,6 +269,7 @@
                 <token-list-p
                   :tokens="getTokenList()"
                   :showreplaced="false"
+                  :showfrom="true"
                   @tkn-down="(value)=>{tokenSelector.onMouseDown(value.token, value.event, getTokenList());}"
                   @tkn-enter="(value)=>{tokenSelector.onMouseEnter(value.token, getTokenList());}"
                   @tkn-out="(value)=>{tokenSelector.onMouseOut(value.token);}"

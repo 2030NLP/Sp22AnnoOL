@@ -1,7 +1,7 @@
 import {  h  } from '../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
 const TokenListP = {
-  props: ["tokens", "showreplaced", "showtitle"],
+  props: ["tokens", "showreplaced", "showfrom", "showtitle"],
   emits: ["tkn-down", "tkn-enter", "tkn-out", "tkn-up"],
   setup(props, ctx) {
     const onTknDown = (token, event) => {
@@ -66,6 +66,7 @@ const TokenListP = {
           'data-word' : token.word,
           'data-to-word' : token?.to?.word,
           'data-from-word' : token?.from?.word,
+          'data-from-whole' : token?.from?.whole,
           'onMousedown' : (evt)=>{this.onTknDown(token, evt)},
           'onMouseenter' : (evt)=>{this.onTknEnter(token, evt)},
           'onMouseout' : (evt)=>{this.onTknOut(token, evt)},
