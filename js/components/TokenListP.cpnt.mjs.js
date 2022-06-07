@@ -25,6 +25,9 @@ const TokenListP = {
 
     const inList = (token) => {
       let word = token?.from?.whole ?? token?.to?.word ?? token?.word;
+      if (word.length==1 && token.seg) {
+        return list.includes(word) && token.seg=="S";
+      };
       return list.includes(word);
     };
 
