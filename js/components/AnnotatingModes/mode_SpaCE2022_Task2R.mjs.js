@@ -369,15 +369,15 @@ const genModeSection = (__pack) => {
       ]),
 
       //
-      div({'class': "text-muted small"}, [
-        h("p", null, ["标注前，请仔细阅读 ", ha("最新标注规范", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide.html"), " 以及 ", ha("常见问题解答FAQ", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html"), " 。"]),
-        h("p", null, ["要点提示："]),
-        h("p", null, ["① 不要求 S-P-E 可以拼成一句通顺的话，重点是说清楚 S（什么）、P（在哪里）和 E（干什么）。尤其注意 ", span({'class': "fw-bold"}, "P 是 Place，E 是 Event，填写时切勿颠倒"), "（如“挂在墙上”应填写“P: 在墙上，E: 挂”）。"]),
-        h("p", null, ["② S 空间实体是被 P、E 直接描述了空间信息的实体，而不一定是主语和施事，如“小明把课本放到桌上”中，如果 P 和 E 分别是“到桌上”和“放”，那么 S 应该是“课本”而不是“小明”。“小明”虽然和“放”也有关联，但他的空间信息没有被表达。"]),
-        h("p", null, ["③ P 应该描述完整的空间方位信息，通常 ", span({'class': "fw-bold"}, "不应该"), " 只有一个方位词。常见的表达形式请看 ", ha("此处", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide_main.html#212-空间实体的方位-p"), " 。"]),
-        // h("p", null, ["④ 语言单位充当 S 的优先级为：专有名词 > 普通名词 > 代词。比如如果某条语料中 P、E 语法上直接关联的成分是代词“他”，并且“他”指代了出现在上下文的专有名词“小明”，那么此时 S 处应填“小明”而不应填“他”。只有“他”在该条语料中没有具体指代，才可以直接填写“他”。"]),
-        h("p", null, ["④ 若遇到较难判断的情况，首先请看 ", ha("几种特殊现象的处理方式", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement_main.html#5-几种特殊现象的处理方式"), " ，若仍难以判断，请在群中提问讨论，谢谢。"]),
-      ]),
+      // div({'class': "text-muted small"}, [
+      //   h("p", null, ["标注前，请仔细阅读 ", ha("最新标注规范", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide.html"), " 以及 ", ha("常见问题解答FAQ", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement.html"), " 。"]),
+      //   h("p", null, ["要点提示："]),
+      //   h("p", null, ["① 不要求 S-P-E 可以拼成一句通顺的话，重点是说清楚 S（什么）、P（在哪里）和 E（干什么）。尤其注意 ", span({'class': "fw-bold"}, "P 是 Place，E 是 Event，填写时切勿颠倒"), "（如“挂在墙上”应填写“P: 在墙上，E: 挂”）。"]),
+      //   h("p", null, ["② S 空间实体是被 P、E 直接描述了空间信息的实体，而不一定是主语和施事，如“小明把课本放到桌上”中，如果 P 和 E 分别是“到桌上”和“放”，那么 S 应该是“课本”而不是“小明”。“小明”虽然和“放”也有关联，但他的空间信息没有被表达。"]),
+      //   h("p", null, ["③ P 应该描述完整的空间方位信息，通常 ", span({'class': "fw-bold"}, "不应该"), " 只有一个方位词。常见的表达形式请看 ", ha("此处", "https://2030nlp.github.io/Sp22AnnoOL/task2_guide_main.html#212-空间实体的方位-p"), " 。"]),
+      //   // h("p", null, ["④ 语言单位充当 S 的优先级为：专有名词 > 普通名词 > 代词。比如如果某条语料中 P、E 语法上直接关联的成分是代词“他”，并且“他”指代了出现在上下文的专有名词“小明”，那么此时 S 处应填“小明”而不应填“他”。只有“他”在该条语料中没有具体指代，才可以直接填写“他”。"]),
+      //   h("p", null, ["④ 若遇到较难判断的情况，首先请看 ", ha("几种特殊现象的处理方式", "https://2030nlp.github.io/Sp22AnnoOL/task2_complement_main.html#5-几种特殊现象的处理方式"), " ，若仍难以判断，请在群中提问讨论，谢谢。"]),
+      // ]),
 
       // 通用结束按钮区
       generalButtonsDiv({

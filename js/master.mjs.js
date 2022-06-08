@@ -527,6 +527,7 @@ const RootComponent = {
 
 
     const updateOneEntry = async (entry_id) => {
+      // entry_id=`${+entry_id}`;
       let aidx = alertBox.pushAlert(`获取中……`, 'info', 99999999);
       const entryResp = await app.theBackEnd.getEntry(entry_id);
       if (entryResp?.data?.code!=200) {

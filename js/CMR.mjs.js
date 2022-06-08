@@ -17,7 +17,7 @@ class CMR {
     this.objects = [];
     // this.prefabs = [];
     // this.interface = {};
-    this.nextId = 0;
+    // this.nextId = 0;
     this.symbols = {
       "@": "@",
       "#": "#",
@@ -32,7 +32,7 @@ class CMR {
     return Object.fromEntries(this.objects.map(obj => [obj._id??obj.id, obj]));
   }
   get _nextId() {
-    return Math.max(...(this.objects.map(it=>+(it._id??it.id)).filter(it=>!isNaN(it))))+1;
+    return (JSON.parse(JSON.stringify(Math.max(...(this.objects.map(it=>+(it._id??it.id)).filter(it=>!isNaN(it))))))??-1)+1;
   }
 
   reset() {}
@@ -58,8 +58,8 @@ class CMR {
   makeNewObject(bud) {
     let obj = Object.assign({}, JSON.parse(JSON.stringify(bud)));
     // obj._isNew = true;
-    obj._id = this.nextId;
-    this.nextId++;
+    obj._id = this._nextId;
+    // this.nextId++;
     this.objects.push(obj);
     return obj;
   }
@@ -71,7 +71,7 @@ class CMR {
     let type = this.typeDict[typeName]??{};
     for (let slot of (type.slots??[])) {
       if (slot.required && slot.name) {
-        bud[slot.name] = slot.default??slot.init??null;
+        bud[slot.name] = {type: this.fixCtrl(slot?.ctrls?.[0]).type, value: slot.default??slot.init??null};
       };
     };
     return this.makeNewObject(bud);
@@ -80,6 +80,22 @@ class CMR {
   cloneObject(bud) {
     return this.makeNewObject(bud);
   }
+
+
+  fixCtrl(ctrl) {
+    if (ctrl==null) {
+      ctrl = {
+        'type': "",
+      };
+    };
+    if (typeof(ctrl)=="string") {
+      ctrl = {
+        'type': ctrl,
+      };
+    };
+    // console.log(ctrl);
+    return ctrl;
+  };
 
 
 

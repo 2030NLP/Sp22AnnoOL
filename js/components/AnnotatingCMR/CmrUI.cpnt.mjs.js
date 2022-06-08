@@ -59,13 +59,15 @@ const 设计 = `
 
 
 const ctrlTypeFaceFnMap = {
-  '单个原文片段': (boy)=>span({}, JSON.stringify(boy)),
+  '原文片段': (boy)=>{
+    return span({}, boy?.value?.text)??muted(JSON.stringify(boy?.value?.idxes))??muted("【请在文中选取】");
+  },
   '单个标签': (boy)=>span({}, JSON.stringify(boy)),
   '单个对象': (boy)=>span({}, JSON.stringify(boy)),
   '多个原文片段': (boy)=>span({}, JSON.stringify(boy)),
   '多个标签': (boy)=>span({}, JSON.stringify(boy)),
-  '多个对象': (boyList, joint)=>{
-    const dogs = boyList.map(boy=>ctrlTypeFaceFnMap['单个对象'](boy));
+  '多个对象': (boyListWrap, joint)=>{
+    const dogs = (boyListWrap?.value??[]).map(boy=>ctrlTypeFaceFnMap['单个对象'](boy));
     let girls = [];
     let first = true;
     for (let dog of dogs) {
@@ -80,8 +82,8 @@ const ctrlTypeFaceFnMap = {
 };
 
 const dataFace = (cat) => {
-  if (cat.type in ctrlTypeFaceFnMap) {
-    return ctrlTypeFaceFnMap[cat.type](cat);
+  if (cat?.type in ctrlTypeFaceFnMap) {
+    return ctrlTypeFaceFnMap[cat?.type](cat);
   };
   return JSON.stringify(cat);
 };
@@ -117,7 +119,7 @@ const ctrlComponent = (ctrl) => {
   // console.log(['props', props]);
   // console.log(['ctrl', ctrl]);
   const ctrlComponentMap = {
-    '单个原文片段': EditorDefault,
+    '原文片段': EditorSingleSpan,
     '单个标签': EditorDefault,
     '单个对象': EditorDefault,
     '多个原文片段': EditorDefault,
@@ -191,7 +193,7 @@ const EditorBool = {
           btn({
             'class': "btn-sm px-1 py-0",
             'onClick': ()=>{
-              ctx.emit("confirm", true);
+              ctx.emit("confirm", {type: props?.ctrl?.type??"", value: true});
               // console.log("confirm");
             },
             'title': "true",
@@ -199,7 +201,7 @@ const EditorBool = {
           btn({
             'class': "btn-sm px-1 py-0",
             'onClick': ()=>{
-              ctx.emit("confirm", false);
+              ctx.emit("confirm", {type: props?.ctrl?.type??"", value: false});
               // console.log("confirm");
             },
             'title': "false",
@@ -217,6 +219,73 @@ const EditorBool = {
   },
 };
 // 布尔值控件 结束
+
+
+
+// 🆓🆓🆓🆓🆓🆓
+// 单个原文片段控件
+const EditorSingleSpan = {
+  props: ['ctrl', 'oldValue'],
+  emits: ['confirm', 'cancel', 'clear-selector'],
+  component: {},
+  setup(props, ctx) {
+    console.log(props);
+    const tokenSelector = inject('tokenSelector');
+    const selection = inject('selection')??[];
+    const tokens = inject('tokens')??[];
+    const idxesToTokens = (idxes) => {
+      idxes = idxes??[];
+      if (!tokens?.length) {
+        return [];
+      };
+      return idxes.map(idx => tokens[idx]?.to ?? tokens[idx] ?? {});
+    };
+    const idxesToText = (idxes) => {
+      let _tokens = idxesToTokens(idxes);
+      let result = _tokens.map(it => it.word).join("");
+      return result;
+    };
+    const localData = reactive({
+      'span': {
+        'type': props?.ctrl?.type,
+        'value': {
+          'text': props?.oldValue?.text,
+          'idxes': props?.oldValue?.idxes,
+        },
+      },
+    });
+    return () => div({'class': "input-group input-group-sm"}, [
+      div({'class': "form-control d-inline-block text-center"}, [
+        div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, selection?.array?.length ? [
+          btn({
+            'class': "btn-sm px-1 py-0",
+            'onClick': ()=>{
+              localData['span']['value']['idxes'] = selection?.array;
+              ctx.emit("clear-selector");
+              localData['span']['value']['text'] = idxesToText(localData['span']['value']['idxes']);
+            },
+            'title': "将选中的文本填入此处",
+          }, [bi("box-arrow-in-down-right"), " ", "填入"], "outline-primary"),
+        ] : span({}, [localData?.['span']?.['value']?.['text']||muted("【请在文中选取】")]),),
+      ]),
+      btn({
+        'onClick': ()=>{
+          ctx.emit("confirm", JSON.parse(JSON.stringify(localData['span'])));
+          // console.log("confirm");
+        },
+        'title': "确定",
+      }, bi("check2"), "outline-secondary"),
+      btn({
+        'onClick': ()=>{
+          ctx.emit("cancel");
+          // console.log("cancel");
+        },
+        'title': "取消",
+      }, bi("arrow-90deg-left"), "outline-secondary"),
+    ]);
+  },
+};
+// 单个原文片段控件 结束
 
 
 
@@ -271,7 +340,7 @@ const EditorBool = {
 // 单个字段
 const PropertyItem = {
   props: ['slot', 'data'],
-  emits: ['set-property'],
+  emits: ['set-property', 'clear-selector'],
   component: {
     EditorDefault,
     EditorBool,
@@ -288,7 +357,7 @@ const PropertyItem = {
     });
 
     const newDataWrap = reactive({
-      'data': JSON.parse(JSON.stringify(props?.['data']??{})),
+      'data': JSON.parse(JSON.stringify(props?.['data'])),
     });
 
     const onGoToEdit = () => {
@@ -317,6 +386,9 @@ const PropertyItem = {
     const onCancel = () => {
       localData.currentStage = stages['①呈现数据内容'];
     };
+    const onClearSelector = () => {
+      ctx.emit("clear-selector");
+    };
 
 
     const currentCtrl = computed(()=>(
@@ -343,10 +415,7 @@ const PropertyItem = {
       ? [
         div({'class': "input-group input-group-sm"}, [
           div({'class': "form-control d-inline-block text-center"}, [
-            span({'class': "align-middle"}, dataFace({
-              value: newDataWrap['data'],
-              type: v(currentCtrl)?.type,
-            })),
+            span({'class': "align-middle"}, dataFace(newDataWrap['data'])),
           ]),
           true ? btn({
             'onClick': ()=>{onDelete()},
@@ -384,8 +453,10 @@ const PropertyItem = {
       ? [
         h(ctrlComponent(v(currentCtrl)), {
           'ctrl': v(currentCtrl),
+          'oldValue': newDataWrap?.['data']?.['value'],
           'onConfirm': (value)=>{onConfirm(value);},
           'onCancel': ()=>{onCancel();},
+          'onClearSelector': ()=>{onClearSelector();},
         }),
       ]
 
@@ -401,11 +472,15 @@ const PropertyItem = {
 // 单个对象的编辑窗口
 const ObjectPanel = {
   props: ['data', 'typeDef'],
-  emits: ['save-object', 'clone-object', 'reset-object', 'delete-object', 'close-object'],
+  emits: ['save-object', 'clone-object', 'reset-object', 'delete-object', 'close-object', 'clear-selector'],
   component: {
     PropertyItem,
   },
   setup(props, ctx) {
+
+    const onClearSelector = () => {
+      ctx.emit("clear-selector");
+    };
 
     const localObjectShadow = reactive({
       'data': JSON.parse(JSON.stringify(props?.['data']??{})),
@@ -462,7 +537,7 @@ const ObjectPanel = {
       if (!fieldName.length) {return;};
       if (fieldName in localObjectShadow.data) {return;};
       Object.assign(localObjectShadow.data, {
-        [fieldName]: slotDict?.[fieldName]?.default ?? slotDict?.[fieldName]?.init ?? {},
+        [fieldName]: slotDict?.[fieldName]?.default ?? slotDict?.[fieldName]?.init ?? null,
       });
     };
 
@@ -513,6 +588,7 @@ const ObjectPanel = {
           'slot': field,
           'onSetProperty': (xx)=>{onSetProperty(xx);},
           'onDeleteProperty': ()=>{onDeleteProperty(field?.name??"");},
+          'onClearSelector': ()=>{onClearSelector();},
         })),
 
         // 添加字段
@@ -628,11 +704,16 @@ const ObjectPanel = {
 // 众多对象编辑窗口的列表
 const ObjectPanelList = {
   props: ['objectWraps'],
-  emits: ['save-object', 'clone-object', 'reset-object', 'delete-object', 'hide-object-wrap'],
+  emits: ['save-object', 'clone-object', 'reset-object', 'delete-object', 'hide-object-wrap', 'clear-selector'],
   component: {
     ObjectPanel,
   },
   setup(props, ctx) {
+
+    const onClearSelector = () => {
+      ctx.emit("clear-selector");
+    };
+
     const shouldShow = computed(()=>{
       return props?.['objectWraps']?.filter?.(it=>it?.show)?.length;
     });
@@ -658,6 +739,9 @@ const ObjectPanelList = {
         },
         'onCloseObject': ()=>{
           ctx.emit("hide-object-wrap", objWrap);
+        },
+        'onClearSelector': ()=>{
+          onClearSelector();
         },
       }) : null),
     ]);
@@ -884,8 +968,14 @@ export default {
     FinalButtonGroup,
   },
   setup(props, ctx) {
+    const onClearSelector = () => {
+      props?.tokenSelector?.clear?.(props?.example?.material?.tokenList);
+    };
     const reactiveCMR = reactive(new CMR);
     provide('reactiveCMR', reactiveCMR);
+    provide('tokenSelector', props.tokenSelector);
+    provide('selection', props.selection);
+    provide('tokens', props?.example?.material?.tokenList??[]);
     const init = () => {
       reactiveCMR.initDefinition(props?.['stepProps']?.['definition']);
       const existedObjects =
@@ -1052,6 +1142,9 @@ export default {
       'onSaveObject': (object)=>{onSaveObject(object);},
       'onHideObjectWrap': (objWrap)=>{
         hide(objWrap['_id']);
+      },
+      'onClearSelector': ()=>{
+        onClearSelector();
       },
     });
 
