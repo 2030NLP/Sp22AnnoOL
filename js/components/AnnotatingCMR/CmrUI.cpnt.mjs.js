@@ -58,10 +58,23 @@ const 设计 = `
 
 
 
+
+const faceFn单个原文片段 = (boy) => {
+  const text = boy?.value?.text ?? "";
+  const idxes = boy?.value?.idxes ?? [];
+  return text.length ? span({}, text) : idxes.length ? muted(JSON.stringify(idxes)) : muted("【请在文中选取】");
+};
+const faceFn单个不连续原文片段 = (boy) => {
+  const text = boy?.value?.texts?.join?.("+") ?? "";
+  const idxeses = boy?.value?.idxeses ?? [];
+  return text.length ? span({}, text) : idxeses.length ? muted(JSON.stringify(idxeses)) : muted("【请在文中选取】");
+};
+
 const ctrlTypeFaceFnMap = {
-  '原文片段': (boy)=>{
-    return span({}, boy?.value?.text)??muted(JSON.stringify(boy?.value?.idxes))??muted("【请在文中选取】");
-  },
+  '原文片段': (boy)=>faceFn单个原文片段(boy),
+  '单个原文片段': (boy)=>faceFn单个原文片段(boy),
+  '不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
+  '单个不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
   '单个标签': (boy)=>span({}, JSON.stringify(boy)),
   '单个对象': (boy)=>span({}, JSON.stringify(boy)),
   '多个原文片段': (boy)=>span({}, JSON.stringify(boy)),
@@ -120,8 +133,11 @@ const ctrlComponent = (ctrl) => {
   // console.log(['ctrl', ctrl]);
   const ctrlComponentMap = {
     '原文片段': EditorSingleSpan,
-    '单个标签': EditorDefault,
-    '单个对象': EditorDefault,
+    '单个原文片段': EditorSingleSpan,
+    '不连续原文片段': EditorSingleBrokenSpan,
+    '单个不连续原文片段': EditorSingleBrokenSpan,
+    '单个标签': EditorSingleLabelSelector,
+    '单个对象': EditorSingleObjectSelector,
     '多个原文片段': EditorDefault,
     '多个标签': EditorDefault,
     '多个对象': EditorDefault,
@@ -223,14 +239,219 @@ const EditorBool = {
 
 
 // 🆓🆓🆓🆓🆓🆓
+// 单个对象控件
+const EditorSingleObjectSelector = {
+  props: ['ctrl'],
+  emits: ['confirm', 'cancel'],
+  component: {},
+  setup(props, ctx) {
+    const reactiveCMR = inject('reactiveCMR', ()=>({}));
+    const objects = computed(()=>{
+      let those = [];
+      let filters = props?.['ctrl']?.['config']?.['filter']??[];
+      let allObjects = reactiveCMR?.objects??[];
+      for (let 模子 of filters) {
+        const keys = Object.keys(模子);
+        const boys = allObjects.filter(it=>keys.every(key=>模子[key]==it[key])&&!those.includes(it));
+        those = [...those, ...boys];
+      };
+      return those;
+    });
+    const localData = reactive({
+      'selected': -1,
+    });
+    return () => div({'class': "input-group input-group-sm"}, [
+      div({'class': "form-control d-inline-block text-center"}, [
+        h("select", {
+          onChange: (event)=>{
+            localData.selected = event?.target?.value;
+          },
+        }, v(objects).map((obj, idx) => h("option", {
+          'value': obj._id??obj.id??-1,
+        }, objectFace(obj))))
+      ]),
+      btn({
+        'onClick': ()=>{
+          ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
+          // console.log("confirm");
+        },
+        'title': "确定",
+      }, bi("check2"), "outline-secondary"),
+      btn({
+        'onClick': ()=>{
+          ctx.emit("cancel");
+          // console.log("cancel");
+        },
+        'title': "取消",
+      }, bi("arrow-90deg-left"), "outline-secondary"),
+    ]);
+  },
+};
+// 单个对象控件 结束
+
+
+
+// 🆓🆓🆓🆓🆓🆓
+// 单个标签控件
+const EditorSingleLabelSelector = {
+  props: ['ctrl'],
+  emits: ['confirm', 'cancel'],
+  component: {},
+  setup(props, ctx) {
+    const reactiveCMR = inject('reactiveCMR', ()=>({}));
+    const objects = computed(()=>{
+      let those = [];
+      let filters = props?.['ctrl']?.['config']?.['filter']??[];
+      let allObjects = reactiveCMR?.objects??[];
+      for (let 模子 of filters) {
+        const keys = Object.keys(模子);
+        const boys = allObjects.filter(it=>keys.every(key=>模子[key]==it[key])&&!those.includes(it));
+        those = [...those, ...boys];
+      };
+      return those;
+    });
+    const localData = reactive({
+      'selected': -1,
+    });
+    return () => div({'class': "input-group input-group-sm"}, [
+      div({'class': "form-control d-inline-block text-center"}, [
+        h("select", {
+          onChange: (event)=>{
+            localData.selected = event?.target?.value;
+          },
+        }, v(objects).map((obj, idx) => h("option", {
+          'value': obj._id??obj.id??-1,
+        }, objectFace(obj))))
+      ]),
+      btn({
+        'onClick': ()=>{
+          ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
+          // console.log("confirm");
+        },
+        'title': "确定",
+      }, bi("check2"), "outline-secondary"),
+      btn({
+        'onClick': ()=>{
+          ctx.emit("cancel");
+          // console.log("cancel");
+        },
+        'title': "取消",
+      }, bi("arrow-90deg-left"), "outline-secondary"),
+    ]);
+  },
+};
+// 单个标签控件 结束
+
+
+
+// 🆓🆓🆓🆓🆓🆓
+// 单个原文片段控件 工厂
+const FactoryOfEditorSingleSpan = (canAppend) => {
+  const _canAppend = !!canAppend;
+  return {
+    props: ['ctrl', 'oldValue'],
+    emits: ['confirm', 'cancel', 'clear-selector'],
+    component: {},
+    setup(props, ctx) {
+      console.log(props);
+      // const tokenSelector = inject('tokenSelector');
+      const selection = inject('selection')??[];
+      const tokens = inject('tokens')??[];
+      const idxesToTokens = (idxes) => {
+        idxes = idxes??[];
+        if (!tokens?.length) {
+          return [];
+        };
+        return idxes.map(idx => tokens[idx]?.to ?? tokens[idx] ?? {});
+      };
+      const idxesToText = (idxes) => {
+        let _tokens = idxesToTokens(idxes);
+        let result = _tokens.map(it => it.word).join("");
+        return result;
+      };
+      const localData = reactive({
+        'span': {
+          'type': props?.ctrl?.type,
+          'value': {
+            'text': props?.oldValue?.text,
+            'idxes': props?.oldValue?.idxes,
+          },
+        },
+      });
+      return () => div({'class': "input-group input-group-sm"}, [
+        div({'class': "form-control d-inline-block text-center"}, [
+          div({
+            'class': "d-flex flex-wrap gap-1 justify-content-evenly"
+          }, [
+            localData?.['span']?.['value']?.['text']?.length
+              ? [
+                span({
+                  'class': "text-secondary",
+                }, [localData?.['span']?.['value']?.['text']]),
+                !selection?.array?.length ? muted("...") : null,
+              ]
+              : !selection?.array?.length ? muted("【请在文中选取】") : null,
+              _canAppend ? btn({
+              'class': [
+                "btn-sm px-1 py-0",
+                {"d-none": (!selection?.array?.length || !localData?.['span']?.['value']?.['text']?.length)},
+              ],
+              'onClick': ()=>{
+                localData['span']['value']['idxes'] = [...localData['span']['value']['idxes'], ...selection?.array];
+                ctx.emit("clear-selector");
+                localData['span']['value']['text'] = `${localData['span']['value']['text']}+${idxesToText(localData['span']['value']['idxes'])}`;
+              },
+              'title': "将选中的文本追加到此处已有的文本之后",
+            }, [bi("plus-lg"), " ", "追加"], "outline-primary") : null,
+            btn({
+              'class': [
+                "btn-sm px-1 py-0",
+                {"d-none": (!selection?.array?.length)},
+              ],
+              'onClick': ()=>{
+                localData['span']['value']['idxes'] = selection?.array;
+                ctx.emit("clear-selector");
+                localData['span']['value']['text'] = idxesToText(localData['span']['value']['idxes']);
+              },
+              'title': localData?.['span']?.['value']?.['text']?.length ? "用选中的文本覆盖此处的文本" : "将选中的文本填入此处",
+            }, [bi("box-arrow-in-down-right"), " ", localData?.['span']?.['value']?.['text']?.length ? "覆盖" : "填入"], "outline-danger"),
+          ]),
+        ]),
+        btn({
+          'onClick': ()=>{
+            ctx.emit("confirm", JSON.parse(JSON.stringify(localData['span'])));
+            // console.log("confirm");
+          },
+          'title': "确定",
+        }, bi("check2"), "outline-secondary"),
+        btn({
+          'onClick': ()=>{
+            ctx.emit("cancel");
+            // console.log("cancel");
+          },
+          'title': "取消",
+        }, bi("arrow-90deg-left"), "outline-secondary"),
+      ]);
+    },
+  };
+};
+// 单个原文片段控件 工厂 结束
+
 // 单个原文片段控件
-const EditorSingleSpan = {
+// 不论是否可追加，文本都是记录在 text 字段
+const EditorSingleSpan = FactoryOfEditorSingleSpan(false);
+// 单个原文片段控件 结束
+
+// 🆓🆓🆓🆓🆓🆓
+// 单个不连续的原文片段控件
+// 不论是否可追加，文本都是记录在 texts 数组 字段
+const EditorSingleBrokenSpan = {
   props: ['ctrl', 'oldValue'],
   emits: ['confirm', 'cancel', 'clear-selector'],
   component: {},
   setup(props, ctx) {
     console.log(props);
-    const tokenSelector = inject('tokenSelector');
+    // const tokenSelector = inject('tokenSelector');
     const selection = inject('selection')??[];
     const tokens = inject('tokens')??[];
     const idxesToTokens = (idxes) => {
@@ -249,24 +470,49 @@ const EditorSingleSpan = {
       'span': {
         'type': props?.ctrl?.type,
         'value': {
-          'text': props?.oldValue?.text,
-          'idxes': props?.oldValue?.idxes,
+          'texts': props?.oldValue?.texts??[],
+          'idxeses': props?.oldValue?.idxeses??[],
         },
       },
     });
     return () => div({'class': "input-group input-group-sm"}, [
       div({'class': "form-control d-inline-block text-center"}, [
-        div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, selection?.array?.length ? [
-          btn({
-            'class': "btn-sm px-1 py-0",
+        div({
+          'class': "d-flex flex-wrap gap-1 justify-content-evenly"
+        }, [
+          localData?.['span']?.['value']?.['texts']?.length
+            ? [
+              span({
+                'class': "text-secondary",
+              }, [localData?.['span']?.['value']?.['texts'].join("+")]),
+              !selection?.array?.length ? muted("...") : null,
+            ]
+            : !selection?.array?.length ? muted("【请在文中选取】") : null,
+            btn({
+            'class': [
+              "btn-sm px-1 py-0",
+              {"d-none": (!selection?.array?.length || !localData?.['span']?.['value']?.['texts']?.length)},
+            ],
             'onClick': ()=>{
-              localData['span']['value']['idxes'] = selection?.array;
+              localData['span']['value']['idxeses']?.push(selection?.array);
               ctx.emit("clear-selector");
-              localData['span']['value']['text'] = idxesToText(localData['span']['value']['idxes']);
+              localData['span']['value']['texts']?.push(idxesToText(localData['span']['value']['idxeses']?.at(-1)));
             },
-            'title': "将选中的文本填入此处",
-          }, [bi("box-arrow-in-down-right"), " ", "填入"], "outline-primary"),
-        ] : span({}, [localData?.['span']?.['value']?.['text']||muted("【请在文中选取】")]),),
+            'title': "将选中的文本追加到此处已有的文本之后",
+          }, [bi("plus-lg"), " ", "追加"], "outline-primary"),
+          btn({
+            'class': [
+              "btn-sm px-1 py-0",
+              {"d-none": (!selection?.array?.length)},
+            ],
+            'onClick': ()=>{
+              localData['span']['value']['idxeses'] = [selection?.array];
+              ctx.emit("clear-selector");
+              localData['span']['value']['texts'] = [idxesToText(localData['span']['value']['idxeses']?.at(-1))];
+            },
+            'title': localData?.['span']?.['value']?.['texts']?.length ? "用选中的文本覆盖此处的文本" : "将选中的文本填入此处",
+          }, [bi("box-arrow-in-down-right"), " ", localData?.['span']?.['value']?.['texts']?.length ? "覆盖" : "填入"], "outline-danger"),
+        ]),
       ]),
       btn({
         'onClick': ()=>{
@@ -285,12 +531,7 @@ const EditorSingleSpan = {
     ]);
   },
 };
-// 单个原文片段控件 结束
-
-
-
-
-
+// 单个不连续的原文片段控件 结束
 
 
 

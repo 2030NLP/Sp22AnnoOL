@@ -55,6 +55,17 @@ class CMR {
     return this.objects.filter(obj => obj._type==type);
   }
 
+
+
+  assignObject(object) {
+    let obj = Object.assign({}, JSON.parse(JSON.stringify(bud)));
+    // obj._isNew = true;
+    obj._id = obj._id ?? this._nextId;
+    // this.nextId++;
+    this.objects.push(obj);
+    return obj;
+  }
+
   makeNewObject(bud) {
     let obj = Object.assign({}, JSON.parse(JSON.stringify(bud)));
     // obj._isNew = true;
@@ -145,11 +156,6 @@ class CMR {
     let typeFace = object['_type'] ?? object['type'] ?? "";
     typeFace = typeFace.replace(/^@+/g, "");
     return this.typeDict[typeFace] ?? {'name': typeFace};
-  }
-
-
-  assignObject(object) {
-    this.makeNewObject(object);
   }
 
 

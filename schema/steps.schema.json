@@ -69,6 +69,10 @@
 
             "object_types": [
 
+              {"name": "文本", "slots": [
+                {"name": "内容", "ctrls": ["单个不连续原文片段"], "required": true}
+              ]},
+
               {"name": "空间实体", "slots": [
                 {"name": "是否是虚拟的", "ctrls": ["布尔值"], "default": false, "required": true},
                 {"name": "是否自成处所", "ctrls": ["布尔值"], "init": false},
@@ -112,7 +116,7 @@
               {"name": "角色引用", "slots": [
                 {"name": "所属事件",
                   "ctrls": [
-                    {"type": "单个对象", "config": {"filter": {"type": "事件"}}}]},
+                    {"type": "单个对象", "config": {"filter": [{"type": "事件"}]}}]},
                 {"name": "角色",
                   "ctrls": [
                     {"type": "单个标签", "config": {"set": "语义角色键"}}],
@@ -131,24 +135,22 @@
                 {"name": "介词", "ctrls": ["原文片段"]},
                 {"name": "参照实体", "ctrls": [
                   {"type": "单个对象", "config": {
-                    "filter": {
-                      "$or": [
+                    "filter": [
                         {"type": "空间实体"},
                         {"type": "合集", "成员类型": "空间实体"},
                         {"type": "角色引用"}]
-                    }}}]},
+                    }} ]},
                 {"name": "方位词", "ctrls": ["原文片段"]}
               ]},
           
               {"name": "方向特征", "slots": [
                 {"name": "参照实体", "ctrls": [
                   {"type": "单个对象", "config": {
-                    "filter": {
-                      "$or": [
+                    "filter": [
                         {"type": "空间实体"},
                         {"type": "合集", "成员类型": "空间实体"},
                         {"type": "角色引用"}]
-                    }}}]},
+                    }} ]},
                 {"name": "介词", "ctrls": ["原文片段"]},
                 {"name": "方位词", "ctrls": ["原文片段"]}
               ]},
@@ -157,34 +159,30 @@
                 {"name": "介词", "ctrls": ["原文片段"]},
                 {"name": "参照实体", "ctrls": [
                   {"type": "单个对象", "config": {
-                    "filter": {
-                      "$or": [
+                    "filter": [
                         {"type": "空间实体"},
                         {"type": "合集", "成员类型": "空间实体"},
                         {"type": "角色引用"}]
-                    }}}]},
+                    }} ]},
                 {"name": "方位词", "ctrls": ["原文片段"]}
               ]},
           
               {"name": "特征命题", "slots": [
                 {"name": "被描述的实体", "ctrls": [
                   {"type": "单个对象", "config": {
-                    "filter": {
-                      "$or": [
+                    "filter": [
                         {"type": "空间实体"},
                         {"type": "合集", "成员类型": "空间实体"},
                         {"type": "角色引用"}]
-                    }}}]},
+                    }} ]},
                 {"name": "依附的事件", "ctrls": [
                   {"type": "单个对象", "config": {
-                    "filter": {
-                      "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
-                    }}}]},
+                    "filter": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
+                    }} ]},
                 {"name": "特征", "ctrls": [
                   {"type": "单个对象", "config": {
-                    "filter": {
-                      "$or": [{"type": "位置特征"}, {"type": "方向特征"}, {"type": "朝向特征"}]
-                    }}}]},
+                    "filter": [{"type": "位置特征"}, {"type": "方向特征"}, {"type": "朝向特征"}]
+                    }} ]},
                 {"name": "时间", "ctrls": ["时间（相对于事件）", "原文片段"]}
               ]},
 
@@ -198,9 +196,7 @@
                       {
                         "type": "单个对象",
                         "config": {
-                          "filter": {
-                            "$or": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
-                          }
+                          "filter": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
                         }
                       },
                       "多个对象"
