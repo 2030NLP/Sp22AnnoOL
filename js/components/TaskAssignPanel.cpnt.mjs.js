@@ -107,6 +107,60 @@ const TaskAssignPanel = {
       };
     };
 
+
+    const selectUsersByGroups = () => {
+      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.namesText = names.join("\n");
+      for (let user of spDB.users) {
+        assignData.assignUserBoxDict[user.id] = names.includes(user.currTaskGroup) ? true : false;
+      };
+    };
+
+    const selectUsersByAddGroups = () => {
+      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.namesText = names.join("\n");
+      for (let user of spDB.users) {
+        if (names.includes(user.currTaskGroup)) {assignData.assignUserBoxDict[user.id] = true};
+      };
+    };
+
+    const selectUsersByRemoveGroups = () => {
+      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.namesText = names.join("\n");
+      for (let user of spDB.users) {
+        if (names.includes(user.currTaskGroup)) {assignData.assignUserBoxDict[user.id] = false};
+      };
+    };
+
+
+    const selectUsersByManagers = () => {
+      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.namesText = names.join("\n");
+      for (let user of spDB.users) {
+        assignData.assignUserBoxDict[user.id] = names.includes(user.manager)||names.includes(user.manager_name) ? true : false;
+      };
+    };
+
+    const selectUsersByAddManagers = () => {
+      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.namesText = names.join("\n");
+      for (let user of spDB.users) {
+        if (names.includes(user.manager)||names.includes(user.manager_name)) {assignData.assignUserBoxDict[user.id] = true};
+      };
+    };
+
+    const selectUsersByRemoveManagers = () => {
+      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.namesText = names.join("\n");
+      for (let user of spDB.users) {
+        if (names.includes(user.manager)||names.includes(user.manager_name)) {assignData.assignUserBoxDict[user.id] = false};
+      };
+    };
+
+
+
+
+
     const selectUsersByRemoveQuitted = () => {
       for (let user of spDB.users) {
         if (user.quitted||user.quited||user.deleted) {assignData.assignUserBoxDict[user.id] = false};
@@ -504,6 +558,41 @@ const TaskAssignPanel = {
               'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
               'onClick': ()=>{selectUsersByRemoveNames();},
             }, ["用名单排除"], ),
+
+
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByGroups();},
+            }, ["根据组别筛选"], ),
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByAddGroups();},
+            }, ["根据组别添加"], ),
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByRemoveGroups();},
+            }, ["根据组别排除"], ),
+
+
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByManagers();},
+            }, ["根据组长筛选"], ),
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByAddManagers();},
+            }, ["根据组长添加"], ),
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByRemoveManagers();},
+            }, ["根据组长排除"], ),
+
             h("button", {
               'type': "button",
               'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
