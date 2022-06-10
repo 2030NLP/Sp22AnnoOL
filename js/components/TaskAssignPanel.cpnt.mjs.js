@@ -91,6 +91,28 @@ const TaskAssignPanel = {
       };
     };
 
+    const selectUsersByAddNames = () => {
+      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.namesText = names.join("\n");
+      for (let user of spDB.users) {
+        if (names.includes(user.name)) {assignData.assignUserBoxDict[user.id] = true};
+      };
+    };
+
+    const selectUsersByRemoveNames = () => {
+      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.namesText = names.join("\n");
+      for (let user of spDB.users) {
+        if (names.includes(user.name)) {assignData.assignUserBoxDict[user.id] = false};
+      };
+    };
+
+    const selectUsersByRemoveQuitted = () => {
+      for (let user of spDB.users) {
+        if (user.quitted||user.quited||user.deleted) {assignData.assignUserBoxDict[user.id] = false};
+      };
+    };
+
     const selectUsersAuto = () => {
       for (let user of spDB.users) {
         let jd = spFN.topic_regulation(user.currTask)==assignData.settings.topic && !user.quitted;
@@ -472,6 +494,21 @@ const TaskAssignPanel = {
               'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
               'onClick': ()=>{selectUsersByNames();},
             }, ["用名单筛选"], ),
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByAddNames();},
+            }, ["用名单添加"], ),
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByRemoveNames();},
+            }, ["用名单排除"], ),
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByRemoveQuitted();},
+            }, ["排除已退出的人员"], ),
             h("button", {
               'type': "button",
               'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
