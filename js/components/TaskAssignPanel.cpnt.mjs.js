@@ -73,11 +73,23 @@ const TaskAssignPanel = {
       analysisDict: {},
       undone: true,
       result: {},
+      //
+      //
+      namesText: "",
+      //
     });
     watch(() => assignData.settings, async () => {
       await saveBasic();
     }, { deep: true });
 
+
+    const selectUsersByNames = () => {
+      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.namesText = names.join("\n");
+      for (let user of spDB.users) {
+        assignData.assignUserBoxDict[user.id] = names.includes(user.name) ? true : false;
+      };
+    };
 
     const selectUsersAuto = () => {
       for (let user of spDB.users) {
@@ -449,7 +461,17 @@ const TaskAssignPanel = {
           h("label", { 'class': "form-label", }, [
             h("span", {}, ["选择用户"], ),
           ], ),
+          h("textarea", {
+            'class': `form-control form-control-sm`,
+            'value': assignData.namesText,
+            'onChange': (e) => {assignData.namesText=e.target.value},
+          }, [], ),
           h("div", {}, [
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'onClick': ()=>{selectUsersByNames();},
+            }, ["用名单筛选"], ),
             h("button", {
               'type': "button",
               'class': "btn btn-sm mx-2 my-1 btn-outline-dark",

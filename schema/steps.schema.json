@@ -69,7 +69,7 @@
 
             "object_types": [
 
-              {"name": "文本", "slots": [
+              {"name": "文本", "icon-bi": "chat-left-quote", "slots": [
                 {"name": "内容", "ctrls": ["单个不连续原文片段"], "required": true}
               ]},
 
@@ -78,7 +78,10 @@
                 {"name": "是否自成处所", "ctrls": ["布尔值"], "init": false},
                 {"name": "是否为指称", "ctrls": ["布尔值"], "init": false},
                 {"name": "是否是名称", "ctrls": ["布尔值"], "init": false},
-                {"name": "原文片段", "ctrls": ["多个原文片段"], "init": [], "required": true}
+                {"name": "原文片段", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ], "init": [], "required": true}
               ]},
 
               {"name": "事件", "slots": [

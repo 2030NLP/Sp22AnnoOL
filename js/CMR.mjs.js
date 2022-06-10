@@ -57,7 +57,7 @@ class CMR {
 
 
 
-  assignObject(object) {
+  assignObject(bud) {
     let obj = Object.assign({}, JSON.parse(JSON.stringify(bud)));
     // obj._isNew = true;
     obj._id = obj._id ?? this._nextId;

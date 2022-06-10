@@ -4,7 +4,7 @@ import {
   // Transition,
   Teleport,
   v,
-  div, span, btn
+  div, span, btn, watch
 } from './VueShadow.mjs.js';
 import { CMR, BS } from './Shadow.mjs.js';
 
@@ -19,6 +19,14 @@ const ha = (children, href, title, targetBlank) => {
   }, children);
 };
 const muted = text => span({'class': "text-muted"}, text);
+const textPrimary = text => span({'class': "text-primary"}, text);
+const textSecondary = text => span({'class': "text-secondary"}, text);
+const textSuccess = text => span({'class': "text-success"}, text);
+const textDanger = text => span({'class': "text-danger"}, text);
+const textWarning = text => span({'class': "text-warning"}, text);
+const textInfo = text => span({'class': "text-info"}, text);
+const textLight = text => span({'class': "text-light"}, text);
+const textDark = text => span({'class': "text-dark"}, text);
 const lightBtn = (icon, text, title, attrs) => {
   attrs = attrs ?? {};
   attrs['class']=["btn-sm", attrs.class];
@@ -33,6 +41,17 @@ const ti = (name) => {
   return h("i", {'class': ["ti", `ti-${name??'square'}`]});
 };  // https://tabler-icons.io
 const vr = () => h("div", {'class': "vr"});
+
+const spansJoin = (spans, joint) => {
+  let result = [];
+  let xx = false;
+  for (let span of spans??[]) {
+    if (xx) {result.push(joint)};
+    result.push(span);
+    xx = true;
+  };
+  return result;
+};
 
 
 const modal = (attrs, children, to, disabled) => h(Teleport, {
@@ -62,12 +81,19 @@ const 设计 = `
 const faceFn单个原文片段 = (boy) => {
   const text = boy?.value?.text ?? "";
   const idxes = boy?.value?.idxes ?? [];
-  return text.length ? span({}, text) : idxes.length ? muted(JSON.stringify(idxes)) : muted("【请在文中选取】");
+  return text.length ? [textPrimary("“"), muted(text), textPrimary("”")] : idxes.length ? muted(JSON.stringify(idxes)) : muted("【请在文中选取】");
 };
 const faceFn单个不连续原文片段 = (boy) => {
-  const text = boy?.value?.texts?.join?.("+") ?? "";
+  const texts = boy?.value?.texts??[];
+  const textSpans = texts.map(it=>muted(it));
+  const sss = spansJoin(textSpans, textPrimary("+"));
+
   const idxeses = boy?.value?.idxeses ?? [];
-  return text.length ? span({}, text) : idxeses.length ? muted(JSON.stringify(idxeses)) : muted("【请在文中选取】");
+  return texts.length ? span({}, [textPrimary("“"), sss, textPrimary("”")]) : idxeses.length ? muted(JSON.stringify(idxeses)) : muted("【请在文中选取】");
+};
+
+const faceFn单个标签 = (boy) => {
+  return boy?.value?.face?.length?textInfo(boy?.value?.face):textDanger("???");
 };
 
 const ctrlTypeFaceFnMap = {
@@ -75,7 +101,7 @@ const ctrlTypeFaceFnMap = {
   '单个原文片段': (boy)=>faceFn单个原文片段(boy),
   '不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
   '单个不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
-  '单个标签': (boy)=>span({}, JSON.stringify(boy)),
+  '单个标签': (boy)=>faceFn单个标签(boy),
   '单个对象': (boy)=>span({}, JSON.stringify(boy)),
   '多个原文片段': (boy)=>span({}, JSON.stringify(boy)),
   '多个标签': (boy)=>span({}, JSON.stringify(boy)),
@@ -94,15 +120,16 @@ const ctrlTypeFaceFnMap = {
   '数值': (boy)=>span({'class': "text-primary"}, boy?.value),
 };
 
-const dataFace = (cat) => {
+const dataFace = (cat, joint) => {
   if (cat?.type in ctrlTypeFaceFnMap) {
-    return ctrlTypeFaceFnMap[cat?.type](cat);
+    return ctrlTypeFaceFnMap[cat?.type](cat, joint);
   };
   return JSON.stringify(cat);
 };
 
 const objectTypeFaceFnMap = {
   '': (boy)=>JSON.stringify(boy),
+  '文本': (boy)=>dataFace(boy?.['内容']),
 };
 
 const objectFace = (object) => {
@@ -181,7 +208,7 @@ const EditorDefault = {
           // console.log("confirm");
         },
         'title': "确定",
-      }, bi("check2"), "outline-secondary"),
+      }, bi("check2"), "primary"),
       btn({
         'onClick': ()=>{
           ctx.emit("cancel");
@@ -261,22 +288,23 @@ const EditorSingleObjectSelector = {
       'selected': -1,
     });
     return () => div({'class': "input-group input-group-sm"}, [
-      div({'class': "form-control d-inline-block text-center"}, [
-        h("select", {
-          onChange: (event)=>{
-            localData.selected = event?.target?.value;
-          },
-        }, v(objects).map((obj, idx) => h("option", {
-          'value': obj._id??obj.id??-1,
-        }, objectFace(obj))))
-      ]),
+      h("select", {
+        'class': "form-select form-select-sm text-center",
+        'value': localData.selected,
+        onChange: (event)=>{
+          localData.selected = event?.target?.value;
+        },
+      }, v(objects).map((obj, idx) => h("option", {
+        'key': `${idx}`,
+        'value': obj._id??obj.id??-1,
+      }, objectFace(obj)))),
       btn({
         'onClick': ()=>{
           ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
           // console.log("confirm");
         },
         'title': "确定",
-      }, bi("check2"), "outline-secondary"),
+      }, bi("check2"), "primary"),
       btn({
         'onClick': ()=>{
           ctx.emit("cancel");
@@ -299,37 +327,36 @@ const EditorSingleLabelSelector = {
   component: {},
   setup(props, ctx) {
     const reactiveCMR = inject('reactiveCMR', ()=>({}));
-    const objects = computed(()=>{
-      let those = [];
-      let filters = props?.['ctrl']?.['config']?.['filter']??[];
-      let allObjects = reactiveCMR?.objects??[];
-      for (let 模子 of filters) {
-        const keys = Object.keys(模子);
-        const boys = allObjects.filter(it=>keys.every(key=>模子[key]==it[key])&&!those.includes(it));
-        those = [...those, ...boys];
-      };
-      return those;
+    const labels = computed(()=>{
+      let domain = props?.['ctrl']?.['config']?.['set']??"";
+      let allLabels = reactiveCMR?.labels??[];
+      const boys = allLabels.filter(it=>it.domain==domain);
+      return boys;
     });
     const localData = reactive({
-      'selected': -1,
+      'label': {
+        'face': "",
+        'domain': props?.['ctrl']?.['config']?.['set']??"",
+      },
     });
     return () => div({'class': "input-group input-group-sm"}, [
-      div({'class': "form-control d-inline-block text-center"}, [
-        h("select", {
-          onChange: (event)=>{
-            localData.selected = event?.target?.value;
-          },
-        }, v(objects).map((obj, idx) => h("option", {
-          'value': obj._id??obj.id??-1,
-        }, objectFace(obj))))
-      ]),
+      h("select", {
+        'class': "form-select form-select-sm text-center",
+        'value': localData.label.face,
+        onChange: (event)=>{
+          localData.label.face = event?.target?.value;
+        },
+      }, v(labels).map((label, idx) => h("option", {
+        'key': `${idx}`,
+        'value': label.face??"???",
+      }, label.face))),
       btn({
         'onClick': ()=>{
-          ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
+          ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['label']});
           // console.log("confirm");
         },
         'title': "确定",
-      }, bi("check2"), "outline-secondary"),
+      }, bi("check2"), "primary"),
       btn({
         'onClick': ()=>{
           ctx.emit("cancel");
@@ -369,6 +396,22 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
         let result = _tokens.map(it => it.word).join("");
         return result;
       };
+      const idxesToBlocks = (idxes) => {
+        let blocks = [];
+        let tmp = [];
+        let last = -999;
+        for (let idx of idxes) {
+          if (idx != last+1) {
+            blocks.push(tmp);
+            tmp = [];
+          };
+          tmp.push(idx);
+          last = idx;
+        };
+        blocks.push(tmp);
+        blocks = blocks.filter(it=>it.length);
+        return blocks;
+      };
       const localData = reactive({
         'span': {
           'type': props?.ctrl?.type,
@@ -378,6 +421,17 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
           },
         },
       });
+      const 特别的face = computed(() => {
+        const idxeses = idxesToBlocks(localData?.['span']?.['value']?.['idxes']);
+        const texts = idxeses.map(it=>idxesToText(it));
+        const 老大 = {
+          'value': {
+            'texts': texts,
+            'idxeses': idxeses,
+          },
+        };
+        return faceFn单个不连续原文片段(老大);
+      });
       return () => div({'class': "input-group input-group-sm"}, [
         div({'class': "form-control d-inline-block text-center"}, [
           div({
@@ -385,9 +439,7 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
           }, [
             localData?.['span']?.['value']?.['text']?.length
               ? [
-                span({
-                  'class': "text-secondary",
-                }, [localData?.['span']?.['value']?.['text']]),
+                v(特别的face),
                 !selection?.array?.length ? muted("...") : null,
               ]
               : !selection?.array?.length ? muted("【请在文中选取】") : null,
@@ -482,9 +534,7 @@ const EditorSingleBrokenSpan = {
         }, [
           localData?.['span']?.['value']?.['texts']?.length
             ? [
-              span({
-                'class': "text-secondary",
-              }, [localData?.['span']?.['value']?.['texts'].join("+")]),
+              faceFn单个不连续原文片段(localData?.['span']),
               !selection?.array?.length ? muted("...") : null,
             ]
             : !selection?.array?.length ? muted("【请在文中选取】") : null,
@@ -520,7 +570,7 @@ const EditorSingleBrokenSpan = {
           // console.log("confirm");
         },
         'title': "确定",
-      }, bi("check2"), "outline-secondary"),
+      }, bi("check2"), "primary"),
       btn({
         'onClick': ()=>{
           ctx.emit("cancel");
@@ -599,6 +649,10 @@ const PropertyItem = {
 
     const newDataWrap = reactive({
       'data': JSON.parse(JSON.stringify(props?.['data'])),
+    });
+
+    watch(()=>props?.['data'], ()=>{
+      newDataWrap['data'] = JSON.parse(JSON.stringify(props?.['data']));
     });
 
     const onGoToEdit = () => {
@@ -1021,8 +1075,11 @@ const AllObjectsPanel = {
                   :(ctx.emit("show-object-wrap", objWrap));
               },
             }, [
-              // objWrap._type,
-              objectFace(objWrap),
+              // span({'class': "text-muted pe-2"}, objWrap?.data?._id??objWrap?.data?.id??"_"),
+              objWrap?.['typeDef']?.['icon-bi']?.length ? [
+                span({'class': "pe-2"}, bi(objWrap?.['typeDef']?.['icon-bi'])),
+              ] : null,
+              objectFace(objWrap.data),
             ], objWrap['show']?"outline-primary":"light")),
         ]),
       ])),
