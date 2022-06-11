@@ -58,30 +58,32 @@
           <div class="navbar-nav">
             <span class="nav-link">#{{ctrl.currentWorkerId??""}} {{ctrl.currentWorker??""}}</span>
             <a class="nav-link" href="./menu" target="_blank">文档</a>
-            <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
-              v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
-              :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
-            >切换到 task1</a>
-            <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t2')}"
-              v-if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
-              :if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
-            >切换到 旧版task2</a> -->
-            <a class="nav-link" _href="#" @click="()=>{setTask('t2r')}"
-              v-if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
-              :if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
-            >切换到 task2</a>
-            <a class="nav-link" _href="#" @click="()=>{setTask('t4')}"
-              v-if="newThings.begun && newThings?.theUser?.currTask!='t4' && isChecker()"
-              :if="newThings.begun && newThings?.theUser?.currTask!='t4' && isChecker()"
-            >切换到 精标</a>
-            <a class="nav-link" _href="#" @click="()=>{}"
-              v-if="isChecker()"
-              :if="isChecker()"
-              title="管理员可以看到 旧版 task2 和 精标，普通标注员看不到"
-            ><small>备注</small></a>
-            <!-- <a class="nav-link" _href="#">配置</a> -->
-            <!-- <a class="nav-link" _href="#" @click="ctrl.currentPage='setup'" v-if="isChecker()">准备</a> -->
-            <!-- <a class="nav-link" _href="#" @click="ctrl.currentPage='anno'" v-if="isChecker()">标注</a> -->
+            <template v-if="!play.playMode">
+              <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
+                v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
+                :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
+              >切换到 task1</a>
+              <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t2')}"
+                v-if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
+                :if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
+              >切换到 旧版task2</a> -->
+              <a class="nav-link" _href="#" @click="()=>{setTask('t2r')}"
+                v-if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
+                :if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
+              >切换到 task2</a>
+              <a class="nav-link" _href="#" @click="()=>{setTask('t4')}"
+                v-if="newThings.begun && newThings?.theUser?.currTask!='t4' && isChecker()"
+                :if="newThings.begun && newThings?.theUser?.currTask!='t4' && isChecker()"
+              >切换到 精标</a>
+              <a class="nav-link" _href="#" @click="()=>{}"
+                v-if="isChecker()"
+                :if="isChecker()"
+                title="管理员可以看到 旧版 task2 和 精标，普通标注员看不到"
+              ><small>备注</small></a>
+              <!-- <a class="nav-link" _href="#">配置</a> -->
+              <!-- <a class="nav-link" _href="#" @click="ctrl.currentPage='setup'" v-if="isChecker()">准备</a> -->
+              <!-- <a class="nav-link" _href="#" @click="ctrl.currentPage='anno'" v-if="isChecker()">标注</a> -->
+            </template>
           </div>
         </div>
       </div>
@@ -158,6 +160,24 @@
               @click="()=>{bEU.begin();newThings.begun=true;}"
               title="开始标注"
             >开始标注</button>
+            <!-- <button
+              type="button"
+              class="btn btn-sm me-2 my-1 btn-outline-primary"
+              @click="()=>{startPlay('t1');}"
+              title="查看 task1 示例"
+            >查看 task1 示例</button> -->
+            <!-- <button
+              type="button"
+              class="btn btn-sm me-2 my-1 btn-outline-primary"
+              @click="()=>{startPlay('t2r');}"
+              title="查看 task2 示例"
+            >查看 task2 示例</button> -->
+            <!-- <button
+              type="button"
+              class="btn btn-sm me-2 my-1 btn-outline-primary"
+              @click="()=>{startPlay('t3');}"
+              title="查看 精标 示例"
+            >查看 精标 示例</button> -->
             <!-- <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
@@ -319,9 +339,10 @@
               :alert-box="alertBox"
               :example="example"
               :backend-usage="bEU"
+              :can-save="!play.playMode"
               @web-next="bEU.next(example)"
-              @web-save="bEU.save(example)"
-              @web-save-and-next="bEU.saveAndNext(example)"
+              @web-save="()=>{if(!play.playMode){bEU.save(example);};}"
+              @web-save-and-next="()=>{if(!play.playMode){bEU.saveAndNext(example);}else{alertBox.pushAlert('演示模式无法保存', 'info', 3000);bEU.next(example);};}"
             ></annotator>
           </div>
           <!-- 功能区 结束 -->
@@ -350,7 +371,7 @@
               :show-title-detail="false"
               :can-close="true"
               :wrap="true"
-              @close="(annot)=>{win.console.log(annot);example.annotations.splice(annot._idx_to_delete,1);alertBox.pushAlert('别忘了保存', 'warning')}"
+              @close="(annot)=>{win.console.log(annot);example.annotations.splice(annot._idx_to_delete,1);alertBox.pushAlert('别忘了保存', 'warning');}"
             ></results-display>
           </div>
         </div>

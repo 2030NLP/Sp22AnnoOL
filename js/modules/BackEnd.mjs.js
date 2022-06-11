@@ -13,6 +13,7 @@ class BackEnd {
     this.bridge = theApi;  // axios
     this.token = token;
     this.handleErrorFn = handleErrorFn;
+    this.playMode = false;
     // this.setRequestHeader();
   }
   static new(token, baseURL, handleErrorFn) {
@@ -281,6 +282,7 @@ class BackEnd {
   }
 
   async updateAnno(user_id, task_id, entry_id, anno_wrap, topic, entryVer) {
+    if (this.playMode) {return};
     // 获取 anno 信息
     // 输入：
     //   user_id

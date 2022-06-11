@@ -1,7 +1,7 @@
 import {  reactive, onMounted, h  } from '../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
 const UserListControl = {
-  props: ["db", "settings", "managers", "groups", "batchnames", "user"],
+  props: ["db", "settings", "managers", "userTags", "userRoles", "groups", "tags", "batchnames", "user"],
   // emits: ['update:manager_id'],
   setup(props, ctx) {
     const localData = reactive({
@@ -33,7 +33,7 @@ const UserListControl = {
                   'value': manager.id,
                 }, [manager.name])),
 
-                h("option", { 'value': "", }, ["【empty】"]),
+                h("option", { 'value': "【empty】", }, ["【empty】"]),
                 h("option", { 'value': "【all】", }, ["【all】"]),
               ]),
             ]),
@@ -51,10 +51,48 @@ const UserListControl = {
                   'value': group,
                 }, [group])),
 
-                h("option", { 'value': "", }, ["【empty】"]),
+                h("option", { 'value': "【empty】", }, ["【empty】"]),
                 h("option", { 'value': "【all】", }, ["【all】"]),
               ]),
             ]),
+
+            h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
+              h("select", {
+                'class': "form-select form-select-sm",
+                'onChange': (event) => {
+                  props.settings.userRoleFilter = event?.target?.value;
+                },
+              }, [
+                h("option", { 'value': "【all】", 'selected': true, }, ["【按角色筛选】"]),
+
+                ...props.userRoles.map(userRole=>h("option", {
+                  'value': userRole,
+                }, [userRole])),
+
+                h("option", { 'value': "【empty】", }, ["【empty】"]),
+                h("option", { 'value': "【all】", }, ["【all】"]),
+              ]),
+            ]),
+
+            h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
+              h("select", {
+                'class': "form-select form-select-sm",
+                'onChange': (event) => {
+                  props.settings.userTagFilter = event?.target?.value;
+                },
+              }, [
+                h("option", { 'value': "【all】", 'selected': true, }, ["【按标签筛选】"]),
+
+                ...props.userTags.map(userTag=>h("option", {
+                  'value': userTag,
+                }, [userTag])),
+
+                h("option", { 'value': "【empty】", }, ["【empty】"]),
+                h("option", { 'value': "【all】", }, ["【all】"]),
+              ]),
+            ]),
+
+            h("br"),
 
             h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
               h("select", {

@@ -122,13 +122,27 @@ const genModeSection = (__pack) => {
       const items = step_props.value?.data?.items?.filter?.(it=>it?.shouldTake)??[];
       const jj1 = items.length>0;
       let jj2 = true;
-      outter:
       for (let item of items) {
         const slots = item?.slots?.filter?.(it=>it)??[];
-        if ((slots?.length??0)<(item.minimal??0)) {jj2 = false; break outter;};
+        if ((slots?.length??0)<(item.minimal??0)) {
+          jj2 = false;
+          break;
+        };
+        let shouldBreakOutter = false;
         for (let slot of slots??[]) {
-          if ('tokenarray' in slot && !slot.tokenarray?.length) {jj2 = false; break outter;};
-          if ('withText' in slot && !slot.withText?.length) {jj2 = false; break outter;};
+          if ('tokenarray' in slot && !slot.tokenarray?.length) {
+            jj2 = false;
+            shouldBreakOutter = true;
+            break;
+          };
+          if ('withText' in slot && !slot.withText?.length) {
+            jj2 = false;
+            shouldBreakOutter = true;
+            break;
+          };
+        };
+        if (shouldBreakOutter) {
+          break;
         };
       };
       return jj1 && jj2;
@@ -137,6 +151,14 @@ const genModeSection = (__pack) => {
     const checkBeforeSubmit = () => {
       let checkResult = true;
       const items = step_props.value?.data?.items?.filter?.(it=>it?.shouldTake)??[];
+
+      const jj1 = items.length>0;
+      if (!jj1) {
+        alertBox.pushAlert('无标注', 'warning', 3000);
+        checkResult=false;
+        return checkResult;
+      };
+
       let hasReplacedToken = false;
       let hasHighlightedToken = false;
       let hasIntersection = false;
@@ -144,8 +166,26 @@ const genModeSection = (__pack) => {
       // outter:
       for (let item of items) {
         const slots = item?.slots?.filter?.(it=>it)??[];
+        if ((slots?.length??0)<(item.minimal??0)) {
+          针对性处理标记清单.push("文本片段数量不足");
+          break;
+        };
         let tokenarrays = [];
+
+        let shouldBreakOutter = false;
         for (let slot of slots??[]) {
+
+          if ('tokenarray' in slot && !slot.tokenarray?.length) {
+            针对性处理标记清单.push("存在未填写的空框");
+            shouldBreakOutter = true;
+            break;
+          };
+          if ('withText' in slot && !slot.withText?.length) {
+            针对性处理标记清单.push("存在未填写的空框");
+            shouldBreakOutter = true;
+            break;
+          };
+
           if ('tokenarray' in slot && slot.tokenarray?.length) {
             tokenarrays.push(slot.tokenarray);
             // 存在交集的情况，现在不管了
@@ -180,6 +220,11 @@ const genModeSection = (__pack) => {
             };
           };
         };
+
+        if (shouldBreakOutter) {
+          break;
+        };
+
         if (item?.针对性处理?.includes?.("语义冲突数量限制")) {
           if (tokenarrays.length < 4) {
             针对性处理标记清单.push("语义冲突片段少于4");
@@ -225,31 +270,40 @@ const genModeSection = (__pack) => {
           //
         };
       };
+
+      if (针对性处理标记清单.includes("文本片段数量不足")) {
+        alertBox.pushAlert('文本片段数量不足，请检查', 'warning', 5000);
+        checkResult=false;
+      };
+      if (针对性处理标记清单.includes("存在未填写的空框")) {
+        alertBox.pushAlert('存在未填写的空框，请检查', 'warning', 5000);
+        checkResult=false;
+      };
+      if (针对性处理标记清单.includes("语义冲突片段少于4")) {
+        alertBox.pushAlert('语义冲突类选中的文本片段数量不足，请检查', 'warning', 5000);
+        checkResult=false;
+      };
       if (!hasHighlightedToken) {
-        alertBox.pushAlert('选中的范围内没有出现高亮词，请检查', 'warning', 60000);
+        alertBox.pushAlert('选中的范围内没有出现高亮词，请检查', 'warning', 5000);
         checkResult=false;
       };
       if (!hasReplacedToken) {
-        alertBox.pushAlert('似乎没有覆盖造成异常的关键片段，最好再检查一下', 'warning', 60000);
-      };
-      if (针对性处理标记清单.includes("语义冲突片段少于4")) {
-        alertBox.pushAlert('语义冲突类选中的文本片段数量不足，请检查', 'warning', 60000);
-        checkResult=false;
+        alertBox.pushAlert('似乎没有覆盖造成异常的关键片段，最好再检查一下', 'warning', 12000);
       };
       if (针对性处理标记清单.includes("语义冲突片段等于5")) {
-        alertBox.pushAlert('语义冲突类选中的文本片段数量不太正常，请确认操作无误再保存', 'warning', 60000);
+        alertBox.pushAlert('语义冲突类选中的文本片段数量不太正常，请确认操作无误再保存', 'warning', 30000);
       };
       if (针对性处理标记清单.includes("P为纯方位词")) {
-        alertBox.pushAlert('P 只含方位词，不太符合规范，请确认操作无误再保存', 'warning', 60000);
+        alertBox.pushAlert('P 只含方位词，不太符合规范，请确认操作无误再保存', 'warning', 30000);
       };
       if (针对性处理标记清单.includes("P含动词")) {
-        alertBox.pushAlert('P 含有动词，是不是和 E 填反了？建议检查一下，确认操作无误再保存', 'warning', 60000);
+        alertBox.pushAlert('P 含有动词，是不是和 E 填反了？请检查确认无误再保存', 'warning', 30000);
       };
       if (针对性处理标记清单.includes("E含方位词")) {
-        alertBox.pushAlert('E 含有方位词，是不是和 P 填反了？建议检查一下，确认操作无误再保存', 'warning', 60000);
+        alertBox.pushAlert('E 含有方位词，是不是和 P 填反了？请检查确认无误再保存', 'warning', 30000);
       };
       // if (hasIntersection) {
-      //   alertBox.pushAlert('某条标注中的两个文本片段存在交集，请确认无误再保存', 'warning', 60000);
+      //   alertBox.pushAlert('某条标注中的两个文本片段存在交集，请确认无误再保存', 'warning', 30000);
       // };
       return checkResult;
     };
@@ -401,7 +455,7 @@ const genModeSection = (__pack) => {
           clearSelector();
         },
       }, {
-        'ok': ()=>!canSubmit(),
+        // 'ok': ()=>!canSubmit(),
         'cancel': ()=>false,
       }),
 

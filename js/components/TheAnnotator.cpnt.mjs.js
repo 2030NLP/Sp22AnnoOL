@@ -11,7 +11,7 @@ import gen_SpaCE2022_Task2R_ModeSection from './AnnotatingModes/mode_SpaCE2022_T
 import CmrUI from './AnnotatingCMR/CmrUI.cpnt.mjs.js';
 
 export default {
-  props: ["example", "backendUsage", "step", "engine", "tokenSelector", "stepCtrl", "tokens", "selection", "alertBox", "modifiedText"],
+  props: ["canSave", "example", "backendUsage", "step", "engine", "tokenSelector", "stepCtrl", "tokens", "selection", "alertBox", "modifiedText"],
   emits: ["web-next", "web-save", "web-save-and-next", "ok", "start", "clean", "cancel", "reset", "next", "add-to-list", "clear-selection", "option"],
   component: {
     BsBadge,
@@ -117,10 +117,13 @@ export default {
 
         // 保存并前往下一条 ⛔️
 
-        someBtn({
+        props.canSave ? someBtn({
           style: "success",
           text: "保存并继续",
-        }, ()=>{ctx.emit('web-save-and-next')}, "保存并继续"),
+        }, ()=>{ctx.emit('web-save-and-next')}, "保存并继续") : someBtn({
+          style: "info",
+          text: "下一条",
+        }, ()=>{ctx.emit('web-next')}, "下一条"),
       ]),
     ][0];
 

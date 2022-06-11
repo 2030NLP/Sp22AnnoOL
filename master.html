@@ -494,6 +494,19 @@
 
 
           <template
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-tags-editor']"
+          >
+            <user-tags-editor
+              :db="spDB"
+              :box="modalBox"
+              :user="modalBox.data?.kwargs"
+              @check-error-on-save="alertBox.pushAlert('存在错误，请检查！', 'warning')"
+              @save="(value)=>{saveUpdatedUser(modalBox.data?.kwargs, value)}"
+            ></user-tags-editor>
+          </template>
+
+
+          <template
             v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-importer']"
           >
             <user-importer
@@ -538,6 +551,12 @@
               </div>
               <div class="row align-items-center my-2">
                 <div class="col-12">
+                  <button
+                    type="button"
+                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                    :title="`编辑 ${user.name} 的标签`"
+                    @click="modalBox_open('user-tags-editor', user)"
+                  >编辑标签</button>
                   <button
                     type="button"
                     class="btn btn-sm me-2 my-1 btn-outline-secondary"

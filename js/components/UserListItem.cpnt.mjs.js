@@ -120,6 +120,10 @@ const UserListItem = {
             'class': "badge bg-light text-dark me-1", 'title': "当前批次的已审量"
           }, ["已审 ", sum.value?.sum]),
 
+          ...(user.tags??[]).map(tag=>h("span", {
+            'class': "badge rounded-pill bg-light _border _border-info text-info me-1"
+          }, [tag])),
+
         ],),
 
 

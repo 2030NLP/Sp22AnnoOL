@@ -75,7 +75,7 @@ const TaskAssignPanel = {
       result: {},
       //
       //
-      namesText: "",
+      clueListText: "",
       //
     });
     watch(() => assignData.settings, async () => {
@@ -84,24 +84,24 @@ const TaskAssignPanel = {
 
 
     const selectUsersByNames = () => {
-      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
-      assignData.namesText = names.join("\n");
+      const names = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = names.join("\n");
       for (let user of spDB.users) {
         assignData.assignUserBoxDict[user.id] = names.includes(user.name) ? true : false;
       };
     };
 
     const selectUsersByAddNames = () => {
-      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
-      assignData.namesText = names.join("\n");
+      const names = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = names.join("\n");
       for (let user of spDB.users) {
         if (names.includes(user.name)) {assignData.assignUserBoxDict[user.id] = true};
       };
     };
 
     const selectUsersByRemoveNames = () => {
-      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
-      assignData.namesText = names.join("\n");
+      const names = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = names.join("\n");
       for (let user of spDB.users) {
         if (names.includes(user.name)) {assignData.assignUserBoxDict[user.id] = false};
       };
@@ -109,51 +109,82 @@ const TaskAssignPanel = {
 
 
     const selectUsersByGroups = () => {
-      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
-      assignData.namesText = names.join("\n");
+      const groups = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = groups.join("\n");
       for (let user of spDB.users) {
-        assignData.assignUserBoxDict[user.id] = names.includes(user.currTaskGroup) ? true : false;
+        assignData.assignUserBoxDict[user.id] = groups.includes(user.currTaskGroup) ? true : false;
       };
     };
 
     const selectUsersByAddGroups = () => {
-      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
-      assignData.namesText = names.join("\n");
+      const groups = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = groups.join("\n");
       for (let user of spDB.users) {
-        if (names.includes(user.currTaskGroup)) {assignData.assignUserBoxDict[user.id] = true};
+        if (groups.includes(user.currTaskGroup)) {assignData.assignUserBoxDict[user.id] = true};
       };
     };
 
     const selectUsersByRemoveGroups = () => {
-      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
-      assignData.namesText = names.join("\n");
+      const groups = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = groups.join("\n");
       for (let user of spDB.users) {
-        if (names.includes(user.currTaskGroup)) {assignData.assignUserBoxDict[user.id] = false};
+        if (groups.includes(user.currTaskGroup)) {assignData.assignUserBoxDict[user.id] = false};
       };
     };
 
 
     const selectUsersByManagers = () => {
-      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
-      assignData.namesText = names.join("\n");
+      const manager_ids = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = manager_ids.join("\n");
       for (let user of spDB.users) {
-        assignData.assignUserBoxDict[user.id] = names.includes(user.manager)||names.includes(user.manager_name) ? true : false;
+        assignData.assignUserBoxDict[user.id] = manager_ids.includes(user.manager)||manager_ids.includes(user.manager_name) ? true : false;
       };
     };
 
     const selectUsersByAddManagers = () => {
-      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
-      assignData.namesText = names.join("\n");
+      const manager_ids = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = manager_ids.join("\n");
       for (let user of spDB.users) {
-        if (names.includes(user.manager)||names.includes(user.manager_name)) {assignData.assignUserBoxDict[user.id] = true};
+        if (manager_ids.includes(user.manager)||manager_ids.includes(user.manager_name)) {assignData.assignUserBoxDict[user.id] = true};
       };
     };
 
     const selectUsersByRemoveManagers = () => {
-      const names = assignData.namesText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
-      assignData.namesText = names.join("\n");
+      const manager_ids = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = manager_ids.join("\n");
       for (let user of spDB.users) {
-        if (names.includes(user.manager)||names.includes(user.manager_name)) {assignData.assignUserBoxDict[user.id] = false};
+        if (manager_ids.includes(user.manager)||manager_ids.includes(user.manager_name)) {assignData.assignUserBoxDict[user.id] = false};
+      };
+    };
+
+
+    const selectUsersByRolesOrTags = () => {
+      const rolesOrTags = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = rolesOrTags.join("\n");
+      for (let user of spDB.users) {
+        for (let tag of rolesOrTags) {
+          assignData.assignUserBoxDict[user.id] = (user?.tags?.includes(tag)||user?.role?.includes(tag)) ? true : false;
+        }
+      };
+    };
+
+    const selectUsersByAddRolesOrTags = () => {
+      const rolesOrTags = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = rolesOrTags.join("\n");
+      for (let user of spDB.users) {
+        for (let tag of rolesOrTags) {
+          if (user?.tags?.includes(tag)||user?.role?.includes(tag)) {assignData.assignUserBoxDict[user.id] = true};
+        }
+      };
+    };
+
+    const selectUsersByRemoveRolesOrTags = () => {
+      const rolesOrTags = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
+      assignData.clueListText = rolesOrTags.join("\n");
+      for (let user of spDB.users) {
+        for (let tag of rolesOrTags) {
+          if (user?.tags?.includes(tag)||user?.role?.includes(tag)) {assignData.assignUserBoxDict[user.id] = false};
+        }
       };
     };
 
@@ -539,59 +570,77 @@ const TaskAssignPanel = {
           ], ),
           h("textarea", {
             'class': `form-control form-control-sm`,
-            'value': assignData.namesText,
-            'onChange': (e) => {assignData.namesText=e.target.value},
+            'value': assignData.clueListText,
+            'onChange': (e) => {assignData.clueListText=e.target.value},
           }, [], ),
           h("div", {}, [
             h("button", {
               'type': "button",
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-primary",
               'onClick': ()=>{selectUsersByNames();},
             }, ["用名单筛选"], ),
             h("button", {
               'type': "button",
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-success",
               'onClick': ()=>{selectUsersByAddNames();},
             }, ["用名单添加"], ),
             h("button", {
               'type': "button",
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-danger",
               'onClick': ()=>{selectUsersByRemoveNames();},
             }, ["用名单排除"], ),
 
 
             h("button", {
               'type': "button",
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-primary",
               'onClick': ()=>{selectUsersByGroups();},
             }, ["根据组别筛选"], ),
             h("button", {
               'type': "button",
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-success",
               'onClick': ()=>{selectUsersByAddGroups();},
             }, ["根据组别添加"], ),
             h("button", {
               'type': "button",
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-danger",
               'onClick': ()=>{selectUsersByRemoveGroups();},
             }, ["根据组别排除"], ),
 
 
             h("button", {
               'type': "button",
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-primary",
               'onClick': ()=>{selectUsersByManagers();},
             }, ["根据组长筛选"], ),
             h("button", {
               'type': "button",
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-success",
               'onClick': ()=>{selectUsersByAddManagers();},
             }, ["根据组长添加"], ),
             h("button", {
               'type': "button",
-              'class': "btn btn-sm mx-2 my-1 btn-outline-dark",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-danger",
               'onClick': ()=>{selectUsersByRemoveManagers();},
             }, ["根据组长排除"], ),
+
+
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-primary",
+              'onClick': ()=>{selectUsersByRolesOrTags();},
+            }, ["根据角色或标签筛选"], ),
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-success",
+              'onClick': ()=>{selectUsersByAddRolesOrTags();},
+            }, ["根据角色或标签添加"], ),
+            h("button", {
+              'type': "button",
+              'class': "btn btn-sm mx-2 my-1 btn-outline-danger",
+              'onClick': ()=>{selectUsersByRemoveRolesOrTags();},
+            }, ["根据角色或标签排除"], ),
+
 
             h("button", {
               'type': "button",

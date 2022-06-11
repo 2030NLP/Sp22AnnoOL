@@ -25,6 +25,8 @@ const UserListPanel = {
         showQuittedUsers: false,
         managerFilter: "【all】",
         groupFilter: "【all】",
+        userRoleFilter: "【all】",
+        userTagFilter: "【all】",
         sortMethod: "id+",
       },
     });
@@ -37,7 +39,9 @@ const UserListPanel = {
     };
 
     const batchNames = computed(()=>theDB.batchNames());
-    const managers = computed(()=>theDB.users.filter(user=>isManager(user)));
+    const managers = computed(()=>theDB.managers());
+    const userTags = computed(()=>theDB.userTags());
+    const userRoles = computed(()=>theDB.userRoles());
     const groups = computed(()=>[...(new Set(theDB.users.map(user=>user.currTaskGroup)))]);
     const newestBatchName = computed(()=>(theDB.tasks??[]).sort((a, b)=>(+a.batch-b.batch)).map(it=>it.batchName).at(-1));
 
@@ -74,10 +78,32 @@ const UserListPanel = {
         list = list.filter(it => !it.quitted);
       };
       if (localData.listControlSettings.managerFilter!="【all】") {
-        list = list.filter(it => (it.manager??"")==localData.listControlSettings.managerFilter);
+        if (localData.listControlSettings.managerFilter!="【empty】") {
+          list = list.filter(it => (it.manager??"")==localData.listControlSettings.managerFilter);
+        } else {
+          list = list.filter(it => !it?.manager?.length);
+        };
       };
       if (localData.listControlSettings.groupFilter!="【all】") {
-        list = list.filter(it => (it.currTaskGroup??"")==localData.listControlSettings.groupFilter);
+        if (localData.listControlSettings.groupFilter!="【empty】") {
+          list = list.filter(it => (it.currTaskGroup??"")==localData.listControlSettings.groupFilter);
+        } else {
+          list = list.filter(it => !it?.currTaskGroup?.length);
+        };
+      };
+      if (localData.listControlSettings.userRoleFilter!="【all】") {
+        if (localData.listControlSettings.userRoleFilter!="【empty】") {
+          list = list.filter(it => it.role?.includes?.(localData.listControlSettings.userRoleFilter));
+        } else {
+          list = list.filter(it => !it?.role?.length);
+        };
+      };
+      if (localData.listControlSettings.userTagFilter!="【all】") {
+        if (localData.listControlSettings.userTagFilter!="【empty】") {
+          list = list.filter(it => it.tags?.includes?.(localData.listControlSettings.userTagFilter));
+        } else {
+          list = list.filter(it => !it?.tags?.length);
+        };
       };
       const sortMethodsMap01 = {
         "id+": it => (+it.id),
@@ -148,6 +174,8 @@ const UserListPanel = {
             'db': theDB,
             'settings': localData.listControlSettings,
             'managers': managers.value,
+            'userTags': userTags.value,
+            'userRoles': userRoles.value,
             'groups': groups.value,
             'batchnames': batchNames.value,
             'batchname': localData.selectedBatchName,

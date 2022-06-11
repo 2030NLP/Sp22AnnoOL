@@ -220,6 +220,10 @@ class Sp22DB {
     return this.cache.dictOfAnnoByUserAndTask[`${user_id}/${task_id}`];
   }
 
+  managers() { return this.lo.uniq(this.users.map(it=>it.manager)).map(it=>this.userDict[it]).filter(it=>it?.name?.length); }
+  userRoles() { return this.lo.uniq(this.users.map(it=>it.role).flat()); }
+  userTags() { return this.lo.uniq(this.users.map(it=>it.tags).flat()); }
+
   topics() { return this.lo.uniq(this.tasks.map(it=>it.topic)); }
   batches() { return this.lo.uniq(this.tasks.map(it=>it.batche)); }
   batchNames() { return this.lo.uniq(this.tasks.map(it=>it.batchName)); }

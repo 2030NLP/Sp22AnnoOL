@@ -96,6 +96,8 @@ class BackEndUsage {
 
     this.checkDB = checkDB;
 
+    this.playMode = false;
+
     // console.log(this);
   }
   static new(appPack, checkDB) {
@@ -109,6 +111,8 @@ class BackEndUsage {
   }
 
   saveStore() {
+    if (this.playMode) {return};
+
     this.storeTool.set(`${this.appName}:version`, this.appVersion);
     // let worker = this.data.ctrl.currentWorker;
     // this.storeTool.set(`${this.appName}:worker`, worker);
@@ -195,7 +199,9 @@ class BackEndUsage {
         //
         this.data.ctrl.currentPage = 'anno';
         this.data.newThings.lastEID = thing?.entry?.id;
-        this.storeTool.set(`${this.appName}:lastEID`, this.data.newThings.lastEID);
+        if (!this.playMode) {
+          this.storeTool.set(`${this.appName}:lastEID`, this.data.newThings.lastEID);
+        };
 
         return content;
       } else {
@@ -405,6 +411,8 @@ class BackEndUsage {
     this.data.ctrl.currentWorkerQuitted = user?.quitted;
     this.data.newThings.theUser = user;
 
+    if (this.playMode) {return;};
+
     this.storeTool.set(`${this.appName}:it`, it);
     this.storeTool.set(`${this.appName}:theUser`, user);
   }
@@ -412,6 +420,10 @@ class BackEndUsage {
 
 
   async save(content) {
+    if (this.playMode) {
+      this.pushAlert(`演示模式，无法保存`, 'info', 2600);
+      return;
+    };
     try {
 
       // if (this.ewp.example?.review?.accept) {

@@ -159,6 +159,11 @@ const RootComponent = {
         showOrigin: false,
         //
       },
+      play: {
+        playMode: false,
+        playToken: "",
+        playTask: "t2",
+      },
       newThings: {
         theUser: {},
         begun: false,
@@ -173,6 +178,54 @@ const RootComponent = {
         navbar_collapse_show: false,
       },
     });
+
+    const startPlay = (key) => {
+      if (DEVELOPING) {
+        key = `${key}-dev`;
+      };
+      const map = {
+        't1-dev': {
+          playMode: true,
+          playToken: "4ae673de-da71-4a07-9b74-197cfa9f652f",
+        },
+        't2-dev': {
+          playMode: true,
+          playToken: "4ae673de-da71-4a07-9b74-197cfa9f652f",
+        },
+        't2r-dev': {
+          playMode: true,
+          playToken: "4ae673de-da71-4a07-9b74-197cfa9f652f",
+        },
+        't3-dev': {
+          playMode: true,
+          playToken: "afeff97c-065a-4e38-99d8-3d1a24b2df22",
+        },
+        't1': {
+          playMode: true,
+          playToken: "e96a57f2-74a3-4878-9639-9e1fb31ef936",
+        },
+        't2': {
+          playMode: true,
+          playToken: "0261d48c-0b62-4041-a90d-599ddc0b93bf",
+        },
+        't2r': {
+          playMode: true,
+          playToken: "0261d48c-0b62-4041-a90d-599ddc0b93bf",
+        },
+        't3': {
+          playMode: true,
+          playToken: "062ebcce-953c-4cab-afd6-c465a9231790",
+        },
+      };
+      if (key in map) {
+        appData.play = map[key];
+        bEU.playMode = true;
+        theBackEnd.playMode = true;
+        theBackEnd.token = appData.play.playToken;
+        bEU.begin();
+        appData.newThings.begun=true;
+      };
+    };
 
     // 启动时 加载缓存的 应用信息 及 用户信息
     onMounted(() => {
@@ -191,6 +244,7 @@ const RootComponent = {
       appData.ctrl.currentWorkerTarget = stored?.target;
       appData.ctrl.currentWorkerTaskType = stored?.taskType;
       appData.ctrl.currentWorkerTaskCount = stored?.taskCount;
+      if (appData.play.playMode) {return};
       appData.newThings.lastEID = store.get(`${APP_NAME}:lastEID`);
       appData.newThings.theUser = store.get(`${APP_NAME}:theUser`);
     });
@@ -218,6 +272,12 @@ const RootComponent = {
 
     watch(()=>appData.ctrl.currentWorkerSecret, () => {
       theBackEnd.token = appData.ctrl.currentWorkerSecret;
+    });
+
+    watch(()=>appData.play, () => {
+      if (appData.play?.playMode) {
+        theBackEnd.token = appData.play?.playToken;
+      };
     });
 
     const appPack = {
@@ -368,6 +428,7 @@ const RootComponent = {
 
 
     const setTask = async (topicLabel) => {
+      if (appData.play.playMode) {return};
       let succeed = await bEU.setTask(appData?.newThings?.theUser, topicLabel);
       if (succeed) {
         await store.set(`${APP_NAME}:theUser`, appData?.newThings?.theUser);
@@ -431,6 +492,8 @@ const RootComponent = {
       //
       // h,
       reactive,
+      //
+      startPlay,
       //
     };
   },

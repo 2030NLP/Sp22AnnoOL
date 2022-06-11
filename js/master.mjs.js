@@ -69,6 +69,7 @@ const RootComponent = {
       "user-progress": "user-progress",
       "user-importer": "user-importer",
       "user-editor": "user-editor",
+      "user-tags-editor": "user-tags-editor",
       "user-detail": "user-detail",
       "entry-detail": "entry-detail",
       "task-detail": "task-detail",
@@ -1156,6 +1157,8 @@ the_app.component('user-list-panel', UserListPanel);
 // the_app.component('user-list-panel', UserListItem);
 
 
+import UserTagsEditor from './components/UserTagsEditor.cpnt.mjs.js';
+the_app.component('user-tags-editor', UserTagsEditor);
 import UserEditor from './components/UserEditor.cpnt.mjs.js';
 the_app.component('user-editor', UserEditor);
 import UserImporter from './components/UserImporter.cpnt.mjs.js';
