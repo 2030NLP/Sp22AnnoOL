@@ -19,6 +19,11 @@ const ha = (children, href, title, targetBlank) => {
   }, children);
 };
 const muted = text => span({'class': "text-muted"}, text);
+const text = (text, attr) => span(attr, text);
+const opacity100 = text => span({'class': "opacity-100"}, text);
+const opacity75 = text => span({'class': "opacity-75"}, text);
+const opacity50 = text => span({'class': "opacity-50"}, text);
+const opacity25 = text => span({'class': "opacity-25"}, text);
 const textPrimary = text => span({'class': "text-primary"}, text);
 const textSecondary = text => span({'class': "text-secondary"}, text);
 const textSuccess = text => span({'class': "text-success"}, text);
@@ -50,7 +55,7 @@ const spansJoin = (spans, joint) => {
     result.push(span);
     xx = true;
   };
-  return result;
+  return span({}, result);
 };
 
 
@@ -81,19 +86,51 @@ const 设计 = `
 const faceFn单个原文片段 = (boy) => {
   const text = boy?.value?.text ?? "";
   const idxes = boy?.value?.idxes ?? [];
-  return text.length ? [textPrimary("“"), muted(text), textPrimary("”")] : idxes.length ? muted(JSON.stringify(idxes)) : muted("【请在文中选取】");
+  return text.length ? [textPrimary("“"), opacity75(text), textPrimary("”")] : idxes.length ? opacity75(JSON.stringify(idxes)) : opacity75(textDanger("<???>"));
 };
 const faceFn单个不连续原文片段 = (boy) => {
   const texts = boy?.value?.texts??[];
-  const textSpans = texts.map(it=>muted(it));
+  const textSpans = texts.map(it=>opacity75(it));
   const sss = spansJoin(textSpans, textPrimary("+"));
 
   const idxeses = boy?.value?.idxeses ?? [];
-  return texts.length ? span({}, [textPrimary("“"), sss, textPrimary("”")]) : idxeses.length ? muted(JSON.stringify(idxeses)) : muted("【请在文中选取】");
+  return texts.length ? span({}, [textPrimary("“"), sss, textPrimary("”")]) : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<???>"));
+};
+const faceFn单个不连续原文片段无引号 = (boy) => {
+  const texts = boy?.value?.texts??[];
+  const textSpans = texts.map(it=>text(it));
+  const sss = spansJoin(textSpans, textPrimary("+"));
+
+  const idxeses = boy?.value?.idxeses ?? [];
+  return texts.length ? sss : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<???>"));
 };
 
 const faceFn单个标签 = (boy) => {
   return boy?.value?.face?.length?textInfo(boy?.value?.face):textDanger("???");
+};
+
+const faceFn单个对象 = (boy, reactiveCMR) => {
+  const obj = reactiveCMR.get(boy);
+  const that = (obj!=null) ? div({
+    'class': "d-inline-box small border rounded px-1 py-0 align-middle text-wrap",
+  }, objectFace(obj, reactiveCMR)) : div({
+    'class': "d-inline-box small border border-danger text-danger rounded px-1 py-0 align-middle text-wrap",
+  }, opacity75("<id不存在>"));
+  return that;
+};
+const faceFn多个对象 = (boyListWrap, reactiveCMR, joint) => {
+  const dogs = (boyListWrap?.value??[]).map(boy=>faceFn单个对象(boy, reactiveCMR));
+  let girls = [];
+  let first = true;
+  for (let dog of dogs) {
+    if (!first) {girls.push(joint)};
+    if (first) {first = false};
+    girls.push(dog);
+  };
+  const box = div({
+    'class': "d-flex flex-wrap gap-1 justify-content-evenly",
+  }, girls);
+  return box;
 };
 
 const ctrlTypeFaceFnMap = {
@@ -102,42 +139,82 @@ const ctrlTypeFaceFnMap = {
   '不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
   '单个不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
   '单个标签': (boy)=>faceFn单个标签(boy),
-  '单个对象': (boy)=>span({}, JSON.stringify(boy)),
-  '多个原文片段': (boy)=>span({}, JSON.stringify(boy)),
-  '多个标签': (boy)=>span({}, JSON.stringify(boy)),
-  '多个对象': (boyListWrap, joint)=>{
-    const dogs = (boyListWrap?.value??[]).map(boy=>ctrlTypeFaceFnMap['单个对象'](boy));
-    let girls = [];
-    let first = true;
-    for (let dog of dogs) {
-      if (!first) {girls.push(joint)};
-      if (first) {first = false};
-      girls.push(dog);
-    };
-    return girls;
-  },
-  '布尔值': (boy)=>(boy?.value?(span({'class': "text-success"}, "true")):(span({'class': "text-danger"}, "false"))),
-  '数值': (boy)=>span({'class': "text-primary"}, boy?.value),
+  '单个对象': (boy, reactiveCMR)=>faceFn单个对象(boy?.value, reactiveCMR),
+  '多个原文片段': (boy)=>text(JSON.stringify(boy)),
+  '多个标签': (boy)=>text(JSON.stringify(boy)),
+  '多个对象': (boyListWrap, reactiveCMR, joint)=>faceFn多个对象(boyListWrap, reactiveCMR, joint),
+  '布尔值': (boy)=>(boy?.value?(textSuccess("true")):(textDanger("false"))),
+  '数值': (boy)=>textPrimary(boy?.value),
 };
 
-const dataFace = (cat, joint) => {
+const dataFace = (cat, reactiveCMR, joint) => {
   if (cat?.type in ctrlTypeFaceFnMap) {
-    return ctrlTypeFaceFnMap[cat?.type](cat, joint);
+    return ctrlTypeFaceFnMap[cat?.type](cat, reactiveCMR, joint);
   };
-  return JSON.stringify(cat);
+  return text(JSON.stringify(cat));
+};
+
+
+
+const 原文顺序依据 = (object, reactiveCMR) => {
+  const values = Object.values(object??{});
+  const ooFn = (id) => {
+    let oooo = reactiveCMR.get(id);
+    return 原文顺序依据(oooo, reactiveCMR);
+  };
+  const map = {
+    "原文片段": (it)=>+(it?.value?.idxes?.[0]??-Infinity),
+    "单个原文片段": (it)=>+(it?.value?.idxes?.[0]??-Infinity),
+    "不连续原文片段": (it)=>+(it?.value?.idxeses?.[0]?.[0]??-Infinity),
+    "单个不连续原文片段": (it)=>+(it?.value?.idxeses?.[0]?.[0]??-Infinity),
+    "单个对象": (it)=>ooFn(it?.value),
+    "多个对象": (it)=>ooFn(it?.value?.[0]),
+  };
+  for (let vv of values) {
+    if (vv.type in map) {
+      const hahah = map[vv.type](vv);
+      if (hahah!=null) {
+        return hahah;
+      };
+    };
+  };
+  return Infinity;
+};
+
+
+
+const faceFnObj空间实体 = (boy, reactiveCMR) => {
+  const syb = textPrimary(boy['是否是虚拟的']?.value ? "$" : "#");
+  const textObjs = (boy['原文片段']?.value??[]).map(id=>reactiveCMR.get(id)).filter(it=>it!=null);
+  const texts = textObjs.map(it=>faceFn单个不连续原文片段无引号(it?.['内容']));
+  const sss = spansJoin(texts, textPrimary("="));
+  // console.log({textObjs, texts, sss});
+  return span({}, [syb, sss, syb]);
+};
+
+const faceFnObj事件 = (boy, reactiveCMR) => {
+  const syb = textPrimary("%");
+  const textObjs = [boy['原文片段']?.value].map(id=>reactiveCMR.get(id)).filter(it=>it!=null);
+  const texts = textObjs.map(it=>faceFn单个不连续原文片段无引号(it?.['内容']));
+  const sss = spansJoin(texts, textPrimary("="));
+  // console.log({textObjs, texts, sss});
+  return span({}, [syb, sss, syb]);
 };
 
 const objectTypeFaceFnMap = {
   '': (boy)=>JSON.stringify(boy),
   '文本': (boy)=>dataFace(boy?.['内容']),
+  '空间实体': (boy, reactiveCMR)=>faceFnObj空间实体(boy, reactiveCMR),
+  '事件': (boy, reactiveCMR)=>faceFnObj事件(boy, reactiveCMR),
 };
 
-const objectFace = (object) => {
-  if (object.type in objectTypeFaceFnMap) {
-    return objectTypeFaceFnMap[object.type](object);
+const objectFace = (object, reactiveCMR) => {
+  if (object?.type in objectTypeFaceFnMap) {
+    return objectTypeFaceFnMap[object.type](object, reactiveCMR);
   };
   return JSON.stringify(object?.data??object);
 };
+
 
 
 
@@ -167,7 +244,7 @@ const ctrlComponent = (ctrl) => {
     '单个对象': EditorSingleObjectSelector,
     '多个原文片段': EditorDefault,
     '多个标签': EditorDefault,
-    '多个对象': EditorDefault,
+    '多个对象': EditorMultiObjectsSelector,
     '布尔值': EditorBool,
     '数值': EditorDefault,
   };
@@ -269,13 +346,13 @@ const EditorBool = {
 // 单个对象控件
 const EditorSingleObjectSelector = {
   props: ['ctrl'],
-  emits: ['confirm', 'cancel'],
+  emits: ['confirm', 'cancel', 'new'],
   component: {},
   setup(props, ctx) {
     const reactiveCMR = inject('reactiveCMR', ()=>({}));
     const objects = computed(()=>{
       let those = [];
-      let filters = props?.['ctrl']?.['config']?.['filter']??[];
+      let filters = props?.['ctrl']?.['config']?.['filter']??[{}];
       let allObjects = reactiveCMR?.objects??[];
       for (let 模子 of filters) {
         const keys = Object.keys(模子);
@@ -297,7 +374,7 @@ const EditorSingleObjectSelector = {
       }, v(objects).map((obj, idx) => h("option", {
         'key': `${idx}`,
         'value': obj._id??obj.id??-1,
-      }, objectFace(obj)))),
+      }, objectFace(obj, reactiveCMR)))),
       btn({
         'onClick': ()=>{
           ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
@@ -305,6 +382,18 @@ const EditorSingleObjectSelector = {
         },
         'title': "确定",
       }, bi("check2"), "primary"),
+      btn({
+        'onClick': ()=>{
+          const 模子s = props?.['ctrl']?.['config']?.['filter'];
+          if (模子s.length==1) {
+            ctx.emit("new", 模子s[0]?.['type']);
+            return;
+          };
+          ctx.emit("new");
+          // console.log("new");
+        },
+        'title': "新建",
+      }, bi("plus-circle"), "info"),
       btn({
         'onClick': ()=>{
           ctx.emit("cancel");
@@ -316,6 +405,105 @@ const EditorSingleObjectSelector = {
   },
 };
 // 单个对象控件 结束
+
+
+
+// 🆓🆓🆓🆓🆓🆓
+// 多个对象控件
+const EditorMultiObjectsSelector = {
+  props: ['ctrl', 'oldValue'],
+  emits: ['confirm', 'cancel', 'new'],
+  component: {},
+  setup(props, ctx) {
+    const reactiveCMR = inject('reactiveCMR', ()=>({}));
+    const objects = computed(()=>{
+      const list = localData.selectedList??[];
+      let those = [];
+      let filters = props?.['ctrl']?.['config']?.['filter']??[{}];
+      let allObjects = reactiveCMR?.objects??[];
+      for (let 模子 of filters) {
+        const keys = Object.keys(模子);
+        const boys = allObjects.filter(it=>keys.every(key=>模子[key]==it[key])&&!those.includes(it));
+        those = [...those, ...boys];
+      };
+      those = those.filter(it=>!list.map(it=>+it).includes(it._id??it.id));
+      return those;
+    });
+    const localData = reactive({
+      'selectedList': props?.oldValue??[],
+      'selected': "-1",
+    });
+    return () => div({
+      'class': "vstack gap-1 p-1 border rounded text-center w-100 bg-white",
+    },[
+      div({'class': "d-inline-block text-center"}, [
+        div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, [
+          localData.selectedList.map(objId=>span({
+            'class': "small border rounded px-1 py-0",
+            'key': objId,
+          }, [
+            span({
+              'class': "align-middle",
+            }, objectFace(reactiveCMR.get(objId), reactiveCMR)),
+            btn({
+              'class': "btn-sm m-0 ms-1 p-0",
+              'onClick': ()=>{
+                localData.selectedList=localData.selectedList.filter(it=>it!=objId);
+              },
+              'title': "删除",
+            }, [bi("x-lg")], "no-style"),
+          ])),
+        ]),
+      ]),
+      div({'class': "input-group input-group-sm"}, [
+        h("select", {
+          'class': "form-select form-select-sm text-center",
+          'value': localData.selected,
+          onChange: (event)=>{
+            localData.selected = event?.target?.value;
+          },
+        }, v(objects).map((obj, idx) => h("option", {
+          'key': `${idx}`,
+          'value': obj._id??obj.id??-1,
+        }, objectFace(obj, reactiveCMR)))),
+        btn({
+          'onClick': ()=>{
+            if (+localData.selected<0) {return};
+            if (localData.selectedList.includes(`${localData.selected}`)) {return};
+            localData.selectedList.push(`${localData.selected}`);
+          },
+          'title': "添加",
+        }, bi("plus-lg"), "outline-primary"),
+        btn({
+          'onClick': ()=>{
+            ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selectedList']});
+            // console.log("confirm");
+          },
+          'title': "确定",
+        }, bi("check2"), "primary"),
+        btn({
+          'onClick': ()=>{
+            const 模子s = props?.['ctrl']?.['config']?.['filter'];
+            if (模子s.length==1) {
+              ctx.emit("new", 模子s[0]?.['type']);
+              return;
+            };
+            ctx.emit("new");
+            // console.log("new");
+          },
+          'title': "新建",
+        }, bi("plus-circle"), "info"),
+        btn({
+          'onClick': ()=>{
+            ctx.emit("cancel");
+            // console.log("cancel");
+          },
+          'title': "取消",
+        }, bi("arrow-90deg-left"), "outline-secondary"),
+      ])]);
+  },
+};
+// 多个对象控件 结束
 
 
 
@@ -442,7 +630,7 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
                 v(特别的face),
                 !selection?.array?.length ? muted("...") : null,
               ]
-              : !selection?.array?.length ? muted("【请在文中选取】") : null,
+              : !selection?.array?.length ? textDanger("【请在文中选取】") : null,
               _canAppend ? btn({
               'class': [
                 "btn-sm px-1 py-0",
@@ -537,7 +725,7 @@ const EditorSingleBrokenSpan = {
               faceFn单个不连续原文片段(localData?.['span']),
               !selection?.array?.length ? muted("...") : null,
             ]
-            : !selection?.array?.length ? muted("【请在文中选取】") : null,
+            : !selection?.array?.length ? textDanger("【请在文中选取】") : null,
             btn({
             'class': [
               "btn-sm px-1 py-0",
@@ -631,12 +819,13 @@ const EditorSingleBrokenSpan = {
 // 单个字段
 const PropertyItem = {
   props: ['slot', 'data'],
-  emits: ['set-property', 'clear-selector'],
+  emits: ['set-property', 'clear-selector', 'new'],
   component: {
     EditorDefault,
     EditorBool,
   },
   setup(props, ctx) {
+    const reactiveCMR = inject('reactiveCMR', ()=>({}));
     const stages = {
       '①呈现数据内容': "①呈现数据内容",
       '②选择操作方式': "②选择操作方式",
@@ -684,6 +873,9 @@ const PropertyItem = {
     const onClearSelector = () => {
       ctx.emit("clear-selector");
     };
+    const onNew = (type) => {
+      ctx.emit("new", type);
+    };
 
 
     const currentCtrl = computed(()=>(
@@ -709,8 +901,8 @@ const PropertyItem = {
       localData.currentStage == stages['①呈现数据内容']
       ? [
         div({'class': "input-group input-group-sm"}, [
-          div({'class': "form-control d-inline-block text-center"}, [
-            span({'class': "align-middle"}, dataFace(newDataWrap['data'])),
+          div({'class': "form-control d-inline-block text-center "}, [
+            span({'class': "align-middle"}, dataFace(newDataWrap['data'], reactiveCMR)),
           ]),
           true ? btn({
             'onClick': ()=>{onDelete()},
@@ -748,9 +940,10 @@ const PropertyItem = {
       ? [
         h(ctrlComponent(v(currentCtrl)), {
           'ctrl': v(currentCtrl),
-          'oldValue': newDataWrap?.['data']?.['value'],
+          'oldValue': (newDataWrap?.['data']?.['type']==v(currentCtrl)?.['type']) ? newDataWrap?.['data']?.['value'] : null,
           'onConfirm': (value)=>{onConfirm(value);},
           'onCancel': ()=>{onCancel();},
+          'onNew': (type)=>{onNew(type);},
           'onClearSelector': ()=>{onClearSelector();},
         }),
       ]
@@ -767,11 +960,13 @@ const PropertyItem = {
 // 单个对象的编辑窗口
 const ObjectPanel = {
   props: ['data', 'typeDef'],
-  emits: ['save-object', 'clone-object', 'reset-object', 'delete-object', 'close-object', 'clear-selector'],
+  emits: ['new', 'save-object', 'clone-object', 'reset-object', 'delete-object', 'close-object', 'clear-selector'],
   component: {
     PropertyItem,
   },
   setup(props, ctx) {
+
+    const reactiveCMR = inject('reactiveCMR', ()=>({}));
 
     const onClearSelector = () => {
       ctx.emit("clear-selector");
@@ -822,10 +1017,14 @@ const ObjectPanel = {
 
     const onSetProperty = (xx) => {
       Object.assign(localObjectShadow.data, xx);
+      ctx.emit("save-object", localObjectShadow.data);
     };
     const onDeleteProperty = (fieldName) => {
       localObjectShadow.data[fieldName] = undefined;
       delete localObjectShadow.data[fieldName];
+    };
+    const onNew = (type) => {
+      ctx.emit("new", type);
     };
 
     const addField = (fieldName) => {
@@ -846,7 +1045,10 @@ const ObjectPanel = {
       }, [
 
         // 类型标题
-        div({'class': "hstack gap-2"}, [
+        div({
+          'class': "hstack gap-2",
+          'title': JSON.stringify(props.typeDef, null, 2),
+        }, [
           props?.typeDef?.['icon-bi'] ? bi(props?.typeDef?.['icon-bi']) : null,
           span({'class': "--user-select-none"}, `${props?.typeDef?.name??"未知类型"}`),
         ]),
@@ -866,7 +1068,7 @@ const ObjectPanel = {
         'class': "mx-2 my-1",
       }, [
         div({'class': "py-1 px-2 rounded --border text-center bg-white --bg-opacity-25"}, [
-          objectFace(localObjectShadow.data),
+          objectFace(localObjectShadow.data, reactiveCMR),
         ]),
       ]);
     };
@@ -884,6 +1086,7 @@ const ObjectPanel = {
           'onSetProperty': (xx)=>{onSetProperty(xx);},
           'onDeleteProperty': ()=>{onDeleteProperty(field?.name??"");},
           'onClearSelector': ()=>{onClearSelector();},
+          'onNew': (type)=>{onNew(type);},
         })),
 
         // 添加字段
@@ -927,13 +1130,13 @@ const ObjectPanel = {
         'class': "hstack gap-2 p-2 justify-content-end",
       }, [
 
-        btn({
-          'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-          'onClick': ()=>{
-            ctx.emit("save-object", localObjectShadow.data);
-          },
-          'disabled': false,
-        }, [bi("save2"), "保存"], "--outline-secondary"),
+        // btn({
+        //   'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
+        //   'onClick': ()=>{
+        //     ctx.emit("save-object", localObjectShadow.data);
+        //   },
+        //   'disabled': false,
+        // }, [bi("save2"), "保存"], "--outline-secondary"),
 
         btn({
           'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
@@ -943,13 +1146,13 @@ const ObjectPanel = {
           'disabled': false,
         }, [bi("back"), "克隆"], "--outline-secondary"),
 
-        btn({
-          'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-          'onClick': ()=>{
-            localData.showResetConfirmModal=true;
-          },
-          'disabled': false,
-        }, [bi("arrow-repeat"), "重置"], "--outline-secondary"),
+        // btn({
+        //   'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
+        //   'onClick': ()=>{
+        //     localData.showResetConfirmModal=true;
+        //   },
+        //   'disabled': false,
+        // }, [bi("arrow-repeat"), "重置"], "--outline-secondary"),
 
         btn({
           'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
@@ -999,7 +1202,7 @@ const ObjectPanel = {
 // 众多对象编辑窗口的列表
 const ObjectPanelList = {
   props: ['objectWraps'],
-  emits: ['save-object', 'clone-object', 'reset-object', 'delete-object', 'hide-object-wrap', 'clear-selector'],
+  emits: ['new-object', 'save-object', 'clone-object', 'reset-object', 'delete-object', 'hide-object-wrap', 'clear-selector'],
   component: {
     ObjectPanel,
   },
@@ -1020,6 +1223,9 @@ const ObjectPanelList = {
         'key': objWrap?.data?._id??objWrap?.data?.id,
         'data': objWrap['data'],
         'typeDef': objWrap['typeDef'],
+        'onNew': (type)=>{
+          ctx.emit("new-object", type);
+        },
         'onSaveObject': (object)=>{
           ctx.emit("save-object", object);
         },
@@ -1048,9 +1254,10 @@ const ObjectPanelList = {
 // 所有对象陈列盒子
 const AllObjectsPanel = {
   props: ['objectWraps', 'typeNames'],
-  emits: ['sort-objects', 'analyze-objects', 'add-object', 'do-debug', 'show-object-wrap', 'hide-object-wrap'],
+  emits: ['sort-objects', 'sort-objects-by-id', 'sort-objects-by-type', 'analyze-objects', 'add-object', 'do-debug', 'show-object-wrap', 'hide-object-wrap'],
   component: {},
   setup(props, ctx) {
+    const reactiveCMR = inject('reactiveCMR', ()=>({}));
     const localData = reactive({
       'typeNameToAdd': {},
       'showAddObjectControl': false,
@@ -1061,14 +1268,14 @@ const AllObjectsPanel = {
       // 陈列盒子
       div({
         'class': "__ratio __ratio-21x9 border rounded overflow-auto",
-        'style': "min-height: 1.5em; max-height: 12em;"
+        'style': "min-height: 1.5em; max-height: 20em;"
       }, div({'class': "p-1"}, [
         div({'class': "d-flex flex-wrap gap-1"}, [
           ...(props['objectWraps']??[])
             .map((objWrap, idx) => btn({
               'key': objWrap?.data?._id??objWrap?.data?.id,
-              'class': ["btn-sm"],
-              'title': JSON.stringify(objWrap, null, 2),
+              'class': ["btn-sm", {"opacity-50": objWrap?.data?.type=="文本"&&!objWrap['show']}],
+              'title': JSON.stringify(objWrap?.data, null, 2),
               'onClick': ()=>{
                 let x = objWrap['show']
                   ?(ctx.emit("hide-object-wrap", objWrap))
@@ -1079,7 +1286,7 @@ const AllObjectsPanel = {
               objWrap?.['typeDef']?.['icon-bi']?.length ? [
                 span({'class': "pe-2"}, bi(objWrap?.['typeDef']?.['icon-bi'])),
               ] : null,
-              objectFace(objWrap.data),
+              objectFace(objWrap.data, reactiveCMR),
             ], objWrap['show']?"outline-primary":"light")),
         ]),
       ])),
@@ -1087,11 +1294,21 @@ const AllObjectsPanel = {
       // 工具
       div({'class': "btn-toolbar __hstack gap-1 justify-content-end"}, [
         div({'class': "btn-group btn-group-sm"}, [
-          // lightBtn(bi("sort-down-alt"), "排序", "按照文本中出现的顺序排序", {
-          //   'onClick': ()=>{
-          //     ctx.emit("sort-objects");
-          //   },
-          // }),
+          lightBtn(bi("sort-down-alt"), "按原文排序", "按照文本中出现的顺序排序", {
+            'onClick': ()=>{
+              ctx.emit("sort-objects");
+            },
+          }),
+          lightBtn(bi("sort-numeric-down"), "按创建顺序排序", "按创建顺序排序", {
+            'onClick': ()=>{
+              ctx.emit("sort-objects-by-id");
+            },
+          }),
+          lightBtn(bi("sort-alpha-down"), "按类型排序", "按照类型排序", {
+            'onClick': ()=>{
+              ctx.emit("sort-objects-by-type");
+            },
+          }),
           // lightBtn(bi("bar-chart-steps"), "预分析", null, {
           //   'onClick': ()=>{
           //     ctx.emit("analyze-objects");
@@ -1152,7 +1369,7 @@ const ResultPanel = {
     const reactiveCMR = inject('reactiveCMR', ()=>({}));
     return () => div({'class': "vstack gap-2 my-1"}, [
       div({'class': "hstack mt-3 mb-1 gap-2"}, [
-        div({'class': "h6 m-0"}, ["标注结果预览"]),
+        div({'class': "h6 m-0"}, ["预览"]),
         lightBtn(bi("arrow-repeat"), "刷新", null, {
           // 'class': "mt-3 mb-1",
           'onClick': ()=>{
@@ -1166,7 +1383,10 @@ const ResultPanel = {
         'style': "min-height: 1.5em; max-height: 12em;"
       }, div({'class': "p-1"}, div({
         'class': "d-flex flex-wrap gap-1"
-      }, h(CmrDisplay, {'annotation': props?.['annotation']}))))
+      }, h(CmrDisplay, {
+        'class': "w-100",
+        'annotation': props?.['annotation'],
+      }))))
     ]);
   },
 };
@@ -1415,9 +1635,21 @@ export default {
       };
     };
 
+
     const 所有对象面板 = () => h(AllObjectsPanel, {
       'objectWraps': v(objectWraps),
       'typeNames': v(typeNames),
+      'onSortObjectsById': ()=>{
+        reactiveCMR.sortObjectsById();
+      },
+      'onSortObjectsByType': ()=>{
+        reactiveCMR.sortObjectsByType();
+      },
+      'onSortObjects': ()=>{
+        reactiveCMR.sortObjectsByType();
+        const fn = it => 原文顺序依据(it, reactiveCMR);
+        reactiveCMR.objects.sort((aa,bb)=>fn(aa)-fn(bb));
+      },
       'onHideObjectWrap': (objWrap)=>{
         hide(objWrap['_id']);
       },
@@ -1432,6 +1664,10 @@ export default {
 
     const 单个对象面板列表 = () => h(ObjectPanelList, {
       'objectWraps': v(objectsToShow),
+      'onNewObject': (type)=>{
+        const newObject = reactiveCMR.makeNewObjectWithType(type);
+        show(newObject?._id);
+      },
       'onCloneObject': (object)=>{
         const newObject = reactiveCMR.cloneObject(object);
         show(newObject._id);
@@ -1461,8 +1697,8 @@ export default {
       // h(StartButtonGroup),
       所有对象面板(),
       单个对象面板列表(),
-      结果预览面板(),
       最终按钮区(),
+      结果预览面板(),
       重置确认框(),
       清空确认框(),
 

@@ -56,12 +56,21 @@ export default {
             ]),
 
             h("div", { 'class': "col col-12", }, [
+              h("p", { }, ["总量 = (已分配量", h("small", {'class': "text-muted"}, " = 已足量提交 + 非足量提交 + 尚未提交"), ") + 未分配量"]),
+            ]),
+
+            h("div", { 'class': "col col-12", }, [
               h("p", { }, ["总体情况："]),
               h("ul", { }, [
                 h("li", { }, ["总量：", (localData.sta?.total?.total_num??0) - (localData.sta?.total?.deleted_num??0), ...((localData.sta?.total?.deleted_num>0) ? [" = ", (localData.sta?.total?.total_num??0), "-", (localData.sta?.total?.deleted_num??0)] : [])]),
-                h("li", { }, ["已分配量：", (localData.sta?.total?.assigned_num??0)]),
-                h("li", { }, ["已足量提交：", (localData.sta?.total?.done_num??0)]),
-                h("li", { }, ["非足量提交：", (localData.sta?.total?.working_num??0)]),
+                h("li", { }, [
+                  "已分配量：", (localData.sta?.total?.assigned_num??0),
+                  h("ul", { }, [
+                    h("li", { }, ["已足量提交：", (localData.sta?.total?.done_num??0)]),
+                    h("li", { }, ["非足量提交：", (localData.sta?.total?.working_num??0)]),
+                    h("li", { }, ["尚未提交：", (localData.sta?.total?.total_num??0)-(localData.sta?.total?.done_num??0)-(localData.sta?.total?.working_num??0)]),
+                  ]),
+                ]),
                 h("li", { }, ["未分配量：", (localData.sta?.total?.total_num??0) - (localData.sta?.total?.deleted_num??0) - (localData.sta?.total?.assigned_num??0)]),
               ]),
             ]),
@@ -74,9 +83,14 @@ export default {
                     h("p", { }, [pair[0]]),
                     h("ul", { }, [
                       h("li", { }, ["总量：", (pair[1]?.total_num??0) - (pair[1]?.deleted_num??0), ...((pair[1]?.deleted_num>0) ? [" = ", (pair[1]?.total_num??0), "-", (pair[1]?.deleted_num??0)] : [])]),
-                      h("li", { }, ["已分配量：", (pair[1]?.assigned_num??0)]),
-                      h("li", { }, ["已足量提交：", (pair[1]?.done_num??0)]),
-                      h("li", { }, ["非足量提交：", (pair[1]?.working_num??0)]),
+                      h("li", { }, [
+                        "已分配量：", (pair[1]?.assigned_num??0),
+                        h("ul", { }, [
+                          h("li", { }, ["已足量提交：", (pair[1]?.done_num??0)]),
+                          h("li", { }, ["非足量提交：", (pair[1]?.working_num??0)]),
+                          h("li", { }, ["尚未提交：", (pair[1]?.total_num??0)-(pair[1]?.done_num??0)-(pair[1]?.working_num??0)]),
+                        ]),
+                      ]),
                       h("li", { }, ["未分配量：", (pair[1]?.total_num??0) - (pair[1]?.deleted_num??0) - (pair[1]?.assigned_num??0)]),
                     ]),
                   ]),

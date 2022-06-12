@@ -73,53 +73,41 @@
                 {"name": "内容", "ctrls": ["单个不连续原文片段"], "required": true}
               ]},
 
-              {"name": "空间实体", "slots": [
+              {"name": "空间实体", "icon-bi": "box", "slots": [
                 {"name": "是否是虚拟的", "ctrls": ["布尔值"], "default": false, "required": true},
                 {"name": "是否自成处所", "ctrls": ["布尔值"], "init": false},
                 {"name": "是否为指称", "ctrls": ["布尔值"], "init": false},
                 {"name": "是否是名称", "ctrls": ["布尔值"], "init": false},
-                {"name": "原文片段", "ctrls": [{"type": "单个对象", "config": {
+                {"name": "原文片段", "ctrls": [{"type": "多个对象", "config": {
                   "filter": [
                       {"type": "文本"}]
                   }} ], "init": [], "required": true}
               ]},
 
-              {"name": "事件", "slots": [
-                {"name": "原文片段", "ctrls": ["单个原文片段"], "init": [], "required": true},
-                {"name": "施事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "共同施事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "当事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "间接当事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "受事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "系事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "与事", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "结果", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "对象", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "内容", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "工具", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "材料", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "方式", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "原因", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "目的", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "事量", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "旧量", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "新量", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "范围", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "起点", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "终点", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "路径", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "方向", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "处所", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "起始", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "结束", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "时点", "ctrls": ["单个对象", "单个原文片段"], "reusable": true},
-                {"name": "时段", "ctrls": ["单个对象", "单个原文片段"], "reusable": true}
+              {"name": "事件", "icon-bi": "disc", "slots": [
+                {"name": "原文片段", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ], "required": true}
+              ]},
+
+              {"name": "论元角色关系", "icon-bi": "link", "slots": [
+                {"name": "事件", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "事件"}]
+                  }} ], "required": true},
+                  {"name": "角色",
+                    "ctrls": [
+                      {"type": "单个标签", "config": {"set": "语义角色键"}}],
+                    "required": true},
+                  {"name": "值", "ctrls": ["单个对象"], "required": true}
               ]},
           
               {"name": "角色引用", "slots": [
-                {"name": "所属事件",
-                  "ctrls": [
-                    {"type": "单个对象", "config": {"filter": [{"type": "事件"}]}}]},
+                {"name": "事件", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "事件"}]
+                  }} ], "required": true},
                 {"name": "角色",
                   "ctrls": [
                     {"type": "单个标签", "config": {"set": "语义角色键"}}],
@@ -202,7 +190,12 @@
                           "filter": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
                         }
                       },
-                      "多个对象"
+                      {
+                        "type": "多个对象",
+                        "config": {
+                          "filter": [{"type": "事件"}]
+                        }
+                      }
                     ],
                     "required": true
                   },

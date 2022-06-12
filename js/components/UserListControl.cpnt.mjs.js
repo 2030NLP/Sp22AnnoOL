@@ -114,13 +114,29 @@ const UserListControl = {
               ]),
             ]),
 
-            h("button", {
-              'type': "button",
-              'class': ["btn btn-sm my-1 me-2", props.settings.showQuittedUsers ? 'btn-primary' : 'btn-outline-dark'],
-              'onClick': ()=>{
-                props.settings.showQuittedUsers = !props.settings.showQuittedUsers;
-              },
-            }, ["显示/隐藏已退出人员"]),
+            h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
+              h("select", {
+                'class': "form-select form-select-sm",
+                'onChange': (event) => {
+                  props.settings.userAtWorkFilter = event?.target?.value;
+                },
+              }, [
+                h("option", { 'value': "在岗", 'selected': true, }, ["【在岗情况】"]),
+                h("option", { 'value': "在岗", }, ["在岗"]),
+                h("option", { 'value': "退出", }, ["退出"]),
+                h("option", { 'value': "退出但有分配", }, ["退出但有分配"]),
+                h("option", { 'value': "退出但有提交", }, ["退出但有提交"]),
+                h("option", { 'value': "全部", }, ["全部"]),
+              ]),
+            ]),
+
+            // h("button", {
+            //   'type': "button",
+            //   'class': ["btn btn-sm my-1 me-2", props.settings.showQuittedUsers ? 'btn-primary' : 'btn-outline-dark'],
+            //   'onClick': ()=>{
+            //     props.settings.showQuittedUsers = !props.settings.showQuittedUsers;
+            //   },
+            // }, ["显示/隐藏已退出人员"]),
 
             ctx?.slots?.default ? h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, ctx.slots.default()) : null,
 

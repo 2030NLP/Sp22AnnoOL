@@ -28,6 +28,7 @@ const UserListPanel = {
         userRoleFilter: "【all】",
         userTagFilter: "【all】",
         sortMethod: "id+",
+        userAtWorkFilter: "在岗",
       },
     });
 
@@ -74,9 +75,6 @@ const UserListPanel = {
     const userList = computed(()=>{
       // console.log(localData.listControlSettings);
       let list = theDB.users??[];
-      if (!localData.listControlSettings.showQuittedUsers) {
-        list = list.filter(it => !it.quitted);
-      };
       if (localData.listControlSettings.managerFilter!="【all】") {
         if (localData.listControlSettings.managerFilter!="【empty】") {
           list = list.filter(it => (it.manager??"")==localData.listControlSettings.managerFilter);
@@ -105,6 +103,28 @@ const UserListPanel = {
           list = list.filter(it => !it?.tags?.length);
         };
       };
+      // if (!localData.listControlSettings.showQuittedUsers) {
+      //   list = list.filter(it => !it.quitted);
+      // };
+      const atWorkFns = {
+        '在岗': ()=>{list = list.filter(it => !it.quitted);},
+        '退出': ()=>{list = list.filter(it => it.quitted);},
+        '退出但有分配': ()=>{
+          const fn = (user)=>{return theDB?.userProgress?.(user, localData.selectedBatchName)?.cDueLen;};
+          list = list.filter(it => it.quitted);
+          list = list.filter(it => fn(it));
+        },
+        '退出但有提交': ()=>{
+          const fn = (user)=>{return theDB?.userProgress?.(user, localData.selectedBatchName)?.cDoneLen;};
+          list = list.filter(it => it.quitted);
+          list = list.filter(it => fn(it));
+        },
+      };
+      if (localData.listControlSettings.userAtWorkFilter in atWorkFns) {
+        atWorkFns[localData.listControlSettings.userAtWorkFilter]();
+      };
+      //
+      //
       const sortMethodsMap01 = {
         "id+": it => (+it.id),
         "progress+": it => (+theDB.userProgress(it, localData.selectedBatchName).ratio),

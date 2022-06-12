@@ -37,9 +37,9 @@ export default {
   emits: [],
   component: {},
   setup(props, ctx) {
-    console.log("CmrDisplay");
-    console.log(props);
-    return () => div(null, [JSON.stringify(props?.['annotation'])]);
+    // console.log("CmrDisplay");
+    // console.log(props);
+    return () => div({'class':"text-wrap text-break"}, [JSON.stringify(props?.['annotation'])]);
   },
 };
 

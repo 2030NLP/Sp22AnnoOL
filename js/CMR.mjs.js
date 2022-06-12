@@ -38,6 +38,7 @@ class CMR {
   reset() {}
 
   get(gid) {
+    if (typeof(gid)!="number") {gid=`${gid}`};
     if (typeof(gid)!="string") {return gid};
     const map = {
       // [this.symbols["@"]]: (id) => this.prefabs.find(obj => obj._id==id),
@@ -76,6 +77,9 @@ class CMR {
   }
 
   makeNewObjectWithType(typeName) {
+    if (!typeName?.length) {
+      return;
+    };
     let bud = {
       type: typeName,
     };
@@ -90,6 +94,19 @@ class CMR {
 
   cloneObject(bud) {
     return this.makeNewObject(bud);
+  }
+
+  sortObjectsById() {
+    this.objects.sort((aa,bb)=>(aa._id??aa.id)-(bb._id??bb.id));
+  }
+
+  sortObjectsByType() {
+    this.sortObjectsById();
+    const fn = (it)=>{
+      const map = Object.fromEntries(this.types.map((tp,idx)=>[tp.name,idx]));
+      return map[it]??Infinity;
+    };
+    this.objects.sort((aa,bb)=>fn(aa.type)-fn(bb.type));
   }
 
 
