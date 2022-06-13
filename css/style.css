@@ -2,7 +2,11 @@
 
 
 
-
+    .text-pink {color: var(--bs-pink);}
+    .text-indigo {color: var(--bs-indigo);}
+    .text-purple {color: var(--bs-purple);}
+    .text-orange {color: var(--bs-orange);}
+    .text-teal {color: var(--bs-teal);}
 
     a {cursor: pointer;}
 

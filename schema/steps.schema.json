@@ -73,11 +73,19 @@
                 {"name": "内容", "ctrls": ["单个不连续原文片段"], "required": true}
               ]},
 
-              {"name": "空间实体", "icon-bi": "box", "slots": [
+              {"__name": "空间实体", "icon-bi": "box", "slots": [
                 {"name": "是否是虚拟的", "ctrls": ["布尔值"], "default": false, "required": true},
                 {"name": "是否自成处所", "ctrls": ["布尔值"], "init": false},
                 {"name": "是否为指称", "ctrls": ["布尔值"], "init": false},
                 {"name": "是否是名称", "ctrls": ["布尔值"], "init": false},
+                {"name": "原文片段", "ctrls": [{"type": "多个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ], "init": [], "required": true}
+              ]},
+
+              {"name": "空间实体", "icon-bi": "box", "slots": [
+                {"name": "是否是虚拟的", "ctrls": ["布尔值"], "default": false, "required": true},
                 {"name": "原文片段", "ctrls": [{"type": "多个对象", "config": {
                   "filter": [
                       {"type": "文本"}]
@@ -114,7 +122,7 @@
                   "required": true}
               ]},
           
-              {"name": "合集", "slots": [
+              {"__name": "合集", "slots": [
                 {"name": "成员类型", "ctrls": ["单个类型"], "required": true},
                 {"name": "成员清单", "ctrls": ["多个对象"], "init": [], "required": true},
                 {"name": "成员间关系",
@@ -122,95 +130,131 @@
                   "default": {"set": "成员间关系", "spec": "^"}, "required": true}
               ]},
           
-              {"name": "位置特征", "slots": [
-                {"name": "介词", "ctrls": ["原文片段"]},
-                {"name": "参照实体", "ctrls": [
-                  {"type": "单个对象", "config": {
-                    "filter": [
-                        {"type": "空间实体"},
-                        {"type": "合集", "成员类型": "空间实体"},
-                        {"type": "角色引用"}]
-                    }} ]},
-                {"name": "方位词", "ctrls": ["原文片段"]}
-              ]},
-          
-              {"name": "方向特征", "slots": [
-                {"name": "参照实体", "ctrls": [
-                  {"type": "单个对象", "config": {
-                    "filter": [
-                        {"type": "空间实体"},
-                        {"type": "合集", "成员类型": "空间实体"},
-                        {"type": "角色引用"}]
-                    }} ]},
-                {"name": "介词", "ctrls": ["原文片段"]},
-                {"name": "方位词", "ctrls": ["原文片段"]}
-              ]},
-          
-              {"name": "朝向特征", "slots": [
-                {"name": "介词", "ctrls": ["原文片段"]},
-                {"name": "参照实体", "ctrls": [
-                  {"type": "单个对象", "config": {
-                    "filter": [
-                        {"type": "空间实体"},
-                        {"type": "合集", "成员类型": "空间实体"},
-                        {"type": "角色引用"}]
-                    }} ]},
-                {"name": "方位词", "ctrls": ["原文片段"]}
-              ]},
-          
-              {"name": "特征命题", "slots": [
+
+
+
+              {"name": "特征命题", "icon-bi": "diagram-3", "slots": [
                 {"name": "被描述的实体", "ctrls": [
-                  {"type": "单个对象", "config": {
+                  {"type": "多个对象", "config": {
                     "filter": [
                         {"type": "空间实体"},
-                        {"type": "合集", "成员类型": "空间实体"},
                         {"type": "角色引用"}]
-                    }} ]},
+                    }} ], "required": true},
                 {"name": "依附的事件", "ctrls": [
-                  {"type": "单个对象", "config": {
+                  {"type": "多个对象", "config": {
                     "filter": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
                     }} ]},
                 {"name": "特征", "ctrls": [
-                  {"type": "单个对象", "config": {
-                    "filter": [{"type": "位置特征"}, {"type": "方向特征"}, {"type": "朝向特征"}]
+                  {"type": "多个对象", "config": {
+                    "filter": [{"type": "位置特征"}, {"type": "方向特征"}, {"type": "朝向特征"}, {"type": "形状特征"}, {"type": "距离特征"}]
+                    }} ], "required": true},
+                {"name": "时间", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "时间特征"}]
+                  }}]}
+              ]},
+          
+              {"name": "位置特征", "icon-bi": "pin-map", "slots": [
+                {"name": "介词", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ]},
+                {"name": "参照实体", "ctrls": [
+                  {"type": "多个对象", "config": {
+                    "filter": [
+                        {"type": "空间实体"},
+                        {"type": "角色引用"}]
+                    }} ], "required": true},
+                {"name": "方位词", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ]}
+              ]},
+          
+              {"name": "方向特征", "icon-bi": "arrow-up-right", "slots": [
+                {"name": "参照实体", "ctrls": [
+                  {"type": "多个对象", "config": {
+                    "filter": [
+                        {"type": "空间实体"},
+                        {"type": "角色引用"}]
                     }} ]},
-                {"name": "时间", "ctrls": ["时间（相对于事件）", "原文片段"]}
+                {"name": "介词", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ]},
+                {"name": "方位词", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ]}
+              ]},
+          
+              {"name": "朝向特征", "icon-bi": "box-arrow-up-right", "slots": [
+                {"name": "介词", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ]},
+                {"name": "参照实体", "ctrls": [
+                  {"type": "多个对象", "config": {
+                    "filter": [
+                        {"type": "空间实体"},
+                        {"type": "角色引用"}]
+                    }} ]},
+                {"name": "方位词", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ]}
+              ]},
+          
+              {"name": "距离特征", "icon-bi": "distribute-horizontal", "slots": [
+                {"name": "参照实体", "ctrls": [
+                  {"type": "多个对象", "config": {
+                    "filter": [
+                        {"type": "空间实体"},
+                        {"type": "角色引用"}]
+                    }} ], "required": true},
+                {"name": "距离描述", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }}, {"type": "单个标签", "config": {"set": "距离限定符"}} ], "required": true}
+              ]},
+          
+              {"name": "形状特征", "icon-bi": "pentagon", "slots": [
+                {"name": "是否是姿态", "ctrls": ["布尔值"], "init": false},
+                {"name": "形状文本", "ctrls": [{"type": "单个对象", "config": {
+                  "filter": [
+                      {"type": "文本"}]
+                  }} ]}
               ]},
 
               {
-                "name": "时间（相对于事件）",
+                "name": "时间特征",
                 "icon-bi": "clock",
                 "slots": [
                   {
                     "name": "参照事件",
                     "ctrls": [
                       {
-                        "type": "单个对象",
-                        "config": {
-                          "filter": [{"type": "事件"}, {"type": "合集", "成员类型": "事件"}]
-                        }
-                      },
-                      {
                         "type": "多个对象",
                         "config": {
                           "filter": [{"type": "事件"}]
                         }
                       }
-                    ],
-                    "required": true
+                    ]
                   },
                   {
-                    "name": "类型",
+                    "name": "界定",
                     "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}],
-                    "default": {"set": "时间限定符", "spec": "时间"},
-                    "required": true
+                    "default": {"set": "时间限定符", "spec": "时间"}
                   },
-                  {
-                    "name": "线索文本",
-                    "ctrls": ["原文片段"]
-                  }
+                  {"name": "时间文本", "ctrls": [{"type": "单个对象", "config": {
+                    "filter": [
+                        {"type": "文本"}]
+                    }} ]}
                 ]
               }
+
+
+
             ]
 
           }

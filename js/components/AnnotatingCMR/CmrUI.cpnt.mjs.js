@@ -18,12 +18,26 @@ const ha = (children, href, title, targetBlank) => {
     'target': targetBlank?'_blank':undefined,
   }, children);
 };
+const space = " ";
+const textNone = text => span({'class': "d-none"}, text);
 const muted = text => span({'class': "text-muted"}, text);
 const text = (text, attr) => span(attr, text);
 const opacity100 = text => span({'class': "opacity-100"}, text);
 const opacity75 = text => span({'class': "opacity-75"}, text);
 const opacity50 = text => span({'class': "opacity-50"}, text);
 const opacity25 = text => span({'class': "opacity-25"}, text);
+
+// .text-pink {color: var(--bs-pink);}
+// .text-indigo {color: var(--bs-indigo);}
+// .text-purple {color: var(--bs-purple);}
+// .text-orange {color: var(--bs-orange);}
+// .text-teal {color: var(--bs-teal);}
+const textPink = text => span({'class': "text-pink"}, text);
+const textIndigo = text => span({'class': "text-indigo"}, text);
+const textPurple = text => span({'class': "text-purple"}, text);
+const textOrange = text => span({'class': "text-orange"}, text);
+const textTeal = text => span({'class': "text-teal"}, text);
+
 const textPrimary = text => span({'class': "text-primary"}, text);
 const textSecondary = text => span({'class': "text-secondary"}, text);
 const textSuccess = text => span({'class': "text-success"}, text);
@@ -32,6 +46,7 @@ const textWarning = text => span({'class': "text-warning"}, text);
 const textInfo = text => span({'class': "text-info"}, text);
 const textLight = text => span({'class': "text-light"}, text);
 const textDark = text => span({'class': "text-dark"}, text);
+
 const lightBtn = (icon, text, title, attrs) => {
   attrs = attrs ?? {};
   attrs['class']=["btn-sm", attrs.class];
@@ -86,7 +101,7 @@ const 设计 = `
 const faceFn单个原文片段 = (boy) => {
   const text = boy?.value?.text ?? "";
   const idxes = boy?.value?.idxes ?? [];
-  return text.length ? [textPrimary("“"), opacity75(text), textPrimary("”")] : idxes.length ? opacity75(JSON.stringify(idxes)) : opacity75(textDanger("<???>"));
+  return text.length ? [textNone("“"), opacity75(text), textNone("”")] : idxes.length ? opacity75(JSON.stringify(idxes)) : opacity75(textDanger("<???>"));
 };
 const faceFn单个不连续原文片段 = (boy) => {
   const texts = boy?.value?.texts??[];
@@ -94,7 +109,7 @@ const faceFn单个不连续原文片段 = (boy) => {
   const sss = spansJoin(textSpans, textPrimary("+"));
 
   const idxeses = boy?.value?.idxeses ?? [];
-  return texts.length ? span({}, [textPrimary("“"), sss, textPrimary("”")]) : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<???>"));
+  return texts.length ? span({}, [textNone("“"), sss, textNone("”")]) : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<???>"));
 };
 const faceFn单个不连续原文片段无引号 = (boy) => {
   const texts = boy?.value?.texts??[];
@@ -106,7 +121,7 @@ const faceFn单个不连续原文片段无引号 = (boy) => {
 };
 
 const faceFn单个标签 = (boy) => {
-  return boy?.value?.face?.length?textInfo(boy?.value?.face):textDanger("???");
+  return boy?.value?.face?.length?textIndigo(boy?.value?.face):textDanger("???");
 };
 
 const faceFn单个对象 = (boy, reactiveCMR) => {
@@ -119,6 +134,7 @@ const faceFn单个对象 = (boy, reactiveCMR) => {
   return that;
 };
 const faceFn多个对象 = (boyListWrap, reactiveCMR, joint) => {
+  // if (joint==null) {joint=textPrimary("^")};
   const dogs = (boyListWrap?.value??[]).map(boy=>faceFn单个对象(boy, reactiveCMR));
   let girls = [];
   let first = true;
@@ -156,6 +172,153 @@ const dataFace = (cat, reactiveCMR, joint) => {
 
 
 
+
+
+
+const faceFnObj空间实体 = (boy, reactiveCMR) => {
+  const syb = textPrimary(boy['是否是虚拟的']?.value ? "$" : "#");
+  const textObjs = (boy['原文片段']?.value??[]).map(id=>reactiveCMR.get(id)).filter(it=>it!=null);
+  const texts = textObjs.map(it=>faceFn单个不连续原文片段无引号(it?.['内容']));
+  const sss = spansJoin(texts, textPrimary("="));
+  // console.log({textObjs, texts, sss});
+  return span({}, [syb, sss, syb]);
+};
+
+const faceFnObj事件 = (boy, reactiveCMR) => {
+  const syb = textSuccess("%");
+  const textObjs = [boy['原文片段']?.value].map(id=>reactiveCMR.get(id)).filter(it=>it!=null);
+  const texts = textObjs.map(it=>faceFn单个不连续原文片段无引号(it?.['内容']));
+  const sss = spansJoin(texts, textPrimary("="));
+  // console.log({textObjs, texts, sss});
+  return span({}, [syb, sss, syb]);
+};
+
+const faceFnObj论元角色关系 = (boy, reactiveCMR) => {
+  const masterText = objectFace(reactiveCMR.get(boy?.['事件']?.value), reactiveCMR);
+  const keyText = faceFn单个标签(boy?.['角色'], reactiveCMR);
+  const valueText = objectFace(reactiveCMR.get(boy?.['值']?.value), reactiveCMR);
+  return span({}, [masterText, space, textPrimary("["), keyText, textPrimary(":"), space, valueText, textPrimary("]")]);
+};
+
+const faceFnObj角色引用 = (boy, reactiveCMR) => {
+  const masterText = objectFace(reactiveCMR.get(boy?.['事件']?.value), reactiveCMR);
+  const keyText = faceFn单个标签(boy?.['角色'], reactiveCMR);
+  return span({}, [masterText, textPrimary("."), keyText]);
+};
+
+const faceFnSpan介词 = (girl, reactiveCMR) => {
+  return girl!=null ? [
+    textPrimary("<"),
+    objectFace(reactiveCMR.get(girl), reactiveCMR),
+    textPrimary(">"),
+  ] : null;
+};
+
+const faceFnSpan方位词 = (girl, reactiveCMR) => {
+  return girl!=null ? [
+    textPrimary("##"),
+    objectFace(reactiveCMR.get(girl), reactiveCMR),
+  ] : null;
+};
+
+const faceFn实体 = (girl, reactiveCMR) => {
+  const dogs = girl??[];
+  if (!dogs.length) {return null};
+  const sons = dogs.map(it=>{
+    const big = reactiveCMR.get(it);
+    return big!=null ? objectFace(big, reactiveCMR) : null;
+  });
+  const 实体Text = spansJoin(sons, textPrimary("^"));
+  return 实体Text;
+};
+
+const faceFnObj位置特征 = (boy, reactiveCMR) => {
+  const 实体Text = faceFn实体(boy?.['参照实体']?.value, reactiveCMR);
+  const 介词Text = faceFnSpan介词(boy?.['介词']?.value, reactiveCMR);
+  const 方位词Text = faceFnSpan方位词(boy?.['方位词']?.value, reactiveCMR);
+  return span({}, [介词Text, 实体Text, 方位词Text]);
+};
+
+const faceFnObj方向特征 = (boy, reactiveCMR) => {
+  const 实体Text = faceFn实体(boy?.['参照实体']?.value, reactiveCMR);
+  const 介词Text = faceFnSpan介词(boy?.['介词']?.value, reactiveCMR);
+  const 方位词Text = objectFace(reactiveCMR.get(boy?.['方位词']?.value), reactiveCMR);
+  return span({}, [实体Text, 介词Text, 方位词Text]);
+};
+
+const faceFnObj朝向特征 = (boy, reactiveCMR) => {
+  const 实体Text = faceFn实体(boy?.['参照实体']?.value, reactiveCMR);
+  const 介词Text = faceFnSpan介词(boy?.['介词']?.value, reactiveCMR);
+  const 方位词Text = objectFace(reactiveCMR.get(boy?.['方位词']?.value), reactiveCMR);
+  return span({}, [介词Text, 实体Text, 方位词Text]);
+};
+
+const faceFnObj形状特征 = (boy, reactiveCMR) => {
+  const 形状Text = objectFace(reactiveCMR.get(boy?.['形状文本']?.value), reactiveCMR);
+  return span({}, [形状Text]);
+};
+
+const faceFnObj距离特征 = (boy, reactiveCMR) => {
+  const 实体Text = faceFn实体(boy?.['参照实体']?.value, reactiveCMR);
+  const 实体TextWrap = 实体Text==null ? null : text([textPrimary("("), 实体Text, textPrimary(")")]);
+  let 距离描述Text;
+  if (boy?.['距离描述']?.type=="单个对象") {
+    const 距离描述Obj = reactiveCMR.get(boy?.['距离描述']?.value);
+    距离描述Text = 距离描述Obj==null ? null : objectFace(距离描述Obj, reactiveCMR);
+  };
+  if (boy?.['距离描述']?.type=="单个标签") {
+    距离描述Text = faceFn单个标签(boy?.['距离描述'], reactiveCMR);
+  };
+  const 距离描述TextWrap = 距离描述Text==null ? null : text([textIndigo(": "), 距离描述Text]);
+  return span({}, ["距离", 实体TextWrap, 距离描述TextWrap]);
+};
+
+const faceFnObj时间特征 = (boy, reactiveCMR) => {
+  const 没有界定 = boy?.['界定']?.value==null;
+  const 没有时间文本 = boy?.['时间文本']?.value==null;
+  const 都有 = (!没有界定)&&(!没有时间文本);
+  const 界定text = 没有界定 ? null : [textPrimary("."), faceFn单个标签(boy?.['界定'], reactiveCMR)];
+  const 事件Text = 没有界定 ? null : (faceFn实体(boy?.['参照事件']?.value, reactiveCMR)??textIndigo("事件"));
+  const 时间文本Text = objectFace(reactiveCMR.get(boy?.['时间文本']?.value), reactiveCMR);
+  const 事件与界定Wrap = [事件Text, 界定text];
+  const 连接符 = 都有 ? (textPrimary("^")) : null;
+  return span({}, [事件与界定Wrap, 连接符, 时间文本Text]);
+};
+
+const faceFnObj特征命题 = (boy, reactiveCMR) => {
+  return span({}, []);
+};
+
+const objectTypeFaceFnMap = {
+  '文本': (boy)=>dataFace(boy?.['内容']),
+  '空间实体': (boy, reactiveCMR)=>faceFnObj空间实体(boy, reactiveCMR),
+  '事件': (boy, reactiveCMR)=>faceFnObj事件(boy, reactiveCMR),
+  '论元角色关系': (boy, reactiveCMR)=>faceFnObj论元角色关系(boy, reactiveCMR),
+  '角色引用': (boy, reactiveCMR)=>faceFnObj角色引用(boy, reactiveCMR),
+  '位置特征': (boy, reactiveCMR)=>faceFnObj位置特征(boy, reactiveCMR),
+  '方向特征': (boy, reactiveCMR)=>faceFnObj方向特征(boy, reactiveCMR),
+  '朝向特征': (boy, reactiveCMR)=>faceFnObj朝向特征(boy, reactiveCMR),
+  '形状特征': (boy, reactiveCMR)=>faceFnObj形状特征(boy, reactiveCMR),
+  '距离特征': (boy, reactiveCMR)=>faceFnObj距离特征(boy, reactiveCMR),
+  '时间特征': (boy, reactiveCMR)=>faceFnObj时间特征(boy, reactiveCMR),
+  // '特征命题': (boy, reactiveCMR)=>faceFnObj特征命题(boy, reactiveCMR),
+};
+
+const objectFace = (object, reactiveCMR) => {
+  if (object?.type in objectTypeFaceFnMap) {
+    return objectTypeFaceFnMap[object.type](object, reactiveCMR);
+  };
+  return JSON.stringify(object?.data??object);
+};
+
+
+
+
+
+
+
+
+
 const 原文顺序依据 = (object, reactiveCMR) => {
   const values = Object.values(object??{});
   const ooFn = (id) => {
@@ -171,8 +334,8 @@ const 原文顺序依据 = (object, reactiveCMR) => {
     "多个对象": (it)=>ooFn(it?.value?.[0]),
   };
   for (let vv of values) {
-    if (vv.type in map) {
-      const hahah = map[vv.type](vv);
+    if (vv?.type in map) {
+      const hahah = map[vv?.type](vv);
       if (hahah!=null) {
         return hahah;
       };
@@ -183,42 +346,23 @@ const 原文顺序依据 = (object, reactiveCMR) => {
 
 
 
-const faceFnObj空间实体 = (boy, reactiveCMR) => {
-  const syb = textPrimary(boy['是否是虚拟的']?.value ? "$" : "#");
-  const textObjs = (boy['原文片段']?.value??[]).map(id=>reactiveCMR.get(id)).filter(it=>it!=null);
-  const texts = textObjs.map(it=>faceFn单个不连续原文片段无引号(it?.['内容']));
-  const sss = spansJoin(texts, textPrimary("="));
-  // console.log({textObjs, texts, sss});
-  return span({}, [syb, sss, syb]);
-};
 
-const faceFnObj事件 = (boy, reactiveCMR) => {
-  const syb = textPrimary("%");
-  const textObjs = [boy['原文片段']?.value].map(id=>reactiveCMR.get(id)).filter(it=>it!=null);
-  const texts = textObjs.map(it=>faceFn单个不连续原文片段无引号(it?.['内容']));
-  const sss = spansJoin(texts, textPrimary("="));
-  // console.log({textObjs, texts, sss});
-  return span({}, [syb, sss, syb]);
-};
 
-const objectTypeFaceFnMap = {
-  '': (boy)=>JSON.stringify(boy),
-  '文本': (boy)=>dataFace(boy?.['内容']),
-  '空间实体': (boy, reactiveCMR)=>faceFnObj空间实体(boy, reactiveCMR),
-  '事件': (boy, reactiveCMR)=>faceFnObj事件(boy, reactiveCMR),
-};
 
-const objectFace = (object, reactiveCMR) => {
-  if (object?.type in objectTypeFaceFnMap) {
-    return objectTypeFaceFnMap[object.type](object, reactiveCMR);
+
+
+const idxesToTokens = (idxes, allTokens) => {
+  idxes = idxes??[];
+  if (!allTokens?.length) {
+    return [];
   };
-  return JSON.stringify(object?.data??object);
+  return idxes.map(idx => allTokens[idx]?.to ?? allTokens[idx] ?? {});
 };
-
-
-
-
-
+const idxesToText = (idxes, allTokens) => {
+  let _tokens = idxesToTokens(idxes, allTokens);
+  let result = _tokens.map(it => it.word).join("");
+  return result;
+};
 
 
 const fixCtrl = (ctrl) => {
@@ -383,6 +527,7 @@ const EditorSingleObjectSelector = {
         'title': "确定",
       }, bi("check2"), "primary"),
       btn({
+        'class': ["xx", {'d-none': props?.['ctrl']?.['config']?.['filter']?.length!=1}],
         'onClick': ()=>{
           const 模子s = props?.['ctrl']?.['config']?.['filter'];
           if (模子s.length==1) {
@@ -482,6 +627,7 @@ const EditorMultiObjectsSelector = {
           'title': "确定",
         }, bi("check2"), "primary"),
         btn({
+          'class': ["xx", {'d-none': props?.['ctrl']?.['config']?.['filter']?.length!=1}],
           'onClick': ()=>{
             const 模子s = props?.['ctrl']?.['config']?.['filter'];
             if (模子s.length==1) {
@@ -572,18 +718,18 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
       // const tokenSelector = inject('tokenSelector');
       const selection = inject('selection')??[];
       const tokens = inject('tokens')??[];
-      const idxesToTokens = (idxes) => {
-        idxes = idxes??[];
-        if (!tokens?.length) {
-          return [];
-        };
-        return idxes.map(idx => tokens[idx]?.to ?? tokens[idx] ?? {});
-      };
-      const idxesToText = (idxes) => {
-        let _tokens = idxesToTokens(idxes);
-        let result = _tokens.map(it => it.word).join("");
-        return result;
-      };
+      // const idxesToTokens = (idxes) => {
+      //   idxes = idxes??[];
+      //   if (!tokens?.length) {
+      //     return [];
+      //   };
+      //   return idxes.map(idx => tokens[idx]?.to ?? tokens[idx] ?? {});
+      // };
+      // const idxesToText = (idxes) => {
+      //   let _tokens = idxesToTokens(idxes);
+      //   let result = _tokens.map(it => it.word).join("");
+      //   return result;
+      // };
       const idxesToBlocks = (idxes) => {
         let blocks = [];
         let tmp = [];
@@ -611,7 +757,7 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
       });
       const 特别的face = computed(() => {
         const idxeses = idxesToBlocks(localData?.['span']?.['value']?.['idxes']);
-        const texts = idxeses.map(it=>idxesToText(it));
+        const texts = idxeses.map(it=>idxesToText(it, tokens));
         const 老大 = {
           'value': {
             'texts': texts,
@@ -639,7 +785,7 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
               'onClick': ()=>{
                 localData['span']['value']['idxes'] = [...localData['span']['value']['idxes'], ...selection?.array];
                 ctx.emit("clear-selector");
-                localData['span']['value']['text'] = `${localData['span']['value']['text']}+${idxesToText(localData['span']['value']['idxes'])}`;
+                localData['span']['value']['text'] = `${localData['span']['value']['text']}+${idxesToText(localData['span']['value']['idxes'], tokens)}`;
               },
               'title': "将选中的文本追加到此处已有的文本之后",
             }, [bi("plus-lg"), " ", "追加"], "outline-primary") : null,
@@ -651,7 +797,7 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
               'onClick': ()=>{
                 localData['span']['value']['idxes'] = selection?.array;
                 ctx.emit("clear-selector");
-                localData['span']['value']['text'] = idxesToText(localData['span']['value']['idxes']);
+                localData['span']['value']['text'] = idxesToText(localData['span']['value']['idxes'], tokens);
               },
               'title': localData?.['span']?.['value']?.['text']?.length ? "用选中的文本覆盖此处的文本" : "将选中的文本填入此处",
             }, [bi("box-arrow-in-down-right"), " ", localData?.['span']?.['value']?.['text']?.length ? "覆盖" : "填入"], "outline-danger"),
@@ -694,18 +840,18 @@ const EditorSingleBrokenSpan = {
     // const tokenSelector = inject('tokenSelector');
     const selection = inject('selection')??[];
     const tokens = inject('tokens')??[];
-    const idxesToTokens = (idxes) => {
-      idxes = idxes??[];
-      if (!tokens?.length) {
-        return [];
-      };
-      return idxes.map(idx => tokens[idx]?.to ?? tokens[idx] ?? {});
-    };
-    const idxesToText = (idxes) => {
-      let _tokens = idxesToTokens(idxes);
-      let result = _tokens.map(it => it.word).join("");
-      return result;
-    };
+    // const idxesToTokens = (idxes) => {
+    //   idxes = idxes??[];
+    //   if (!tokens?.length) {
+    //     return [];
+    //   };
+    //   return idxes.map(idx => tokens[idx]?.to ?? tokens[idx] ?? {});
+    // };
+    // const idxesToText = (idxes) => {
+    //   let _tokens = idxesToTokens(idxes);
+    //   let result = _tokens.map(it => it.word).join("");
+    //   return result;
+    // };
     const localData = reactive({
       'span': {
         'type': props?.ctrl?.type,
@@ -734,7 +880,7 @@ const EditorSingleBrokenSpan = {
             'onClick': ()=>{
               localData['span']['value']['idxeses']?.push(selection?.array);
               ctx.emit("clear-selector");
-              localData['span']['value']['texts']?.push(idxesToText(localData['span']['value']['idxeses']?.at(-1)));
+              localData['span']['value']['texts']?.push(idxesToText(localData['span']['value']['idxeses']?.at(-1), tokens));
             },
             'title': "将选中的文本追加到此处已有的文本之后",
           }, [bi("plus-lg"), " ", "追加"], "outline-primary"),
@@ -746,7 +892,7 @@ const EditorSingleBrokenSpan = {
             'onClick': ()=>{
               localData['span']['value']['idxeses'] = [selection?.array];
               ctx.emit("clear-selector");
-              localData['span']['value']['texts'] = [idxesToText(localData['span']['value']['idxeses']?.at(-1))];
+              localData['span']['value']['texts'] = [idxesToText(localData['span']['value']['idxeses']?.at(-1), tokens)];
             },
             'title': localData?.['span']?.['value']?.['texts']?.length ? "用选中的文本覆盖此处的文本" : "将选中的文本填入此处",
           }, [bi("box-arrow-in-down-right"), " ", localData?.['span']?.['value']?.['texts']?.length ? "覆盖" : "填入"], "outline-danger"),
@@ -1022,6 +1168,7 @@ const ObjectPanel = {
     const onDeleteProperty = (fieldName) => {
       localObjectShadow.data[fieldName] = undefined;
       delete localObjectShadow.data[fieldName];
+      ctx.emit("save-object", localObjectShadow.data);
     };
     const onNew = (type) => {
       ctx.emit("new", type);
@@ -1101,7 +1248,7 @@ const ObjectPanel = {
 
           div({'class': "input-group input-group-sm"}, [
             h("select", {
-              'class': "form-select text-center",
+              'class': "form-select text-center bg-light",
               'onChange': (event)=>{
                 localData.fieldToAdd = event?.target?.value;
               },
@@ -1489,6 +1636,7 @@ export default {
     const onClearSelector = () => {
       props?.tokenSelector?.clear?.(props?.example?.material?.tokenList);
     };
+    const tokens = computed(()=>props?.example?.material?.tokenList??[]);
     const reactiveCMR = reactive(new CMR);
     provide('reactiveCMR', reactiveCMR);
     provide('tokenSelector', props.tokenSelector);
@@ -1636,6 +1784,67 @@ export default {
     };
 
 
+    const 自动填入 = (obj) => {
+      if (!props.selection?.array?.length) {return};
+      const type = reactiveCMR.typeDict[obj.type];
+      if (type==null) {return};
+
+      if (type.name=="文本") {
+        obj['内容'] = {
+          'type': "单个不连续原文片段",
+          'value': {
+            'idxeses': JSON.parse(JSON.stringify([props.selection?.array])),
+            'texts': JSON.parse(JSON.stringify([idxesToText(props.selection?.array, v(tokens))])),
+          },
+        };
+        onClearSelector();
+      };
+
+      const 需要文本的字段设定 = type?.slots?.find?.(slot=>
+        slot?.ctrls?.find?.(it=>
+          it?.config?.filter?.find?.(dd=>dd?.type=="文本")
+        )
+      );
+
+      if (需要文本的字段设定==null) {return;};
+
+      const 文本Object = reactiveCMR.makeNewObjectWithType("文本");
+      文本Object['内容'] = {
+        'type': "单个不连续原文片段",
+        'value': {
+          'idxeses': JSON.parse(JSON.stringify([props.selection?.array])),
+          'texts': JSON.parse(JSON.stringify([idxesToText(props.selection?.array, v(tokens))])),
+        },
+      };
+      onClearSelector();
+
+      const 需要文本的控件类型 = 需要文本的字段设定?.ctrls?.find?.(it=>
+        it?.config?.filter?.find?.(dd=>dd?.type=="文本")
+      )?.type;
+
+      const 需要文本的字段名 = 需要文本的字段设定?.name;
+
+      if (需要文本的控件类型=="多个对象") {
+        obj[需要文本的字段名] = {
+          'type': 需要文本的控件类型,
+          'value': [`${文本Object._id}`],
+        };
+      };
+
+      if (需要文本的控件类型=="单个对象") {
+        obj[需要文本的字段名] = {
+          'type': 需要文本的控件类型,
+          'value': `${文本Object._id}`,
+        };
+      };
+
+
+      // if (obj==null) {obj={}};
+      // const keys = Object.keys(obj);
+      // keys.find(key=>obj[key]);
+    };
+
+
     const 所有对象面板 = () => h(AllObjectsPanel, {
       'objectWraps': v(objectWraps),
       'typeNames': v(typeNames),
@@ -1658,6 +1867,7 @@ export default {
       },
       'onAddObject': (typeName)=>{
         const newObject = reactiveCMR.makeNewObjectWithType(typeName);
+        自动填入(newObject);
         show(newObject._id);
       },
     }, []);

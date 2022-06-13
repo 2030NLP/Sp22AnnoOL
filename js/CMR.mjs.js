@@ -135,10 +135,12 @@ class CMR {
 
     // 新方法
     let old = this.objectDict[obj._id??obj.id];
-    for (let key in old) {
+    for (let key of Object.keys(old)) {
       if (['_id', 'id'].includes(key)) {continue};
-      delete old.key;
+      old[key] = undefined;
+      delete old[key];
     };
+    console.log(JSON.stringify(old));
     Object.assign(old, obj);
   }
 
@@ -177,6 +179,7 @@ class CMR {
 
 
   assignObjects(objects) {
+    this.objects = [];
     for (let object of objects) {
       this.assignObject(object);
     };
