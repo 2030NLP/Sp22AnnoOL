@@ -21,6 +21,9 @@ const UserListPanel = {
       此批审核量文本: "",
       审核完美率文本: "",
       初审完美率文本: "",
+      参与人数文本: "",
+      已完成人数文本: "",
+      未完成人数文本: "",
       listControlSettings: {
         showQuittedUsers: false,
         managerFilter: "【all】",
@@ -49,6 +52,23 @@ const UserListPanel = {
 
     onMounted(()=>{localData.selectedBatchName=newestBatchName.value;});
 
+    const 未完工筛选函数 = (it) => {
+      const pg = user => theDB?.userProgress?.(user, localData.selectedBatchName);
+      const fn = (user) => {
+        const pg_user = pg(user);
+        return pg_user?.cDueLen>0&&pg_user?.cDueLen>pg_user?.cDoneLen;
+      };
+      return fn(it);
+    };
+    const 已完工筛选函数 = (it) => {
+      const pg = user => theDB?.userProgress?.(user, localData.selectedBatchName);
+      const fn = (user) => {
+        const pg_user = pg(user);
+        return pg_user?.cDueLen>0&&pg_user?.cDueLen<=pg_user?.cDoneLen;
+      };
+      return fn(it);
+    };
+
     const 计算审核量 = () => {
       let allReviewedAnnos = theDB?.annos?.filter?.(it=>it?.content?.review) ?? [];
       let currAnnos = theDB?.annos?.filter?.(it=>it?.batchName==localData.selectedBatchName) ?? [];
@@ -69,6 +89,15 @@ const UserListPanel = {
 
       localData.审核完美率文本 = `${审核完美量} / ${审核完美布尔数组.length} = ${审核完美率.toFixed(2)}`;
       localData.初审完美率文本 = `${初审完美量} / ${初审完美布尔数组.length} = ${初审完美率.toFixed(2)}`;
+
+      const 参与用户 = (theDB?.users??[]).filter(user => theDB?.userProgress?.(user, localData.selectedBatchName)?.cDueLen);
+      const 完成用户 = 参与用户.filter(user => 已完工筛选函数(user));
+      const 已完成率 = (完成用户.length??0) / (参与用户.length??0);
+      const 未完成率 = ((参与用户.length??0)-(完成用户.length??0)) / (参与用户.length??0);
+
+      localData.参与人数文本 = `${参与用户.length??0}`;
+      localData.已完成人数文本 = `${完成用户.length??0} (${已完成率.toFixed(2)})`;
+      localData.未完成人数文本 = `${(参与用户.length??0)-(完成用户.length??0)} (${未完成率.toFixed(2)})`;
 
       console.log(localData);
     };
@@ -142,22 +171,6 @@ const UserListPanel = {
       };
       if (localData.listControlSettings.userAtWorkFilter in atWorkFns) {
         atWorkFns[localData.listControlSettings.userAtWorkFilter]();
-      };
-      const 未完工筛选函数 = (it) => {
-        const pg = user => theDB?.userProgress?.(user, localData.selectedBatchName);
-        const fn = (user) => {
-          const pg_user = pg(user);
-          return pg_user?.cDueLen>0&&pg_user?.cDueLen>pg_user?.cDoneLen;
-        };
-        return fn(it);
-      };
-      const 已完工筛选函数 = (it) => {
-        const pg = user => theDB?.userProgress?.(user, localData.selectedBatchName);
-        const fn = (user) => {
-          const pg_user = pg(user);
-          return pg_user?.cDueLen>0&&pg_user?.cDueLen<=pg_user?.cDoneLen;
-        };
-        return fn(it);
       };
       const progressFns = {
         '有分配': ()=>{
@@ -234,7 +247,10 @@ const UserListPanel = {
                 "全部已审", " ", localData.总审核量文本, h("br"),
                 `${localData.selectedBatchName} 已审`, " ", localData.此批审核量文本, h("br"),
                 `${localData.selectedBatchName} 审核通过率达0.9以上的人员的比例`, " ", localData.审核完美率文本, h("br"),
-                `${localData.selectedBatchName} 初审通过率达0.9以上的人员的比例`, " ", localData.初审完美率文本,
+                `${localData.selectedBatchName} 初审通过率达0.9以上的人员的比例`, " ", localData.初审完美率文本, h("br"),
+                `${localData.selectedBatchName} 参与标注的人数`, " ", localData.参与人数文本, h("br"),
+                `${localData.selectedBatchName} 已完成的人数`, " ", localData.已完成人数文本, h("br"),
+                `${localData.selectedBatchName} 未完成的人数`, " ", localData.未完成人数文本,
               ]),
               h("button", {
                 'type': "button",
