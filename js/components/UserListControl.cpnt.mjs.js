@@ -124,8 +124,22 @@ const UserListControl = {
                 h("option", { 'value': "在岗", 'selected': true, }, ["【在岗情况】"]),
                 h("option", { 'value': "在岗", }, ["在岗"]),
                 h("option", { 'value': "退出", }, ["退出"]),
-                h("option", { 'value': "退出但有分配", }, ["退出但有分配"]),
-                h("option", { 'value': "退出但有提交", }, ["退出但有提交"]),
+                h("option", { 'value': "全部", }, ["全部"]),
+              ]),
+            ]),
+
+            h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
+              h("select", {
+                'class': "form-select form-select-sm",
+                'onChange': (event) => {
+                  props.settings.userProgressFilter = event?.target?.value;
+                },
+              }, [
+                h("option", { 'value': "有分配", 'selected': true, }, ["【分配及完成情况】"]),
+                h("option", { 'value': "有分配", }, ["有分配"]),
+                h("option", { 'value': "已完工", }, ["已完工"]),
+                h("option", { 'value': "未完工", }, ["未完工"]),
+                h("option", { 'value': "无分配", }, ["无分配"]),
                 h("option", { 'value': "全部", }, ["全部"]),
               ]),
             ]),

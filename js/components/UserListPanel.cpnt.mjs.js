@@ -29,6 +29,7 @@ const UserListPanel = {
         userTagFilter: "【all】",
         sortMethod: "id+",
         userAtWorkFilter: "在岗",
+        userProgressFilter: "有分配",
       },
     });
 
@@ -109,6 +110,14 @@ const UserListPanel = {
       const atWorkFns = {
         '在岗': ()=>{list = list.filter(it => !it.quitted);},
         '退出': ()=>{list = list.filter(it => it.quitted);},
+        '有分配': ()=>{
+          const fn = (user)=>{return theDB?.userProgress?.(user, localData.selectedBatchName)?.cDueLen;};
+          list = list.filter(it => fn(it));
+        },
+        '无分配': ()=>{
+          const fn = (user)=>{return theDB?.userProgress?.(user, localData.selectedBatchName)?.cDueLen;};
+          list = list.filter(it => !fn(it));
+        },
         '退出但有分配': ()=>{
           const fn = (user)=>{return theDB?.userProgress?.(user, localData.selectedBatchName)?.cDueLen;};
           list = list.filter(it => it.quitted);
@@ -119,9 +128,55 @@ const UserListPanel = {
           list = list.filter(it => it.quitted);
           list = list.filter(it => fn(it));
         },
+        '未完工': ()=>{
+          list = list.filter(it => 未完工筛选函数(it));
+        },
+        '在岗未完工': ()=>{
+          list = list.filter(it => !it.quitted);
+          list = list.filter(it => 未完工筛选函数(it));
+        },
+        '退出未完工': ()=>{
+          list = list.filter(it => it.quitted);
+          list = list.filter(it => 未完工筛选函数(it));
+        },
       };
       if (localData.listControlSettings.userAtWorkFilter in atWorkFns) {
         atWorkFns[localData.listControlSettings.userAtWorkFilter]();
+      };
+      const 未完工筛选函数 = (it) => {
+        const pg = user => theDB?.userProgress?.(user, localData.selectedBatchName);
+        const fn = (user) => {
+          const pg_user = pg(user);
+          return pg_user?.cDueLen>0&&pg_user?.cDueLen>pg_user?.cDoneLen;
+        };
+        return fn(it);
+      };
+      const 已完工筛选函数 = (it) => {
+        const pg = user => theDB?.userProgress?.(user, localData.selectedBatchName);
+        const fn = (user) => {
+          const pg_user = pg(user);
+          return pg_user?.cDueLen>0&&pg_user?.cDueLen<=pg_user?.cDoneLen;
+        };
+        return fn(it);
+      };
+      const progressFns = {
+        '有分配': ()=>{
+          const fn = (user)=>{return theDB?.userProgress?.(user, localData.selectedBatchName)?.cDueLen;};
+          list = list.filter(it => fn(it));
+        },
+        '未完工': ()=>{
+          list = list.filter(it => 未完工筛选函数(it));
+        },
+        '已完工': ()=>{
+          list = list.filter(it => 已完工筛选函数(it));
+        },
+        '无分配': ()=>{
+          const fn = (user)=>{return theDB?.userProgress?.(user, localData.selectedBatchName)?.cDueLen;};
+          list = list.filter(it => !fn(it));
+        },
+      };
+      if (localData.listControlSettings.userProgressFilter in progressFns) {
+        progressFns[localData.listControlSettings.userProgressFilter]();
       };
       //
       //
@@ -212,6 +267,9 @@ const UserListPanel = {
 
           h("div", { 'class': "row align-items-center my-2", }, [
             h("div", { 'class': "col col-12 my-2", }, [
+              h("div", { 'class': "container my-2", }, [h("p", {}, [`筛选出 ${userList.value.length??0} 人`])]),
+            ]),
+            h("div", { 'class': "col col-12 my-2", }, [
               h("div", { 'class': "container my-2", },
                 userList.value.map(user => h(UserListItem, {
                   'db': theDB,
@@ -223,7 +281,8 @@ const UserListPanel = {
                   'key': user.id,
                   'onClickUserDetailBtn': ()=>{ctx.emit('click-user-detail-btn', user);},
                   'onClickUserProgressBtn': ()=>{ctx.emit('click-user-progress-btn', user);},
-                }))),
+                }))
+              ),
             ]),
           ]),
 
