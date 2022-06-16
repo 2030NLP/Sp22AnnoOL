@@ -664,6 +664,9 @@ class Sp22FN {
 
   static 将按词切分的语料格式转成按字切分的语料格式但没有id = (it) => {
     // 将按词切分的语料格式转成按字切分的语料格式但没有id
+  
+    const list = ["快速", "迅速", "急速", "缓慢", "慢速", "低速", "快快", "慢慢", "缓缓", "到处", "处处", "四处", "随处", "一起", "一齐", "单独", "独自", "健步", "缓步", "大步", "小步", "单向", "双向", "当场", "就近", "当面", "正面", "中途", "顺路", "向", "到", "往", "自", "朝", "在", "距", "经", "从", "由", "沿", "沿着", "朝着", "向着", "对着", "顺着", "通过"];
+  
     let pp = {
       version: version,
       createdAt: JSON.parse(JSON.stringify(new Date())),
@@ -682,6 +685,11 @@ class Sp22FN {
         autoSpatial: oldToken.autoSpatial,
         word_idx: oldToken.idx,
       };
+  
+      if (oldToken.autoDVerb) {
+        newTokenTemplate.autoDVerb = oldToken.autoDVerb;
+      };
+  
       let oldWord = "";
       if (oldToken.to==null) {
         newTokenTemplate.replaced = false;
@@ -690,21 +698,28 @@ class Sp22FN {
         newTokenTemplate.replaced = true;
         oldWord = oldToken.to.word;
       };
-
+  
+      let inList = false;
+      if (list.includes(oldWord)) { inList = true; };
+  
       for (let ii in oldWord) {
         let newToken = JSON.parse(JSON.stringify(newTokenTemplate));
-
+  
+        if (inList) {
+          newToken.inList = inList;
+        };
+  
         newToken.seg = (oldWord.length==1)?"S"
           :(oldWord.length-1==ii)?"E"
           :(0==ii)?"B"
           :"M";
-
+  
         newToken.word = oldWord[ii];
-
+  
         newToken.ii = +ii;
         newToken.idx = nextNewIdx;
         nextNewIdx++;
-
+  
         if (newToken.replaced) {
           if (oldToken?.to?.word?.length == oldToken?.word?.length) {
             newToken.from = {word: oldToken.word[ii]};
@@ -715,11 +730,13 @@ class Sp22FN {
               newToken.from = {word: ""};
             };
           };
+          newToken.from.whole = oldToken?.word;
+          newToken.whole = oldWord;
         };
-
+  
         newTokens.push(newToken);
       };
-
+  
     };
     oo.content.material.tokenList = newTokens;
     return oo;

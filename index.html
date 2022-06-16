@@ -352,6 +352,7 @@
         <div class="row mt-2 mb-1 carded" id="annotations-area">
           <div class="col col-12 my-1" v-show="example?.review?.accept!=null">
             <span class="badge text-wrap my-1 me-2" :class="example?.review?.accept ? (example?.review?.checked ? 'bg-warning bg-opacity-25 text-dark' : 'bg-success text-light') : (example?.review?.checked ? 'bg-warning bg-opacity-25 text-dark' : 'bg-danger text-light')">
+              <span v-show="example?.review?.reviewer">{{example?.review?.reviewer?.name??`审核员${example?.review?.reviewer?.id}`}}</span>
               <span>{{example?.review?.accept ? (example?.review?.checked ? '等待复审' : '审核通过') : (example?.review?.checked ? '等待复审' : '审核未通过，请修改！')}}</span>
               <span v-show="example?.review?.comment">（{{example?.review?.comment}}）</span>
             </span>
