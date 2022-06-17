@@ -648,6 +648,62 @@ class Sp22DB {
 
 
 
+  用户批次标注(user, batchName) {
+    let annos = (user?.allAnnos??[]).map(it=>this.anno(it));
+    if (batchName?.length) {
+      annos.filter(it=>it?.batchName==batchName);
+    };
+    return annos;
+  };
+
+  用户近期修改量(user, batchName, hours=24) {
+    let annos = this.用户批次标注(user, batchName);
+    const fn = (it)=>{
+      let 结束时间 = (it?.content?._ctrl?.timeLog??[]).filter(li=>li[0]=="out").at(-1)?.[1];
+      let 是否工作了 = (new Date(结束时间))-(new Date()-(hours*60*60*1000))>0;
+      return 是否工作了;
+    };
+    return annos.filter(it=>fn(it)).length;
+  };
+
+
+
+  用户被审核过的标注(user, batchName) {
+    return (this.用户批次标注(user, batchName)??[]).filter(anno=>anno?.content?.review);
+  };
+
+  用户待复审的数量(user, batchName) {
+    let annos = 用户被审核过的标注(user, batchName);
+  };
+
+  用户被审核及处理情况(user, batchName) {
+    let annos = this.用户批次标注(user, batchName);
+    let 总标注数 = annos.length??0;
+    const 总的情况 = this.lo.countBy(annos, anno=>[
+      !!anno?.content?.review,
+      !!anno?.content?.review?.accept,
+      !!anno?.content?.review?.checked,
+    ]);
+    let 审核通过数 = (总的情况?.['true,true,true']??0)+(总的情况?.['true,true,false']??0);
+    let 审核拒绝数 = (总的情况?.['true,false,true']??0)+(总的情况?.['true,false,false']??0);
+    let 审核数 = 审核通过数 + 审核拒绝数;
+    let 审核通过处理数 = 总的情况?.['true,true,true']??0;
+    let 审核通过未处理数 = 总的情况?.['true,true,false']??0;
+    let 审核拒绝处理数 = 总的情况?.['true,false,true']??0;
+    let 审核拒绝未处理数 = 总的情况?.['true,false,false']??0;
+    let 审核处理数 = 审核通过处理数 + 审核拒绝处理数;
+    return {
+      总标注数,
+      审核数,
+      审核处理数,
+      审核通过数,
+      审核拒绝数,
+      审核通过处理数,
+      审核通过未处理数,
+      审核拒绝处理数,
+      审核拒绝未处理数,
+    };
+  };
 
   inspectionSum(user, batchName) {
     if (batchName==null) {batchName=user?.currBatchName};
@@ -725,6 +781,37 @@ class Sp22DB {
     let r1 = ins2.passRatio - ins1.passRatio;
     if (r1!=0) {return r1;};
     return (ins2.true??0) - (ins1.true??0);
+  };
+
+  标注最后保存时间文本(anno) {
+    const tt = (anno?.content?._ctrl?.timeLog??[]).filter(li=>li[0]=="out").at(-1)?.[1];
+    return tt;
+  };
+
+  用户最后保存时间(user, batchName) {
+    let annos = (user?.allAnnos??[]).map(it=>this.anno(it));
+    if (batchName?.length) {
+      annos.filter(it=>it?.batchName==batchName);
+    };
+    const time_texts = this.lo.map(annos, anno=>this.标注最后保存时间文本(anno)).filter(it=>it?.length);
+    const lastTime = this.lo.max(time_texts.map(it=>(new Date(it))));
+    return lastTime;
+  };
+
+  sortFnByLastSaveTime(u1, u2, batchName) {
+    return this.用户最后保存时间(u1, batchName) - this.用户最后保存时间(u2, batchName);
+  };
+
+  sortFnByLastSaveTimeR(u1, u2, batchName) {
+    return this.用户最后保存时间(u2, batchName) - this.用户最后保存时间(u1, batchName);
+  };
+
+  sortFnByShouldReInspect(u1, u2, batchName) {
+    return this.用户被审核及处理情况(u1, batchName)?.审核处理数 - this.用户被审核及处理情况(u2, batchName)?.审核处理数;
+  };
+
+  sortFnByShouldReInspectR(u1, u2, batchName) {
+    return this.用户被审核及处理情况(u2, batchName)?.审核处理数 - this.用户被审核及处理情况(u1, batchName)?.审核处理数;
   };
 
 

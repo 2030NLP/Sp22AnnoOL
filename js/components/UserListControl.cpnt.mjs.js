@@ -92,27 +92,7 @@ const UserListControl = {
               ]),
             ]),
 
-            h("br"),
-
-            h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
-              h("select", {
-                'class': "form-select form-select-sm",
-                'onChange': (event) => {
-                  props.settings.sortMethod = event?.target?.value;
-                },
-              }, [
-                h("option", { 'value': "id+", 'selected': true, }, ["【排序方式】"]),
-                h("option", { 'value': "id+", }, ["序号 升序"]),
-                h("option", { 'value': "progress+", }, ["进度 升序"]),
-                h("option", { 'value': "progress-", }, ["进度 降序"]),
-                h("option", { 'value': "done+", }, ["总完成量 升序"]),
-                h("option", { 'value': "done-", }, ["总完成量 降序"]),
-                h("option", { 'value': "pass+", }, ["审核通过率 升序"]),
-                h("option", { 'value': "pass-", }, ["审核通过率 降序"]),
-                h("option", { 'value': "primary_pass+", }, ["初审通过率 升序"]),
-                h("option", { 'value': "primary_pass-", }, ["初审通过率 降序"]),
-              ]),
-            ]),
+            // h("br"),
 
             h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
               h("select", {
@@ -144,13 +124,55 @@ const UserListControl = {
               ]),
             ]),
 
-            // h("button", {
-            //   'type': "button",
-            //   'class': ["btn btn-sm my-1 me-2", props.settings.showQuittedUsers ? 'btn-primary' : 'btn-outline-dark'],
-            //   'onClick': ()=>{
-            //     props.settings.showQuittedUsers = !props.settings.showQuittedUsers;
-            //   },
-            // }, ["显示/隐藏已退出人员"]),
+            h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
+              h("select", {
+                'class': "form-select form-select-sm",
+                'onChange': (event) => {
+                  props.settings.sortMethod = event?.target?.value;
+                },
+              }, [
+                h("option", { 'value': "id+", 'selected': true, }, ["【排序方式】"]),
+                h("option", { 'value': "id+", }, ["序号 升序"]),
+                h("option", { 'value': "progress+", }, ["进度 升序"]),
+                h("option", { 'value': "progress-", }, ["进度 降序"]),
+                h("option", { 'value': "done+", }, ["总完成量 升序"]),
+                h("option", { 'value': "done-", }, ["总完成量 降序"]),
+
+                h("option", { 'value': "pass+", }, ["审核通过率 升序"]),
+                h("option", { 'value': "pass-", }, ["审核通过率 降序"]),
+                h("option", { 'value': "primary_pass+", }, ["初审通过率 升序"]),
+                h("option", { 'value': "primary_pass-", }, ["初审通过率 降序"]),
+
+                h("option", { 'value': "re_inspect+", }, ["待复审数量 升序"]),
+                h("option", { 'value': "re_inspect-", }, ["待复审数量 降序"]),
+
+                h("option", { 'value': "last_save_time+", }, ["最后标注时间 升序"]),
+                h("option", { 'value': "last_save_time-", }, ["最后标注时间 降序"]),
+
+                // h("option", { 'value': "last_inspect_time+", }, ["最后审核时间 升序"]),
+                // h("option", { 'value': "last_inspect_time-", }, ["最后审核时间 降序"]),
+
+                // h("option", { 'value': "inspected+", }, ["已审核量 升序"]),
+                // h("option", { 'value': "inspected-", }, ["已审核量 降序"]),
+              ]),
+            ]),
+
+            // h("br"),
+
+            h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
+              h("div", { 'class': "input-group input-group-sm", 'title': "计算标注员最近进行过保存操作的语料数量的时间范围"}, [
+                h("label", { 'class': "input-group-text", }, ["…时间范围:"]),
+                h("input", {
+                  'type': "number",
+                  'class': "form-control form-control-sm",
+                  'value': props.settings.timeRangeHour??0,
+                  'onChange': (event) => {
+                    props.settings.timeRangeHour = event?.target?.value;
+                  },
+                }),
+                h("label", { 'class': "input-group-text", }, ["小时内"]),
+              ]),
+            ]),
 
             ctx?.slots?.default ? h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, ctx.slots.default()) : null,
 

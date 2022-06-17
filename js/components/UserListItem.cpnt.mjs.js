@@ -6,7 +6,7 @@ import {
 } from '../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 
 const UserListItem = {
-  props: ["db", "user", "settings", "me", "functions", "batchname"],
+  props: ["db", "user", "settings", "me", "functions", "batchname", "hours"],
   emits: ["happy", 'click-user-progress-btn', 'click-user-detail-btn'],
   component: {
   },
@@ -47,6 +47,10 @@ const UserListItem = {
     } );
     const sum = computed(()=>{return inspectionSum(user, props.batchname);});
 
+    const 审核及处理情况 = computed(()=>{return theDB?.用户被审核及处理情况?.(user, props.batchname);});
+
+    const 近期修改量 = computed(()=>theDB?.用户近期修改量?.(user, props.batchName, props.hours));
+
 
     const firstInspectionSum = (user, batchName) => { return theDB.firstInspectionSum(user, batchName); };
     const fstsum = computed(()=>{return firstInspectionSum(user, props.batchname);});
@@ -81,12 +85,12 @@ const UserListItem = {
 
           h("span", {
             'class': "badge bg-light text-dark me-1",
-            'title': "当前任务",
+            'title': "该用户当前标注页显示的任务类型",
           }, [theFN.topic_regulation(user.currTask)]),
 
-          h("span", {
-            'class': "badge bg-light text-dark me-1", 'title': "已标总量"
-          }, ["总 ", user.allAnnos?.length]),
+          // h("span", {
+          //   'class': "badge bg-light text-dark me-1", 'title': "已标总量"
+          // }, ["总 ", user.allAnnos?.length]),
 
           h("span", {
             'class': "badge bg-light text-dark me-1", 'title': "此类已标量"
@@ -102,7 +106,7 @@ const UserListItem = {
               'bg-light text-danger border border-1 border-danger',
             ],
             'title': "审核通过率",
-          }, ["审核通过率 ", sum.value?.passRatio?.toFixed?.(3)??'null']),
+          }, ["通率 ", sum.value?.passRatio?.toFixed?.(3)??'null']),
 
           h("span", {
             'class': [
@@ -114,11 +118,43 @@ const UserListItem = {
               'bg-light text-danger border border-1 border-danger',
             ],
             'title': "初审通过率",
-          }, ["初审通过率 ", fstsum.value?.passRatio?.toFixed?.(3)??'null']),
+          }, ["初通率 ", fstsum.value?.passRatio?.toFixed?.(3)??'null']),
 
           h("span", {
-            'class': "badge bg-light text-dark me-1", 'title': "当前批次的已审量"
-          }, ["已审 ", sum.value?.sum]),
+            'class': "badge bg-light text-muted me-1",
+            'title': [
+              `已审核数: ${审核及处理情况.value?.审核数}\n`,
+              `通过,无修改: ${审核及处理情况.value?.审核通过未处理数}\n`,
+              `通过,有修改: ${审核及处理情况.value?.审核通过处理数}\n`,
+              `不通过,已处理: ${审核及处理情况.value?.审核拒绝处理数}\n`,
+              `不通过,未处理: ${审核及处理情况.value?.审核拒绝未处理数}`,
+            ]
+          }, [
+            h('span', {'class': "text-dark"}, 审核及处理情况.value?.审核数),
+            "=",
+            h('span', {'class': "text-success"}, 审核及处理情况.value?.审核通过未处理数),
+            审核及处理情况.value?.审核通过处理数
+              ? ["+", h('span', {'class': "text-info"}, 审核及处理情况.value?.审核通过处理数)]
+              : null,
+            审核及处理情况.value?.审核拒绝处理数
+              ? ["+", h('span', {'class': "text-warning"}, 审核及处理情况.value?.审核拒绝处理数)]
+              : null,
+            审核及处理情况.value?.审核拒绝未处理数
+              ? ["+", h('span', {'class': "text-danger"}, 审核及处理情况.value?.审核拒绝未处理数)]
+              : null,
+          ]),
+
+          h("span", {
+            'class': [
+              "badge me-1",
+              'bg-light text-dark',
+            ],
+            'title': "最后在线时间",
+          }, ["最后在线于 ", (theDB?.用户最后保存时间?.(user, props.batchname)?.toLocaleString()??'???')]),
+
+          h("span", {
+            'class': "badge bg-light text-dark me-1", 'title': `${props.hours}小时内进行了保存操作的这一批次的标注数量`
+          }, ["近期修改 ", 近期修改量.value]),
 
           ...(user.tags??[]).map(tag=>h("span", {
             'class': "badge rounded-pill bg-light _border _border-info text-info me-1"

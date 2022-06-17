@@ -33,6 +33,7 @@ const UserListPanel = {
         sortMethod: "id+",
         userAtWorkFilter: "在岗",
         userProgressFilter: "有分配",
+        timeRangeHour: 24,
       },
     });
 
@@ -208,9 +209,18 @@ const UserListPanel = {
         "pass-": (a,b) => theDB.sortFnByPassRatioR(a,b, localData.selectedBatchName),
         "primary_pass+": (a,b) => theDB.sortFnByPrimaryPassRatio(a,b, localData.selectedBatchName),
         "primary_pass-": (a,b) => theDB.sortFnByPrimaryPassRatioR(a,b, localData.selectedBatchName),
+        "re_inspect+": (a,b) => theDB.sortFnByShouldReInspect(a,b, localData.selectedBatchName),
+        "re_inspect-": (a,b) => theDB.sortFnByShouldReInspectR(a,b, localData.selectedBatchName),
       };
       if (localData.listControlSettings.sortMethod in sortMethodsMap02) {
         list = list.sort(sortMethodsMap02[localData.listControlSettings.sortMethod]);
+      };
+      const sortMethodsMap03 = {
+        "last_save_time+": (a,b) => theDB.sortFnByLastSaveTime(a,b, localData.selectedBatchName),
+        "last_save_time-": (a,b) => theDB.sortFnByLastSaveTimeR(a,b, localData.selectedBatchName),
+      };
+      if (localData.listControlSettings.sortMethod in sortMethodsMap03) {
+        list = list.sort(sortMethodsMap03[localData.listControlSettings.sortMethod]);
       };
       // console.log(list);
       return list;
@@ -294,6 +304,7 @@ const UserListPanel = {
                   'settings': props.settings,
                   'functions': theFN,
                   'batchname': localData.selectedBatchName,
+                  'hours': localData.listControlSettings?.timeRangeHour??24,
                   'key': user.id,
                   'onClickUserDetailBtn': ()=>{ctx.emit('click-user-detail-btn', user);},
                   'onClickUserProgressBtn': ()=>{ctx.emit('click-user-progress-btn', user);},

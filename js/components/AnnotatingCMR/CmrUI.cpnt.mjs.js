@@ -922,6 +922,84 @@ const EditorSingleBrokenSpan = {
 
 
 
+// 🆓🆓🆓🆓🆓🆓
+// 多个不连续的原文片段控件
+// 不论是否可追加，文本都是记录在 texts 数组 字段
+const EditorMultiBrokenSpan = {
+  props: ['ctrl', 'oldValue'],
+  emits: ['confirm', 'cancel', 'clear-selector'],
+  component: {},
+  setup(props, ctx) {
+    console.log(props);
+    // const tokenSelector = inject('tokenSelector');
+    const selection = inject('selection')??[];
+    const tokens = inject('tokens')??[];
+
+    const localData = reactive({
+      'span': {
+        'type': props?.ctrl?.type,
+        'value': {
+          'textses': props?.oldValue?.textses??[],
+          'idxeseses': props?.oldValue?.idxeseses??[],
+        },
+      },
+    });
+    return () => div({'class': "input-group input-group-sm"}, [
+      div({'class': "form-control d-inline-block text-center"}, [
+        div({
+          'class': "d-flex flex-wrap gap-1 justify-content-evenly"
+        }, [
+          localData?.['span']?.['value']?.['textses']?.length
+            ? [
+              faceFn单个不连续原文片段(localData?.['span']),
+              !selection?.array?.length ? muted("...") : null,
+            ]
+            : !selection?.array?.length ? textDanger("【请在文中选取】") : null,
+            btn({
+            'class': [
+              "btn-sm px-1 py-0",
+              {"d-none": (!selection?.array?.length || !localData?.['span']?.['value']?.['texts']?.length)},
+            ],
+            'onClick': ()=>{
+              localData['span']['value']['idxeses']?.push(selection?.array);
+              ctx.emit("clear-selector");
+              localData['span']['value']['texts']?.push(idxesToText(localData['span']['value']['idxeses']?.last(), tokens));
+            },
+            'title': "将选中的文本追加到此处已有的文本之后",
+          }, [bi("plus-lg"), " ", "追加"], "outline-primary"),
+          btn({
+            'class': [
+              "btn-sm px-1 py-0",
+              {"d-none": (!selection?.array?.length)},
+            ],
+            'onClick': ()=>{
+              localData['span']['value']['idxeses'] = [selection?.array];
+              ctx.emit("clear-selector");
+              localData['span']['value']['texts'] = [idxesToText(localData['span']['value']['idxeses']?.last(), tokens)];
+            },
+            'title': localData?.['span']?.['value']?.['texts']?.length ? "用选中的文本覆盖此处的文本" : "将选中的文本填入此处",
+          }, [bi("box-arrow-in-down-right"), " ", localData?.['span']?.['value']?.['texts']?.length ? "覆盖" : "填入"], "outline-danger"),
+        ]),
+      ]),
+      btn({
+        'onClick': ()=>{
+          ctx.emit("confirm", JSON.parse(JSON.stringify(localData['span'])));
+          // console.log("confirm");
+        },
+        'title': "确定",
+      }, bi("check2"), "primary"),
+      btn({
+        'onClick': ()=>{
+          ctx.emit("cancel");
+          // console.log("cancel");
+        },
+        'title': "取消",
+      }, bi("arrow-90deg-left"), "outline-secondary"),
+    ]);
+  },
+};
+// 多个不连续的原文片段控件 结束
+
 
 
 
