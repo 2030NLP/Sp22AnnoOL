@@ -94,10 +94,10 @@ const DataPanel = {
               h("span", {title:"entriesExtended"}, [props.db.state?.entriesExtended ? "🟢" : "🔴"]),
               h("span", {title:"entryDictBuilt"}, [props.db.state?.entryDictBuilt ? "🟢" : "🔴"]),
               h("span", {title:"entriesSyncTime"}, [" ", "语料 Entry", " ", "上次刷新于 ", props.timedict.entries]),
-              h("span", {
+              isManager(props.me) ? h("span", {
                 'class': ["mx-2", "text-decoration-underline cursor-pointer"],
                 'onClick': ()=>{ctx.emit('sync-entries')},
-              }, ["[刷新 (不含文本内容)]"]),
+              }, ["[刷新 (不含文本内容)]"]) : null,
               isManager(props.me) ? h("span", {
                 'class': ["mx-2", "text-decoration-underline cursor-pointer"],
                 'onClick': ()=>{ctx.emit('export', 'entries')},
@@ -108,10 +108,10 @@ const DataPanel = {
               h("span", {title:"tasksExtended"}, [props.db.state?.tasksExtended ? "🟢" : "🔴"]),
               h("span", {title:"taskDictBuilt"}, [props.db.state?.taskDictBuilt ? "🟢" : "🔴"]),
               h("span", {title:"tasksSyncTime"}, [" ", "任务 Task", " ", "上次刷新于 ", props.timedict.tasks]),
-              h("span", {
+              isManager(props.me) ? h("span", {
                 'class': ["mx-2", "text-decoration-underline cursor-pointer"],
                 'onClick': ()=>{ctx.emit('sync-tasks')},
-              }, ["[刷新]"]),
+              }, ["[刷新]"]) : null,
               isManager(props.me) ? h("span", {
                 'class': ["mx-2", "text-decoration-underline cursor-pointer"],
                 'onClick': ()=>{ctx.emit('export', 'tasks')},
@@ -122,10 +122,10 @@ const DataPanel = {
               h("span", {title:"annosExtended"}, [props.db.state?.annosExtended ? "🟢" : "🔴"]),
               h("span", {title:"annoDictBuilt"}, [props.db.state?.annoDictBuilt ? "🟢" : "🔴"]),
               h("span", {title:"annosSyncTime"}, [" ", "标注 Anno", " ", "上次刷新于 ", props.timedict.annos]),
-              h("span", {
+              isManager(props.me)||true ? h("span", {
                 'class': ["mx-2", "text-decoration-underline cursor-pointer"],
                 'onClick': ()=>{ctx.emit('sync-annos')},
-              }, ["[刷新]"]),
+              }, ["[刷新]"]) : null,
               isManager(props.me) ? h("span", {
                 'class': ["mx-2", "text-decoration-underline cursor-pointer"],
                 'onClick': ()=>{ctx.emit('export', 'annos')},
@@ -136,10 +136,10 @@ const DataPanel = {
               h("span", {title:"usersExtended"}, [props.db.state?.usersExtended ? "🟢" : "🔴"]),
               h("span", {title:"userDictBuilt"}, [props.db.state?.userDictBuilt ? "🟢" : "🔴"]),
               h("span", {title:"usersSyncTime"}, [" ", "用户 User", " ", "上次刷新于 ", props.timedict.users]),
-              h("span", {
+              isManager(props.me) ? h("span", {
                 'class': ["mx-2", "text-decoration-underline cursor-pointer"],
                 'onClick': ()=>{ctx.emit('sync-users')},
-              }, ["[刷新]"]),
+              }, ["[刷新]"]) : null,
               isManager(props.me) ? h("span", {
                 'class': ["mx-2", "text-decoration-underline cursor-pointer"],
                 'onClick': ()=>{ctx.emit('export', 'users')},

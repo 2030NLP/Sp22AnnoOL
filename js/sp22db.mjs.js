@@ -651,7 +651,7 @@ class Sp22DB {
   用户批次标注(user, batchName) {
     let annos = (user?.allAnnos??[]).map(it=>this.anno(it));
     if (batchName?.length) {
-      annos.filter(it=>it?.batchName==batchName);
+      annos = annos.filter(it=>it?.batchName==batchName);
     };
     return annos;
   };
