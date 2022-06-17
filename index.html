@@ -254,7 +254,10 @@
 
         <div class="row">
           <div class="row mt-2 mb-0">
-            <p class="text-muted small" :title="`${example?._info?.batchName} | ${example?._info?.batch}`">#{{example?._info?.entry_id}}　{{example?.originId}}　{{`${fileInfo(example?.originId)?.用户显示名称??'其他'}`}}</p>
+            <p
+              class="text-muted small"
+              :title="`${example?._info?.batchName} | ${example?._info?.batch}`"
+            >#{{example?._info?.entry_id}}　{{example?.originId}}　{{example?._info?.batchName}}　{{`${fileInfo(example?.originId)?.用户显示名称??'其他'}`}}</p>
           </div>
         </div>
 
