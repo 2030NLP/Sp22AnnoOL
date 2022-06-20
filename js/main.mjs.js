@@ -439,6 +439,8 @@ const RootComponent = {
 
     return {
       //
+      APP_VERSION,
+      //
       win,
       lo,
       //

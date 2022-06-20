@@ -50,13 +50,16 @@
     <!-- navbar start -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand" href="#">空间关系理解数据标注 2022</a>
+        <a class="navbar-brand" :title="APP_VERSION" _href="#">空间关系理解数据标注 2022</a>
         <button class="navbar-toggler" type="button" @click="newThings.navbar_collapse_show=!newThings.navbar_collapse_show">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" :class="{show: newThings.navbar_collapse_show}">
           <div class="navbar-nav">
             <span class="nav-link">#{{ctrl.currentWorkerId??""}} {{ctrl.currentWorker??""}}</span>
+            <template v-for="tag in (newThings?.theUser?.tags??[]).filter(it=>['A组', 'B组', 'C组', 'D组', 'cool'].includes(it))">
+              <a class="nav-link" v-if="!play.playMode" _href="#" @click="()=>{}"><small>{{tag}}</small></a>
+            </template>
             <a class="nav-link" href="./menu" target="_blank">文档</a>
             <template v-if="!play.playMode">
               <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
