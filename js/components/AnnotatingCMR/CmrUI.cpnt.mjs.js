@@ -122,10 +122,18 @@ const faceFn单个不连续原文片段 = (boy) => {
 const faceFn单个不连续原文片段无引号 = (boy) => {
   const texts = boy?.value?.texts??[];
   const textSpans = texts.map(it=>text(it));
-  const sss = spansJoin(textSpans, textPrimary("+"));
+  const sss = spansJoin(textSpans, muted("+"));
 
   const idxeses = boy?.value?.idxeses ?? [];
   return texts.length ? sss : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<???>"));
+};
+
+const faceFn多个不连续原文片段 = (boy) => {
+  console.log(boy);
+  const spans = boy?.value??[];
+  const spanSpans = spans.map(it=>faceFn单个不连续原文片段无引号({value: it}));
+  const sss = spansJoin(spanSpans, muted("^"));
+  return spans?.length ? sss : opacity75(textDanger("<???>"));
 };
 
 const faceFn单个标签 = (boy) => {
@@ -162,6 +170,7 @@ const ctrlTypeFaceFnMap = {
   '单个原文片段': (boy)=>faceFn单个原文片段(boy),
   '不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
   '单个不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
+  '多个不连续原文片段': (boy)=>faceFn多个不连续原文片段(boy),
   '单个标签': (boy)=>faceFn单个标签(boy),
   '单个对象': (boy, reactiveCMR)=>faceFn单个对象(boy?.value, reactiveCMR),
   '多个原文片段': (boy)=>text(JSON.stringify(boy)),
@@ -959,7 +968,7 @@ const EditorMultiBrokenSpan = {
         }, [
           localData?.['spans']?.['value']?.length
             ? localData?.['spans']?.['value'].map((span, spanIdx)=>labelSpan([
-              faceFn单个不连续原文片段({value: span}),
+              faceFn单个不连续原文片段无引号({value: span}),
               // !selection?.array?.length ? muted("...") : null,
               btn({
                 'class': [

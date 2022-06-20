@@ -3,6 +3,7 @@ import {
   computed,
   onMounted,
   h,
+  watch,
 } from '../modules_lib/vue_3.2.31_.esm-browser.prod.min.js';
 import UserListControl from './UserListControl.cpnt.mjs.js';
 import UserListItem from './UserListItem.cpnt.mjs.js';
@@ -35,6 +36,15 @@ const UserListPanel = {
         userProgressFilter: "有分配",
         timeRangeHour: 24,
       },
+    });
+    const 筛选后的统计 = reactive({
+      总审核量文本: "",
+      此批审核量文本: "",
+      审核完美率文本: "",
+      初审完美率文本: "",
+      参与人数文本: "",
+      已完成人数文本: "",
+      未完成人数文本: "",
     });
 
     const theDB = props.db;
@@ -101,6 +111,43 @@ const UserListPanel = {
       localData.未完成人数文本 = `${(参与用户.length??0)-(完成用户.length??0)} (${未完成率.toFixed(2)})`;
 
       console.log(localData);
+    };
+
+    const 计算筛选部分的审核量 = () => {
+      let 所选用户 = userList.value;
+
+      let 所选有效用户 = 所选用户.filter(user => theDB.inspectionSum(user, localData.selectedBatchName)?.sum>0);
+
+      let 审核完美布尔数组 = 所选有效用户.map(user => theDB.inspectionSum(user, localData.selectedBatchName)?.passRatio >= 0.9);
+      let 初审完美布尔数组 = 所选有效用户.map(user => theDB.firstInspectionSum(user, localData.selectedBatchName)?.passRatio >= 0.9);
+
+      let 所选用户的标注 = 所选有效用户.map(it=>theDB.用户批次标注(it)).flat();
+
+      let allReviewedAnnos = 所选用户的标注?.filter?.(it=>it?.content?.review) ?? [];
+      let currAnnos = 所选用户的标注?.filter?.(it=>it?.batchName==localData.selectedBatchName) ?? [];
+      let currReviewedAnnos = allReviewedAnnos?.filter?.(it=>it.batchName==localData.selectedBatchName) ?? [];
+      筛选后的统计.总审核量文本 = `${allReviewedAnnos.length} / ${所选用户的标注?.length} = ${(allReviewedAnnos.length/所选用户的标注?.length).toFixed(2)}`;
+      筛选后的统计.此批审核量文本 = `${currReviewedAnnos.length} / ${currAnnos.length} = ${(currReviewedAnnos.length/currAnnos.length).toFixed(2)}`;
+
+      let 审核完美量 = 审核完美布尔数组.filter(it=>it==true).length;
+      let 初审完美量 = 初审完美布尔数组.filter(it=>it==true).length;
+
+      let 审核完美率 = 审核完美量 / 审核完美布尔数组.length;
+      let 初审完美率 = 初审完美量 / 初审完美布尔数组.length;
+
+      筛选后的统计.审核完美率文本 = `${审核完美量} / ${审核完美布尔数组.length} = ${审核完美率.toFixed(2)}`;
+      筛选后的统计.初审完美率文本 = `${初审完美量} / ${初审完美布尔数组.length} = ${初审完美率.toFixed(2)}`;
+
+      const 参与用户 = 所选用户.filter(user => theDB?.userProgress?.(user, localData.selectedBatchName)?.cDueLen);
+      const 完成用户 = 参与用户.filter(user => 已完工筛选函数(user));
+      const 已完成率 = (完成用户.length??0) / (参与用户.length??0);
+      const 未完成率 = ((参与用户.length??0)-(完成用户.length??0)) / (参与用户.length??0);
+
+      筛选后的统计.参与人数文本 = `${参与用户.length??0}`;
+      筛选后的统计.已完成人数文本 = `${完成用户.length??0} (${已完成率.toFixed(2)})`;
+      筛选后的统计.未完成人数文本 = `${(参与用户.length??0)-(完成用户.length??0)} (${未完成率.toFixed(2)})`;
+
+      console.log(筛选后的统计);
     };
 
     const userList = computed(()=>{
@@ -226,6 +273,10 @@ const UserListPanel = {
       return list;
     });
 
+    watch(()=>userList.value, ()=>{
+      计算审核量();计算筛选部分的审核量();
+    });
+
     return () => [
       h("div", {
           'class': ["container", props.show ? null : "d-none"],
@@ -239,6 +290,7 @@ const UserListPanel = {
                   'onChange': (event) => {
                     localData.selectedBatchName = event?.target?.value;
                     计算审核量();
+                    计算筛选部分的审核量();
                   },
                 }, [
                   h("option", {
@@ -266,7 +318,7 @@ const UserListPanel = {
                 'type': "button",
                 'class': "btn btn-sm btn-outline-dark my-1 me-2",
                 'title': "重算审核量",
-                'onClick': ()=>{计算审核量();},
+                'onClick': ()=>{计算审核量();计算筛选部分的审核量();},
               }, ["重算审核量"]),
             ]),
           ]),
@@ -292,9 +344,27 @@ const UserListPanel = {
           }),
 
           h("div", { 'class': "row align-items-center my-2", }, [
-            h("div", { 'class': "col col-12 my-2", }, [
-              h("div", { 'class': "container my-2", }, [h("p", {}, [`筛选出 ${userList.value.length??0} 人`])]),
+            h("div", { 'class': "col col-12", }, [
+              h("div", { 'class': "__d-inline-block align-middle my-1 me-2", }, [
+                `对于 筛选出的 ${userList.value.length??0} 人：`, h("br"),
+                "全部已审", " ", 筛选后的统计.总审核量文本, h("br"),
+                `${localData.selectedBatchName} 已审`, " ", 筛选后的统计.此批审核量文本, h("br"),
+                `${localData.selectedBatchName} 审核通过率达0.9以上的人员的比例`, " ", 筛选后的统计.审核完美率文本, h("br"),
+                `${localData.selectedBatchName} 初审通过率达0.9以上的人员的比例`, " ", 筛选后的统计.初审完美率文本, h("br"),
+                `${localData.selectedBatchName} 参与标注的人数`, " ", 筛选后的统计.参与人数文本, h("br"),
+                `${localData.selectedBatchName} 已完成的人数`, " ", 筛选后的统计.已完成人数文本, h("br"),
+                `${localData.selectedBatchName} 未完成的人数`, " ", 筛选后的统计.未完成人数文本,
+              ]),
+              h("button", {
+                'type': "button",
+                'class': "btn btn-sm btn-outline-dark my-1 me-2",
+                'title': "重算审核量",
+                'onClick': ()=>{计算审核量();计算筛选部分的审核量();},
+              }, ["重算审核量"]),
             ]),
+          ]),
+
+          h("div", { 'class': "row align-items-center my-2", }, [
             h("div", { 'class': "col col-12 my-2", }, [
               h("div", { 'class': "container my-2", },
                 userList.value.map(user => h(UserListItem, {
