@@ -73,6 +73,10 @@
                 {"name": "内容", "ctrls": ["单个不连续原文片段"], "required": true}
               ]},
 
+              {"name": "多文本", "icon-bi": "chat-left-quote", "slots": [
+                {"name": "内容", "ctrls": ["多个不连续原文片段"], "required": true}
+              ]},
+
               {"__name": "空间实体", "icon-bi": "box", "slots": [
                 {"name": "是否是虚拟的", "ctrls": ["布尔值"], "default": false, "required": true},
                 {"name": "是否自成处所", "ctrls": ["布尔值"], "init": false},

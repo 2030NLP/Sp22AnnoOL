@@ -35,7 +35,9 @@ class CMR {
     return (JSON.parse(JSON.stringify(Math.max(...(this.objects.map(it=>+(it._id??it.id)).filter(it=>!isNaN(it))))))??-1)+1;
   }
 
-  reset() {}
+  reset() {
+    this.objects = [];
+  }
 
   get(gid) {
     if (typeof(gid)!="number") {gid=`${gid}`};

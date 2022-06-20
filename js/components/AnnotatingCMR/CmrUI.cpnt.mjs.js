@@ -49,6 +49,12 @@ const textInfo = text => span({'class': "text-info"}, text);
 const textLight = text => span({'class': "text-light"}, text);
 const textDark = text => span({'class': "text-dark"}, text);
 
+const labelSpan = (children, attr) => {
+  if (attr==null) {attr={};};
+  attr.class = [attr.class, "d-inline-flex border rounded px-1 py-0 flex-wrap gap-1 align-items-center justify-content-evenly"];
+  return div(attr, children);
+};
+
 const lightBtn = (icon, text, title, attrs) => {
   attrs = attrs ?? {};
   attrs['class']=["btn-sm", attrs.class];
@@ -108,7 +114,7 @@ const faceFn单个原文片段 = (boy) => {
 const faceFn单个不连续原文片段 = (boy) => {
   const texts = boy?.value?.texts??[];
   const textSpans = texts.map(it=>opacity75(it));
-  const sss = spansJoin(textSpans, textPrimary("+"));
+  const sss = spansJoin(textSpans, muted("+"));
 
   const idxeses = boy?.value?.idxeses ?? [];
   return texts.length ? span({}, [textNone("“"), sss, textNone("”")]) : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<???>"));
@@ -129,9 +135,9 @@ const faceFn单个标签 = (boy) => {
 const faceFn单个对象 = (boy, reactiveCMR) => {
   const obj = reactiveCMR.get(boy);
   const that = (obj!=null) ? div({
-    'class': "d-inline-box small border rounded px-1 py-0 align-middle text-wrap",
+    'class': "d-inline-block small border rounded px-1 py-0 align-middle text-wrap",
   }, objectFace(obj, reactiveCMR)) : div({
-    'class': "d-inline-box small border border-danger text-danger rounded px-1 py-0 align-middle text-wrap",
+    'class': "d-inline-block small border border-danger text-danger rounded px-1 py-0 align-middle text-wrap",
   }, opacity75("<id不存在>"));
   return that;
 };
@@ -386,6 +392,7 @@ const ctrlComponent = (ctrl) => {
     '单个原文片段': EditorSingleSpan,
     '不连续原文片段': EditorSingleBrokenSpan,
     '单个不连续原文片段': EditorSingleBrokenSpan,
+    '多个不连续原文片段': EditorMultiBrokenSpan,
     '单个标签': EditorSingleLabelSelector,
     '单个对象': EditorSingleObjectSelector,
     '多个原文片段': EditorDefault,
@@ -418,7 +425,7 @@ const EditorDefault = {
         div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, [
           (props['slot']?.ctrls??[]).map((ctrl, idx)=>btn({
             'class': "btn-sm px-1 py-0",
-            'onClick': ()=>{
+            onClick: ()=>{
               localData.ctrlIdx = idx;
               localData.currentStage = stages['③进行编辑操作'];
             },
@@ -426,14 +433,14 @@ const EditorDefault = {
         ]),
       ]),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("confirm", {'data': "data"});
           // console.log("confirm");
         },
         'title': "确定",
       }, bi("check2"), "primary"),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("cancel");
           // console.log("cancel");
         },
@@ -458,7 +465,7 @@ const EditorBool = {
         div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, [
           btn({
             'class': "btn-sm px-1 py-0",
-            'onClick': ()=>{
+            onClick: ()=>{
               ctx.emit("confirm", {type: props?.ctrl?.type??"", value: true});
               // console.log("confirm");
             },
@@ -466,7 +473,7 @@ const EditorBool = {
           }, [bi("check"), " ", "true"], "outline-success"),
           btn({
             'class': "btn-sm px-1 py-0",
-            'onClick': ()=>{
+            onClick: ()=>{
               ctx.emit("confirm", {type: props?.ctrl?.type??"", value: false});
               // console.log("confirm");
             },
@@ -475,7 +482,7 @@ const EditorBool = {
         ]),
       ]),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("cancel");
           // console.log("cancel");
         },
@@ -522,7 +529,7 @@ const EditorSingleObjectSelector = {
         'value': obj._id??obj.id??-1,
       }, objectFace(obj, reactiveCMR)))),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
           // console.log("confirm");
         },
@@ -530,7 +537,7 @@ const EditorSingleObjectSelector = {
       }, bi("check2"), "primary"),
       btn({
         'class': ["xx", {'d-none': props?.['ctrl']?.['config']?.['filter']?.length!=1}],
-        'onClick': ()=>{
+        onClick: ()=>{
           const 模子s = props?.['ctrl']?.['config']?.['filter'];
           if (模子s.length==1) {
             ctx.emit("new", 模子s[0]?.['type']);
@@ -542,7 +549,7 @@ const EditorSingleObjectSelector = {
         'title': "新建",
       }, bi("plus-circle"), "info"),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("cancel");
           // console.log("cancel");
         },
@@ -594,7 +601,7 @@ const EditorMultiObjectsSelector = {
             }, objectFace(reactiveCMR.get(objId), reactiveCMR)),
             btn({
               'class': "btn-sm m-0 ms-1 p-0",
-              'onClick': ()=>{
+              onClick: ()=>{
                 localData.selectedList=localData.selectedList.filter(it=>it!=objId);
               },
               'title': "删除",
@@ -614,7 +621,7 @@ const EditorMultiObjectsSelector = {
           'value': obj._id??obj.id??-1,
         }, objectFace(obj, reactiveCMR)))),
         btn({
-          'onClick': ()=>{
+          onClick: ()=>{
             if (+localData.selected<0) {return};
             if (localData.selectedList.includes(`${localData.selected}`)) {return};
             localData.selectedList.push(`${localData.selected}`);
@@ -622,7 +629,7 @@ const EditorMultiObjectsSelector = {
           'title': "添加",
         }, bi("plus-lg"), "outline-primary"),
         btn({
-          'onClick': ()=>{
+          onClick: ()=>{
             ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selectedList']});
             // console.log("confirm");
           },
@@ -630,7 +637,7 @@ const EditorMultiObjectsSelector = {
         }, bi("check2"), "primary"),
         btn({
           'class': ["xx", {'d-none': props?.['ctrl']?.['config']?.['filter']?.length!=1}],
-          'onClick': ()=>{
+          onClick: ()=>{
             const 模子s = props?.['ctrl']?.['config']?.['filter'];
             if (模子s.length==1) {
               ctx.emit("new", 模子s[0]?.['type']);
@@ -642,7 +649,7 @@ const EditorMultiObjectsSelector = {
           'title': "新建",
         }, bi("plus-circle"), "info"),
         btn({
-          'onClick': ()=>{
+          onClick: ()=>{
             ctx.emit("cancel");
             // console.log("cancel");
           },
@@ -687,14 +694,14 @@ const EditorSingleLabelSelector = {
         'value': label.face??"???",
       }, label.face))),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['label']});
           // console.log("confirm");
         },
         'title': "确定",
       }, bi("check2"), "primary"),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("cancel");
           // console.log("cancel");
         },
@@ -784,7 +791,7 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
                 "btn-sm px-1 py-0",
                 {"d-none": (!selection?.array?.length || !localData?.['span']?.['value']?.['text']?.length)},
               ],
-              'onClick': ()=>{
+              onClick: ()=>{
                 localData['span']['value']['idxes'] = [...localData['span']['value']['idxes'], ...selection?.array];
                 ctx.emit("clear-selector");
                 localData['span']['value']['text'] = `${localData['span']['value']['text']}+${idxesToText(localData['span']['value']['idxes'], tokens)}`;
@@ -796,7 +803,7 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
                 "btn-sm px-1 py-0",
                 {"d-none": (!selection?.array?.length)},
               ],
-              'onClick': ()=>{
+              onClick: ()=>{
                 localData['span']['value']['idxes'] = selection?.array;
                 ctx.emit("clear-selector");
                 localData['span']['value']['text'] = idxesToText(localData['span']['value']['idxes'], tokens);
@@ -806,14 +813,14 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
           ]),
         ]),
         btn({
-          'onClick': ()=>{
+          onClick: ()=>{
             ctx.emit("confirm", JSON.parse(JSON.stringify(localData['span'])));
             // console.log("confirm");
           },
           'title': "确定",
         }, bi("check2"), "outline-secondary"),
         btn({
-          'onClick': ()=>{
+          onClick: ()=>{
             ctx.emit("cancel");
             // console.log("cancel");
           },
@@ -879,7 +886,7 @@ const EditorSingleBrokenSpan = {
               "btn-sm px-1 py-0",
               {"d-none": (!selection?.array?.length || !localData?.['span']?.['value']?.['texts']?.length)},
             ],
-            'onClick': ()=>{
+            onClick: ()=>{
               localData['span']['value']['idxeses']?.push(selection?.array);
               ctx.emit("clear-selector");
               localData['span']['value']['texts']?.push(idxesToText(localData['span']['value']['idxeses']?.last(), tokens));
@@ -891,7 +898,7 @@ const EditorSingleBrokenSpan = {
               "btn-sm px-1 py-0",
               {"d-none": (!selection?.array?.length)},
             ],
-            'onClick': ()=>{
+            onClick: ()=>{
               localData['span']['value']['idxeses'] = [selection?.array];
               ctx.emit("clear-selector");
               localData['span']['value']['texts'] = [idxesToText(localData['span']['value']['idxeses']?.last(), tokens)];
@@ -901,14 +908,14 @@ const EditorSingleBrokenSpan = {
         ]),
       ]),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("confirm", JSON.parse(JSON.stringify(localData['span'])));
           // console.log("confirm");
         },
         'title': "确定",
       }, bi("check2"), "primary"),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("cancel");
           // console.log("cancel");
         },
@@ -936,12 +943,13 @@ const EditorMultiBrokenSpan = {
     const tokens = inject('tokens')??[];
 
     const localData = reactive({
-      'span': {
+      'spans': {
         'type': props?.ctrl?.type,
-        'value': {
-          'textses': props?.oldValue?.textses??[],
-          'idxeseses': props?.oldValue?.idxeseses??[],
-        },
+        'value': props?.oldValue??[],
+        // [{
+        //   'texts': props?.oldValue?.texts??[],
+        //   'idxeses': props?.oldValue?.idxeses??[],
+        // }],
       },
     });
     return () => div({'class': "input-group input-group-sm"}, [
@@ -949,47 +957,58 @@ const EditorMultiBrokenSpan = {
         div({
           'class': "d-flex flex-wrap gap-1 justify-content-evenly"
         }, [
-          localData?.['span']?.['value']?.['textses']?.length
-            ? [
-              faceFn单个不连续原文片段(localData?.['span']),
-              !selection?.array?.length ? muted("...") : null,
-            ]
+          localData?.['spans']?.['value']?.length
+            ? localData?.['spans']?.['value'].map((span, spanIdx)=>labelSpan([
+              faceFn单个不连续原文片段({value: span}),
+              // !selection?.array?.length ? muted("...") : null,
+              btn({
+                'class': [
+                  "btn-sm p-0",
+                  {"d-none": (!selection?.array?.length)},
+                ],
+                'title': "将选中的文本片段追加到此处已有的文本之后",
+                onClick: ()=>{
+                  localData?.['spans']?.['value']?.[spanIdx]?.['idxeses'].push(selection?.array);
+                  localData?.['spans']?.['value']?.[spanIdx]?.['texts'].push(`${idxesToText(selection?.array, tokens)}`);
+                  ctx.emit("clear-selector");
+                },
+              }, [muted(bi("plus-circle"))]),
+              btn({
+                'class': [
+                  "btn-sm p-0",
+                ],
+                'title': "删除此文本片段",
+                onClick: ()=>{
+                  localData?.['spans']?.['value'].splice(spanIdx, 1);
+                },
+              }, [muted(bi("x-circle"))],)
+            ], {'key': `${spanIdx}-${span?.texts?.[0]}`}))
             : !selection?.array?.length ? textDanger("【请在文中选取】") : null,
-            btn({
-            'class': [
-              "btn-sm px-1 py-0",
-              {"d-none": (!selection?.array?.length || !localData?.['span']?.['value']?.['texts']?.length)},
-            ],
-            'onClick': ()=>{
-              localData['span']['value']['idxeses']?.push(selection?.array);
-              ctx.emit("clear-selector");
-              localData['span']['value']['texts']?.push(idxesToText(localData['span']['value']['idxeses']?.last(), tokens));
-            },
-            'title': "将选中的文本追加到此处已有的文本之后",
-          }, [bi("plus-lg"), " ", "追加"], "outline-primary"),
           btn({
             'class': [
               "btn-sm px-1 py-0",
               {"d-none": (!selection?.array?.length)},
             ],
-            'onClick': ()=>{
-              localData['span']['value']['idxeses'] = [selection?.array];
+            onClick: ()=>{
+              localData['spans']['value']?.push({
+                'texts': [`${idxesToText(selection?.array, tokens)}`],
+                'idxeses': [selection?.array],
+              });
               ctx.emit("clear-selector");
-              localData['span']['value']['texts'] = [idxesToText(localData['span']['value']['idxeses']?.last(), tokens)];
             },
-            'title': localData?.['span']?.['value']?.['texts']?.length ? "用选中的文本覆盖此处的文本" : "将选中的文本填入此处",
-          }, [bi("box-arrow-in-down-right"), " ", localData?.['span']?.['value']?.['texts']?.length ? "覆盖" : "填入"], "outline-danger"),
+            'title': "将选中的文本片段填入此处",
+          }, [bi("box-arrow-in-down-right"), " ", "填入"], "outline-danger"),
         ]),
       ]),
       btn({
-        'onClick': ()=>{
-          ctx.emit("confirm", JSON.parse(JSON.stringify(localData['span'])));
+        onClick: ()=>{
+          ctx.emit("confirm", JSON.parse(JSON.stringify(localData['spans'])));
           // console.log("confirm");
         },
         'title': "确定",
       }, bi("check2"), "primary"),
       btn({
-        'onClick': ()=>{
+        onClick: ()=>{
           ctx.emit("cancel");
           // console.log("cancel");
         },
@@ -1131,11 +1150,11 @@ const PropertyItem = {
             span({'class': "align-middle"}, dataFace(newDataWrap['data'], reactiveCMR)),
           ]),
           true ? btn({
-            'onClick': ()=>{onDelete()},
+            onClick: ()=>{onDelete()},
             'title': "删除"
           }, bi("trash3"), "outline-secondary") : null,
           btn({
-            'onClick': ()=>{onGoToEdit()},
+            onClick: ()=>{onGoToEdit()},
             'disabled': (props['slot']?.ctrls?.length??0)<1,
             'title': "编辑"
           }, bi("pencil"), "outline-secondary"),
@@ -1151,7 +1170,7 @@ const PropertyItem = {
             div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, [
               (props['slot']?.ctrls??[]).map((ctrl, idx)=>btn({
                 'class': "btn-sm px-1 py-0",
-                'onClick': ()=>{
+                onClick: ()=>{
                   localData.ctrlIdx = idx;
                   localData.currentStage = stages['③进行编辑操作'];
                 },
@@ -1283,7 +1302,7 @@ const ObjectPanel = {
         // 关闭按钮
         btn({
           'class': "btn-sm px-1 py-0",
-          'onClick': ()=>{
+          onClick: ()=>{
             ctx.emit("close-object", localObjectShadow.data);
           },
         }, bi("x-lg"), "--outline-danger"),
@@ -1329,7 +1348,7 @@ const ObjectPanel = {
           div({'class': "input-group input-group-sm"}, [
             h("select", {
               'class': "form-select text-center bg-light",
-              'onChange': (event)=>{
+              onChange: (event)=>{
                 localData.fieldToAdd = event?.target?.value;
               },
               'value': localData.fieldToAdd,
@@ -1342,7 +1361,7 @@ const ObjectPanel = {
               }, [field.name])),
             ]),
             btn({
-              'onClick': ()=>{
+              onClick: ()=>{
                 addField(localData.fieldToAdd);
               },
               'title': "执行添加",
@@ -1359,7 +1378,7 @@ const ObjectPanel = {
 
         // btn({
         //   'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-        //   'onClick': ()=>{
+        //   onClick: ()=>{
         //     ctx.emit("save-object", localObjectShadow.data);
         //   },
         //   'disabled': false,
@@ -1367,7 +1386,7 @@ const ObjectPanel = {
 
         btn({
           'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-          'onClick': ()=>{
+          onClick: ()=>{
             ctx.emit("clone-object", localObjectShadow.data);
           },
           'disabled': false,
@@ -1375,7 +1394,7 @@ const ObjectPanel = {
 
         // btn({
         //   'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-        //   'onClick': ()=>{
+        //   onClick: ()=>{
         //     localData.showResetConfirmModal=true;
         //   },
         //   'disabled': false,
@@ -1383,7 +1402,7 @@ const ObjectPanel = {
 
         btn({
           'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-          'onClick': ()=>{
+          onClick: ()=>{
             localData.showDeleteConfirmModal=true;
           },
           'disabled': false,
@@ -1503,7 +1522,7 @@ const AllObjectsPanel = {
               'key': objWrap?.data?._id??objWrap?.data?.id,
               'class': ["btn-sm", {"opacity-50": objWrap?.data?.type=="文本"&&!objWrap['show']}],
               'title': JSON.stringify(objWrap?.data, null, 2),
-              'onClick': ()=>{
+              onClick: ()=>{
                 let x = objWrap['show']
                   ?(ctx.emit("hide-object-wrap", objWrap))
                   :(ctx.emit("show-object-wrap", objWrap));
@@ -1522,32 +1541,32 @@ const AllObjectsPanel = {
       div({'class': "btn-toolbar __hstack gap-1 justify-content-end"}, [
         div({'class': "btn-group btn-group-sm"}, [
           lightBtn(bi("sort-down-alt"), "按原文排序", "按照文本中出现的顺序排序", {
-            'onClick': ()=>{
+            onClick: ()=>{
               ctx.emit("sort-objects");
             },
           }),
           lightBtn(bi("sort-numeric-down"), "按创建顺序排序", "按创建顺序排序", {
-            'onClick': ()=>{
+            onClick: ()=>{
               ctx.emit("sort-objects-by-id");
             },
           }),
           lightBtn(bi("sort-alpha-down"), "按类型排序", "按照类型排序", {
-            'onClick': ()=>{
+            onClick: ()=>{
               ctx.emit("sort-objects-by-type");
             },
           }),
           // lightBtn(bi("bar-chart-steps"), "预分析", null, {
-          //   'onClick': ()=>{
+          //   onClick: ()=>{
           //     ctx.emit("analyze-objects");
           //   },
           // }),
           lightBtn(bi("plus-circle"), "新增", null, {
-            'onClick': ()=>{
+            onClick: ()=>{
               localData.showAddObjectControl = !localData.showAddObjectControl;
             },
           }),
           // lightBtn(bi("bug"), "debug", null, {
-          //   'onClick': ()=>{
+          //   onClick: ()=>{
           //     ctx.emit("do-debug");
           //     console.log(props['objectWraps']);
           //   },
@@ -1560,7 +1579,7 @@ const AllObjectsPanel = {
         div({'class': "input-group input-group-sm"}, [
           h("select", {
             'class': "form-select text-center",
-            'onChange': (event)=>{
+            onChange: (event)=>{
               localData.typeNameToAdd = event?.target?.value;
             },
             'value': localData.typeNameToAdd,
@@ -1570,7 +1589,7 @@ const AllObjectsPanel = {
             }, [typeName])),
           ]),
           btn({
-            'onClick': ()=>{
+            onClick: ()=>{
               ctx.emit("add-object", localData.typeNameToAdd);
               localData.showAddObjectControl = false;
             },
@@ -1599,7 +1618,7 @@ const ResultPanel = {
         div({'class': "h6 m-0"}, ["预览"]),
         lightBtn(bi("arrow-repeat"), "刷新", null, {
           // 'class': "mt-3 mb-1",
-          'onClick': ()=>{
+          onClick: ()=>{
             ctx.emit('update');
           },
         }),
@@ -1631,12 +1650,12 @@ const StartButtonGroup = {
     }, [
       btn({
         'class': "btn-sm",
-        'onClick': ()=>{ctx.emit('reset-from-cloud');},
+        onClick: ()=>{ctx.emit('reset-from-cloud');},
         'title': "重置为云端保存时的状态。",
       }, "从云端读取", "warning"),
       btn({
         'class': "btn-sm",
-        'onClick': ()=>{ctx.emit('save-to-cloud');},
+        onClick: ()=>{ctx.emit('save-to-cloud');},
         'title': "将未完成的标注暂时保存到云端，并记录这条标注处于「未完成」的状态。",
       }, "保存到云端", "primary"),
     ]);
@@ -1659,26 +1678,26 @@ const FinalButtonGroup = {
       }, [
         btn({
           'class': "btn-sm",
-          'onClick': ()=>{ctx.emit('save');},
+          onClick: ()=>{ctx.emit('save');},
           'title': "将未完成的标注暂时保存到云端，并记录这条标注处于「未完成」的状态。",
         }, "暂时保存", "primary"),
         btn({
           'class': "btn-sm",
-          'onClick': ()=>{ctx.emit('ok');},
+          onClick: ()=>{ctx.emit('ok');},
           'title': "保存并提交，记为「完成」状态。",
         }, "完成并保存", "success"),
         btn({
           'class': "btn-sm",
-          'onClick': ()=>{ctx.emit('reset');},
+          onClick: ()=>{ctx.emit('reset');},
           'title': "重置为上次保存时的状态。",
         }, "重置", "warning"),
         btn({
           'class': "btn-sm",
-          'onClick': ()=>{ctx.emit('clean');},
+          onClick: ()=>{ctx.emit('clean');},
         }, "清空", "danger"),
         btn({
           'class': "btn-sm",
-          'onClick': ()=>{ctx.emit('debug');},
+          onClick: ()=>{ctx.emit('debug');},
         }, "DEBUG", "outline-secondary"),
       ]),
       div({
@@ -1686,12 +1705,12 @@ const FinalButtonGroup = {
       }, [
         btn({
           'class': "btn-sm",
-          'onClick': ()=>{ctx.emit('go-prev');},
+          onClick: ()=>{ctx.emit('go-prev');},
           'title': "不会保存",
         }, "上一条", "outline-secondary"),
         btn({
           'class': "btn-sm",
-          'onClick': ()=>{ctx.emit('go-next');},
+          onClick: ()=>{ctx.emit('go-next');},
           'title': "不会保存",
         }, "下一条", "outline-secondary"),
       ]),

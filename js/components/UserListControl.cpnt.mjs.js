@@ -101,10 +101,10 @@ const UserListControl = {
                   props.settings.userAtWorkFilter = event?.target?.value;
                 },
               }, [
-                h("option", { 'value': "在岗", 'selected': true, }, ["【在岗情况】"]),
+                h("option", { 'value': "全部", }, ["【在岗情况】"]),
                 h("option", { 'value': "在岗", }, ["在岗"]),
                 h("option", { 'value': "退出", }, ["退出"]),
-                h("option", { 'value': "全部", }, ["全部"]),
+                h("option", { 'value': "全部", 'selected': true, }, ["全部(在岗+退出)"]),
               ]),
             ]),
 
@@ -115,8 +115,8 @@ const UserListControl = {
                   props.settings.userProgressFilter = event?.target?.value;
                 },
               }, [
-                h("option", { 'value': "全部", 'selected': true, }, ["【分配及完成情况】"]),
-                h("option", { 'value': "有分配", }, ["有分配"]),
+                h("option", { 'value': "全部", }, ["【分配及完成情况】"]),
+                h("option", { 'value': "有分配", 'selected': true, }, ["有分配"]),
                 h("option", { 'value': "已完工", }, ["已完工"]),
                 h("option", { 'value': "未完工", }, ["未完工"]),
                 h("option", { 'value': "无分配", }, ["无分配"]),
