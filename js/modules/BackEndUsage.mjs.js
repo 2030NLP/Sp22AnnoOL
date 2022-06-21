@@ -222,7 +222,13 @@ class BackEndUsage {
     };
     this.data.ctrl.currentPage = 'anno';
     let lastEID = this?.data?.newThings?.lastEID ?? null;
-    let btn = this.data.tasks.find(btn => btn.rejectedTP==3&&!btn.checked) ?? this.data.tasks.find(btn => !btn.done) ?? this.data.tasks.find(btn => btn.rejectedTP==3);
+    // 【寻找首条】
+    // 参考 【队列排序】
+    let btn =
+      this.data.tasks.find(btn => btn.commented&&!btn.checked)  // 首条尚未处理的有批示的
+      ?? this.data.tasks.find(btn => btn.rejectedTP==3&&!btn.checked)  // 首条尚未处理的未通过的
+      ?? this.data.tasks.find(btn => !btn.done)
+      ?? this.data.tasks.find(btn => btn.rejectedTP==3);
     if (btn) {
       await this.goIdx(btn.idx);
       return;
@@ -345,7 +351,8 @@ class BackEndUsage {
       //   return;
       // };
       let work_list = resp?.data?.data ?? [];
-      work_list = this.lo.shuffle(work_list);
+      // 【打乱】
+      // work_list = this.lo.shuffle(work_list);
       // console.debug(work_list);
       let task_btn_list = [];
       for (let work of work_list) {
@@ -364,7 +371,12 @@ class BackEndUsage {
           batchName: task.batchName ?? "",
           batch: task.batch ?? 0,
           done: done,
-          rejectedTP: anno?.content?.review?.accept===false ? 3 : anno?.content?.review?.accept===true ? 1 : 2,
+          rejectedTP: anno?.content?.review?.accept===false
+            ? 3
+            : anno?.content?.review?.accept===true
+            ? 2
+            : 1,
+          commented: (anno?.content?.review?.comment?.length??0)>0,
           checked: anno?.content?.review?.checked,
           valid: anno && !anno?.dropped && !anno?.skipped ? true : false,
           dropped: anno?.dropped ? true : false,
@@ -372,8 +384,17 @@ class BackEndUsage {
         };
         task_btn_list.push(task_btn);
       };
+      // 参考 【寻找首条】
+      // 【队列排序】
       // task_btn_list = task_btn_list.filter(it=>(!it.done)||(it.rejectedTP==3));
-      task_btn_list = this.lo.sortBy(task_btn_list, [(it=>!it.done), (it=>it.rejectedTP), (it=>!it.checked), (it=>it.batchName), (it=>it.batch)]);
+      task_btn_list = this.lo.sortBy(task_btn_list, [
+        (it=>!it.done),
+        (it=>!it.checked),
+        (it=>it.rejectedTP),
+        (it=>it.commented),
+        (it=>it.batchName),
+        (it=>it.batch),
+      ]);
       // task_btn_list.sort((a, b)=>(+b.done)-(+a.done));
       // task_btn_list = task_btn_list.sort((a,b)=> +a.entryId-b.entryId);
       for (let idx in task_btn_list) {
