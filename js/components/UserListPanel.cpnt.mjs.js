@@ -18,6 +18,7 @@ const UserListPanel = {
   setup(props, ctx) {
     const localData = reactive({
       selectedBatchName: "",
+      通过率分界线: 0.9,
       总审核量文本: "",
       此批审核量文本: "",
       审核完美率文本: "",
@@ -89,8 +90,8 @@ const UserListPanel = {
 
       let 有效用户 = (theDB?.users??[]).filter(user => theDB.inspectionSum(user, localData.selectedBatchName)?.sum>0);
 
-      let 审核完美布尔数组 = 有效用户.map(user => theDB.inspectionSum(user, localData.selectedBatchName)?.passRatio >= 0.9);
-      let 初审完美布尔数组 = 有效用户.map(user => theDB.firstInspectionSum(user, localData.selectedBatchName)?.passRatio >= 0.9);
+      let 审核完美布尔数组 = 有效用户.map(user => theDB.inspectionSum(user, localData.selectedBatchName)?.passRatio >= +localData.通过率分界线);
+      let 初审完美布尔数组 = 有效用户.map(user => theDB.firstInspectionSum(user, localData.selectedBatchName)?.passRatio >= +localData.通过率分界线);
 
       let 审核完美量 = 审核完美布尔数组.filter(it=>it==true).length;
       let 初审完美量 = 初审完美布尔数组.filter(it=>it==true).length;
@@ -118,8 +119,8 @@ const UserListPanel = {
 
       let 所选有效用户 = 所选用户.filter(user => theDB.inspectionSum(user, localData.selectedBatchName)?.sum>0);
 
-      let 审核完美布尔数组 = 所选有效用户.map(user => theDB.inspectionSum(user, localData.selectedBatchName)?.passRatio >= 0.9);
-      let 初审完美布尔数组 = 所选有效用户.map(user => theDB.firstInspectionSum(user, localData.selectedBatchName)?.passRatio >= 0.9);
+      let 审核完美布尔数组 = 所选有效用户.map(user => theDB.inspectionSum(user, localData.selectedBatchName)?.passRatio >= +localData.通过率分界线);
+      let 初审完美布尔数组 = 所选有效用户.map(user => theDB.firstInspectionSum(user, localData.selectedBatchName)?.passRatio >= +localData.通过率分界线);
 
       let 所选用户的标注 = 所选有效用户.map(it=>theDB.用户批次标注(it)).flat();
 
@@ -277,6 +278,30 @@ const UserListPanel = {
       计算审核量();计算筛选部分的审核量();
     });
 
+    const 导出用户信息 = ()=>{
+      const user_main_infos = theDB.users.map(it=>[
+        it.id,
+        it.name,
+        theDB.userDict[it.manager]?.name,
+        it.quitted?true:false,
+        it.role?.join?.("|"),
+        it.tags?.join?.("|"),
+      ]);
+
+      let lines = user_main_infos.map(
+        ln=>ln.map(
+          it=> ((typeof it)=="string") ? JSON.stringify(it) : JSON.stringify(JSON.stringify(it))
+        ).join(",")
+      );
+      lines.unshift(`"id","name","组长","是否已退出","角色","标签"`);
+
+      const txt = lines.join("\n");
+
+      console.log(txt);
+
+      app.theSaver.saveText(txt, `人员信息(${JSON.parse(JSON.stringify(new Date()))}).csv`);
+    };
+
     return () => [
       h("div", {
           'class': ["container", props.show ? null : "d-none"],
@@ -308,18 +333,38 @@ const UserListPanel = {
               h("div", { 'class': "__d-inline-block align-middle my-1 me-2", }, [
                 "全部已审", " ", localData.总审核量文本, h("br"),
                 `${localData.selectedBatchName} 已审`, " ", localData.此批审核量文本, h("br"),
-                `${localData.selectedBatchName} 审核通过率达0.9以上的人员的比例`, " ", localData.审核完美率文本, h("br"),
-                `${localData.selectedBatchName} 初审通过率达0.9以上的人员的比例`, " ", localData.初审完美率文本, h("br"),
+                `${localData.selectedBatchName} 审核通过率达${localData.通过率分界线}以上的人员的比例`, " ", localData.审核完美率文本, h("br"),
+                `${localData.selectedBatchName} 初审通过率达${localData.通过率分界线}以上的人员的比例`, " ", localData.初审完美率文本, h("br"),
                 `${localData.selectedBatchName} 参与标注的人数`, " ", localData.参与人数文本, h("br"),
                 `${localData.selectedBatchName} 已完成的人数`, " ", localData.已完成人数文本, h("br"),
                 `${localData.selectedBatchName} 未完成的人数`, " ", localData.未完成人数文本,
               ]),
+
+              h("div", { 'class': "d-inline-block my-1 me-2 align-middle", }, [
+                h("div", { 'class': "input-group input-group-sm", 'title': "设置通过率界限"}, [
+                  h("label", { 'class': "input-group-text", }, ["通过率界限:"]),
+                  h("input", {
+                    'type': "number",
+                    'max': 1,
+                    'min': 0,
+                    'step': 0.05,
+                    'class': "form-control form-control-sm",
+                    'value': localData.通过率分界线,
+                    'onChange': (event) => {
+                      localData.通过率分界线 = event?.target?.value;
+                    },
+                  }),
+                  h("label", { 'class': "input-group-text", }, ["设置后需重新统计"]),
+                ]),
+              ]),
+
               h("button", {
                 'type': "button",
                 'class': "btn btn-sm btn-outline-dark my-1 me-2",
-                'title': "重算审核量",
+                'title': "重新统计",
                 'onClick': ()=>{计算审核量();计算筛选部分的审核量();},
-              }, ["重算审核量"]),
+              }, ["重新统计"]),
+
             ]),
           ]),
 
@@ -340,6 +385,12 @@ const UserListPanel = {
                 'title': "新增用户",
                 'onClick': (event)=>{ctx.emit('click-add-user-btn', event)},
               }, ["新增用户"]),
+              h("button", {
+                'type': "button",
+                'class': "btn btn-sm btn-outline-dark my-1 me-2",
+                'title': "导出用户信息",
+                'onClick': ()=>{导出用户信息()},
+              }, ["导出用户信息"]),
             ] : null,
           }),
 
@@ -349,8 +400,8 @@ const UserListPanel = {
                 `对于 筛选出的 ${userList.value.length??0} 人：`, h("br"),
                 "全部已审", " ", 筛选后的统计.总审核量文本, h("br"),
                 `${localData.selectedBatchName} 已审`, " ", 筛选后的统计.此批审核量文本, h("br"),
-                `${localData.selectedBatchName} 审核通过率达0.9以上的人员的比例`, " ", 筛选后的统计.审核完美率文本, h("br"),
-                `${localData.selectedBatchName} 初审通过率达0.9以上的人员的比例`, " ", 筛选后的统计.初审完美率文本, h("br"),
+                `${localData.selectedBatchName} 审核通过率达${localData.通过率分界线}以上的人员的比例`, " ", 筛选后的统计.审核完美率文本, h("br"),
+                `${localData.selectedBatchName} 初审通过率达${localData.通过率分界线}以上的人员的比例`, " ", 筛选后的统计.初审完美率文本, h("br"),
                 `${localData.selectedBatchName} 参与标注的人数`, " ", 筛选后的统计.参与人数文本, h("br"),
                 `${localData.selectedBatchName} 已完成的人数`, " ", 筛选后的统计.已完成人数文本, h("br"),
                 `${localData.selectedBatchName} 未完成的人数`, " ", 筛选后的统计.未完成人数文本,
@@ -358,9 +409,9 @@ const UserListPanel = {
               h("button", {
                 'type': "button",
                 'class': "btn btn-sm btn-outline-dark my-1 me-2",
-                'title': "重算审核量",
+                'title': "重新统计",
                 'onClick': ()=>{计算审核量();计算筛选部分的审核量();},
-              }, ["重算审核量"]),
+              }, ["重新统计"]),
             ]),
           ]),
 
