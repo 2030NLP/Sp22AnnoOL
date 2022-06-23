@@ -14,14 +14,78 @@
 
 
 
-
-
-
-
-
-
-
   "精标": {
+    "startStep": "start",
+    "endStep": "start",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "",
+          "continueBtn": {
+            "text": "继续完善标注",
+            "go": "start",
+            "style": "outline-primary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "开始",
+        "mode": "CSpaceBank",
+        "props": {
+          "go": "end",
+          "strings": {},
+          "data": {},
+
+          "definition": {
+
+            "namespace": "CSpaceBank",
+
+            "label_sets": [
+              ["实体虚实性", ["虚", "实"]],
+              ["时间限定符", ["时间", "开始前", "结束后"]],
+              ["距离限定符", ["远", "近", "缩短", "加长"]],
+              ["成员间关系", ["^", "|"]],
+              ["事件算子", ["~"]],
+              ["语义角色键", [
+                "施事", "共同施事", "当事", "间接当事",
+                "受事", "系事", "与事", "结果", "对象", "内容",
+                "工具", "材料", "方式", "原因", "目的",
+                "事量", "旧量", "新量", "范围",
+                "起点", "终点", "路径", "方向",
+                "处所", "起始", "结束", "时点", "时段"
+              ]]
+            ],
+
+            "object_types": [
+
+              {"name": "多文本", "icon-bi": "chat-left-quote", "slots": [
+                {"name": "内容", "ctrls": ["多个不连续原文片段"], "required": true}
+              ]},
+
+              {"name": "多文本", "icon-bi": "chat-left-quote", "slots": [
+                {"name": "内容", "ctrls": ["多个不连续原文片段"], "required": true}
+              ]}
+
+            ]
+
+          }
+
+        }
+      }
+    }
+  },
+
+
+
+
+
+
+
+  "旧精标": {
     "startStep": "start",
     "endStep": "start",
     "steps": {

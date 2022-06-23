@@ -162,8 +162,9 @@ const TaskAssignPanel = {
       const rolesOrTags = assignData.clueListText.split(/[\n\t]+| *[,，;；] */).map(it=>it?.trim?.()).filter(it=>it?.length);
       assignData.clueListText = rolesOrTags.join("\n");
       for (let user of spDB.users) {
+        assignData.assignUserBoxDict[user.id] = false;
         for (let tag of rolesOrTags) {
-          assignData.assignUserBoxDict[user.id] = (user?.tags?.includes(tag)||user?.role?.includes(tag)) ? true : false;
+          if (user?.tags?.includes(tag)||user?.role?.includes(tag)) {assignData.assignUserBoxDict[user.id] = true};
         }
       };
     };
@@ -663,6 +664,9 @@ const TaskAssignPanel = {
               'onClick': ()=>{selectUsersNone();},
             }, ["清除"], ),
           ], ),
+          h("div", {}, [
+            h("p", {}, [`已选人数：${Object.values(assignData.assignUserBoxDict).filter(it=>it===true)?.length}`]),
+          ]),
           h("div", {
             'class': "form-control form-control-sm overflow-auto max-vh-40"
             }, [
