@@ -47,7 +47,7 @@
             "label_sets": [
               ["实体虚实性", ["虚", "实"]],
               ["时间限定符", ["说话时", "E开始前", "E结束后", "E时间", "长时"]],
-              ["距离限定符", ["远", "近", "缩短", "加长"]]
+              ["距离限定符", ["远", "近", "变远", "变近"]]
             ],
 
             "object_types": [
@@ -55,15 +55,52 @@
               {
                 "name": "propSet_Sp",
                 "nameFace": "一般空间信息(S-T-E-P)",
-                "icon-bi": "diagram-3",
+                "icon-bi": "boxes",
                 "slots": [
                   {"name": "S", "nameFace": "实体 S", "ctrls": ["MB_SPANS"], "required": true},
 
-                  {"name": "T", "nameFace": "时间文本 T", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "T_Rg", "nameFace": "时间类型 T.Rg", "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}], "required": true},
+                  {"name": "_0", "gap": true},
+                  {"name": "Pl", "nameFace": "处所", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Be", "nameFace": "起点", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Ed", "nameFace": "终点", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Dr", "nameFace": "方向", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Or", "nameFace": "朝向", "ctrls": ["MB_SPANS"], "required": true},
 
+                  {"name": "Pt", "nameFace": "路径", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Pt_Fr", "nameFace": "路径形状", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Fr", "nameFace": "形状", "ctrls": ["MB_SPANS"], "required": false},
+
+                  {"name": "Ds_Tg", "nameFace": "距离参照", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Ds_Vl", "nameFace": "距离值", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Ds_Dc", "nameFace": "距离描述", "ctrls": ["MB_SPANS"], "required": false},
+
+                  {"_name": "P", "nameFace": "空间信息 P", "ctrls": [
+                    {
+                      "type": "多个对象",
+                      "config": {
+                        "filter": [
+                          {
+                            "type": "propSet_P"
+                          }
+                        ]
+                      }
+                    }
+                  ], "required": true},
+
+                  {"name": "_1", "gap": true},
                   {"name": "E", "nameFace": "事件 E", "ctrls": ["MB_SPANS"], "required": true},
 
+                  {"name": "_2", "gap": true},
+                  {"name": "T", "nameFace": "时间文本", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "T_Rg", "nameFace": "时间类型", "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}], "required": true}
+                ]
+              },
+
+              {
+                "_name": "propSet_P",
+                "nameFace": "空间信息(P)",
+                "icon-bi": "box",
+                "slots": [
                   {"name": "Pl", "nameFace": "处所 P.Pl", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "Be", "nameFace": "起点 P.Be", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "Ed", "nameFace": "终点 P.Ed", "ctrls": ["MB_SPANS"], "required": true},
@@ -71,12 +108,16 @@
                   {"name": "Or", "nameFace": "朝向 P.Or", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "Pt", "nameFace": "路径 P.Pt", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "Pt_Fr", "nameFace": "路径形状 P.Pt.Fr", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "Fr", "nameFace": "形状 P.Fr", "ctrls": ["MB_SPANS"], "required": true}
+                  {"name": "Fr", "nameFace": "形状 P.Fr", "ctrls": ["MB_SPANS"], "required": true},
+
+                  {"name": "Ds_Tg", "nameFace": "距离参照 Ds.Tg", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Ds_Vl", "nameFace": "距离值 Ds.Vl", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Ds_Dc", "nameFace": "距离描述 Ds.Dc", "ctrls": ["MB_SPANS"], "required": true}
                 ]
               },
 
               {
-                "name": "propSet_Ds",
+                "_name": "propSet_Ds",
                 "nameFace": "距离空间信息(Ds)",
                 "icon-bi": "distribute-horizontal",
                 "slots": [
@@ -94,7 +135,7 @@
               {
                 "name": "propSet_E",
                 "nameFace": "事件信息(E)",
-                "icon-bi": "disc",
+                "icon-bi": "film",
                 "slots": [
                   {"name": "E", "nameFace": "事件谓词 E", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "arg0", "ctrls": ["MB_SPANS"], "required": true},
@@ -109,10 +150,10 @@
 
               {
                 "name": "propSet_S",
-                "nameFace": "空间实体(S)的跨小句共指关系",
-                "icon-bi": "box",
+                "nameFace": "空间实体(S)的共指关系",
+                "icon-bi": "diagram-3",
                 "slots": [
-                  {"name": "S", "nameFace": "实体 S", "ctrls": ["MB_SPANS"], "required": true}
+                  {"name": "S", "nameFace": "所有共指片段", "ctrls": ["MB_SPANS"], "required": true}
                 ]
               }
 

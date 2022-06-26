@@ -114,7 +114,7 @@ const faceFn单个原文片段 = (boy) => {
 const faceFn单个不连续原文片段 = (boy) => {
   const texts = boy?.value?.texts??[];
   const textSpans = texts.map(it=>opacity75(it));
-  const sss = spansJoin(textSpans, muted("+"));
+  const sss = spansJoin(textSpans, muted(" "));
 
   const idxeses = boy?.value?.idxeses ?? [];
   return texts.length ? span({}, [textNone("“"), sss, textNone("”")]) : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<null>"));
@@ -122,7 +122,7 @@ const faceFn单个不连续原文片段 = (boy) => {
 const faceFn单个不连续原文片段无引号 = (boy) => {
   const texts = boy?.value?.texts??[];
   const textSpans = texts.map(it=>text(it));
-  const sss = spansJoin(textSpans, muted("+"));
+  const sss = spansJoin(textSpans, muted(" "));
 
   const idxeses = boy?.value?.idxeses ?? [];
   return texts.length ? sss : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<null>"));
@@ -132,7 +132,7 @@ const faceFn多个不连续原文片段 = (boy) => {
   // console.log(boy);
   const spans = boy?.value??[];
   const spanSpans = spans.map(it=>faceFn单个不连续原文片段无引号({value: it}));
-  const sss = spansJoin(spanSpans, muted("^"));
+  const sss = spansJoin(spanSpans, muted(" + "));
   return spans?.length ? sss : opacity75(textDanger("<null>"));
 };
 
@@ -150,7 +150,7 @@ const faceFn单个对象 = (boy, reactiveCMR) => {
   return that;
 };
 const faceFn多个对象 = (boyListWrap, reactiveCMR, joint) => {
-  // if (joint==null) {joint=textPrimary("^")};
+  // if (joint==null) {joint=textPrimary(" + ")};
   const dogs = (boyListWrap?.value??[]).map(boy=>faceFn单个对象(boy, reactiveCMR));
   let girls = [];
   let first = true;
@@ -246,7 +246,7 @@ const faceFn实体 = (girl, reactiveCMR) => {
     const big = reactiveCMR.get(it);
     return big!=null ? objectFace(big, reactiveCMR) : null;
   });
-  const 实体Text = spansJoin(sons, textPrimary("^"));
+  const 实体Text = spansJoin(sons, textPrimary(" + "));
   return 实体Text;
 };
 
@@ -299,7 +299,7 @@ const faceFnObj时间特征 = (boy, reactiveCMR) => {
   const 事件Text = 没有界定 ? null : (faceFn实体(boy?.['参照事件']?.value, reactiveCMR)??textIndigo("事件"));
   const 时间文本Text = objectFace(reactiveCMR.get(boy?.['时间文本']?.value), reactiveCMR);
   const 事件与界定Wrap = [事件Text, 界定text];
-  const 连接符 = 都有 ? (textPrimary("^")) : null;
+  const 连接符 = 都有 ? (textPrimary(" + ")) : null;
   return span({}, [事件与界定Wrap, 连接符, 时间文本Text]);
 };
 
@@ -326,7 +326,7 @@ const defaultObjectFace = (object, reactiveCMR) => {
   let frags = [];
   const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
   for (let slot of slots) {
-    if (slot.name in object && object?.[slot.name].value!=null) {
+    if (slot.name in object && object?.[slot.name]?.value!=null) {
       frags.push(labelSpan([muted(slot.name), dataFace(object[slot.name], reactiveCMR)], {
         'class': "border-0",
       }));
@@ -462,7 +462,7 @@ const EditorDefault = {
           // console.log("confirm");
         },
         'title': "确定",
-      }, bi("check2"), "primary"),
+      }, /*bi("check2")*/"存", "danger"),
       btn({
         onClick: ()=>{
           ctx.emit("cancel");
@@ -558,7 +558,7 @@ const EditorSingleObjectSelector = {
           // console.log("confirm");
         },
         'title': "确定",
-      }, bi("check2"), "primary"),
+      }, /*bi("check2")*/"存", "danger"),
       btn({
         'class': ["xx", {'d-none': props?.['ctrl']?.['config']?.['filter']?.length!=1}],
         onClick: ()=>{
@@ -658,7 +658,7 @@ const EditorMultiObjectsSelector = {
             // console.log("confirm");
           },
           'title': "确定",
-        }, bi("check2"), "primary"),
+        }, /*bi("check2")*/"存", "danger"),
         btn({
           'class': ["xx", {'d-none': props?.['ctrl']?.['config']?.['filter']?.length!=1}],
           onClick: ()=>{
@@ -689,7 +689,7 @@ const EditorMultiObjectsSelector = {
 // 🆓🆓🆓🆓🆓🆓
 // 单个标签控件
 const EditorSingleLabelSelector = {
-  props: ['ctrl'],
+  props: ['ctrl', 'oldValue'],
   emits: ['confirm', 'cancel'],
   component: {},
   setup(props, ctx) {
@@ -702,35 +702,56 @@ const EditorSingleLabelSelector = {
     });
     const localData = reactive({
       'label': {
-        'face': "",
+        'face': props?.['oldValue']?.['face']??"",
         'domain': props?.['ctrl']?.['config']?.['set']??"",
       },
     });
     return () => div({'class': "input-group input-group-sm"}, [
+      btn({
+        onClick: ()=>{ctx.emit("copy");},
+        'disabled': false,
+        'title': "复制"
+      }, "拷", "outline-secondary"),
+      btn({
+        onClick: ()=>{ctx.emit("paste");},
+        'disabled': false,
+        'title': "粘贴"
+      }, "贴", "outline-secondary"),
       h("select", {
         'class': "form-select form-select-sm text-center",
         'value': localData.label.face,
         onChange: (event)=>{
           localData.label.face = event?.target?.value;
         },
-      }, v(labels).map((label, idx) => h("option", {
-        'key': `${idx}`,
-        'value': label.face??"???",
-      }, label.face))),
+      }, [
+        ...v(labels).map((label, idx) => h("option", {
+          'key': `${idx}`,
+          'value': label.face??"???",
+        }, label.face)),
+        h("option", {
+          'key': `--none`,
+          'value': "",
+        }, "【请选择】"),
+      ]),
       btn({
         onClick: ()=>{
           ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['label']});
           // console.log("confirm");
         },
         'title': "确定",
-      }, bi("check2"), "primary"),
+      }, /*bi("check2")*/"存", "danger"),
       btn({
-        onClick: ()=>{
-          ctx.emit("cancel");
-          // console.log("cancel");
-        },
-        'title': "取消",
-      }, bi("arrow-90deg-left"), "outline-secondary"),
+        onClick: ()=>{ctx.emit("delete");},
+        'disabled': false,
+        'title': "删除"
+      }, "删", "outline-secondary"),
+      // btn({
+      //   onClick: ()=>{
+      //     ctx.emit("cancel");
+      //     // console.log("cancel");
+      //   },
+      //   'title': "取消",
+      // }, bi("arrow-90deg-left"), "outline-secondary"),
     ]);
   },
 };
@@ -809,7 +830,7 @@ const FactoryOfEditorSingleSpan = (canAppend) => {
                 v(特别的face),
                 !selection?.array?.length ? muted("...") : null,
               ]
-              : !selection?.array?.length ? textDanger("【请在文中选取】") : null,
+              : !selection?.array?.length ? muted("【请在文中选取】") : null,
               _canAppend ? btn({
               'class': [
                 "btn-sm px-1 py-0",
@@ -904,7 +925,7 @@ const EditorSingleBrokenSpan = {
               faceFn单个不连续原文片段(localData?.['span']),
               !selection?.array?.length ? muted("...") : null,
             ]
-            : !selection?.array?.length ? textDanger("【请在文中选取】") : null,
+            : !selection?.array?.length ? muted("【请在文中选取】") : null,
             btn({
             'class': [
               "btn-sm px-1 py-0",
@@ -937,7 +958,7 @@ const EditorSingleBrokenSpan = {
           // console.log("confirm");
         },
         'title': "确定",
-      }, bi("check2"), "primary"),
+      }, /*bi("check2")*/"存", "danger"),
       btn({
         onClick: ()=>{
           ctx.emit("cancel");
@@ -958,7 +979,7 @@ const EditorSingleBrokenSpan = {
 // 不论是否可追加，文本都是记录在 texts 数组 字段
 const EditorMultiBrokenSpan = {
   props: ['ctrl', 'oldValue'],
-  emits: ['confirm', 'cancel', 'clear-selector'],
+  emits: ['confirm', 'cancel', 'clear-selector', 'copy', 'paste', 'delete'],
   component: {},
   setup(props, ctx) {
     console.log(props);
@@ -977,6 +998,16 @@ const EditorMultiBrokenSpan = {
       },
     });
     return () => div({'class': "input-group input-group-sm"}, [
+      btn({
+        onClick: ()=>{ctx.emit("copy");},
+        'disabled': false,
+        'title': "复制"
+      }, "拷", "outline-secondary"),
+      btn({
+        onClick: ()=>{ctx.emit("paste");},
+        'disabled': false,
+        'title': "粘贴"
+      }, "贴", "outline-secondary"),
       div({'class': "form-control d-inline-block text-center"}, [
         div({
           'class': "d-flex flex-wrap gap-1 justify-content-evenly"
@@ -1007,7 +1038,7 @@ const EditorMultiBrokenSpan = {
                 },
               }, [muted(bi("x-circle"))],)
             ], {'key': `${spanIdx}-${span?.texts?.[0]}`, 'class': "justify-content-evenly"}))
-            : !selection?.array?.length ? textDanger("【请在文中选取】") : null,
+            : !selection?.array?.length ? muted("【请在文中选取】") : null,
           btn({
             'class': [
               "btn-sm px-1 py-0",
@@ -1030,14 +1061,19 @@ const EditorMultiBrokenSpan = {
           // console.log("confirm");
         },
         'title': "确定",
-      }, bi("check2"), "danger"),
+      }, /*bi("check2")*/"存", "danger"),
       btn({
-        onClick: ()=>{
-          ctx.emit("cancel");
-          // console.log("cancel");
-        },
-        'title': "取消",
-      }, bi("arrow-90deg-left"), "outline-secondary"),
+        onClick: ()=>{ctx.emit("delete");},
+        'disabled': false,
+        'title': "删除"
+      }, "删", "outline-secondary"),
+      // btn({
+      //   onClick: ()=>{
+      //     ctx.emit("cancel");
+      //     // console.log("cancel");
+      //   },
+      //   'title': "取消",
+      // }, bi("arrow-90deg-left"), "outline-secondary"),
     ]);
   },
 };
@@ -1086,7 +1122,7 @@ const EditorMultiBrokenSpan = {
 
 // 🔯🔯🔯🔯🔯🔯
 // 单个字段
-const PropertyItem = {
+const __PropertyItemOld = {
   props: ['slot', 'data'],
   emits: ['set-property', 'clear-selector', 'new'],
   component: {
@@ -1193,7 +1229,7 @@ const PropertyItem = {
           div({'class': "form-control d-inline-block text-center "}, [
             span({'class': "align-middle"}, dataFace(newDataWrap['data'], reactiveCMR)),
           ]),
-          props['slot']?.deletable ? btn({
+          props['slot']?.deletable||true ? btn({
             onClick: ()=>{onDelete()},
             'title': "删除"
           }, bi("trash3"), "outline-secondary") : null,
@@ -1245,6 +1281,185 @@ const PropertyItem = {
 };
 // 单个字段 结束
 
+
+
+// 🔯🔯🔯🔯🔯🔯
+// 单个字段
+const PropertyItem = {
+  props: ['slot', 'data'],
+  emits: ['set-property', 'clear-selector', 'new'],
+  component: {
+    EditorDefault,
+    EditorBool,
+  },
+  setup(props, ctx) {
+    const reactiveCMR = inject('reactiveCMR', ()=>({}));
+    const clipboard = inject('clipboard', ()=>({}));
+    const stages = {
+      '①呈现数据内容': "①呈现数据内容",
+      '②选择操作方式': "②选择操作方式",
+      '③进行编辑操作': "③进行编辑操作",
+    };
+    const localData = reactive({
+      currentStage: stages['①呈现数据内容'],
+      ctrlIdx: 0,
+    });
+
+    const newDataWrap = reactive({
+      'data': JSON.parse(JSON.stringify(props?.['data'])),
+    });
+
+    watch(()=>props?.['data'], ()=>{
+      newDataWrap['data'] = JSON.parse(JSON.stringify(props?.['data']));
+    });
+
+    onMounted(()=>{
+      if (props?.['data']?.['value']) {return;};
+      onGoToEdit();
+    });
+
+    const onGoToEdit = () => {
+      const len = props['slot']?.ctrls?.length??0;
+      // console.log(len);
+      if (len>1) {
+        localData.currentStage = stages['②选择操作方式'];
+        return;
+      };
+      if (len==1) {
+        localData.ctrlIdx = 0;
+        localData.currentStage = stages['③进行编辑操作'];
+        return;
+      };
+      return;
+    };
+    const onDelete = () => {
+      ctx.emit('delete-property');
+    };
+    const onConfirm = (value) => {
+      let key = props['slot']?.['name']??props['slot']?.['nameFace']??"未知字段";
+      newDataWrap['data'] = value;
+      localData.currentStage = stages['①呈现数据内容'];
+      ctx.emit('set-property', {[key]: newDataWrap['data']});
+    };
+    const onCancel = () => {
+      localData.currentStage = stages['①呈现数据内容'];
+    };
+    const onClearSelector = () => {
+      ctx.emit("clear-selector");
+    };
+    const onNew = (type) => {
+      ctx.emit("new", type);
+    };
+    const onCopy = () => {
+      ctx.emit("copy", newDataWrap['data']);
+    };
+    const onPaste = () => {
+      ctx.emit("paste", clipboard);
+      console.log(["paste", clipboard]);
+      if (newDataWrap['data']?.type!=clipboard['data']?.type) {return;};
+      onConfirm(clipboard['data']);
+    };
+
+
+    const currentCtrl = computed(()=>(
+      fixCtrl(
+        (props['slot']?.ctrls??[])[localData.ctrlIdx]
+      )
+    ));
+
+
+    // 单个字段 渲染
+    return () => div({'class': "--border p-0 hstack gap-1 align-items-center justify-content-around"}, [
+      div({
+        'class': [
+          "w-25",
+          "text-center small",
+          "text-muted",
+        ],
+      }, [
+        span(null, `${props['slot']?.nameFace??props['slot']?.name??"无名字段"}`),
+      ]),
+
+      //
+      localData.currentStage == stages['①呈现数据内容']
+      ? [
+        div({'class': "input-group input-group-sm"}, [
+          btn({
+            onClick: ()=>{onCopy()},
+            'disabled': false,
+            'title': "复制"
+          }, "拷", "outline-secondary"),
+          btn({
+            onClick: ()=>{onPaste()},
+            'disabled': false,
+            'title': "粘贴"
+          }, "贴", "outline-secondary"),
+          div({'class': "form-control d-inline-block text-center "}, [
+            span({'class': "align-middle"}, dataFace(newDataWrap['data'], reactiveCMR)),
+          ]),
+          btn({
+            onClick: ()=>{onGoToEdit()},
+            'disabled': (props['slot']?.ctrls?.length??0)<1,
+            'title': "编辑"
+          }, "改", "outline-secondary"),
+          props['slot']?.deletable||true ? btn({
+            onClick: ()=>{onDelete()},
+            'title': "删除"
+          }, "删", "outline-secondary") : null,
+        ]),
+      ]
+
+      //
+      : localData.currentStage == stages['②选择操作方式']
+      ? [
+        div({'class': "input-group input-group-sm"}, [
+          div({'class': "form-control d-inline-block text-center"}, [
+            div({'class': "mb-1 text-center text-muted"}, "请选择操作方式"),
+            div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, [
+              (props['slot']?.ctrls??[]).map((ctrl, idx)=>btn({
+                'class': "btn-sm px-1 py-0",
+                onClick: ()=>{
+                  localData.ctrlIdx = idx;
+                  localData.currentStage = stages['③进行编辑操作'];
+                },
+              }, `${fixCtrl(ctrl)?.['type']}`, "light")),
+            ]),
+          ]),
+        ]),
+      ]
+
+      //
+      : localData.currentStage == stages['③进行编辑操作']
+      ? [
+        h(ctrlComponent(v(currentCtrl)), {
+          'ctrl': v(currentCtrl),
+          'oldValue': (newDataWrap?.['data']?.['type']==v(currentCtrl)?.['type']) ? newDataWrap?.['data']?.['value'] : null,
+          'onConfirm': (value)=>{onConfirm(value);},
+          'onCancel': ()=>{onCancel();},
+          'onNew': (type)=>{onNew(type);},
+          'onClearSelector': ()=>{onClearSelector();},
+          'onCopy': ()=>{onCopy();},
+          'onPaste': ()=>{onPaste();},
+          'onDelete': ()=>{onDelete();},
+        }),
+      ]
+
+      //
+      : null,
+    ]);
+    // 单个字段 渲染 结束
+  },
+};
+// 单个字段 结束
+
+
+
+
+
+
+
+
+
 // 🔯🔯🔯🔯🔯🔯
 // 单个对象的编辑窗口
 const ObjectPanel = {
@@ -1269,6 +1484,7 @@ const ObjectPanel = {
       'fieldToAdd': "",
       'showResetConfirmModal': false,
       'showDeleteConfirmModal': false,
+      'collapse': false,
     });
 
     const slots = computed(() => (props?.typeDef?.slots??[]));
@@ -1284,20 +1500,32 @@ const ObjectPanel = {
     });
 
     const fields = computed(() => {
-      let v_slotDict = v(slotDict);
-      let kkvvs = Object.entries(localObjectShadow.data);
-      let that = kkvvs.filter(kkvv => kkvv[0] in v_slotDict).map(kkvv => {
-        let [kk, vv] = kkvv;
-        return v_slotDict[kk];
-      });
-      // console.log(that);
-      return that;
+      // let v_slotDict = v(slotDict);
+      // let kkvvs = Object.entries(localObjectShadow.data);
+
+      let result = [];
+      for (let slot of v(slots)) {
+        if ((slot.name && slot.name in localObjectShadow.data) || slot.gap) {
+          result.push(slot);
+        }
+      };
+      return result;
+
+
+      // let that = kkvvs
+      //   .filter(kkvv => kkvv[0] in v_slotDict)
+      //   .map(kkvv => {
+      //     let [kk, vv] = kkvv;
+      //     return v_slotDict[kk];
+      //   });
+      // // console.log(that);
+      // return that;
     });
 
     const moreFields = computed(() => {
       let that = [];
       for (let slot of v(slots)) {
-        if (slot.name && !(slot.name in localObjectShadow.data)) {
+        if (!slot.gap && slot.name && !(slot.name in localObjectShadow.data)) {
           that.push(slot);
         };
       };
@@ -1321,7 +1549,7 @@ const ObjectPanel = {
       if (!fieldName.length) {return;};
       if (fieldName in localObjectShadow.data) {return;};
       Object.assign(localObjectShadow.data, {
-        [fieldName]: slotDict?.[fieldName]?.default ?? slotDict?.[fieldName]?.init ?? null,
+        [fieldName]: v(slotDict)?.[fieldName]?.default ?? v(slotDict)?.[fieldName]?.init ?? null,
       });
     };
 
@@ -1343,19 +1571,84 @@ const ObjectPanel = {
           span({'class': "--user-select-none"}, `${props?.typeDef?.nameFace??props?.typeDef?.name??"未知类型"}`),
         ]),
 
-        // 关闭按钮
-        btn({
-          'class': "btn-sm px-1 py-0",
-          onClick: ()=>{
-            ctx.emit("close-object", localObjectShadow.data);
-          },
-        }, bi("x-lg"), "--outline-danger"),
+        // 按钮区
+        div({
+          'class': "hstack gap-2",
+        }, [
+
+          // btn({
+          //   'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
+          //   onClick: ()=>{
+          //     ctx.emit("save-object", localObjectShadow.data);
+          //   },
+          //   'disabled': false,
+          // }, [bi("save2"), "保存"], "--outline-secondary"),
+  
+          btn({
+            'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
+            onClick: ()=>{
+              ctx.emit("clone-object", localObjectShadow.data);
+            },
+            'disabled': false,
+            'title': "克隆",
+          }, [/*bi("back"), */"克隆"], "--outline-secondary"),
+  
+          // btn({
+          //   'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
+          //   onClick: ()=>{
+          //     localData.showResetConfirmModal=true;
+          //   },
+          //   'disabled': false,
+          // }, [bi("arrow-repeat"), "重置"], "--outline-secondary"),
+
+          // 删除按钮
+          btn({
+            'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
+            onClick: ()=>{
+              localData.showDeleteConfirmModal=true;
+            },
+            'disabled': false,
+            'title': "删除",
+          }, [/*bi("trash3"), */"删除"], "--outline-secondary"),
+
+          // 分割线
+          vr(),
+
+          // 收起按钮
+          btn({
+            'class': ["btn-sm px-1 py-0", {"d-none": localData.collapse}],
+            onClick: ()=>{
+              localData.collapse=true;
+            },
+            'title': "收起",
+          }, bi("arrows-collapse"), "--outline-danger"),
+
+          // 展开按钮
+          btn({
+            'class': ["btn-sm px-1 py-0", {"d-none": !localData.collapse}],
+            onClick: ()=>{
+              localData.collapse=false;
+            },
+            'title': "展开",
+          }, bi("arrows-expand"), "--outline-danger"),
+
+          // 关闭按钮
+          btn({
+            'class': "btn-sm px-1 py-0",
+            onClick: ()=>{
+              ctx.emit("close-object", localObjectShadow.data);
+            },
+            'title': "关闭",
+          }, bi("x-lg"), "--outline-danger"),
+        ]),
+
+
       ]);
     };
 
     const 数据呈现 = () => {
       return div({
-        'class': "mx-2 my-1",
+        'class': "mx-2 mt-1 mb-2",
       }, [
         div({'class': "py-1 px-2 rounded --border text-center bg-white --bg-opacity-25"}, [
           objectFace(localObjectShadow.data, reactiveCMR),
@@ -1369,11 +1662,13 @@ const ObjectPanel = {
 
     const 字段列表 = () => {
       return div({
-        'class': "vstack gap-1 px-2 py-1"
+        'class': "vstack gap-1 px-2 py-2"
       }, [
 
         // 已有字段
-        v(fields).map((field, idx) => h(PropertyItem, {
+        v(fields).map((field, idx) => field.gap ? div({
+          'class': "my-2",
+        }) : h(PropertyItem, {
           'key': idx,
           'data': localObjectShadow?.data?.[field?.name],
           'slot': field,
@@ -1383,6 +1678,10 @@ const ObjectPanel = {
           'onNew': (type)=>{onNew(type);},
           'onCopy': (data)=>{onCopyProperty(data);},
         })),
+
+        v(moreFields).length ? div({
+          'class': "my-2",
+        }) : null,
 
         // 添加字段
         v(moreFields).length ? div({'class': "--border p-0 hstack gap-1 align-items-center justify-content-around"}, [
@@ -1407,7 +1706,7 @@ const ObjectPanel = {
               }, "<请选择>"),
               ...v(moreFields).map(field=>h("option", {
                 'value': field.name,
-              }, [field.name])),
+              }, [field.nameFace??field.name])),
             ]),
             btn({
               onClick: ()=>{
@@ -1420,44 +1719,12 @@ const ObjectPanel = {
       ]);
     };
 
-    const 总体操作 = () => {
-      return div({
-        'class': "hstack gap-2 p-2 justify-content-end",
-      }, [
-
-        // btn({
-        //   'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-        //   onClick: ()=>{
-        //     ctx.emit("save-object", localObjectShadow.data);
-        //   },
-        //   'disabled': false,
-        // }, [bi("save2"), "保存"], "--outline-secondary"),
-
-        btn({
-          'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-          onClick: ()=>{
-            ctx.emit("clone-object", localObjectShadow.data);
-          },
-          'disabled': false,
-        }, [bi("back"), "克隆"], "--outline-secondary"),
-
-        // btn({
-        //   'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-        //   onClick: ()=>{
-        //     localData.showResetConfirmModal=true;
-        //   },
-        //   'disabled': false,
-        // }, [bi("arrow-repeat"), "重置"], "--outline-secondary"),
-
-        btn({
-          'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-          onClick: ()=>{
-            localData.showDeleteConfirmModal=true;
-          },
-          'disabled': false,
-        }, [bi("trash3"), "删除"], "--outline-secondary"),
-      ]);
-    };
+    // const 总体操作 = () => {
+    //   return div({
+    //     'class': "hstack gap-2 p-2 justify-content-end",
+    //   }, [
+    //   ]);
+    // };
 
     const 重置确认框 = () => confirmModal(
       localData,
@@ -1484,8 +1751,7 @@ const ObjectPanel = {
     }, [
       标题栏(),
       数据呈现(),
-      字段列表(),
-      总体操作(),
+      localData.collapse ? null : 字段列表(),
       重置确认框(),
       删除确认框(),
     ]);
@@ -1566,7 +1832,7 @@ const AllObjectsPanel = {
       'showAddObjectControl': false,
     });
     return () => div({'class': "vstack gap-2 my-1"}, [
-      div({'class': "h6 mt-3 mb-1"}, ["全部"]),
+      // div({'class': "h6 mt-3 mb-1"}, ["全部"]),
 
       // 陈列盒子
       div({
@@ -1631,31 +1897,48 @@ const AllObjectsPanel = {
       //   ]),
       // ]),
 
+      // // 新增操作区
+      // div({'class': ["hstack gap-1", {
+      //   // "d-none": !localData.showAddObjectControl
+      // }]}, [
+      //   div({'class': "input-group input-group-sm"}, [
+      //     h("label", {'class': "input-group-text"}, "新增"),
+      //     h("select", {
+      //       'class': "form-select text-center",
+      //       onChange: (event)=>{
+      //         localData.typeNameToAdd = event?.target?.value;
+      //       },
+      //       'value': localData.typeNameToAdd,
+      //     }, [
+      //       ...(props?.types??[]).map(type=>h("option", {
+      //         'value': type.name,
+      //       }, [type.nameFace??type.name])),
+      //     ]),
+      //     btn({
+      //       onClick: ()=>{
+      //         ctx.emit("add-object", localData.typeNameToAdd);
+      //         localData.showAddObjectControl = false;
+      //       },
+      //       'title': "执行添加",
+      //     }, bi("plus-lg"), "outline-secondary"),
+      //   ]),
+      // ]),
+
       // 新增操作区
-      div({'class': ["hstack gap-1", {
+      div({'class': ["d-flex flex-wrap gap-2", {
         // "d-none": !localData.showAddObjectControl
       }]}, [
-        div({'class': "input-group input-group-sm"}, [
-          h("label", {'class': "input-group-text"}, "新增"),
-          h("select", {
-            'class': "form-select text-center",
-            onChange: (event)=>{
-              localData.typeNameToAdd = event?.target?.value;
-            },
-            'value': localData.typeNameToAdd,
-          }, [
-            ...(props?.types??[]).map(type=>h("option", {
-              'value': type.name,
-            }, [type.nameFace??type.name])),
-          ]),
-          btn({
+        ...(props?.types??[]).map(type=>btn(
+          {
             onClick: ()=>{
-              ctx.emit("add-object", localData.typeNameToAdd);
-              localData.showAddObjectControl = false;
+              ctx.emit("add-object", type.name);
             },
-            'title': "执行添加",
-          }, bi("plus-lg"), "outline-secondary"),
-        ]),
+            'class': "btn-sm",
+            'title': `新增一项 ${type.nameFace??type.name??"无名类型"} 的标注`,
+          },
+          [`新增 ${type.nameFace??type.name??"无名类型"}`],
+          "light",
+        )),
       ]),
 
     ]);
@@ -1908,7 +2191,7 @@ export default {
           return that;
         };
       });
-      return nodes??null;
+      return nodes.reverse()??null;
     });
 
     onMounted(()=>{
@@ -2054,11 +2337,11 @@ export default {
     });
 
     return () => div({'class': "--border --p-2 my-1 vstack gap-2"}, [
-      div({'class': ""}, [
-        "请按照 ",
-        ha("CSpaceBank 标注规范"),
-        " 进行标注。",
-      ]),
+      // div({'class': ""}, [
+      //   "请按照 ",
+      //   ha("CSpaceBank 标注规范"),
+      //   " 进行标注。",
+      // ]),
 
       // h(StartButtonGroup),
       所有对象面板(),

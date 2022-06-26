@@ -32,6 +32,15 @@ const ti = (name) => {
 const vr = () => h("div", {'class': "vr"});
 
 
+
+const labelSpan = (children, attr) => {
+  if (attr==null) {attr={};};
+  attr.class = ["d-inline-flex border rounded px-1 py-0 flex-wrap gap-1 align-items-center", attr.class];
+  return div(attr, children);
+};
+
+
+
 export default {
   props: ['annotation'],
   emits: [],
