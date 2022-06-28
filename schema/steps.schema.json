@@ -75,7 +75,7 @@
 
                   {"name": "Ds_Tg", "nameFace": "距离参照", "ctrls": ["MB_SPANS"], "required": false},
                   {"name": "Ds_Vl", "nameFace": "距离值", "ctrls": ["MB_SPANS"], "required": false},
-                  {"name": "Ds_Dc", "nameFace": "距离描述", "ctrls": [{"type": "单个标签", "config": {"set": "距离限定符"}}], "required": true},
+                  {"name": "Ds_Dc", "nameFace": "距离描述", "ctrls": [{"type": "单个标签", "config": {"set": "距离限定符"}}], "required": false},
 
                   {"_name": "P", "nameFace": "空间信息 P", "ctrls": [
                     {
