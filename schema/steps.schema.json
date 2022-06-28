@@ -58,26 +58,27 @@
                 "nameFace": "S-T-E-P 整体信息标注",
                 "icon-bi": "boxes",
                 "slots": [
-                  {"name": "S", "nameFace": "实体 S", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "S", "nameFace": "实体S", "ctrls": ["MB_SPANS"], "required": true},
 
                   {"name": "_0", "gap": true},
                   {"name": "Pl", "nameFace": "处所", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "PPl", "nameFace": "部件处所", "ctrls": ["MB_SPANS"], "required": false},
-                  {"name": "Pa", "nameFace": "部件", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Pa", "nameFace": "部位", "ctrls": ["MB_SPANS"], "required": false},
                   {"name": "Be", "nameFace": "起点", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "Ed", "nameFace": "终点", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "Dr", "nameFace": "方向", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "Or", "nameFace": "朝向", "ctrls": ["MB_SPANS"], "required": true},
 
                   {"name": "Pt", "nameFace": "路径", "ctrls": ["MB_SPANS"], "required": false},
-                  {"name": "Pt_Fr", "nameFace": "路径形状", "ctrls": ["MB_SPANS"], "required": false},
-                  {"name": "Fr", "nameFace": "形状", "ctrls": ["MB_SPANS"], "required": false},
+                  {"__name": "Pt_Shp", "nameFace": "路径形状", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Shp_Rf", "nameFace": "构形参照", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Shp", "nameFace": "形状", "ctrls": ["MB_SPANS"], "required": false},
 
                   {"name": "Ds_Tg", "nameFace": "距离参照", "ctrls": ["MB_SPANS"], "required": false},
                   {"name": "Ds_Vl", "nameFace": "距离值", "ctrls": ["MB_SPANS"], "required": false},
-                  {"name": "Ds_Dc", "nameFace": "距离描述", "ctrls": [{"type": "单个标签", "config": {"set": "距离限定符"}}], "required": false},
+                  {"name": "Ds_Dc", "nameFace": "远近", "ctrls": [{"type": "单个标签", "config": {"set": "距离限定符"}}], "required": false},
 
-                  {"_name": "P", "nameFace": "空间信息 P", "ctrls": [
+                  {"_name": "P", "nameFace": "空间信息P", "ctrls": [
                     {
                       "type": "多个对象",
                       "config": {
@@ -91,13 +92,14 @@
                   ], "required": true},
 
                   {"name": "_1", "gap": true},
-                  {"name": "E", "nameFace": "事件 E", "ctrls": ["MB_SPANS"], "required": true},
+                  {"__name": "TrV", "nameFace": "命题真值", "ctrls": [{"type": "单个标签", "config": {"set": "命题真伪性"}}], "default": {"type": "单个标签", "value": {"domain": "命题真伪性", "face": "Neg"}}, "required": false},
+                  {"name": "F", "nameFace": "事实性", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false},
+
+                  {"name": "E", "nameFace": "事件E", "ctrls": ["MB_SPANS"], "required": true},
                   {"__name": "E_obj", "nameFace": "事件对象", "ctrls": [{"type": "多个对象", "config": {
                     "filter": [
                         {"type": "propSet_E"}]
                     }} ], "required": true},
-                  {"__name": "TrV", "nameFace": "命题真值", "ctrls": [{"type": "单个标签", "config": {"set": "命题真伪性"}}], "default": {"type": "单个标签", "value": {"domain": "命题真伪性", "face": "Neg"}}, "required": false},
-                  {"name": "F", "nameFace": "事实性", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false},
 
                   {"name": "_2", "gap": true},
                   {"name": "T_wd", "nameFace": "原文时间", "ctrls": ["MB_SPANS"], "required": true},
@@ -128,8 +130,8 @@
                 "icon-bi": "diagram-3",
                 "slots": [
                   {
-                    "name": "S",
-                    "nameFace": "共指片段",
+                    "name": "R",
+                    "nameFace": "同指片段",
                     "ctrls": [
                       {
                         "type": "MB_SPANS",

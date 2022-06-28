@@ -338,7 +338,7 @@ const defaultObjectFace = (object, reactiveCMR) => {
   const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
   for (let slot of slots) {
     if (slot.name in object && object?.[slot.name]?.value!=null) {
-      frags.push(labelSpan([opacity75(muted(slot.name)), dataFace(object[slot.name], reactiveCMR)], {
+      frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
         'class': "border-0",
       }));
     };
@@ -1581,10 +1581,17 @@ const ObjectPanel = {
         // 类型标题
         div({
           'class': "hstack gap-2",
-          'title': JSON.stringify(props.typeDef, null, 2),
+          'title': JSON.stringify(props?.data),
         }, [
           props?.typeDef?.['icon-bi'] ? bi(props?.typeDef?.['icon-bi']) : null,
-          span({'class': "--user-select-none"}, `${props?.typeDef?.nameFace??props?.typeDef?.name??"未知类型"} [${props?.data?._id??props?.data?.id}]`),
+          span({
+            'class': "--user-select-none",
+            // 'title': JSON.stringify(props.typeDef),
+          }, `${props?.typeDef?.nameFace??props?.typeDef?.name??"未知类型"}`),
+          span({
+            'class': "--user-select-none",
+            'title': JSON.stringify(props?.data),
+          }, `[${props?.data?._id??props?.data?.id}]`),
         ]),
 
         // 按钮区
@@ -1668,7 +1675,7 @@ const ObjectPanel = {
       }, [
         div({
           'class': "py-1 px-2 rounded --border text-center bg-white --bg-opacity-25",
-          'title': JSON.stringify(props?.data),
+          // 'title': JSON.stringify(props?.data),
         }, [
           objectFace(localObjectShadow.data, reactiveCMR),
         ]),
@@ -1861,9 +1868,9 @@ const AllObjectsPanel = {
         div({'class': "d-flex flex-wrap gap-1"}, props['objectWraps']?.length ? [
           ...(props['objectWraps']??[])
             .map((objWrap, idx) => btn({
-              'key': objWrap?.data?._id??objWrap?.data?.id,
+              'key': `${idx}-${objWrap?.data?._id??objWrap?.data?.id}`,
               'class': ["btn-sm", {"opacity-50": objWrap?.data?.type=="文本"&&!objWrap['show']}],
-              'title': JSON.stringify(objWrap?.data, null, 2),
+              // 'title': JSON.stringify(objWrap?.data, null, 2),
               onClick: ()=>{
                 let x = objWrap['show']
                   ?(ctx.emit("hide-object-wrap", objWrap))
