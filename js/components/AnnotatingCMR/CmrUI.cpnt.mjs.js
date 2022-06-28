@@ -1562,10 +1562,10 @@ const ObjectPanel = {
       if (!fieldName.length) {return;};
       if (fieldName in localObjectShadow.data) {return;};
       let _default = v(slotDict)?.[fieldName]?.default ?? v(slotDict)?.[fieldName]?.init ?? null;
-      if (_default==null) {return;};
       Object.assign(localObjectShadow.data, {
         [fieldName]: _default,
       });
+      if (_default==null) {return;};
       ctx.emit("save-object", localObjectShadow.data);
     };
 
