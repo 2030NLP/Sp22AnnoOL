@@ -1686,7 +1686,7 @@ const ObjectPanel = {
 
         // 已有字段
         v(fields).map((field, idx) => field.gap ? div({
-          'class': "my-2",
+          'class': "my-2 border-top w-25",
         }) : h(PropertyItem, {
           'key': `${idx}-${field?.name}`,
           'data': localObjectShadow?.data?.[field?.name],

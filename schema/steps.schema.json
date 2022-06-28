@@ -47,7 +47,7 @@
             "label_sets": [
               ["实体虚实性", ["虚", "实"]],
               ["命题真伪性", ["Negative", "Positve"]],
-              ["时间限定符", ["说话时", "长时", "V之前", "V之后", "V之时", "两个V之间"]],
+              ["时间限定符", ["说话时", "长时", "之前", "之后", "之时", "之间"]],
               ["距离限定符", ["远", "近", "变远", "变近"]]
             ],
 
@@ -100,9 +100,9 @@
                   {"name": "F", "nameFace": "事实性", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false},
 
                   {"name": "_2", "gap": true},
-                  {"name": "T_wd", "nameFace": "时间文本", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "T_Rf", "nameFace": "时间参照事件", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "T_Rg", "nameFace": "时间类型", "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}], "--default": {"type": "单个标签", "value": {"domain": "时间限定符", "face": "说话时"}}, "required": true}
+                  {"name": "T_wd", "nameFace": "原文时间", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "T_Rf", "nameFace": "参照事件", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "T_Rg", "nameFace": "参照时间", "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}], "--default": {"type": "单个标签", "value": {"domain": "时间限定符", "face": "说话时"}}, "required": true}
                 ]
               },
 
