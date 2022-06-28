@@ -92,7 +92,7 @@
 
                   {"name": "_1", "gap": true},
                   {"name": "E", "nameFace": "事件 E", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "E_obj", "nameFace": "事件对象", "ctrls": [{"type": "多个对象", "config": {
+                  {"__name": "E_obj", "nameFace": "事件对象", "ctrls": [{"type": "多个对象", "config": {
                     "filter": [
                         {"type": "propSet_E"}]
                     }} ], "required": true},

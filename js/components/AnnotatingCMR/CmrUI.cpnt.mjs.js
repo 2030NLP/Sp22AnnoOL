@@ -177,7 +177,7 @@ const ctrlTypeFaceFnMap = {
   '多个原文片段': (boy)=>text(JSON.stringify(boy)),
   '多个标签': (boy)=>text(JSON.stringify(boy)),
   '多个对象': (boyListWrap, reactiveCMR, joint)=>faceFn多个对象(boyListWrap, reactiveCMR, joint),
-  '布尔值': (boy)=>(boy?.value?(textSuccess("true")):(textDanger("false"))),
+  '布尔值': (boy)=>(boy?.value?(textIndigo("true")):(textIndigo("false"))),
   '数值': (boy)=>textPrimary(boy?.value),
 };
 
@@ -1326,7 +1326,7 @@ const PropertyItem = {
     });
 
     onMounted(()=>{
-      if (props?.['data']?.['value']) {return;};
+      if (props?.['data']?.['value']!=null) {return;};
       onGoToEdit();
     });
 
