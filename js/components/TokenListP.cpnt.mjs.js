@@ -53,7 +53,7 @@ const TokenListP = {
             token?.to?.word?.length?'\norigin: '+token.word:''
           }${
             token?.from?.word?.length?'\nfrom: '+token.from.word:''
-          }` : null,
+          }` : token.idx,
           'data-title' : `idx: ${token.idx}\npos: ${token.pos}${token?.to?.word?.length?'\norigin: '+token.word:''}`,
           'data-idx' : token.idx,
           'data-pos' : token.pos,

@@ -519,6 +519,9 @@ the_app.component('results-display', ResultsDisplay);
 import BsBadge from './components/bs/BsBadge.cpnt.mjs.js';
 the_app.component('bs-badge', BsBadge);
 
+import CmrUI_Helper from './components/AnnotatingCMR/CmrUI_Helper.cpnt.mjs.js';
+the_app.component('cmr-ui-helper', CmrUI_Helper);
+
 
 const app = the_app.mount('#bodywrap');
 window.app = app;
