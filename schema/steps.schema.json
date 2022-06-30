@@ -1,12 +1,12 @@
 {
   "name": "SpaCE2022",
-  "version": "220629v1",
+  "version": "220630v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
     "第2期R": "220603v1",
-    "精标": "220629v1"
+    "精标": "220630v1"
   },
   "using": "精标",
 
@@ -47,7 +47,7 @@
             "label_sets": [
               ["实体虚实性", ["虚", "实"]],
               ["命题真伪性", ["Negative", "Positve"]],
-              ["时间限定符", ["说话时", "常态", "之前", "之后", "之时", "之间"]],
+              ["时间限定符", ["说话时", "过去", "将来", "常态", "之前", "之后", "之时", "之间"]],
               ["距离限定符", ["远", "近", "变远", "变近"]]
             ],
 
@@ -58,7 +58,7 @@
                 "nameFace": "S-T-E-P 整体信息标注",
                 "icon-bi": "boxes",
                 "slots": [
-                  {"name": "S", "nameFace": "实体S", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "S", "nameFace": "实体S", "desc": "空间实体……", "ctrls": ["MB_SPANS"], "required": true},
 
                   {"name": "_0", "gap": true},
                   {"name": "Pl", "nameFace": "处所", "ctrls": ["MB_SPANS"], "required": true},
@@ -71,12 +71,12 @@
 
                   {"name": "Pt", "nameFace": "路径", "ctrls": ["MB_SPANS"], "required": false},
                   {"__name": "Pt_Shp", "nameFace": "路径形状", "ctrls": ["MB_SPANS"], "required": false},
-                  {"name": "Shp_Rf", "nameFace": "构形参照", "ctrls": ["MB_SPANS"], "required": false},
+                  {"__name": "Shp_Rf", "nameFace": "构形参照", "ctrls": ["MB_SPANS"], "required": false},
                   {"name": "Shp", "nameFace": "形状", "ctrls": ["MB_SPANS"], "required": false},
 
-                  {"name": "Ds_Tg", "nameFace": "距离参照", "ctrls": ["MB_SPANS"], "required": false},
-                  {"name": "Ds_Vl", "nameFace": "距离值", "ctrls": ["MB_SPANS"], "required": false},
-                  {"name": "Ds_Dc", "nameFace": "远近", "ctrls": [{"type": "单个标签", "config": {"set": "距离限定符"}}], "required": false},
+                  {"__name": "Ds_Tg", "nameFace": "距离参照", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Ds_Vl", "nameFace": "距离1", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Ds_Dc", "nameFace": "距离2", "ctrls": [{"type": "单个标签", "config": {"set": "距离限定符"}}], "required": false},
 
                   {"_name": "P", "nameFace": "空间信息P", "ctrls": [
                     {
@@ -93,7 +93,7 @@
 
                   {"name": "_1", "gap": true},
                   {"__name": "TrV", "nameFace": "命题真值", "ctrls": [{"type": "单个标签", "config": {"set": "命题真伪性"}}], "default": {"type": "单个标签", "value": {"domain": "命题真伪性", "face": "Neg"}}, "required": false},
-                  {"name": "F", "nameFace": "事实性", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false},
+                  {"name": "F", "nameFace": "事实性F", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false},
 
                   {"name": "E", "nameFace": "事件E", "ctrls": ["MB_SPANS"], "required": true},
                   {"__name": "E_obj", "nameFace": "事件对象", "ctrls": [{"type": "多个对象", "config": {
@@ -114,13 +114,41 @@
                 "icon-bi": "film",
                 "slots": [
                   {"name": "E", "nameFace": "事件谓词", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "arg0", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "arg1", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "arg2", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "arg3", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "argM", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "argS", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "argT", "ctrls": ["MB_SPANS"], "required": true}
+                  {
+                    "name": "arg0",
+                    "desc": "核心角色1：主体。对应论旨角色：施事（共同施事）、当事（间接当事）。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "arg1",
+                    "desc": "核心角色2：客体。对应论旨角色：受事、系事、结果、对象、内容。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "arg2",
+                    "desc": "核心角色3：受益/受损者。对应论旨角色：与事。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "arg3",
+                    "desc": "外围角色1：伴随者（准外围）。对应论旨角色：工具、材料、方式。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "argM",
+                    "desc": "外围角色2：环境成分（真外围）。对应论旨角色：事量、范围、原因、目的。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "argS",
+                    "desc": "外围角色3：空间角色。对应论旨角色：起点、终点、路径、方向、处所。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "argT",
+                    "desc": "外围角色4：时间角色。对应论旨角色：起始、结束、时点、时段。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true}
                 ]
               },
 
@@ -132,6 +160,7 @@
                   {
                     "name": "R",
                     "nameFace": "同指片段",
+                    "desc": "只需标注有P信息的空间实体的同指关系。\n有同指关系的空间实体，共享STEP信息。\n同指关系标注，以指代词和指称词的同指为主。",
                     "ctrls": [
                       {
                         "type": "MB_SPANS",

@@ -1390,7 +1390,9 @@ const PropertyItem = {
           "text-muted",
         ],
       }, [
-        span(null, `${props['slot']?.nameFace??props['slot']?.name??"无名字段"}`),
+        span({
+          'title': props['slot']?.desc,
+        }, `${props['slot']?.nameFace??props['slot']?.name??"无名字段"}`),
       ]),
 
       //

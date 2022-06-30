@@ -126,6 +126,14 @@ class BackEnd {
     return response;
   }
 
+  async getSPE(originId) {
+    let response = await this.request({
+      method: "get",
+      url: `/spe-ref/${originId}`,
+    });
+    return response;
+  }
+
   async postUser(user) {
     let response = await this.request({
       method: "post",

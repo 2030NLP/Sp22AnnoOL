@@ -327,7 +327,11 @@
               <!-- 参考信息区 开始 -->
               <div class="row my-2">
                 <div class="col col-12 col-lg-12">
-                  <cmr-ui-helper></cmr-ui-helper>
+                  <cmr-ui-helper
+                    :spes="example?._spes"
+                    :tokens="getTokenList()"
+                    :token-selector="tokenSelector"
+                  ></cmr-ui-helper>
                 </div>
               </div>
               <!-- 参考信息区 结束 -->

@@ -174,6 +174,8 @@ class BackEndUsage {
           anno_id: thing?.anno?.id,
         };
 
+        content._spes = await this.getSPE(thing?.entry?.originId);
+
         this.ewp.example = {};
         this.ewp.example = foolCopy(content);
 
@@ -234,6 +236,19 @@ class BackEndUsage {
       return;
     }
     await this.goIdx(0);
+  }
+
+  async getSPE(originId) {
+    try {
+      // console.log(this);
+      let resp = await this.backEnd.getSPE(originId);
+      if (errorHappened(resp?.data?.err)) {
+        return [];
+      };
+      return resp?.data?.data?.SPEs;
+    } catch (error) {
+      return [];
+    };
   }
 
   async connect() {
