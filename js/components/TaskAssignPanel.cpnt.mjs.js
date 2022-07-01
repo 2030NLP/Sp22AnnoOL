@@ -442,7 +442,7 @@ const TaskAssignPanel = {
 
 
     const exportPlan = () => {
-      theSaver.saveJson(assignData.plans, 'plans.json');
+      theSaver.saveJson(assignData.plans, `plans-${assignData.batch}.json`);
     };
 
 

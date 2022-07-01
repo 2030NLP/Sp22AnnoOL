@@ -309,8 +309,8 @@ const faceFnObj特征命题 = (boy, reactiveCMR) => {
 
 const faceFnObj共指关系 = (object, reactiveCMR) => {
   let frags = [];
-  if ("S" in object && object?.["S"]?.value!=null) {
-    frags.push(labelSpan([muted("S"), dataFace(object["S"], reactiveCMR, " = ")], {
+  if ("R" in object && object?.["R"]?.value!=null) {
+    frags.push(labelSpan([muted("同指片段"), dataFace(object["R"], reactiveCMR, " = ")], {
       'class': "border-0",
     }));
   };
