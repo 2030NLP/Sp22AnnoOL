@@ -1,12 +1,12 @@
 {
   "name": "SpaCE2022",
-  "version": "220702v1",
+  "version": "220702v2",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
     "第2期R": "220603v1",
-    "精标": "220702v1"
+    "精标": "220702v2"
   },
   "using": "精标",
 
@@ -161,7 +161,7 @@
                 "nameFace": "同指关系标注",
                 "icon-bi": "diagram-3",
                 "slots": [
-                  {"name": "SPE_obj", "nameFace": "同指片段来源", "ctrls": [{"type": "多个对象", "config": {
+                  {"__name": "SPE_obj", "nameFace": "同指片段来源", "ctrls": [{"type": "多个对象", "config": {
                     "filter": [
                         {"type": "propSet_Sp"}]
                     }} ], "required": true},

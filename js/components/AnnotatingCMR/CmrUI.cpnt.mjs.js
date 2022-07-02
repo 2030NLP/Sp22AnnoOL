@@ -8,373 +8,91 @@ import {
 } from './VueShadow.mjs.js';
 import { CMR, BS } from './Shadow.mjs.js';
 
+import {
+  ha,
+  space,
+  text,
+  textNone,
+  muted,
+
+  opacity100,
+  opacity75,
+  opacity50,
+  opacity25,
+
+  textPink,
+  textIndigo,
+  textPurple,
+  textOrange,
+  textTeal,
+
+  textPrimary,
+  textSecondary,
+  textSuccess,
+  textDanger,
+  textWarning,
+  textInfo,
+  textLight,
+  textDark,
+
+  labelSpan,
+  lightBtn,
+  bi,
+  ti,
+  vr,
+  spansJoin,
+  modal,
+  confirmModal,
+} from './BsVueUtils.mjs.js';
+
+import {
+  faceFn单个原文片段,
+  faceFn单个不连续原文片段,
+  faceFn单个不连续原文片段无引号,
+  faceFn多个不连续原文片段,
+  faceFn单个标签,
+  faceFn单个对象,
+  faceFn多个对象,
+  ctrlTypeFaceFnMap,
+  dataFace,
+  faceFnObj空间实体,
+  faceFnObj事件,
+  faceFnObj论元角色关系,
+  faceFnObj角色引用,
+  faceFnSpan介词,
+  faceFnSpan方位词,
+  faceFn实体,
+  faceFnObj位置特征,
+  faceFnObj方向特征,
+  faceFnObj朝向特征,
+  faceFnObj形状特征,
+  faceFnObj距离特征,
+  faceFnObj时间特征,
+  faceFnObj特征命题,
+  faceFnObj共指关系,
+  objectTypeFaceFnMap,
+  faceFnObj事件角色,
+  defaultObjectFace,
+  objectFace,
+} from './CmrFaces.mjs.js';
+
+import {
+  ctrlComponent,
+  EditorDefault,
+  EditorBool,
+  EditorSingleObjectSelector,
+  EditorMultiObjectsSelector,
+  EditorSingleLabelSelector,
+  FactoryOfEditorSingleSpan,
+  EditorSingleSpan,
+  EditorSingleBrokenSpan,
+  EditorMultiBrokenSpan,
+} from './CmrEditors.mjs.js';
+
 import CmrDisplay from './CmrDisplay.cpnt.mjs.js';
 
+
 Array.prototype.last = function() {return this[this.length-1]};
-
-const ha = (children, href, title, targetBlank) => {
-  targetBlank = targetBlank?(!!targetBlank):true;
-  return h("a", {
-    'href': href??"#",
-    'title': title??"",
-    'target': targetBlank?'_blank':undefined,
-  }, children);
-};
-const space = " ";
-const textNone = text => span({'class': "d-none"}, text);
-const muted = text => span({'class': "text-muted"}, text);
-const text = (text, attr) => span(attr, text);
-const opacity100 = text => span({'class': "opacity-100"}, text);
-const opacity75 = text => span({'class': "opacity-75"}, text);
-const opacity50 = text => span({'class': "opacity-50"}, text);
-const opacity25 = text => span({'class': "opacity-25"}, text);
-
-// .text-pink {color: var(--bs-pink);}
-// .text-indigo {color: var(--bs-indigo);}
-// .text-purple {color: var(--bs-purple);}
-// .text-orange {color: var(--bs-orange);}
-// .text-teal {color: var(--bs-teal);}
-const textPink = text => span({'class': "text-pink"}, text);
-const textIndigo = text => span({'class': "text-indigo"}, text);
-const textPurple = text => span({'class': "text-purple"}, text);
-const textOrange = text => span({'class': "text-orange"}, text);
-const textTeal = text => span({'class': "text-teal"}, text);
-
-const textPrimary = text => span({'class': "text-primary"}, text);
-const textSecondary = text => span({'class': "text-secondary"}, text);
-const textSuccess = text => span({'class': "text-success"}, text);
-const textDanger = text => span({'class': "text-danger"}, text);
-const textWarning = text => span({'class': "text-warning"}, text);
-const textInfo = text => span({'class': "text-info"}, text);
-const textLight = text => span({'class': "text-light"}, text);
-const textDark = text => span({'class': "text-dark"}, text);
-
-const labelSpan = (children, attr) => {
-  if (attr==null) {attr={};};
-  attr.class = ["d-inline-flex border rounded px-1 py-0 flex-wrap gap-1 align-items-center", attr.class];
-  return div(attr, children);
-};
-
-const lightBtn = (icon, text, title, attrs) => {
-  attrs = attrs ?? {};
-  attrs['class']=["btn-sm", attrs.class];
-  attrs['title']=title??text;
-  // return btn({'class': "btn-sm", title: title??text}, [icon, icon?" ":null, muted(text)], "outline-secondary");
-  return btn(attrs, [icon, icon?" ":null, muted(text)], "----light");
-};
-const bi = (name) => {
-  return h("i", {'class': ["bi", `bi-${name??'square'}`]});
-};  // https://icons.getbootstrap.com/
-const ti = (name) => {
-  return h("i", {'class': ["ti", `ti-${name??'square'}`]});
-};  // https://tabler-icons.io
-const vr = () => h("div", {'class': "vr"});
-
-const spansJoin = (spans, joint) => {
-  let result = [];
-  let xx = false;
-  for (let span of spans??[]) {
-    if (xx) {result.push(joint)};
-    result.push(span);
-    xx = true;
-  };
-  return span({}, result);
-};
-
-
-const modal = (attrs, children, to, disabled) => h(Teleport, {
-  'to': to??"body",
-  'disabled': disabled??false,
-}, h(BS.Modal, attrs, children));
-
-const confirmModal = (dataWrap, showName, text, onConfirm, onHide) => modal({
-  'show': dataWrap[showName],
-  'needconfirm': true,
-  'onConfirm': ()=>{(onConfirm??(()=>{}))();dataWrap[showName]=false;},
-  'onHide': ()=>{(onHide??(()=>{}))();dataWrap[showName]=false;},
-}, {
-  default: div({}, text),
-}, "body");
-
-
-
-
-const 设计 = `
-
-`;
-
-
-
-
-const faceFn单个原文片段 = (boy) => {
-  const text = boy?.value?.text ?? "";
-  const idxes = boy?.value?.idxes ?? [];
-  return text.length ? [textNone("“"), opacity75(text), textNone("”")] : idxes.length ? opacity75(JSON.stringify(idxes)) : opacity75(textDanger("<null>"));
-};
-const faceFn单个不连续原文片段 = (boy) => {
-  const texts = boy?.value?.texts??[];
-  const textSpans = texts.map(it=>opacity75(it));
-  const sss = spansJoin(textSpans, muted(" "));
-
-  const idxeses = boy?.value?.idxeses ?? [];
-  return texts.length ? span({}, [textNone("“"), sss, textNone("”")]) : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<null>"));
-};
-const faceFn单个不连续原文片段无引号 = (boy) => {
-  const texts = boy?.value?.texts??[];
-  const textSpans = texts.map((it, idx)=>text(it, {'title': boy?.value?.idxeses?.[idx]}));
-  const sss = spansJoin(textSpans, muted(" "));
-
-  const idxeses = boy?.value?.idxeses ?? [];
-  return texts.length ? sss : idxeses.length ? opacity75(JSON.stringify(idxeses)) : opacity75(textDanger("<null>"));
-};
-
-const faceFn多个不连续原文片段 = (boy, reactiveCMR, joint) => {
-  // console.log(boy);
-  const spans = boy?.value??[];
-  const spanSpans = spans.map(it=>faceFn单个不连续原文片段无引号({value: it}));
-  const sss = spansJoin(spanSpans, muted(joint??" + "));
-  return spans?.length ? sss : opacity75(textDanger("<null>"));
-};
-
-const faceFn单个标签 = (boy) => {
-  return boy?.value?.face?.length?textIndigo(boy?.value?.face):textDanger("???");
-};
-
-const faceFn单个对象 = (boy, reactiveCMR) => {
-  const obj = reactiveCMR.get(boy);
-  const that = (obj!=null) ? div({
-    'class': "d-inline-block small border rounded px-1 py-0 align-middle text-wrap",
-  }, objectFace(obj, reactiveCMR)) : div({
-    'class': "d-inline-block small border border-danger text-danger rounded px-1 py-0 align-middle text-wrap",
-  }, opacity75("<id不存在>"));
-  return that;
-};
-const faceFn多个对象 = (boyListWrap, reactiveCMR, joint) => {
-  // if (joint==null) {joint=textPrimary(" + ")};
-  const dogs = (boyListWrap?.value??[]).map(boy=>faceFn单个对象(boy, reactiveCMR));
-  let girls = [];
-  let first = true;
-  for (let dog of dogs) {
-    if (!first) {girls.push(joint)};
-    if (first) {first = false};
-    girls.push(dog);
-  };
-  const box = div({
-    'class': "d-flex flex-wrap gap-1 justify-content-evenly",
-  }, girls);
-  return box;
-};
-
-const ctrlTypeFaceFnMap = {
-  '原文片段': (boy)=>faceFn单个原文片段(boy),
-  '单个原文片段': (boy)=>faceFn单个原文片段(boy),
-  '不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
-  '单个不连续原文片段': (boy)=>faceFn单个不连续原文片段(boy),
-  '多个不连续原文片段': (boy, reactiveCMR, joint)=>faceFn多个不连续原文片段(boy, reactiveCMR, joint),
-  'MB_SPANS': (boy, reactiveCMR, joint)=>faceFn多个不连续原文片段(boy, reactiveCMR, joint),
-  '单个标签': (boy)=>faceFn单个标签(boy),
-  '单个对象': (boy, reactiveCMR)=>faceFn单个对象(boy?.value, reactiveCMR),
-  '多个原文片段': (boy)=>text(JSON.stringify(boy)),
-  '多个标签': (boy)=>text(JSON.stringify(boy)),
-  '多个对象': (boyListWrap, reactiveCMR, joint)=>faceFn多个对象(boyListWrap, reactiveCMR, joint),
-  '布尔值': (boy)=>(boy?.value?(textIndigo("true")):(textIndigo("false"))),
-  '数值': (boy)=>textPrimary(boy?.value),
-};
-
-const dataFace = (cat, reactiveCMR, joint) => {
-  if (cat?.type in ctrlTypeFaceFnMap) {
-    return ctrlTypeFaceFnMap[cat?.type](cat, reactiveCMR, joint);
-  };
-  return text(JSON.stringify(cat));
-};
-
-
-
-
-
-
-const faceFnObj空间实体 = (boy, reactiveCMR) => {
-  const syb = textPrimary(boy['是否是虚拟的']?.value ? "$" : "#");
-  const textObjs = (boy['原文片段']?.value??[]).map(id=>reactiveCMR.get(id)).filter(it=>it!=null);
-  const texts = textObjs.map(it=>faceFn单个不连续原文片段无引号(it?.['内容']));
-  const sss = spansJoin(texts, textPrimary("="));
-  // console.log({textObjs, texts, sss});
-  return span({}, [syb, sss, syb]);
-};
-
-const faceFnObj事件 = (boy, reactiveCMR) => {
-  const syb = textSuccess("%");
-  const textObjs = [boy['原文片段']?.value].map(id=>reactiveCMR.get(id)).filter(it=>it!=null);
-  const texts = textObjs.map(it=>faceFn单个不连续原文片段无引号(it?.['内容']));
-  const sss = spansJoin(texts, textPrimary("="));
-  // console.log({textObjs, texts, sss});
-  return span({}, [syb, sss, syb]);
-};
-
-const faceFnObj论元角色关系 = (boy, reactiveCMR) => {
-  const masterText = objectFace(reactiveCMR.get(boy?.['事件']?.value), reactiveCMR);
-  const keyText = faceFn单个标签(boy?.['角色'], reactiveCMR);
-  const valueText = objectFace(reactiveCMR.get(boy?.['值']?.value), reactiveCMR);
-  return span({}, [masterText, space, textPrimary("["), keyText, textPrimary(":"), space, valueText, textPrimary("]")]);
-};
-
-const faceFnObj角色引用 = (boy, reactiveCMR) => {
-  const masterText = objectFace(reactiveCMR.get(boy?.['事件']?.value), reactiveCMR);
-  const keyText = faceFn单个标签(boy?.['角色'], reactiveCMR);
-  return span({}, [masterText, textPrimary("."), keyText]);
-};
-
-const faceFnSpan介词 = (girl, reactiveCMR) => {
-  return girl!=null ? [
-    textPrimary("<"),
-    objectFace(reactiveCMR.get(girl), reactiveCMR),
-    textPrimary(">"),
-  ] : null;
-};
-
-const faceFnSpan方位词 = (girl, reactiveCMR) => {
-  return girl!=null ? [
-    textPrimary("##"),
-    objectFace(reactiveCMR.get(girl), reactiveCMR),
-  ] : null;
-};
-
-const faceFn实体 = (girl, reactiveCMR) => {
-  const dogs = girl??[];
-  if (!dogs.length) {return null};
-  const sons = dogs.map(it=>{
-    const big = reactiveCMR.get(it);
-    return big!=null ? objectFace(big, reactiveCMR) : null;
-  });
-  const 实体Text = spansJoin(sons, textPrimary(" + "));
-  return 实体Text;
-};
-
-const faceFnObj位置特征 = (boy, reactiveCMR) => {
-  const 实体Text = faceFn实体(boy?.['参照实体']?.value, reactiveCMR);
-  const 介词Text = faceFnSpan介词(boy?.['介词']?.value, reactiveCMR);
-  const 方位词Text = faceFnSpan方位词(boy?.['方位词']?.value, reactiveCMR);
-  return span({}, [介词Text, 实体Text, 方位词Text]);
-};
-
-const faceFnObj方向特征 = (boy, reactiveCMR) => {
-  const 实体Text = faceFn实体(boy?.['参照实体']?.value, reactiveCMR);
-  const 介词Text = faceFnSpan介词(boy?.['介词']?.value, reactiveCMR);
-  const 方位词Text = objectFace(reactiveCMR.get(boy?.['方位词']?.value), reactiveCMR);
-  return span({}, [实体Text, 介词Text, 方位词Text]);
-};
-
-const faceFnObj朝向特征 = (boy, reactiveCMR) => {
-  const 实体Text = faceFn实体(boy?.['参照实体']?.value, reactiveCMR);
-  const 介词Text = faceFnSpan介词(boy?.['介词']?.value, reactiveCMR);
-  const 方位词Text = objectFace(reactiveCMR.get(boy?.['方位词']?.value), reactiveCMR);
-  return span({}, [介词Text, 实体Text, 方位词Text]);
-};
-
-const faceFnObj形状特征 = (boy, reactiveCMR) => {
-  const 形状Text = objectFace(reactiveCMR.get(boy?.['形状文本']?.value), reactiveCMR);
-  return span({}, [形状Text]);
-};
-
-const faceFnObj距离特征 = (boy, reactiveCMR) => {
-  const 实体Text = faceFn实体(boy?.['参照实体']?.value, reactiveCMR);
-  const 实体TextWrap = 实体Text==null ? null : text([textPrimary("("), 实体Text, textPrimary(")")]);
-  let 距离描述Text;
-  if (boy?.['距离描述']?.type=="单个对象") {
-    const 距离描述Obj = reactiveCMR.get(boy?.['距离描述']?.value);
-    距离描述Text = 距离描述Obj==null ? null : objectFace(距离描述Obj, reactiveCMR);
-  };
-  if (boy?.['距离描述']?.type=="单个标签") {
-    距离描述Text = faceFn单个标签(boy?.['距离描述'], reactiveCMR);
-  };
-  const 距离描述TextWrap = 距离描述Text==null ? null : text([textIndigo(": "), 距离描述Text]);
-  return span({}, ["距离", 实体TextWrap, 距离描述TextWrap]);
-};
-
-const faceFnObj时间特征 = (boy, reactiveCMR) => {
-  const 没有界定 = boy?.['界定']?.value==null;
-  const 没有时间文本 = boy?.['时间文本']?.value==null;
-  const 都有 = (!没有界定)&&(!没有时间文本);
-  const 界定text = 没有界定 ? null : [textPrimary("."), faceFn单个标签(boy?.['界定'], reactiveCMR)];
-  const 事件Text = 没有界定 ? null : (faceFn实体(boy?.['参照事件']?.value, reactiveCMR)??textIndigo("事件"));
-  const 时间文本Text = objectFace(reactiveCMR.get(boy?.['时间文本']?.value), reactiveCMR);
-  const 事件与界定Wrap = [事件Text, 界定text];
-  const 连接符 = 都有 ? (textPrimary(" + ")) : null;
-  return span({}, [事件与界定Wrap, 连接符, 时间文本Text]);
-};
-
-const faceFnObj特征命题 = (boy, reactiveCMR) => {
-  return span({}, []);
-};
-
-const faceFnObj共指关系 = (object, reactiveCMR) => {
-  let frags = [];
-  if ("R" in object && object?.["R"]?.value!=null) {
-    frags.push(labelSpan([muted("同指片段"), dataFace(object["R"], reactiveCMR, " = ")], {
-      'class': "border-0",
-    }));
-  };
-  return labelSpan(frags, {'class': "gap-2 border-0"});
-};
-
-const objectTypeFaceFnMap = {
-  '文本': (boy)=>dataFace(boy?.['内容']),
-  '空间实体': (boy, reactiveCMR)=>faceFnObj空间实体(boy, reactiveCMR),
-  '事件': (boy, reactiveCMR)=>faceFnObj事件(boy, reactiveCMR),
-  '论元角色关系': (boy, reactiveCMR)=>faceFnObj论元角色关系(boy, reactiveCMR),
-  '角色引用': (boy, reactiveCMR)=>faceFnObj角色引用(boy, reactiveCMR),
-  '位置特征': (boy, reactiveCMR)=>faceFnObj位置特征(boy, reactiveCMR),
-  '方向特征': (boy, reactiveCMR)=>faceFnObj方向特征(boy, reactiveCMR),
-  '朝向特征': (boy, reactiveCMR)=>faceFnObj朝向特征(boy, reactiveCMR),
-  '形状特征': (boy, reactiveCMR)=>faceFnObj形状特征(boy, reactiveCMR),
-  '距离特征': (boy, reactiveCMR)=>faceFnObj距离特征(boy, reactiveCMR),
-  '时间特征': (boy, reactiveCMR)=>faceFnObj时间特征(boy, reactiveCMR),
-
-  'propSet_E': (boy, reactiveCMR)=>faceFnObj事件角色(boy, reactiveCMR),
-  'propSet_S': (boy, reactiveCMR)=>faceFnObj共指关系(boy, reactiveCMR),
-  // '特征命题': (boy, reactiveCMR)=>faceFnObj特征命题(boy, reactiveCMR),
-};
-
-const faceFnObj事件角色 = (object, reactiveCMR) => {
-  let frags = [];
-  const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
-  for (let slot of slots) {
-    if (slot.name == "SPE_obj" && object?.[slot.name]?.value!=null) {
-      let speObj = reactiveCMR.get(object?.[slot.name]?.value);
-      frags.push(labelSpan([opacity75(muted("事件谓词")), dataFace(speObj?.E, reactiveCMR)], {
-        'class': "border-0",
-      }));
-    };
-    if (slot.name != "SPE_obj" && slot.name in object && object?.[slot.name]?.value!=null) {
-      frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
-        'class': "border-0",
-      }));
-    };
-  };
-  return labelSpan(frags, {'class': "gap-2 border-0"});
-};
-
-const defaultObjectFace = (object, reactiveCMR) => {
-  let frags = [];
-  const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
-  for (let slot of slots) {
-    if (slot.name in object && object?.[slot.name]?.value!=null) {
-      frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
-        'class': "border-0",
-      }));
-    };
-  };
-  return labelSpan(frags, {'class': "gap-2 border-0"});
-};
-
-const objectFace = (object, reactiveCMR) => {
-  if (object?.type in objectTypeFaceFnMap) {
-    return objectTypeFaceFnMap[object.type](object, reactiveCMR);
-  };
-  return defaultObjectFace(object, reactiveCMR);
-};
-
-
 
 
 
@@ -422,12 +140,12 @@ const idxesToTokens = (idxes, allTokens) => {
   };
   return idxes.map(idx => allTokens[idx]?.to ?? allTokens[idx] ?? {});
 };
+
 const idxesToText = (idxes, allTokens) => {
   let _tokens = idxesToTokens(idxes, allTokens);
   let result = _tokens.map(it => it.word).join("");
   return result;
 };
-
 
 const fixCtrl = (ctrl) => {
   if (typeof(ctrl)=="string") {
@@ -438,739 +156,6 @@ const fixCtrl = (ctrl) => {
   // console.log(ctrl);
   return ctrl;
 };
-// 挑选相应的控件组件
-const ctrlComponent = (ctrl) => {
-  ctrl = fixCtrl(ctrl);
-  // console.log(['props', props]);
-  // console.log(['ctrl', ctrl]);
-  const ctrlComponentMap = {
-    '原文片段': EditorSingleSpan,
-    '单个原文片段': EditorSingleSpan,
-    '不连续原文片段': EditorSingleBrokenSpan,
-    '单个不连续原文片段': EditorSingleBrokenSpan,
-    '多个不连续原文片段': EditorMultiBrokenSpan,
-    'MB_SPANS': EditorMultiBrokenSpan,
-    '单个标签': EditorSingleLabelSelector,
-    '单个对象': EditorSingleObjectSelector,
-    '多个原文片段': EditorDefault,
-    '多个标签': EditorDefault,
-    '多个对象': EditorMultiObjectsSelector,
-    '布尔值': EditorBool,
-    '数值': EditorDefault,
-  };
-  if (ctrl['type'] in ctrlComponentMap) {
-    return ctrlComponentMap[ctrl['type']];
-  };
-  return EditorDefault;
-};
-// 挑选相应的控件组件 结束
-
-
-
-
-
-// 🆓🆓🆓🆓🆓🆓
-// 缺省控件
-const EditorDefault = {
-  props: ['ctrl'],
-  emits: ['confirm', 'cancel'],
-  component: {},
-  setup(props, ctx) {
-    return () => div({'class': "input-group input-group-sm"}, [
-      div({'class': "form-control d-inline-block text-center"}, [
-        div({'class': "mb-1 text-center text-muted"}, JSON.stringify(props['ctrl'])),
-        div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, [
-          (props['slot']?.ctrls??[]).map((ctrl, idx)=>btn({
-            'class': "btn-sm px-1 py-0",
-            onClick: ()=>{
-              localData.ctrlIdx = idx;
-              localData.currentStage = stages['③进行编辑操作'];
-            },
-          }, `${fixCtrl(ctrl)?.['type']}`, "light")),
-        ]),
-      ]),
-      btn({
-        onClick: ()=>{
-          ctx.emit("confirm", {'data': "data"});
-          // console.log("confirm");
-        },
-        'title': "确定",
-      }, /*bi("check2")*/"存", "danger"),
-      btn({
-        onClick: ()=>{
-          ctx.emit("cancel");
-          // console.log("cancel");
-        },
-        'title': "取消",
-      }, bi("arrow-90deg-left"), "outline-secondary"),
-    ]);
-  },
-};
-// 缺省控件 结束
-
-
-
-// 🆓🆓🆓🆓🆓🆓
-// 布尔值控件
-const EditorBool = {
-  props: ['ctrl'],
-  emits: ['confirm', 'cancel'],
-  component: {},
-  setup(props, ctx) {
-    return () => div({'class': "input-group input-group-sm"}, [
-      div({'class': "form-control d-inline-block text-center"}, [
-        div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, [
-          btn({
-            'class': "btn-sm px-1 py-0",
-            onClick: ()=>{
-              ctx.emit("confirm", {type: props?.ctrl?.type??"", value: true});
-              // console.log("confirm");
-            },
-            'title': "true",
-          }, [bi("check"), " ", "true"], "outline-success"),
-          btn({
-            'class': "btn-sm px-1 py-0",
-            onClick: ()=>{
-              ctx.emit("confirm", {type: props?.ctrl?.type??"", value: false});
-              // console.log("confirm");
-            },
-            'title': "false",
-          }, [bi("x"), " ", "false"], "outline-danger"),
-        ]),
-      ]),
-      btn({
-        onClick: ()=>{
-          ctx.emit("cancel");
-          // console.log("cancel");
-        },
-        'title': "取消",
-      }, bi("arrow-90deg-left"), "outline-secondary"),
-    ]);
-  },
-};
-// 布尔值控件 结束
-
-
-
-// 🆓🆓🆓🆓🆓🆓
-// 单个对象控件
-const EditorSingleObjectSelector = {
-  props: ['ctrl', 'triggerForSave'],
-  emits: ['confirm', 'cancel', 'new'],
-  component: {},
-  setup(props, ctx) {
-    const reactiveCMR = inject('reactiveCMR', ()=>({}));
-    const objects = computed(()=>{
-      let those = [];
-      let filters = props?.['ctrl']?.['config']?.['filter']??[{}];
-      let allObjects = reactiveCMR?.objects??[];
-      for (let 模子 of filters) {
-        const keys = Object.keys(模子);
-        const boys = allObjects.filter(it=>keys.every(key=>模子[key]==it[key])&&!those.includes(it));
-        those = [...those, ...boys];
-      };
-      return those;
-    });
-    const localData = reactive({
-      'selected': -1,
-    });
-
-    watch(()=>props?.['triggerForSave'], ()=>{
-      if (localData['selected']>=0) {
-        ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
-      };
-    });
-    return () => div({'class': "input-group input-group-sm"}, [
-      h("select", {
-        'class': "form-select form-select-sm text-center",
-        'value': localData.selected,
-        onChange: (event)=>{
-          localData.selected = event?.target?.value;
-        },
-      }, v(objects).map((obj, idx) => h("option", {
-        'key': `${idx}`,
-        'value': obj._id??obj.id??-1,
-      }, objectFace(obj, reactiveCMR)))),
-      btn({
-        onClick: ()=>{
-          ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
-          // console.log("confirm");
-        },
-        'title': "确定",
-      }, /*bi("check2")*/"存", "danger"),
-      btn({
-        'class': ["xx", {'d-none': props?.['ctrl']?.['config']?.['filter']?.length!=1}],
-        onClick: ()=>{
-          const 模子s = props?.['ctrl']?.['config']?.['filter'];
-          if (模子s.length==1) {
-            ctx.emit("new", 模子s[0]?.['type']);
-            return;
-          };
-          ctx.emit("new");
-          // console.log("new");
-        },
-        'title': "新建",
-      }, bi("plus-circle"), "info"),
-      btn({
-        onClick: ()=>{
-          ctx.emit("cancel");
-          // console.log("cancel");
-        },
-        'title': "取消",
-      }, bi("arrow-90deg-left"), "outline-secondary"),
-    ]);
-  },
-};
-// 单个对象控件 结束
-
-
-
-// 🆓🆓🆓🆓🆓🆓
-// 多个对象控件
-const EditorMultiObjectsSelector = {
-  props: ['ctrl', 'oldValue', 'triggerForSave'],
-  emits: ['confirm', 'cancel', 'new'],
-  component: {},
-  setup(props, ctx) {
-    const reactiveCMR = inject('reactiveCMR', ()=>({}));
-    const objects = computed(()=>{
-      const list = localData.selectedList??[];
-      let those = [];
-      let filters = props?.['ctrl']?.['config']?.['filter']??[{}];
-      let allObjects = reactiveCMR?.objects??[];
-      for (let 模子 of filters) {
-        const keys = Object.keys(模子);
-        const boys = allObjects.filter(it=>keys.every(key=>模子[key]==it[key])&&!those.includes(it));
-        those = [...those, ...boys];
-      };
-      those = those.filter(it=>!list.map(it=>+it).includes(it._id??it.id));
-      return those;
-    });
-    const localData = reactive({
-      'selectedList': props?.oldValue??[],
-      'selected': "-1",
-    });
-
-    watch(()=>props?.['triggerForSave'], ()=>{
-      if (localData['selectedList']?.length) {
-        ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selectedList']});
-      };
-    });
-
-    return () => div({
-      'class': "vstack gap-1 p-1 border rounded text-center w-100 bg-white",
-    },[
-      div({'class': "d-inline-block text-center"}, [
-        div({'class': "d-flex flex-wrap gap-1 justify-content-evenly"}, [
-          localData.selectedList.map(objId=>span({
-            'class': "small border rounded px-1 py-0",
-            'key': objId,
-          }, [
-            span({
-              'class': "align-middle",
-            }, objectFace(reactiveCMR.get(objId), reactiveCMR)),
-            btn({
-              'class': "btn-sm m-0 ms-1 p-0",
-              onClick: ()=>{
-                localData.selectedList=localData.selectedList.filter(it=>it!=objId);
-              },
-              'title': "删除",
-            }, [bi("x-lg")], "no-style"),
-          ])),
-        ]),
-      ]),
-      div({'class': "input-group input-group-sm"}, [
-        h("select", {
-          'class': "form-select form-select-sm text-center",
-          'value': localData.selected,
-          onChange: (event)=>{
-            localData.selected = event?.target?.value;
-          },
-        }, v(objects).map((obj, idx) => h("option", {
-          'key': `${idx}`,
-          'value': obj._id??obj.id??-1,
-        }, objectFace(obj, reactiveCMR)))),
-        btn({
-          onClick: ()=>{
-            if (+localData.selected<0) {return};
-            if (localData.selectedList.includes(`${localData.selected}`)) {return};
-            localData.selectedList.push(`${localData.selected}`);
-          },
-          'title': "添加",
-        }, bi("plus-lg"), "outline-primary"),
-        btn({
-          onClick: ()=>{
-            ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selectedList']});
-            // console.log("confirm");
-          },
-          'title': "确定",
-        }, /*bi("check2")*/"存", "danger"),
-        btn({
-          'class': ["xx", {'d-none': props?.['ctrl']?.['config']?.['filter']?.length!=1}],
-          onClick: ()=>{
-            const 模子s = props?.['ctrl']?.['config']?.['filter'];
-            if (模子s.length==1) {
-              ctx.emit("new", 模子s[0]?.['type']);
-              return;
-            };
-            ctx.emit("new");
-            // console.log("new");
-          },
-          'title': "新建",
-        }, bi("plus-circle"), "info"),
-        btn({
-          onClick: ()=>{
-            ctx.emit("cancel");
-            // console.log("cancel");
-          },
-          'title': "取消",
-        }, bi("arrow-90deg-left"), "outline-secondary"),
-      ])]);
-  },
-};
-// 多个对象控件 结束
-
-
-
-// 🆓🆓🆓🆓🆓🆓
-// 单个标签控件
-const EditorSingleLabelSelector = {
-  props: ['ctrl', 'oldValue', 'triggerForSave'],
-  emits: ['confirm', 'cancel'],
-  component: {},
-  setup(props, ctx) {
-    const reactiveCMR = inject('reactiveCMR', ()=>({}));
-    const labels = computed(()=>{
-      let domain = props?.['ctrl']?.['config']?.['set']??"";
-      let allLabels = reactiveCMR?.labels??[];
-      const boys = allLabels.filter(it=>it.domain==domain);
-      return boys;
-    });
-    const localData = reactive({
-      'label': {
-        'face': props?.['oldValue']?.['face']??"",
-        'domain': props?.['ctrl']?.['config']?.['set']??"",
-      },
-    });
-
-    watch(()=>props?.['triggerForSave'], ()=>{
-      if (localData['label']?.face?.length && (localData['label']?.domain==props?.['ctrl']?.['config']?.['set']??"")) {
-        ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['label']});
-      };
-    });
-    return () => div({'class': "input-group input-group-sm"}, [
-      btn({
-        onClick: ()=>{ctx.emit("copy");},
-        'disabled': false,
-        'title': "复制"
-      }, "拷", "outline-secondary"),
-      btn({
-        onClick: ()=>{ctx.emit("paste");},
-        'disabled': false,
-        'title': "粘贴"
-      }, "贴", "outline-secondary"),
-      h("select", {
-        'class': "form-select form-select-sm text-center",
-        'value': localData.label.face,
-        onChange: (event)=>{
-          localData.label.face = event?.target?.value;
-        },
-      }, [
-        ...v(labels).map((label, idx) => h("option", {
-          'key': `${idx}`,
-          'value': label.face??"???",
-        }, label.face)),
-        h("option", {
-          'key': `--none`,
-          'value': "",
-        }, "【请选择】"),
-      ]),
-      btn({
-        onClick: ()=>{
-          ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['label']});
-          // console.log("confirm");
-        },
-        'title': "确定",
-      }, /*bi("check2")*/"存", "danger"),
-      btn({
-        onClick: ()=>{ctx.emit("delete");},
-        'disabled': false,
-        'title': "删除"
-      }, "删", "outline-secondary"),
-      // btn({
-      //   onClick: ()=>{
-      //     ctx.emit("cancel");
-      //     // console.log("cancel");
-      //   },
-      //   'title': "取消",
-      // }, bi("arrow-90deg-left"), "outline-secondary"),
-    ]);
-  },
-};
-// 单个标签控件 结束
-
-
-
-// 🆓🆓🆓🆓🆓🆓
-// 单个原文片段控件 工厂
-const FactoryOfEditorSingleSpan = (canAppend) => {
-  const _canAppend = !!canAppend;
-  return {
-    props: ['ctrl', 'oldValue'],
-    emits: ['confirm', 'cancel', 'clear-selector'],
-    component: {},
-    setup(props, ctx) {
-      console.log(props);
-      // const tokenSelector = inject('tokenSelector');
-      const selection = inject('selection')??[];
-      const tokens = inject('tokens')??[];
-      // const idxesToTokens = (idxes) => {
-      //   idxes = idxes??[];
-      //   if (!tokens?.length) {
-      //     return [];
-      //   };
-      //   return idxes.map(idx => tokens[idx]?.to ?? tokens[idx] ?? {});
-      // };
-      // const idxesToText = (idxes) => {
-      //   let _tokens = idxesToTokens(idxes);
-      //   let result = _tokens.map(it => it.word).join("");
-      //   return result;
-      // };
-      const idxesToBlocks = (idxes) => {
-        let blocks = [];
-        let tmp = [];
-        let last = -999;
-        for (let idx of idxes) {
-          if (idx != last+1) {
-            blocks.push(tmp);
-            tmp = [];
-          };
-          tmp.push(idx);
-          last = idx;
-        };
-        blocks.push(tmp);
-        blocks = blocks.filter(it=>it.length);
-        return blocks;
-      };
-      const localData = reactive({
-        'span': {
-          'type': props?.ctrl?.type,
-          'value': {
-            'text': props?.oldValue?.text,
-            'idxes': props?.oldValue?.idxes,
-          },
-        },
-      });
-      const 特别的face = computed(() => {
-        const idxeses = idxesToBlocks(localData?.['span']?.['value']?.['idxes']);
-        const texts = idxeses.map(it=>idxesToText(it, tokens));
-        const 老大 = {
-          'value': {
-            'texts': texts,
-            'idxeses': idxeses,
-          },
-        };
-        return faceFn单个不连续原文片段(老大);
-      });
-      return () => div({'class': "input-group input-group-sm"}, [
-        div({'class': "form-control d-inline-block text-center"}, [
-          div({
-            'class': "d-flex flex-wrap gap-1 justify-content-evenly"
-          }, [
-            localData?.['span']?.['value']?.['text']?.length
-              ? [
-                v(特别的face),
-                !selection?.array?.length ? muted("...") : null,
-              ]
-              : !selection?.array?.length ? muted("【请在文中选取】") : null,
-              _canAppend ? btn({
-              'class': [
-                "btn-sm px-1 py-0",
-                {"d-none": (!selection?.array?.length || !localData?.['span']?.['value']?.['text']?.length)},
-              ],
-              onClick: ()=>{
-                localData['span']['value']['idxes'] = [...localData['span']['value']['idxes'], ...selection?.array];
-                ctx.emit("clear-selector");
-                localData['span']['value']['text'] = `${localData['span']['value']['text']}+${idxesToText(localData['span']['value']['idxes'], tokens)}`;
-              },
-              'title': "将选中的文本追加到此处已有的文本之后",
-            }, [bi("plus-lg"), " ", "追加"], "outline-primary") : null,
-            btn({
-              'class': [
-                "btn-sm px-1 py-0",
-                {"d-none": (!selection?.array?.length)},
-              ],
-              onClick: ()=>{
-                localData['span']['value']['idxes'] = selection?.array;
-                ctx.emit("clear-selector");
-                localData['span']['value']['text'] = idxesToText(localData['span']['value']['idxes'], tokens);
-              },
-              'title': localData?.['span']?.['value']?.['text']?.length ? "用选中的文本覆盖此处的文本" : "将选中的文本填入此处",
-            }, [bi("box-arrow-in-down-right"), " ", localData?.['span']?.['value']?.['text']?.length ? "覆盖" : "填入"], "outline-danger"),
-          ]),
-        ]),
-        btn({
-          onClick: ()=>{
-            ctx.emit("confirm", JSON.parse(JSON.stringify(localData['span'])));
-            // console.log("confirm");
-          },
-          'title': "确定",
-        }, bi("check2"), "outline-secondary"),
-        btn({
-          onClick: ()=>{
-            ctx.emit("cancel");
-            // console.log("cancel");
-          },
-          'title': "取消",
-        }, bi("arrow-90deg-left"), "outline-secondary"),
-      ]);
-    },
-  };
-};
-// 单个原文片段控件 工厂 结束
-
-// 单个原文片段控件
-// 不论是否可追加，文本都是记录在 text 字段
-const EditorSingleSpan = FactoryOfEditorSingleSpan(false);
-// 单个原文片段控件 结束
-
-// 🆓🆓🆓🆓🆓🆓
-// 单个不连续的原文片段控件
-// 不论是否可追加，文本都是记录在 texts 数组 字段
-const EditorSingleBrokenSpan = {
-  props: ['ctrl', 'oldValue'],
-  emits: ['confirm', 'cancel', 'clear-selector'],
-  component: {},
-  setup(props, ctx) {
-    console.log(props);
-    // const tokenSelector = inject('tokenSelector');
-    const selection = inject('selection')??[];
-    const tokens = inject('tokens')??[];
-    // const idxesToTokens = (idxes) => {
-    //   idxes = idxes??[];
-    //   if (!tokens?.length) {
-    //     return [];
-    //   };
-    //   return idxes.map(idx => tokens[idx]?.to ?? tokens[idx] ?? {});
-    // };
-    // const idxesToText = (idxes) => {
-    //   let _tokens = idxesToTokens(idxes);
-    //   let result = _tokens.map(it => it.word).join("");
-    //   return result;
-    // };
-    const localData = reactive({
-      'span': {
-        'type': props?.ctrl?.type,
-        'value': {
-          'texts': props?.oldValue?.texts??[],
-          'idxeses': props?.oldValue?.idxeses??[],
-        },
-      },
-    });
-    return () => div({'class': "input-group input-group-sm"}, [
-      div({'class': "form-control d-inline-block text-center"}, [
-        div({
-          'class': "d-flex flex-wrap gap-1 justify-content-evenly"
-        }, [
-          localData?.['span']?.['value']?.['texts']?.length
-            ? [
-              faceFn单个不连续原文片段(localData?.['span']),
-              !selection?.array?.length ? muted("...") : null,
-            ]
-            : !selection?.array?.length ? muted("【请在文中选取】") : null,
-            btn({
-            'class': [
-              "btn-sm px-1 py-0",
-              {"d-none": (!selection?.array?.length || !localData?.['span']?.['value']?.['texts']?.length)},
-            ],
-            onClick: ()=>{
-              localData['span']['value']['idxeses']?.push(selection?.array);
-              ctx.emit("clear-selector");
-              localData['span']['value']['texts']?.push(idxesToText(localData['span']['value']['idxeses']?.last(), tokens));
-            },
-            'title': "将选中的文本追加到此处已有的文本之后",
-          }, [bi("plus-lg"), " ", "追加"], "outline-primary"),
-          btn({
-            'class': [
-              "btn-sm px-1 py-0",
-              {"d-none": (!selection?.array?.length)},
-            ],
-            onClick: ()=>{
-              localData['span']['value']['idxeses'] = [selection?.array];
-              ctx.emit("clear-selector");
-              localData['span']['value']['texts'] = [idxesToText(localData['span']['value']['idxeses']?.last(), tokens)];
-            },
-            'title': localData?.['span']?.['value']?.['texts']?.length ? "用选中的文本覆盖此处的文本" : "将选中的文本填入此处",
-          }, [bi("box-arrow-in-down-right"), " ", localData?.['span']?.['value']?.['texts']?.length ? "覆盖" : "填入"], "outline-danger"),
-        ]),
-      ]),
-      btn({
-        onClick: ()=>{
-          ctx.emit("confirm", JSON.parse(JSON.stringify(localData['span'])));
-          // console.log("confirm");
-        },
-        'title': "确定",
-      }, /*bi("check2")*/"存", "danger"),
-      btn({
-        onClick: ()=>{
-          ctx.emit("cancel");
-          // console.log("cancel");
-        },
-        'title': "取消",
-      }, bi("arrow-90deg-left"), "outline-secondary"),
-    ]);
-  },
-};
-// 单个不连续的原文片段控件 结束
-
-
-
-
-// 🆓🆓🆓🆓🆓🆓
-// 多个不连续的原文片段控件
-// 不论是否可追加，文本都是记录在 texts 数组 字段
-const EditorMultiBrokenSpan = {
-  props: ['ctrl', 'oldValue', 'triggerForSave'],
-  emits: ['confirm', 'cancel', 'clear-selector', 'copy', 'paste', 'delete'],
-  component: {},
-  setup(props, ctx) {
-    // console.log(props);
-    // const tokenSelector = inject('tokenSelector');
-    const selection = inject('selection')??[];
-    const tokens = inject('tokens')??[];
-
-    const localData = reactive({
-      'spans': {
-        'type': props?.ctrl?.type,
-        'value': props?.oldValue??[],
-        // [{
-        //   'texts': props?.oldValue?.texts??[],
-        //   'idxeses': props?.oldValue?.idxeses??[],
-        // }],
-      },
-    });
-
-    watch(()=>props?.['triggerForSave'], ()=>{
-      if (localData?.spans?.value?.length) {
-        ctx.emit("confirm", JSON.parse(JSON.stringify(localData['spans'])));
-      };
-    });
-    return () => div({'class': "input-group input-group-sm"}, [
-      btn({
-        onClick: ()=>{ctx.emit("copy", localData?.spans);},
-        'disabled': false,
-        'title': "复制"
-      }, "拷", "outline-secondary"),
-      btn({
-        onClick: ()=>{ctx.emit("paste");},
-        'disabled': false,
-        'title': "粘贴"
-      }, "贴", "outline-secondary"),
-      div({'class': "form-control d-inline-block text-center"}, [
-        div({
-          'class': "d-flex flex-wrap gap-1 justify-content-evenly"
-        }, [
-          localData?.['spans']?.['value']?.length
-            ? localData?.['spans']?.['value'].map((span, spanIdx)=>labelSpan([
-              faceFn单个不连续原文片段无引号({value: span}),
-              // !selection?.array?.length ? muted("...") : null,
-              btn({
-                'class': [
-                  "btn-sm p-0",
-                  {"d-none": (!selection?.array?.length)},
-                ],
-                'title': "将选中的文本片段追加到此处已有的文本之后",
-                onClick: ()=>{
-                  localData?.['spans']?.['value']?.[spanIdx]?.['idxeses'].push(selection?.array);
-                  localData?.['spans']?.['value']?.[spanIdx]?.['texts'].push(`${idxesToText(selection?.array, tokens)}`);
-                  ctx.emit("clear-selector");
-                },
-              }, [muted(bi("plus-circle"))]),
-              btn({
-                'class': [
-                  "btn-sm p-0",
-                ],
-                'title': "删除此文本片段",
-                onClick: ()=>{
-                  localData?.['spans']?.['value'].splice(spanIdx, 1);
-                },
-              }, [muted(bi("x-circle"))],)
-            ], {'key': `${spanIdx}-${span?.texts?.[0]}`, 'class': "justify-content-evenly"}))
-            : !selection?.array?.length ? muted("【请在文中选取】") : null,
-          btn({
-            'class': [
-              "btn-sm px-1 py-0",
-              {"d-none": (!selection?.array?.length)},
-            ],
-            onClick: ()=>{
-              localData['spans']['value']?.push({
-                'texts': [`${idxesToText(selection?.array, tokens)}`],
-                'idxeses': [selection?.array],
-              });
-              ctx.emit("clear-selector");
-            },
-            'title': "将选中的文本片段填入此处",
-          }, [bi("box-arrow-in-down-right"), " ", "填入"], "outline-danger"),
-        ]),
-      ]),
-      btn({
-        onClick: ()=>{
-          ctx.emit("confirm", JSON.parse(JSON.stringify(localData['spans'])));
-          // console.log("confirm");
-        },
-        'title': "确定",
-      }, /*bi("check2")*/"存", "danger"),
-      btn({
-        onClick: ()=>{ctx.emit("delete");},
-        'disabled': false,
-        'title': "删除"
-      }, "删", "outline-secondary"),
-      // btn({
-      //   onClick: ()=>{
-      //     ctx.emit("cancel");
-      //     // console.log("cancel");
-      //   },
-      //   'title': "取消",
-      // }, bi("arrow-90deg-left"), "outline-secondary"),
-    ]);
-  },
-};
-// 多个不连续的原文片段控件 结束
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1186,6 +171,13 @@ const __PropertyItemOld = {
   component: {
     EditorDefault,
     EditorBool,
+    EditorSingleObjectSelector,
+    EditorMultiObjectsSelector,
+    EditorSingleLabelSelector,
+    FactoryOfEditorSingleSpan,
+    EditorSingleSpan,
+    EditorSingleBrokenSpan,
+    EditorMultiBrokenSpan,
   },
   setup(props, ctx) {
     const reactiveCMR = inject('reactiveCMR', ()=>({}));
@@ -1349,6 +341,13 @@ const PropertyItem = {
   component: {
     EditorDefault,
     EditorBool,
+    EditorSingleObjectSelector,
+    EditorMultiObjectsSelector,
+    EditorSingleLabelSelector,
+    FactoryOfEditorSingleSpan,
+    EditorSingleSpan,
+    EditorSingleBrokenSpan,
+    EditorMultiBrokenSpan,
   },
   setup(props, ctx) {
     const reactiveCMR = inject('reactiveCMR', ()=>({}));
