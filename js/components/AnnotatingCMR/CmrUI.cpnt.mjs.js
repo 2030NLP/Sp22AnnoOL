@@ -89,11 +89,11 @@ import {
   EditorMultiBrokenSpan,
 } from './CmrEditors.mjs.js';
 
-import CmrDisplay from './CmrDisplay.cpnt.mjs.js';
-
 
 Array.prototype.last = function() {return this[this.length-1]};
 
+
+import CmrDisplay from './CmrDisplay.cpnt.mjs.js';
 
 
 

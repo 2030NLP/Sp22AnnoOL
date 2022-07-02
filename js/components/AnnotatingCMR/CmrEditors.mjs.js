@@ -243,7 +243,7 @@ export const EditorSingleObjectSelector = {
     });
 
     watch(()=>props?.['triggerForSave'], ()=>{
-      if (localData['selected']!=null/*>=0*/) {
+      if (localData['selected']>=0 || props.oldValue) {
         ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
       };
     });
@@ -319,7 +319,7 @@ export const EditorMultiObjectsSelector = {
     });
 
     watch(()=>props?.['triggerForSave'], ()=>{
-      if (localData['selectedList']!=null/*?.length*/) {
+      if (localData['selectedList']?.length || props.oldValue) {
         ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selectedList']});
       };
     });
@@ -718,7 +718,7 @@ export const EditorMultiBrokenSpan = {
     });
 
     watch(()=>props?.['triggerForSave'], ()=>{
-      if (localData?.spans?.value!=null/*?.length*/) {
+      if (localData?.spans?.value?.length || props.oldValue) {
         ctx.emit("confirm", JSON.parse(JSON.stringify(localData['spans'])));
       };
     });

@@ -175,7 +175,8 @@ export default {
         ]
       }, h(CmrDisplay, {
         'key': annot.idx??`idx-${idx}`,
-        'annotation': annot?.['data'],
+        'annotation': annot,
+        'tokens': props.tokens,
       }));
       return result;
     };
