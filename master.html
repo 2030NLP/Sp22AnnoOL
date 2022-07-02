@@ -321,6 +321,7 @@
                       <anno-card
                         :anno="anno"
                         :db="spDB"
+                        :definition="ctrl.精标定义"
                         @submit-review="(value)=>{saveAnnoReview(...value)}"
                         @open-modal="(value)=>{modalBox_open(...value)}"
                         @update-anno="(value)=>{updateOneAnno(value)}"
@@ -450,6 +451,7 @@
                         v-for="anno in [spDB.anno(anno_id)]"
                         :anno="anno"
                         :db="spDB"
+                        :definition="ctrl.精标定义"
                         :key="anno.id"
                         @submit-review="(value)=>{saveAnnoReview(...value)}"
                         @open-modal="(value)=>{modalBox_open(...value)}"
@@ -700,6 +702,7 @@
                   <anno-card
                     :anno="anno"
                     :db="spDB"
+                    :definition="ctrl.精标定义"
                     @submit-review="(value)=>{saveAnnoReview(...value)}"
                     @open-modal="(value)=>{modalBox_open(...value)}"
                     @update-anno="(value)=>{updateOneAnno(value)}"

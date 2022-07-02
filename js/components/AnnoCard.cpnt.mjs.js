@@ -2,7 +2,7 @@ import {  reactive, h  } from '../modules_lib/vue_3.2.31_.esm-browser.prod.min.j
 import ResultsDisplay from './Annotator/ResultsDisplay.cpnt.mjs.js';
 
 const AnnoCard = {
-  props: ["db", "anno", "reviewer"],
+  props: ["db", "anno", "reviewer", "definition"],
   emits: ['open-modal', 'submit-review', 'update-anno', /*'update:modelValue'*/],
   setup(props, ctx) {
     const ctrl = reactive({
@@ -159,6 +159,9 @@ const AnnoCard = {
           eachClass: "my-1 me-2",
           annotations: this.anno?.content?.annotations,
           tokens: this.db?.entryDict?.[this.anno?.entry]?.content?.material?.tokenList,
+          stepProps: {
+            definition: this?.definition,
+          },
           showSub: true,
           showIndex: true,
           showTitleDetail: true,

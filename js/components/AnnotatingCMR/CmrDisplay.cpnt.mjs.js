@@ -76,55 +76,154 @@ import {
   objectFace,
 } from './CmrFaces.mjs.js';
 
-import {
-  ctrlComponent,
-  EditorDefault,
-  EditorBool,
-  EditorSingleObjectSelector,
-  EditorMultiObjectsSelector,
-  EditorSingleLabelSelector,
-  FactoryOfEditorSingleSpan,
-  EditorSingleSpan,
-  EditorSingleBrokenSpan,
-  EditorMultiBrokenSpan,
-} from './CmrEditors.mjs.js';
-
 
 Array.prototype.last = function() {return this[this.length-1]};
+const average = list => list.reduce(((aa, bb)=>aa+bb), 0) / list.length;
 
 
 
 export default {
-  props: ['annotation', 'tokens'],
+  props: ['annotation', 'tokens', 'definition'],
   emits: [],
   component: {},
   setup(props, ctx) {
+
+    const localData = reactive({
+      'viewMode': "清单模式",
+      'roleMap': {},
+      'highlighted_idxes': [],
+      'annotated_idxes': [],
+      'highlighted_obj_id': -1,
+    });
+
     const reactiveCMR = reactive(new CMR);
-    const objects = computed(()=>props?.annotation?.data?.objects);
+
+    const objects = computed(()=>props?.annotation?.data?.objects?.sort?.(按原文顺序排序函数));
+
+    const allIdxes = computed(() => v(objects).map(obj=>objIdxes(obj)).flat(Infinity));
+
     const init = () => {
-      reactiveCMR.initDefinition(props?.['stepProps']?.['definition']);
+      reactiveCMR.initDefinition(props?.['definition']);
       const existedObjects = v(objects);
       reactiveCMR.initData({'objects': existedObjects});
     };
-
-    onMounted(()=>{init()});
+    onMounted(()=>{
+      init();
+      localData.annotated_idxes = v(allIdxes);
+    });
 
 
     const completionText = computed(()=>{
       const txt = props?.annotation?.needCompletion ? (
-        props?.annotation?.completed ? ("已完成的标注") : ("未完成的标注")
-      ) : ("无需检查完成与否");
+        props?.annotation?.completed ?
+          span({
+            'class': ["d-inline-block border rounded py-0 px-1 small fw-normal text-muted"],
+          }, "已完成的标注") :
+          span({
+            'class': ["d-inline-block border rounded py-0 px-1 small fw-bold text-primary"],
+          }, "未完成的标注")
+      ) :
+      span({
+        'class': ["d-inline-block border rounded py-0 px-1 small fw-bold text-secondary"],
+      }, "无需检查完成与否");
       return txt;
     });
 
 
-    return () => div({'class':"text-wrap text-break"}, [
-      h("p", {'class': [{"d-none": !props?.annotation?.needCompletion}]}, [
-        v(completionText), "：",
-      ]),
-      v(objects).map((obj, idx)=>div({
+
+
+    const tokenUnits = computed(() => {
+      const tokens = props?.tokens??[];
+      const units = tokens.map((token, idx)=>({
+        idx: idx,
+        word: token?.to?.word ?? token?.word,
+        role: localData?.roleMap?.[idx],
+        annotated: localData?.annotated_idxes?.includes?.(idx),
+        highlighted: localData?.highlighted_idxes?.includes?.(idx),
+      }));
+      return units;
+    });
+
+    const 文本区 = computed(()=>{
+      return div({
+        'class': "cmr-display-text mb-2",
+      }, v(tokenUnits).map(
+        unit=>span({
+          'class': [
+            `role-${unit.role}`,
+            {"annotated": unit.annotated},
+            {"highlighted": unit.highlighted},
+          ],
+        }, unit.word)
+      ));
+    });
+
+    const objIdxes = (obj) => {
+      let idxes = [];
+      const slots = reactiveCMR?.typeDict?.[obj?.type]?.slots??[];
+      const fn_map = {
+        "MB_SPANS": (list)=>{return list.map(it=>it.idxeses).flat(Infinity);},
+      };
+      for (let slot of slots) {
+        if (slot.name in obj && obj?.[slot.name]?.value!=null) {
+          if (obj?.[slot.name]?.type in fn_map) {
+            let new_idxes = fn_map[obj?.[slot.name]?.type](obj?.[slot.name]?.value)??[];
+            idxes = [...idxes, ...new_idxes];
+          };
+          if (slot.name=="SPE_obj" && obj.type=="propSet_E") {
+            const spe_obj = reactiveCMR.get(obj?.SPE_obj?.value);
+            if (spe_obj) {
+              let new_idxes = spe_obj?.E?.value?.[0]?.idxeses?.[0]??[];
+              idxes = [...idxes, ...new_idxes];
+            };
+          };
+        };
+      };
+      return idxes;
+    };
+
+    const 按原文顺序排序函数 = (aa, bb) => {
+      const iiaa = objIdxes(aa);
+      const iibb = objIdxes(bb);
+      return iiaa[0]==iibb[0] ? (average(iiaa)-average(iibb)) : (iiaa[0]-iibb[0]);
+    };
+
+    const objectFaceLine = (obj) => {
+      const that = btn({
+        'class': "btn-sm",
+        onClick: ()=>{
+          if (localData?.highlighted_obj_id==(obj?._id??obj?.id)) {
+            localData.highlighted_obj_id=-1;
+            localData.highlighted_idxes=[];
+          } else {
+            localData.highlighted_obj_id=obj?._id??obj?.id;
+            localData.highlighted_idxes=objIdxes(obj);
+          };
+          console.log(JSON.stringify(obj));
+          console.log([objIdxes(obj), average(objIdxes(obj))]);
+        },
+      }, [
+        muted(obj?._id??obj?.id),
+        objectFace(obj, reactiveCMR),
+      ], "light");
+      return that;
+    };
+
+    const 清单模式面板 = computed(() => {
+      return v(objects).map((obj, idx)=>div({
+        'class': "me-2 mb-2 d-inline-block",
         'key': idx,
-      }, [objectFace(obj, reactiveCMR)])),
+      }, [objectFaceLine(obj)]));
+    });
+
+    return () => div({'class': "cmr-display text-wrap text-break"}, [
+      div({'class': ["mb-2", {"d-none": !props?.annotation?.needCompletion}]}, [
+        v(completionText),
+      ]),
+      v(文本区),
+      div({'class': ["mb-2", {"d-none": localData?.viewMode!="清单模式"}]}, [
+        v(清单模式面板),
+      ]),
     ]);
   },
 };

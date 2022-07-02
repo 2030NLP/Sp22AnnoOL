@@ -252,9 +252,28 @@ export const faceFnObj特征命题 = (boy, reactiveCMR) => {
 export const faceFnObj共指关系 = (object, reactiveCMR) => {
   let frags = [];
   if ("R" in object && object?.["R"]?.value!=null) {
-    frags.push(labelSpan([muted("同指片段"), dataFace(object["R"], reactiveCMR, " = ")], {
+    frags.push(labelSpan([opacity75(muted("同指片段")), dataFace(object["R"], reactiveCMR, " = ")], {
       'class': "border-0",
     }));
+  };
+  return labelSpan(frags, {'class': "gap-2 border-0"});
+};
+
+export const faceFnObj事件角色 = (object, reactiveCMR) => {
+  let frags = [];
+  const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
+  for (let slot of slots) {
+    if (slot.name == "SPE_obj" && object?.[slot.name]?.value!=null) {
+      let speObj = reactiveCMR.get(object?.[slot.name]?.value);
+      frags.push(labelSpan([opacity75(muted("事件谓词")), dataFace(speObj?.E, reactiveCMR)], {
+        'class': "border-0",
+      }));
+    };
+    if (slot.name != "SPE_obj" && slot.name in object && object?.[slot.name]?.value!=null) {
+      frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
+        'class': "border-0",
+      }));
+    };
   };
   return labelSpan(frags, {'class': "gap-2 border-0"});
 };
@@ -275,25 +294,6 @@ export const objectTypeFaceFnMap = {
   'propSet_E': (boy, reactiveCMR)=>faceFnObj事件角色(boy, reactiveCMR),
   'propSet_S': (boy, reactiveCMR)=>faceFnObj共指关系(boy, reactiveCMR),
   // '特征命题': (boy, reactiveCMR)=>faceFnObj特征命题(boy, reactiveCMR),
-};
-
-export const faceFnObj事件角色 = (object, reactiveCMR) => {
-  let frags = [];
-  const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
-  for (let slot of slots) {
-    if (slot.name == "SPE_obj" && object?.[slot.name]?.value!=null) {
-      let speObj = reactiveCMR.get(object?.[slot.name]?.value);
-      frags.push(labelSpan([opacity75(muted("事件谓词")), dataFace(speObj?.E, reactiveCMR)], {
-        'class': "border-0",
-      }));
-    };
-    if (slot.name != "SPE_obj" && slot.name in object && object?.[slot.name]?.value!=null) {
-      frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
-        'class': "border-0",
-      }));
-    };
-  };
-  return labelSpan(frags, {'class': "gap-2 border-0"});
 };
 
 export const defaultObjectFace = (object, reactiveCMR) => {

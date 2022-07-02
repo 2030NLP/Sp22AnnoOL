@@ -369,7 +369,19 @@
       text-decoration: none;
     }
 
+    .cmr-display .cmr-display-text {
+      color: #666;
+    }
 
+    .cmr-display .cmr-display-text .annotated {
+      color: var(--bs-red);
+      border-bottom: 1px solid var(--bs-red);
+    }
+
+    .cmr-display .cmr-display-text .highlighted {
+      background-color: #ff0;
+      font-weight: bolder;
+    }
 
 
 

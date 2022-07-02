@@ -91,6 +91,7 @@ import {
 
 
 Array.prototype.last = function() {return this[this.length-1]};
+const average = list => list.reduce(((aa, bb)=>aa+bb), -1) / list.length;
 
 
 import CmrDisplay from './CmrDisplay.cpnt.mjs.js';
@@ -915,6 +916,46 @@ const AllObjectsPanel = {
     return () => div({'class': "vstack gap-2 my-1"}, [
       // div({'class': "h6 mt-3 mb-1"}, ["全部"]),
 
+      // 工具
+      div({'class': "btn-toolbar __hstack gap-1 justify-content-start"}, [
+        div({'class': "btn-group btn-group-sm"}, [
+          lightBtn(bi("sort-down-alt"), "按原文排序", "按照文本中出现的顺序排序", {
+            onClick: ()=>{
+              ctx.emit("sort-objects");
+            },
+            'class': "btn-light",
+          }),
+          lightBtn(bi("sort-numeric-down"), "按创建顺序排序", "按创建顺序排序", {
+            onClick: ()=>{
+              ctx.emit("sort-objects-by-id");
+            },
+            'class': "btn-light",
+          }),
+          lightBtn(bi("sort-alpha-down"), "按类型排序", "按照类型排序", {
+            onClick: ()=>{
+              ctx.emit("sort-objects-by-type");
+            },
+            'class': "btn-light",
+          }),
+          // lightBtn(bi("bar-chart-steps"), "预分析", null, {
+          //   onClick: ()=>{
+          //     ctx.emit("analyze-objects");
+          //   },
+          // }),
+          // lightBtn(bi("plus-circle"), "新增", null, {
+          //   onClick: ()=>{
+          //     localData.showAddObjectControl = !localData.showAddObjectControl;
+          //   },
+          // }),
+          // lightBtn(bi("bug"), "debug", null, {
+          //   onClick: ()=>{
+          //     ctx.emit("do-debug");
+          //     console.log(props['objectWraps']);
+          //   },
+          // }),
+        ]),
+      ]),
+
       // 陈列盒子
       div({
         'class': "__ratio __ratio-21x9 border rounded overflow-auto",
@@ -941,43 +982,6 @@ const AllObjectsPanel = {
             ], objWrap['show']?"outline-primary":"light")),
         ] : [span({class:"px-2"}, muted("暂无内容"))]),
       ])),
-
-      // 工具
-      div({'class': "btn-toolbar __hstack gap-1 justify-content-start"}, [
-        div({'class': "btn-group btn-group-sm"}, [
-          lightBtn(bi("sort-down-alt"), "按原文排序", "按照文本中出现的顺序排序", {
-            onClick: ()=>{
-              ctx.emit("sort-objects");
-            },
-          }),
-          lightBtn(bi("sort-numeric-down"), "按创建顺序排序", "按创建顺序排序", {
-            onClick: ()=>{
-              ctx.emit("sort-objects-by-id");
-            },
-          }),
-          lightBtn(bi("sort-alpha-down"), "按类型排序", "按照类型排序", {
-            onClick: ()=>{
-              ctx.emit("sort-objects-by-type");
-            },
-          }),
-          // lightBtn(bi("bar-chart-steps"), "预分析", null, {
-          //   onClick: ()=>{
-          //     ctx.emit("analyze-objects");
-          //   },
-          // }),
-          // lightBtn(bi("plus-circle"), "新增", null, {
-          //   onClick: ()=>{
-          //     localData.showAddObjectControl = !localData.showAddObjectControl;
-          //   },
-          // }),
-          // lightBtn(bi("bug"), "debug", null, {
-          //   onClick: ()=>{
-          //     ctx.emit("do-debug");
-          //     console.log(props['objectWraps']);
-          //   },
-          // }),
-        ]),
-      ]),
 
       // // 新增操作区
       // div({'class': ["hstack gap-1", {
@@ -1364,6 +1368,35 @@ export default {
       // keys.find(key=>obj[key]);
     };
 
+    const objIdxes = (obj) => {
+      let idxes = [];
+      const slots = reactiveCMR?.typeDict?.[obj?.type]?.slots??[];
+      const fn_map = {
+        "MB_SPANS": (list)=>{return list.map(it=>it.idxeses).flat(Infinity);},
+      };
+      for (let slot of slots) {
+        if (slot.name in obj && obj?.[slot.name]?.value!=null) {
+          if (obj?.[slot.name]?.type in fn_map) {
+            let new_idxes = fn_map[obj?.[slot.name]?.type](obj?.[slot.name]?.value)??[];
+            idxes = [...idxes, ...new_idxes];
+          };
+          if (slot.name=="SPE_obj" && obj.type=="propSet_E") {
+            const spe_obj = reactiveCMR.get(obj?.SPE_obj?.value);
+            if (spe_obj) {
+              let new_idxes = spe_obj?.E?.value?.[0]?.idxeses?.[0]??[];
+              idxes = [...idxes, ...new_idxes];
+            };
+          };
+        };
+      };
+      return idxes;
+    };
+
+    const 按原文顺序排序函数 = (aa, bb) => {
+      const iiaa = objIdxes(aa);
+      const iibb = objIdxes(bb);
+      return iiaa[0]==iibb[0] ? (average(iiaa)-average(iibb)) : (iiaa[0]-iibb[0]);
+    };
 
     const 所有对象面板 = () => h(AllObjectsPanel, {
       'objectWraps': v(objectWraps),
@@ -1376,8 +1409,7 @@ export default {
       },
       'onSortObjects': ()=>{
         reactiveCMR.sortObjectsByType();
-        const fn = it => 原文顺序依据(it, reactiveCMR);
-        reactiveCMR.objects.sort((aa,bb)=>fn(aa)-fn(bb));
+        reactiveCMR.objects.sort(按原文顺序排序函数);
       },
       'onHideObjectWrap': (objWrap)=>{
         hide(objWrap['_id']);

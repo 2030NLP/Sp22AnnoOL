@@ -138,6 +138,8 @@ const RootComponent = {
       tab: TABS['overview'],
       lastTime: "never",
       lastTimeDict: {},
+
+      精标定义: {},
     });
 
     const goTab = async (tb) => {
@@ -760,10 +762,32 @@ const RootComponent = {
 
 
 
-    // // 一个 axios 实例，方便在控制台调试
-    // const anAxios = axios.create({
-    //   headers: {'Cache-Cotrol': 'no-cache'},
-    // });
+    // 一个 axios 实例，方便在控制台调试
+    const anAxios = axios.create({
+      headers: {'Cache-Cotrol': 'no-cache'},
+    });
+
+    const 更新精标定义 = async () => {
+      let wrap;
+      try {
+        let response = await anAxios.request({
+          url: `schema/steps.schema.json?x=${Math.ceil(Math.random()*999999999)}`,
+          headers: {'Cache-Cotrol': 'no-cache'},
+          method: 'get',
+        });
+        wrap = (response.data);
+        console.log(wrap);
+      } catch (error) {
+        console.log("获取精标定义时出错");
+        console.log(error);
+      };
+      ctrl.精标定义 = wrap?.精标?.steps?.start?.props?.definition;
+    };
+
+    onMounted(更新精标定义);
+
+
+
     // // 更新 notes
     // const updateNotes = async () => {
     //   let wrap;
@@ -780,7 +804,6 @@ const RootComponent = {
     //     // return;
     //   };
     // };
-
 
 
 
