@@ -142,7 +142,7 @@ class CMR {
       old[key] = undefined;
       delete old[key];
     };
-    console.log(JSON.stringify(old));
+    // console.log(JSON.stringify(old));
     Object.assign(old, obj);
   }
 

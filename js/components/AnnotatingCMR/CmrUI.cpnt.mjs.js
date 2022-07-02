@@ -329,8 +329,29 @@ const objectTypeFaceFnMap = {
   '形状特征': (boy, reactiveCMR)=>faceFnObj形状特征(boy, reactiveCMR),
   '距离特征': (boy, reactiveCMR)=>faceFnObj距离特征(boy, reactiveCMR),
   '时间特征': (boy, reactiveCMR)=>faceFnObj时间特征(boy, reactiveCMR),
+
+  'propSet_E': (boy, reactiveCMR)=>faceFnObj事件角色(boy, reactiveCMR),
   'propSet_S': (boy, reactiveCMR)=>faceFnObj共指关系(boy, reactiveCMR),
   // '特征命题': (boy, reactiveCMR)=>faceFnObj特征命题(boy, reactiveCMR),
+};
+
+const faceFnObj事件角色 = (object, reactiveCMR) => {
+  let frags = [];
+  const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
+  for (let slot of slots) {
+    if (slot.name == "SPE_obj" && object?.[slot.name]?.value!=null) {
+      let speObj = reactiveCMR.get(object?.[slot.name]?.value);
+      frags.push(labelSpan([opacity75(muted("事件谓词")), dataFace(speObj?.E, reactiveCMR)], {
+        'class': "border-0",
+      }));
+    };
+    if (slot.name != "SPE_obj" && slot.name in object && object?.[slot.name]?.value!=null) {
+      frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
+        'class': "border-0",
+      }));
+    };
+  };
+  return labelSpan(frags, {'class': "gap-2 border-0"});
 };
 
 const defaultObjectFace = (object, reactiveCMR) => {
@@ -534,7 +555,7 @@ const EditorBool = {
 // 🆓🆓🆓🆓🆓🆓
 // 单个对象控件
 const EditorSingleObjectSelector = {
-  props: ['ctrl'],
+  props: ['ctrl', 'triggerForSave'],
   emits: ['confirm', 'cancel', 'new'],
   component: {},
   setup(props, ctx) {
@@ -552,6 +573,12 @@ const EditorSingleObjectSelector = {
     });
     const localData = reactive({
       'selected': -1,
+    });
+
+    watch(()=>props?.['triggerForSave'], ()=>{
+      if (localData['selected']>=0) {
+        ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selected']});
+      };
     });
     return () => div({'class': "input-group input-group-sm"}, [
       h("select", {
@@ -601,7 +628,7 @@ const EditorSingleObjectSelector = {
 // 🆓🆓🆓🆓🆓🆓
 // 多个对象控件
 const EditorMultiObjectsSelector = {
-  props: ['ctrl', 'oldValue'],
+  props: ['ctrl', 'oldValue', 'triggerForSave'],
   emits: ['confirm', 'cancel', 'new'],
   component: {},
   setup(props, ctx) {
@@ -623,6 +650,13 @@ const EditorMultiObjectsSelector = {
       'selectedList': props?.oldValue??[],
       'selected': "-1",
     });
+
+    watch(()=>props?.['triggerForSave'], ()=>{
+      if (localData['selectedList']?.length) {
+        ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['selectedList']});
+      };
+    });
+
     return () => div({
       'class': "vstack gap-1 p-1 border rounded text-center w-100 bg-white",
     },[
@@ -701,7 +735,7 @@ const EditorMultiObjectsSelector = {
 // 🆓🆓🆓🆓🆓🆓
 // 单个标签控件
 const EditorSingleLabelSelector = {
-  props: ['ctrl', 'oldValue'],
+  props: ['ctrl', 'oldValue', 'triggerForSave'],
   emits: ['confirm', 'cancel'],
   component: {},
   setup(props, ctx) {
@@ -717,6 +751,12 @@ const EditorSingleLabelSelector = {
         'face': props?.['oldValue']?.['face']??"",
         'domain': props?.['ctrl']?.['config']?.['set']??"",
       },
+    });
+
+    watch(()=>props?.['triggerForSave'], ()=>{
+      if (localData['label']?.face?.length && (localData['label']?.domain==props?.['ctrl']?.['config']?.['set']??"")) {
+        ctx.emit("confirm", {type: props?.ctrl?.type??"", value: localData['label']});
+      };
     });
     return () => div({'class': "input-group input-group-sm"}, [
       btn({
@@ -990,7 +1030,7 @@ const EditorSingleBrokenSpan = {
 // 多个不连续的原文片段控件
 // 不论是否可追加，文本都是记录在 texts 数组 字段
 const EditorMultiBrokenSpan = {
-  props: ['ctrl', 'oldValue'],
+  props: ['ctrl', 'oldValue', 'triggerForSave'],
   emits: ['confirm', 'cancel', 'clear-selector', 'copy', 'paste', 'delete'],
   component: {},
   setup(props, ctx) {
@@ -1008,6 +1048,12 @@ const EditorMultiBrokenSpan = {
         //   'idxeses': props?.oldValue?.idxeses??[],
         // }],
       },
+    });
+
+    watch(()=>props?.['triggerForSave'], ()=>{
+      if (localData?.spans?.value?.length) {
+        ctx.emit("confirm", JSON.parse(JSON.stringify(localData['spans'])));
+      };
     });
     return () => div({'class': "input-group input-group-sm"}, [
       btn({
@@ -1298,7 +1344,7 @@ const __PropertyItemOld = {
 // 🔯🔯🔯🔯🔯🔯
 // 单个字段
 const PropertyItem = {
-  props: ['slot', 'data'],
+  props: ['slot', 'data', 'triggerForSave'],
   emits: ['set-property', 'clear-selector', 'new'],
   component: {
     EditorDefault,
@@ -1448,6 +1494,7 @@ const PropertyItem = {
       ? [
         h(ctrlComponent(v(currentCtrl)), {
           'ctrl': v(currentCtrl),
+          'triggerForSave': props?.['triggerForSave'],
           'oldValue': (newDataWrap?.['data']?.['type']==v(currentCtrl)?.['type']) ? newDataWrap?.['data']?.['value'] : null,
           'onConfirm': (value)=>{onConfirm(value);},
           'onCancel': ()=>{onCancel();},
@@ -1500,6 +1547,7 @@ const ObjectPanel = {
       'showResetConfirmModal': false,
       'showDeleteConfirmModal': false,
       'collapse': false,
+      'triggerForSave': 1,
     });
 
     const slots = computed(() => (props?.typeDef?.slots??[]));
@@ -1571,6 +1619,11 @@ const ObjectPanel = {
       ctx.emit("save-object", localObjectShadow.data);
     };
 
+    const onSaveProperties = () => {
+      localData.triggerForSave += 1;
+      // console.log("triggerForSave sent");
+    };
+
     const 标题栏 = () => {
       return div({
         'class': [
@@ -1601,13 +1654,13 @@ const ObjectPanel = {
           'class': "hstack gap-2",
         }, [
 
-          // btn({
-          //   'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
-          //   onClick: ()=>{
-          //     ctx.emit("save-object", localObjectShadow.data);
-          //   },
-          //   'disabled': false,
-          // }, [bi("save2"), "保存"], "--outline-secondary"),
+          btn({
+            'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
+            onClick: ()=>{
+              onSaveProperties();
+            },
+            'disabled': false,
+          }, [/*bi("save2"), */"保存"], "--outline-secondary"),
   
           btn({
             'class': "btn-sm px-1 py-0 text-muted hstack gap-1",
@@ -1700,6 +1753,7 @@ const ObjectPanel = {
           'key': `${idx}-${field?.name}`,
           'data': localObjectShadow?.data?.[field?.name],
           'slot': field,
+          'triggerForSave': localData.triggerForSave,
           'onSetProperty': (xx)=>{onSetProperty(xx);},
           'onDeleteProperty': ()=>{onDeleteProperty(field?.name??"");},
           'onClearSelector': ()=>{onClearSelector();},
@@ -2052,12 +2106,12 @@ const FinalButtonGroup = {
           'class': "btn-sm",
           onClick: ()=>{ctx.emit('save');},
           'title': "将未完成的标注暂时保存到云端，并记录这条标注处于「未完成」的状态。",
-        }, "暂时保存", "primary"),
+        }, "暂存", "primary"),
         btn({
           'class': "btn-sm",
           onClick: ()=>{ctx.emit('ok');},
           'title': "保存并提交，记为「完成」状态。",
-        }, "完成并保存", "success"),
+        }, "完成", "success"),
         btn({
           'class': "btn-sm",
           onClick: ()=>{ctx.emit('reset');},
@@ -2067,10 +2121,10 @@ const FinalButtonGroup = {
           'class': "btn-sm",
           onClick: ()=>{ctx.emit('clean');},
         }, "清空", "danger"),
-        btn({
-          'class': "btn-sm",
-          onClick: ()=>{ctx.emit('debug');},
-        }, "DEBUG", "outline-secondary"),
+        // btn({
+        //   'class': "btn-sm",
+        //   onClick: ()=>{ctx.emit('debug');},
+        // }, "DEBUG", "outline-secondary"),
       ]),
       div({
         'class': "hstack gap-2 justify-content-end flex-wrap",
@@ -2078,12 +2132,12 @@ const FinalButtonGroup = {
         btn({
           'class': "btn-sm",
           onClick: ()=>{ctx.emit('go-prev');},
-          'title': "不会保存",
+          'title': "⚠️ 警告：请先保存！！！",
         }, "上一条", "outline-secondary"),
         btn({
           'class': "btn-sm",
           onClick: ()=>{ctx.emit('go-next');},
-          'title': "不会保存",
+          'title': "⚠️ 警告：请先保存！！！",
         }, "下一条", "outline-secondary"),
       ]),
     ]);
@@ -2374,8 +2428,8 @@ export default {
 
       // h(StartButtonGroup),
       所有对象面板(),
-      单个对象面板列表(),
       最终按钮区(),
+      单个对象面板列表(),
       // 结果预览面板(),
       重置确认框(),
       清空确认框(),

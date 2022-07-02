@@ -1,12 +1,12 @@
 {
   "name": "SpaCE2022",
-  "version": "220630v1",
+  "version": "220702v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
     "第2期R": "220603v1",
-    "精标": "220630v1"
+    "精标": "220702v1"
   },
   "using": "精标",
 
@@ -113,7 +113,11 @@
                 "nameFace": "事件角色信息标注",
                 "icon-bi": "film",
                 "slots": [
-                  {"name": "E", "nameFace": "事件谓词", "ctrls": ["MB_SPANS"], "required": true},
+                  {"__name": "E", "nameFace": "事件谓词", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "SPE_obj", "nameFace": "谓词来源", "ctrls": [{"type": "单个对象", "config": {
+                    "filter": [
+                        {"type": "propSet_Sp"}]
+                    }} ], "required": true},
                   {
                     "name": "arg0",
                     "desc": "核心角色1：主体。对应论旨角色：施事（共同施事）、当事（间接当事）。",
@@ -157,6 +161,10 @@
                 "nameFace": "同指关系标注",
                 "icon-bi": "diagram-3",
                 "slots": [
+                  {"name": "SPE_obj", "nameFace": "同指片段来源", "ctrls": [{"type": "多个对象", "config": {
+                    "filter": [
+                        {"type": "propSet_Sp"}]
+                    }} ], "required": true},
                   {
                     "name": "R",
                     "nameFace": "同指片段",
