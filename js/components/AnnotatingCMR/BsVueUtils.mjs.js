@@ -19,33 +19,40 @@ export const ha = (children, href, title, targetBlank) => {
 };
 export const space = " ";
 export const text = (text, attr) => span(attr, text);
-export const textNone = text => span({'class': "d-none"}, text);
-export const muted = text => span({'class': "text-muted"}, text);
 
-export const opacity100 = text => span({'class': "opacity-100"}, text);
-export const opacity75 = text => span({'class': "opacity-75"}, text);
-export const opacity50 = text => span({'class': "opacity-50"}, text);
-export const opacity25 = text => span({'class': "opacity-25"}, text);
+export const textPreClass = (preClass, text, attr) => {
+  if (attr==null) {attr={};};
+  attr.class = [preClass, attr.class];
+  return span(attr, text);
+};
+
+export const textNone = (text, attr) => textPreClass("d-none", text, attr);
+export const muted = (text, attr) => textPreClass("text-muted", text, attr);
+
+export const opacity100 = (text, attr) => textPreClass("opacity-100", text, attr);
+export const opacity75 = (text, attr) => textPreClass("opacity-75", text, attr);
+export const opacity50 = (text, attr) => textPreClass("opacity-50", text, attr);
+export const opacity25 = (text, attr) => textPreClass("opacity-25", text, attr);
 
 // .text-pink {color: var(--bs-pink);}
 // .text-indigo {color: var(--bs-indigo);}
 // .text-purple {color: var(--bs-purple);}
 // .text-orange {color: var(--bs-orange);}
 // .text-teal {color: var(--bs-teal);}
-export const textPink = text => span({'class': "text-pink"}, text);
-export const textIndigo = text => span({'class': "text-indigo"}, text);
-export const textPurple = text => span({'class': "text-purple"}, text);
-export const textOrange = text => span({'class': "text-orange"}, text);
-export const textTeal = text => span({'class': "text-teal"}, text);
+export const textPink = (text, attr) => textPreClass("text-pink", text, attr);
+export const textIndigo = (text, attr) => textPreClass("text-indigo", text, attr);
+export const textPurple = (text, attr) => textPreClass("text-purple", text, attr);
+export const textOrange = (text, attr) => textPreClass("text-orange", text, attr);
+export const textTeal = (text, attr) => textPreClass("text-teal", text, attr);
 
-export const textPrimary = text => span({'class': "text-primary"}, text);
-export const textSecondary = text => span({'class': "text-secondary"}, text);
-export const textSuccess = text => span({'class': "text-success"}, text);
-export const textDanger = text => span({'class': "text-danger"}, text);
-export const textWarning = text => span({'class': "text-warning"}, text);
-export const textInfo = text => span({'class': "text-info"}, text);
-export const textLight = text => span({'class': "text-light"}, text);
-export const textDark = text => span({'class': "text-dark"}, text);
+export const textPrimary = (text, attr) => textPreClass("text-primary", text, attr);
+export const textSecondary = (text, attr) => textPreClass("text-secondary", text, attr);
+export const textSuccess = (text, attr) => textPreClass("text-success", text, attr);
+export const textDanger = (text, attr) => textPreClass("text-danger", text, attr);
+export const textWarning = (text, attr) => textPreClass("text-warning", text, attr);
+export const textInfo = (text, attr) => textPreClass("text-info", text, attr);
+export const textLight = (text, attr) => textPreClass("text-light", text, attr);
+export const textDark = (text, attr) => textPreClass("text-dark", text, attr);
 
 export const labelSpan = (children, attr) => {
   if (attr==null) {attr={};};

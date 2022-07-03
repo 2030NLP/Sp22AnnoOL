@@ -374,12 +374,14 @@
     }
 
     .cmr-display .cmr-display-text .annotated {
-      color: var(--bs-red);
-      border-bottom: 1px solid var(--bs-red);
+      border-bottom: 1px solid var(--bs-blue);
+      color: var(--bs-blue);
     }
 
     .cmr-display .cmr-display-text .highlighted {
       background-color: #ff0;
+      border-bottom: 2px solid var(--bs-red);
+      color: var(--bs-red);
       font-weight: bolder;
     }
 

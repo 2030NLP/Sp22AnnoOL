@@ -149,6 +149,8 @@ export default {
         'class': "cmr-display-text mb-2",
       }, v(tokenUnits).map(
         unit=>span({
+          'key': `idx-${unit.idx}`,
+          'title': unit.idx,
           'class': [
             `role-${unit.role}`,
             {"annotated": unit.annotated},

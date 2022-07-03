@@ -251,10 +251,22 @@ export const faceFnObj特征命题 = (boy, reactiveCMR) => {
 
 export const faceFnObj共指关系 = (object, reactiveCMR) => {
   let frags = [];
+  let 含有_正常的_R_字段 = false;
   if ("R" in object && object?.["R"]?.value!=null) {
     frags.push(labelSpan([opacity75(muted("同指片段")), dataFace(object["R"], reactiveCMR, " = ")], {
       'class': "border-0",
     }));
+    if ((object?.["R"]?.value?.length??0)>1) {
+      含有_正常的_R_字段 = true;
+    };
+  };
+  if ("F" in object && object?.["F"]?.value!=null) {
+    frags.push(labelSpan([opacity75(muted("")), dataFace(object["F"], reactiveCMR)], {
+      'class': "border-0",
+    }));
+  };
+  if (!含有_正常的_R_字段) {
+    frags.push(textDanger("❗️ 同指关系成员数量不足", {'class': "fw-bold"}));
   };
   return labelSpan(frags, {'class': "gap-2 border-0"});
 };
@@ -262,18 +274,53 @@ export const faceFnObj共指关系 = (object, reactiveCMR) => {
 export const faceFnObj事件角色 = (object, reactiveCMR) => {
   let frags = [];
   const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
+  let 含有_SPE_obj_字段 = false;
   for (let slot of slots) {
-    if (slot.name == "SPE_obj" && object?.[slot.name]?.value!=null) {
+    if (slot.name == "SPE_obj" && object?.[slot.name]?.value!=null && object?.[slot.name]?.value >= 0) {
       let speObj = reactiveCMR.get(object?.[slot.name]?.value);
-      frags.push(labelSpan([opacity75(muted("事件谓词")), dataFace(speObj?.E, reactiveCMR)], {
+      frags.push(labelSpan([opacity75(muted("事件E")), dataFace(speObj?.E, reactiveCMR)], {
         'class': "border-0",
       }));
+      含有_SPE_obj_字段 = true;
     };
     if (slot.name != "SPE_obj" && slot.name in object && object?.[slot.name]?.value!=null) {
       frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
         'class': "border-0",
       }));
     };
+  };
+  if (!含有_SPE_obj_字段) {
+    frags.push(textDanger("❗️ 缺少谓词信息", {'class': "fw-bold"}));
+  };
+  return labelSpan(frags, {'class': "gap-2 border-0"});
+};
+
+export const faceFnObjSTEP = (object, reactiveCMR) => {
+  let frags = [];
+  const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
+  let 含有_S_字段 = false;
+  let 含有_P_信息 = false;
+  for (let slot of slots) {
+    if (slot.name in object && object?.[slot.name]?.value!=null) {
+      frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
+        'class': "border-0",
+      }));
+    };
+    if (slot.name == "S" && object?.[slot.name]?.value?.length) {
+      含有_S_字段 = true;
+    };
+    if (["Pl", "PPl", "Pa", "Be", "Ed", "Dr", "Or", "Pt", "Shp", "Ds_Vl"].includes(slot.name) && object?.[slot.name]?.value?.length) {
+      含有_P_信息 = true;
+    };
+    if (["Ds_Dc"].includes(slot.name) && object?.[slot.name]?.value?.face?.length) {
+      含有_P_信息 = true;
+    };
+  };
+  if (!含有_S_字段) {
+    frags.push(textDanger("❗️ 缺少空间实体", {'class': "fw-bold"}));
+  };
+  if (!含有_P_信息) {
+    frags.push(textDanger("❗️ 缺少空间信息", {'class': "fw-bold"}));
   };
   return labelSpan(frags, {'class': "gap-2 border-0"});
 };
@@ -291,6 +338,7 @@ export const objectTypeFaceFnMap = {
   '距离特征': (boy, reactiveCMR)=>faceFnObj距离特征(boy, reactiveCMR),
   '时间特征': (boy, reactiveCMR)=>faceFnObj时间特征(boy, reactiveCMR),
 
+  'propSet_Sp': (boy, reactiveCMR)=>faceFnObjSTEP(boy, reactiveCMR),
   'propSet_E': (boy, reactiveCMR)=>faceFnObj事件角色(boy, reactiveCMR),
   'propSet_S': (boy, reactiveCMR)=>faceFnObj共指关系(boy, reactiveCMR),
   // '特征命题': (boy, reactiveCMR)=>faceFnObj特征命题(boy, reactiveCMR),

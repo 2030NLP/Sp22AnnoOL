@@ -1,12 +1,12 @@
 {
   "name": "SpaCE2022",
-  "version": "220702v2",
+  "version": "220703v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
     "第2期R": "220603v1",
-    "精标": "220702v2"
+    "精标": "220703v1"
   },
   "using": "精标",
 
@@ -177,7 +177,8 @@
                         }
                       }
                     ],
-                    "required": true}
+                    "required": true},
+                  {"name": "F", "nameFace": "同指事实性", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false}
                 ]
               }
 
