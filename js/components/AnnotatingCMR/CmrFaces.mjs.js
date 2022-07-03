@@ -276,6 +276,7 @@ export const faceFnObj事件角色 = (object, reactiveCMR) => {
   let frags = [];
   const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
   let 含有_SPE_obj_字段 = false;
+  let 含有_arg_字段 = false;
   for (let slot of slots) {
     if (slot.name == "SPE_obj" && object?.[slot.name]?.value!=null && object?.[slot.name]?.value >= 0) {
       let speObj = reactiveCMR.get(object?.[slot.name]?.value);
@@ -288,10 +289,14 @@ export const faceFnObj事件角色 = (object, reactiveCMR) => {
       frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
         'class': "border-0",
       }));
+      含有_arg_字段 = true;
     };
   };
   if (!含有_SPE_obj_字段) {
     frags.push(textDanger("❗️ 缺少谓词信息", {'class': "fw-bold"}));
+  };
+  if (!含有_arg_字段) {
+    frags.push(textDanger("❗️ 缺少论元角色信息", {'class': "fw-bold"}));
   };
   return labelSpan(frags, {'class': "gap-2 border-0"});
 };
