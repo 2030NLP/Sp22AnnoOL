@@ -91,7 +91,7 @@ import {
 
 
 Array.prototype.last = function() {return this[this.length-1]};
-const average = list => list.reduce(((aa, bb)=>aa+bb), -1) / list.length;
+const average = list => list.length ? (list.reduce(((aa, bb)=>aa+bb), 0) / list.length) : Infinity;
 
 
 import CmrDisplay from './CmrDisplay.cpnt.mjs.js';
@@ -1395,6 +1395,9 @@ export default {
     const 按原文顺序排序函数 = (aa, bb) => {
       const iiaa = objIdxes(aa);
       const iibb = objIdxes(bb);
+      if (!iiaa.length && !iibb.length) {return true;};
+      if (!iiaa.length) {return true;};
+      if (!iibb.length) {return false;};
       return iiaa[0]==iibb[0] ? (average(iiaa)-average(iibb)) : (iiaa[0]-iibb[0]);
     };
 
@@ -1405,6 +1408,7 @@ export default {
         reactiveCMR.sortObjectsById();
       },
       'onSortObjectsByType': ()=>{
+        reactiveCMR.objects.sort(按原文顺序排序函数);
         reactiveCMR.sortObjectsByType();
       },
       'onSortObjects': ()=>{

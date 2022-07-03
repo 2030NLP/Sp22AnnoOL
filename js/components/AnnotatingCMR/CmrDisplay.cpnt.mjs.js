@@ -78,7 +78,7 @@ import {
 
 
 Array.prototype.last = function() {return this[this.length-1]};
-const average = list => list.reduce(((aa, bb)=>aa+bb), 0) / list.length;
+const average = list => list.length ? (list.reduce(((aa, bb)=>aa+bb), 0) / list.length) : Infinity;
 
 
 
@@ -117,14 +117,23 @@ export default {
       const txt = props?.annotation?.needCompletion ? (
         props?.annotation?.completed ?
           span({
-            'class': ["d-inline-block border rounded py-0 px-1 small fw-normal text-muted"],
+            'class': [
+              "d-inline-block border rounded py-0 px-1 small fw-normal text-muted",
+              {"d-none": !props?.annotation?.needCompletion},
+            ],
           }, "已完成的标注") :
           span({
-            'class': ["d-inline-block border rounded py-0 px-1 small fw-bold text-primary"],
+            'class': [
+              "d-inline-block border rounded py-0 px-1 small fw-bold text-primary",
+              {"d-none": !props?.annotation?.needCompletion},
+            ],
           }, "未完成的标注")
       ) :
       span({
-        'class': ["d-inline-block border rounded py-0 px-1 small fw-bold text-secondary"],
+        'class': [
+          "d-inline-block border rounded py-0 px-1 small fw-bold text-secondary",
+          {"d-none": !props?.annotation?.needCompletion},
+        ],
       }, "无需检查完成与否");
       return txt;
     });
@@ -187,6 +196,9 @@ export default {
     const 按原文顺序排序函数 = (aa, bb) => {
       const iiaa = objIdxes(aa);
       const iibb = objIdxes(bb);
+      if (!iiaa.length && !iibb.length) {return true;};
+      if (!iiaa.length) {return true;};
+      if (!iibb.length) {return false;};
       return iiaa[0]==iibb[0] ? (average(iiaa)-average(iibb)) : (iiaa[0]-iibb[0]);
     };
 
@@ -212,18 +224,48 @@ export default {
     };
 
     const 清单模式面板 = computed(() => {
-      return v(objects).map((obj, idx)=>div({
-        'class': "me-2 mb-2 d-inline-block",
+      return reactiveCMR.objects.map((obj, idx)=>div({
+        'class': "me-2 my-1 d-inline-block",
         'key': idx,
       }, [objectFaceLine(obj)]));
     });
 
+    const onSortObjects = () => {
+      reactiveCMR.sortObjectsByType();
+      reactiveCMR.objects.sort(按原文顺序排序函数);
+    };
+    const onSortObjectsById = () => {
+      reactiveCMR.sortObjectsById();
+    };
+    const onSortObjectsByType = () => {
+      reactiveCMR.objects.sort(按原文顺序排序函数);
+      reactiveCMR.sortObjectsByType();
+    };
+    const 排序按钮组 = computed(() => {
+      const btns = [
+        btn({
+          'class': "btn-sm py-0 px-1 text-muted",
+          onClick: ()=>{onSortObjects()},
+        }, ["按原文排序"], "light"),
+        btn({
+          'class': "btn-sm py-0 px-1 text-muted",
+          onClick: ()=>{onSortObjectsById()},
+        }, ["按创建顺序排序"], "light"),
+        btn({
+          'class': "btn-sm py-0 px-1 text-muted",
+          onClick: ()=>{onSortObjectsByType()},
+        }, ["按类型排序"], "light"),
+      ];
+      return div({'class': "d-inline-flex gap-1 mx-2"}, btns);
+    });
+
     return () => div({'class': "cmr-display text-wrap text-break"}, [
-      div({'class': ["mb-2", {"d-none": !props?.annotation?.needCompletion}]}, [
+      div({'class': ["mb-2"]}, [
         v(completionText),
+        v(排序按钮组),
       ]),
       v(文本区),
-      div({'class': ["mb-2", {"d-none": localData?.viewMode!="清单模式"}]}, [
+      div({'class': ["my-1", {"d-none": localData?.viewMode!="清单模式"}]}, [
         v(清单模式面板),
       ]),
     ]);
