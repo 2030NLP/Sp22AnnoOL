@@ -250,10 +250,11 @@ export const faceFnObj特征命题 = (boy, reactiveCMR) => {
 };
 
 export const faceFnObj共指关系 = (object, reactiveCMR) => {
+  let joint = object?.["F"]?.value===false ? "≠" : " = ";
   let frags = [];
   let 含有_正常的_R_字段 = false;
   if ("R" in object && object?.["R"]?.value!=null) {
-    frags.push(labelSpan([opacity75(muted("同指片段")), dataFace(object["R"], reactiveCMR, " = ")], {
+    frags.push(labelSpan([opacity75(muted("同指片段")), dataFace(object["R"], reactiveCMR, joint)], {
       'class': "border-0",
     }));
     if ((object?.["R"]?.value?.length??0)>1) {

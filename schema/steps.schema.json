@@ -173,7 +173,7 @@
                       {
                         "type": "MB_SPANS",
                         "config": {
-                          "joint": " = "
+                          "joint": ", "
                         }
                       }
                     ],
