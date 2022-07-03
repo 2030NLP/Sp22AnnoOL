@@ -44,6 +44,7 @@ export const textIndigo = (text, attr) => textPreClass("text-indigo", text, attr
 export const textPurple = (text, attr) => textPreClass("text-purple", text, attr);
 export const textOrange = (text, attr) => textPreClass("text-orange", text, attr);
 export const textTeal = (text, attr) => textPreClass("text-teal", text, attr);
+// export const textCyan = (text, attr) => textPreClass("text-cyan", text, attr);
 
 export const textPrimary = (text, attr) => textPreClass("text-primary", text, attr);
 export const textSecondary = (text, attr) => textPreClass("text-secondary", text, attr);

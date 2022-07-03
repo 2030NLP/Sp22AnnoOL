@@ -250,7 +250,7 @@ export const faceFnObj特征命题 = (boy, reactiveCMR) => {
 };
 
 export const faceFnObj共指关系 = (object, reactiveCMR) => {
-  let joint = object?.["F"]?.value===false ? "≠" : " = ";
+  let joint = object?.["F"]?.value===false ? textOrange(" ≠ ") : textTeal(" = ");
   let frags = [];
   let 含有_正常的_R_字段 = false;
   if ("R" in object && object?.["R"]?.value!=null) {
@@ -261,11 +261,11 @@ export const faceFnObj共指关系 = (object, reactiveCMR) => {
       含有_正常的_R_字段 = true;
     };
   };
-  if ("F" in object && object?.["F"]?.value!=null) {
-    frags.push(labelSpan([opacity75(muted("")), dataFace(object["F"], reactiveCMR)], {
-      'class': "border-0",
-    }));
-  };
+  // if ("F" in object && object?.["F"]?.value!=null) {
+  //   frags.push(labelSpan([opacity75(muted("")), dataFace(object["F"], reactiveCMR)], {
+  //     'class': "border-0",
+  //   }));
+  // };
   if (!含有_正常的_R_字段) {
     frags.push(textDanger("❗️ 同指关系成员数量不足", {'class': "fw-bold"}));
   };
