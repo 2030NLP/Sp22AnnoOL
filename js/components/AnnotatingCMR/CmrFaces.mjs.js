@@ -249,10 +249,19 @@ export const faceFnObj特征命题 = (boy, reactiveCMR) => {
   return span({}, []);
 };
 
+
+
+const 标点列表 = ",.，。;:；：——-=_!！?？/\\~";
+
 export const faceFnObj共指关系 = (object, reactiveCMR) => {
   let joint = object?.["F"]?.value===false ? textOrange(" ≠ ") : textTeal(" = ");
   let frags = [];
+
   let 含有_正常的_R_字段 = false;
+  let 异常字典 = {
+    标点问题: {value: false, message: "❗️ 首尾有异常标点"},
+  };
+
   if ("R" in object && object?.["R"]?.value!=null) {
     frags.push(labelSpan([opacity75(muted("同指片段")), dataFace(object["R"], reactiveCMR, joint)], {
       'class': "border-0",
@@ -260,12 +269,20 @@ export const faceFnObj共指关系 = (object, reactiveCMR) => {
     if ((object?.["R"]?.value?.length??0)>1) {
       含有_正常的_R_字段 = true;
     };
+    if ((object?.["R"]?.value??[]).find(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(it?.texts?.[0]?.at?.(-1)))) {
+      异常字典.标点问题.value = true;
+    };
   };
   // if ("F" in object && object?.["F"]?.value!=null) {
   //   frags.push(labelSpan([opacity75(muted("")), dataFace(object["F"], reactiveCMR)], {
   //     'class': "border-0",
   //   }));
   // };
+
+  if (异常字典.标点问题.value) {
+    frags.push(textDanger(异常字典.标点问题.message, {'class': "fw-bold"}));
+  };
+
   if (!含有_正常的_R_字段) {
     frags.push(textDanger("❗️ 同指关系成员数量不足", {'class': "fw-bold"}));
   };
@@ -275,8 +292,14 @@ export const faceFnObj共指关系 = (object, reactiveCMR) => {
 export const faceFnObj事件角色 = (object, reactiveCMR) => {
   let frags = [];
   const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
+
   let 含有_SPE_obj_字段 = false;
   let 含有_arg_字段 = false;
+
+  let 异常字典 = {
+    标点问题: {value: false, message: "❗️ 首尾有异常标点"},
+  };
+
   for (let slot of slots) {
     if (slot.name == "SPE_obj" && object?.[slot.name]?.value!=null && object?.[slot.name]?.value >= 0) {
       let speObj = reactiveCMR.get(object?.[slot.name]?.value);
@@ -290,44 +313,112 @@ export const faceFnObj事件角色 = (object, reactiveCMR) => {
         'class': "border-0",
       }));
       含有_arg_字段 = true;
+      if ((object?.[slot.name]?.value??[]).find(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(it?.texts?.[0]?.at?.(-1)))) {
+        异常字典.标点问题.value = true;
+      };
     };
   };
+
+  if (异常字典.标点问题.value) {
+    frags.push(textDanger(异常字典.标点问题.message, {'class': "fw-bold"}));
+  };
+
   if (!含有_SPE_obj_字段) {
     frags.push(textDanger("❗️ 缺少谓词信息", {'class': "fw-bold"}));
   };
   if (!含有_arg_字段) {
     frags.push(textDanger("❗️ 缺少论元角色信息", {'class': "fw-bold"}));
   };
+
   return labelSpan(frags, {'class': "gap-2 border-0"});
 };
 
 export const faceFnObjSTEP = (object, reactiveCMR) => {
   let frags = [];
   const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
-  let 含有_S_字段 = false;
-  let 含有_P_信息 = false;
+
+  let 异常字典 = {
+    含有_S_字段: {value: false, message: "❗️ 缺少空间实体"},
+    含有_P_信息: {value: false, message: "❗️ 缺少空间信息"},
+    异常_Pl_介词: {value: false, message: "⚠️ 处所不应以介词开头"},
+    异常_E_把被: {value: false, message: "⚠️ 事件不应以“把被”等开头"},
+    异常_E_来去: {value: false, message: "⚠️ 事件不应以“来去”结尾"},
+    标点问题: {value: false, message: "❗️ 首尾有异常标点"},
+  };
+
+  let 介词列表 = ["从", "由", "经", "往", "向", "朝", "到", "至"];
+  let 来去列表 = ["来", "去"];
+  let 把被列表 = ["把", "被", "将", "的"];
+
   for (let slot of slots) {
     if (slot.name in object && object?.[slot.name]?.value!=null) {
       frags.push(labelSpan([opacity75(muted(slot.nameFace??slot.name)), dataFace(object[slot.name], reactiveCMR)], {
         'class': "border-0",
       }));
+      if (slot.name=="Pl") {
+        if ((object?.[slot.name]?.value??[]).find(it=>介词列表.includes(it?.texts?.[0]?.[0]))) {
+          异常字典.异常_Pl_介词.value = true;
+        };
+      };
+      if (slot.name=="E") {
+        if ((object?.[slot.name]?.value??[]).find(it=>把被列表.includes(it?.texts?.[0]?.[0]))) {
+          异常字典.异常_E_把被.value = true;
+        };
+      };
+      if (slot.name=="E") {
+        if ((object?.[slot.name]?.value??[]).find(it=>来去列表.includes(it?.texts?.[0]?.at?.(-1)))) {
+          异常字典.异常_E_来去.value = true;
+        };
+      };
+      if ((object?.[slot.name]?.value??[]).find(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(it?.texts?.[0]?.at?.(-1)))) {
+        异常字典.标点问题.value = true;
+      };
     };
     if (slot.name == "S" && object?.[slot.name]?.value?.length) {
-      含有_S_字段 = true;
+      异常字典.含有_S_字段.value = true;
     };
     if (["Pl", "PPl", "Pa", "Be", "Ed", "Dr", "Or", "Pt", "Shp", "Ds_Vl"].includes(slot.name) && object?.[slot.name]?.value?.length) {
-      含有_P_信息 = true;
+      异常字典.含有_P_信息.value = true;
     };
     if (["Ds_Dc"].includes(slot.name) && object?.[slot.name]?.value?.face?.length) {
-      含有_P_信息 = true;
+      异常字典.含有_P_信息.value = true;
     };
   };
-  if (!含有_S_字段) {
-    frags.push(textDanger("❗️ 缺少空间实体", {'class': "fw-bold"}));
+
+  if (!异常字典.含有_S_字段.value) {
+    frags.push(textDanger(异常字典.含有_S_字段.message, {'class': "fw-bold"}));
   };
-  if (!含有_P_信息) {
-    frags.push(textDanger("❗️ 缺少空间信息", {'class': "fw-bold"}));
+  if (!异常字典.含有_P_信息.value) {
+    frags.push(textDanger(异常字典.含有_P_信息.message, {'class': "fw-bold"}));
   };
+  if (异常字典.异常_Pl_介词.value) {
+    frags.push(textOrange(异常字典.异常_Pl_介词.message, {'class': "fw-bold"}));
+  };
+  if (异常字典.异常_E_把被.value) {
+    frags.push(textOrange(异常字典.异常_E_把被.message, {'class': "fw-bold"}));
+  };
+  if (异常字典.异常_E_来去.value) {
+    frags.push(textOrange(异常字典.异常_E_来去.message, {'class': "fw-bold"}));
+  };
+  if (异常字典.标点问题.value) {
+    frags.push(textDanger(异常字典.标点问题.message, {'class': "fw-bold"}));
+  };
+
+  // 检查 时间信息 是否和谐
+  if (["之前", "之后", "之时", "之间"].includes(object?.["T_Rg"]?.value?.face)) {
+    if (!object?.["T_Rf"]?.value?.length) {
+      frags.push(textDanger("❗️ 时间缺少参照事件", {'class': "fw-bold"}));
+    };
+  };
+  if ("之间" == (object?.["T_Rg"]?.value?.face)) {
+    if ((object?.["T_Rf"]?.value?.length??0)<2) {
+      frags.push(textDanger("❗️ 时间参照事件数量不足", {'class': "fw-bold"}));
+    };
+  };
+  if ((object?.["T_Rf"]?.value?.length||object?.["T_Rg"]?.value?.face?.length) && object?.["T_wd"]?.value?.length) {
+    frags.push(textOrange("⚠️ 原文时间与参照时间不应并存", {'class': "fw-bold"}));
+  };
+
   return labelSpan(frags, {'class': "gap-2 border-0"});
 };
 

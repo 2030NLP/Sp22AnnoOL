@@ -134,6 +134,22 @@ class BackEnd {
     return response;
   }
 
+  async getWorkload(userId) {
+    let response = await this.request({
+      method: "get",
+      url: `/workload/${userId}`,
+    });
+    return response;
+  }
+
+  async getWorkloadOfReviewer(userId) {
+    let response = await this.request({
+      method: "get",
+      url: `/workload-reviewer/${userId}`,
+    });
+    return response;
+  }
+
   async postUser(user) {
     let response = await this.request({
       method: "post",

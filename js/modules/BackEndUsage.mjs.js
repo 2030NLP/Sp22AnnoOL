@@ -601,6 +601,119 @@ class BackEndUsage {
   }
 
 
+  async getWorkloadOf(userId) {
+    try {
+      // console.log(this);
+      let resp = await this.backEnd.getWorkload(userId);
+      if (errorHappened(resp?.data?.err)) {
+        return null;
+      };
+
+      let user = resp?.data?.data?.[0];
+      let all_annos = user?.all_anno_items;
+      let apples = [];
+      for (let anno of all_annos) {
+        let task = anno?.task_wrap?.[0];
+        let apple = Object.assign({}, task);
+        apple.审核情况 =
+          anno?.content?.review?.accept===true ? "审核通过" :
+          anno?.content?.review?.accept===false ? "审核否决" :
+          anno?.content?.review==null ? "未审核" : "奇怪";
+        apple.审核后修改情况 =
+          anno?.content?.review?.checked===true ? "有修改" :
+          anno?.content?.review?.checked===false ? "无修改" :
+          anno?.content?.review==null ? "未审核" : "奇怪";
+        apples.push(apple);
+      };
+
+      let dict = {};
+      dict.总体情况 = {};
+
+      for (let apple of apples) {
+        let clue = `${apple.审核情况}${apple.审核后修改情况}`;
+        dict.总体情况[clue] = (dict.总体情况[clue]??0)+1;
+        dict.总体情况["level"] = 0;
+
+        let topic = apple.topic;
+        if (dict[topic]==null) {dict[topic]={}};
+        dict[topic][clue] = (dict[topic][clue]??0)+1;
+        dict[topic]["level"] = 1;
+
+        let batchName = apple.batchName;
+        if (dict[batchName]==null) {dict[batchName]={}};
+        dict[batchName][clue] = (dict[batchName][clue]??0)+1;
+        dict[batchName]["level"] = 2;
+      };
+
+      let dictList = Object.entries(dict);
+
+      dictList = this.lo.sortBy(dictList, [it=>it[1]?.level, it=>it[0]]);
+
+      return dictList;
+
+    } catch (error) {
+      return null;
+    };
+  }
+
+
+  async getWorkloadOfReviewerOf(userId) {
+    try {
+      // console.log(this);
+      let resp = await this.backEnd.getWorkloadOfReviewer(userId);
+      if (errorHappened(resp?.data?.err)) {
+        console.log(resp);
+        return null;
+      };
+      let data = resp?.data?.data;
+
+      let reviewed_annos = data.reviewed_annos;
+      let name = data.user_name;
+
+      // return data;
+
+      let apples = [];
+      for (let anno of reviewed_annos) {
+        let task = anno?.task_wrap?.[0];
+        let apple = Object.assign({}, task);
+        let 初审者 = anno?.content?._ctrl?.timeLog?.find?.(it=>it[0]=="check")?.[2];
+        apple.审核类型 =
+          初审者?.name==name||初审者?.id==userId ? "初审" : "复审";
+        apples.push(apple);
+      };
+
+      let dict = {};
+      dict.总体情况 = {};
+
+      for (let apple of apples) {
+        let clue = apple.审核类型;
+        dict.总体情况[clue] = (dict.总体情况[clue]??0)+1;
+        dict.总体情况["level"] = 0;
+
+        let topic = apple.topic;
+        if (dict[topic]==null) {dict[topic]={}};
+        dict[topic][clue] = (dict[topic][clue]??0)+1;
+        dict[topic]["level"] = 1;
+
+        let batchName = apple.batchName;
+        if (dict[batchName]==null) {dict[batchName]={}};
+        dict[batchName][clue] = (dict[batchName][clue]??0)+1;
+        dict[batchName]["level"] = 2;
+      };
+
+      let dictList = Object.entries(dict);
+
+      dictList = this.lo.sortBy(dictList, [it=>it[1]?.level, it=>it[0]]);
+
+      return dictList;
+
+    } catch (error) {
+      console.log(error);
+      return null;
+    };
+  }
+
+
   // 对 后端 API 进行基础的使用 结束
 
 }
