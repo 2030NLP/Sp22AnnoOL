@@ -46,6 +46,7 @@ import {
 } from './BsVueUtils.mjs.js';
 
 Array.prototype.last = function() {return this[this.length-1]};
+String.prototype.last = function() {return this[this.length-1]};
 
 
 export const faceFn单个原文片段 = (boy) => {
@@ -269,7 +270,7 @@ export const faceFnObj共指关系 = (object, reactiveCMR) => {
     if ((object?.["R"]?.value?.length??0)>1) {
       含有_正常的_R_字段 = true;
     };
-    if ((object?.["R"]?.value??[]).find(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(it?.texts?.[0]?.at?.(-1)))) {
+    if ((object?.["R"]?.value??[])?.find?.(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(it?.texts?.[0]?.last?.()))) {
       异常字典.标点问题.value = true;
     };
   };
@@ -313,7 +314,7 @@ export const faceFnObj事件角色 = (object, reactiveCMR) => {
         'class': "border-0",
       }));
       含有_arg_字段 = true;
-      if ((object?.[slot.name]?.value??[]).find(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(it?.texts?.[0]?.at?.(-1)))) {
+      if ((object?.[slot.name]?.value??[])?.find?.(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(it?.texts?.[0]?.last?.()))) {
         异常字典.标点问题.value = true;
       };
     };
@@ -356,21 +357,21 @@ export const faceFnObjSTEP = (object, reactiveCMR) => {
         'class': "border-0",
       }));
       if (slot.name=="Pl") {
-        if ((object?.[slot.name]?.value??[]).find(it=>介词列表.includes(it?.texts?.[0]?.[0]))) {
+        if ((object?.[slot.name]?.value??[])?.find?.(it=>介词列表.includes(it?.texts?.[0]?.[0]))) {
           异常字典.异常_Pl_介词.value = true;
         };
       };
       if (slot.name=="E") {
-        if ((object?.[slot.name]?.value??[]).find(it=>把被列表.includes(it?.texts?.[0]?.[0]))) {
+        if ((object?.[slot.name]?.value??[])?.find?.(it=>把被列表.includes(it?.texts?.[0]?.[0]))) {
           异常字典.异常_E_把被.value = true;
         };
       };
       if (slot.name=="E") {
-        if ((object?.[slot.name]?.value??[]).find(it=>来去列表.includes(it?.texts?.[0]?.at?.(-1)))) {
+        if ((object?.[slot.name]?.value??[])?.find?.(it=>来去列表.includes(it?.texts?.[0]?.last?.()))) {
           异常字典.异常_E_来去.value = true;
         };
       };
-      if ((object?.[slot.name]?.value??[]).find(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(it?.texts?.[0]?.at?.(-1)))) {
+      if ((object?.[slot.name]?.value??[])?.find?.(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(it?.texts?.[0]?.last?.()))) {
         异常字典.标点问题.value = true;
       };
     };
