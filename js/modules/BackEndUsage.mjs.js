@@ -601,6 +601,26 @@ class BackEndUsage {
   }
 
 
+  async getWorkloadOfAllof(userId) {
+    let 审核包 = (await this.getWorkloadOfReviewerOf(userId)) ?? {list:[], name:""};
+    let 审核情况 = 审核包.list;
+    let name = 审核包.name
+    let 标注情况 = (await this.getWorkloadOf(userId)) ?? [];
+
+    let 汇总 = [];
+
+    for (let it of 标注情况) {
+      汇总.push([userId, name, it[1]?.level, it[0], it[1]?.detail, "标"]);
+    };
+
+    for (let it of 审核情况) {
+      汇总.push([userId, name, it[1]?.level, it[0], it[1]?.detail, "审"]);
+    };
+
+    return 汇总;
+  }
+
+
   async getWorkloadOf(userId) {
     try {
       // console.log(this);
@@ -609,39 +629,59 @@ class BackEndUsage {
         return null;
       };
 
+      // console.log(resp?.data?.data);
+
+      const 求标签不连续出现次数 = (labels, label) => {
+        let num = 0;
+        let lastLabel;
+        for (let lb of labels) {
+          if (lb === label && lastLabel != label) {
+            num++;
+          };
+          lastLabel = lb;
+        };
+        return num;
+      };
+
       let user = resp?.data?.data?.[0];
       let all_annos = user?.all_anno_items;
       let apples = [];
       for (let anno of all_annos) {
         let task = anno?.task_wrap?.[0];
         let apple = Object.assign({}, task);
+
+        let 审核次数 = 求标签不连续出现次数(anno?.content?._ctrl?.timeLog?.map?.(it=>it[0]), "check");
+        let 审核次数字符 = 审核次数==0?"0":审核次数==1?"1":"多";
+
+        apple.审核次数文本 = 审核次数字符=="0"?"无次数":审核次数字符=="1"?"初审后":"多次审核后";
+
         apple.审核情况 =
-          anno?.content?.review?.accept===true ? "审核通过" :
-          anno?.content?.review?.accept===false ? "审核否决" :
+          anno?.content?.review?.accept===true ? "通过" :
+          anno?.content?.review?.accept===false ? "否决" :
           anno?.content?.review==null ? "未审核" : "奇怪";
         apple.审核后修改情况 =
-          anno?.content?.review?.checked===true ? "有修改" :
-          anno?.content?.review?.checked===false ? "无修改" :
-          anno?.content?.review==null ? "未审核" : "奇怪";
+          anno?.content?.review?.checked===true ? "有修改" : "未修改或未记录";
+          // anno?.content?.review?.checked===false ? "未修改" :
+          // anno?.content?.review==null ? "未审核" : "不知是否修改";
         apples.push(apple);
       };
 
       let dict = {};
-      dict.总体情况 = {};
 
       for (let apple of apples) {
-        let clue = `${apple.审核情况}${apple.审核后修改情况}`;
-        dict.总体情况[clue] = (dict.总体情况[clue]??0)+1;
+        let clue = `${apple.审核次数文本}${apple.审核情况}${apple.审核后修改情况}`;
+        if (dict["总体情况"]==null) {dict["总体情况"]={detail: {}}};
+        dict.总体情况.detail[clue] = (dict.总体情况.detail[clue]??0)+1;
         dict.总体情况["level"] = 0;
 
         let topic = apple.topic;
-        if (dict[topic]==null) {dict[topic]={}};
-        dict[topic][clue] = (dict[topic][clue]??0)+1;
+        if (dict[topic]==null) {dict[topic]={detail: {}}};
+        dict[topic].detail[clue] = (dict[topic].detail[clue]??0)+1;
         dict[topic]["level"] = 1;
 
         let batchName = apple.batchName;
-        if (dict[batchName]==null) {dict[batchName]={}};
-        dict[batchName][clue] = (dict[batchName][clue]??0)+1;
+        if (dict[batchName]==null) {dict[batchName]={detail: {}}};
+        dict[batchName].detail[clue] = (dict[batchName].detail[clue]??0)+1;
         dict[batchName]["level"] = 2;
       };
 
@@ -665,6 +705,8 @@ class BackEndUsage {
         console.log(resp);
         return null;
       };
+
+      // console.log(resp?.data?.data);
       let data = resp?.data?.data;
 
       let reviewed_annos = data.reviewed_annos;
@@ -683,21 +725,21 @@ class BackEndUsage {
       };
 
       let dict = {};
-      dict.总体情况 = {};
 
       for (let apple of apples) {
         let clue = apple.审核类型;
-        dict.总体情况[clue] = (dict.总体情况[clue]??0)+1;
+        if (dict["总体情况"]==null) {dict["总体情况"]={detail: {}}};
+        dict.总体情况.detail[clue] = (dict.总体情况.detail[clue]??0)+1;
         dict.总体情况["level"] = 0;
 
         let topic = apple.topic;
-        if (dict[topic]==null) {dict[topic]={}};
-        dict[topic][clue] = (dict[topic][clue]??0)+1;
+        if (dict[topic]==null) {dict[topic]={detail: {}}};
+        dict[topic].detail[clue] = (dict[topic].detail[clue]??0)+1;
         dict[topic]["level"] = 1;
 
         let batchName = apple.batchName;
-        if (dict[batchName]==null) {dict[batchName]={}};
-        dict[batchName][clue] = (dict[batchName][clue]??0)+1;
+        if (dict[batchName]==null) {dict[batchName]={detail: {}}};
+        dict[batchName].detail[clue] = (dict[batchName].detail[clue]??0)+1;
         dict[batchName]["level"] = 2;
       };
 
@@ -705,7 +747,7 @@ class BackEndUsage {
 
       dictList = this.lo.sortBy(dictList, [it=>it[1]?.level, it=>it[0]]);
 
-      return dictList;
+      return {list: dictList, name};
 
     } catch (error) {
       console.log(error);

@@ -102,9 +102,9 @@
                     }} ], "required": true},
 
                   {"name": "_2", "gap": true},
-                  {"name": "T_wd", "nameFace": "原文时间", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "T_Rf", "nameFace": "参照事件", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "T_Rg", "nameFace": "参照时间", "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}], "--default": {"type": "单个标签", "value": {"domain": "时间限定符", "face": "说话时"}}, "required": true}
+                  {"name": "T_wd", "nameFace": "原文时间", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "T_Rf", "nameFace": "参照事件", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "T_Rg", "nameFace": "参照时间", "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}], "--default": {"type": "单个标签", "value": {"domain": "时间限定符", "face": "说话时"}}, "required": false}
                 ]
               },
 
