@@ -228,6 +228,7 @@ export default {
         'step': props.step,
         'stepProps': step_props.value,
         onSave: (data)=>{
+          console.log(data);
           props.stepCtrl.排他处理(data);
           props.backendUsage.save(props.example);
         },

@@ -41,7 +41,7 @@ export default {
 
     const idxesToText = idxes => {
       let _tokens = idxes.map(it => (props?.['tokens']??[])[it]);
-      let txt = _tokens.map(it=>it?.to?.word ?? it.word).join("");
+      let txt = _tokens.map(it=>it?.to?.word ?? it?.word).join("");
       return txt;
     };
 

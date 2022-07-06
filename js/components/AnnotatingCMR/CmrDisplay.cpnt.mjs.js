@@ -111,6 +111,10 @@ export default {
       init();
       localData.annotated_idxes = v(allIdxes);
     });
+    watch(()=>props?.annotation, ()=>{
+      init();
+      localData.annotated_idxes = v(allIdxes);
+    });
 
 
     const completionText = computed(()=>{
