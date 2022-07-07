@@ -1021,6 +1021,7 @@ const AllObjectsPanel = {
             },
             'class': "btn-sm",
             'title': `新增一项 ${type.nameFace??type.name??"无名类型"} 的标注`,
+            'disabled': type.addDisabled,
           },
           [`新增 ${type.nameFace??type.name??"无名类型"}`],
           "light",

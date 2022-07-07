@@ -110,10 +110,12 @@ export default {
     onMounted(()=>{
       init();
       localData.annotated_idxes = v(allIdxes);
+      onSortObjectsByType();
     });
     watch(()=>props?.annotation, ()=>{
       init();
       localData.annotated_idxes = v(allIdxes);
+      onSortObjectsByType();
     });
 
 
@@ -249,16 +251,16 @@ export default {
       const btns = [
         btn({
           'class': "btn-sm py-0 px-1 text-muted",
+          onClick: ()=>{onSortObjectsByType()},
+        }, ["按类型排序"], "light"),
+        btn({
+          'class': "btn-sm py-0 px-1 text-muted",
           onClick: ()=>{onSortObjects()},
         }, ["按原文排序"], "light"),
         btn({
           'class': "btn-sm py-0 px-1 text-muted",
           onClick: ()=>{onSortObjectsById()},
         }, ["按创建顺序排序"], "light"),
-        btn({
-          'class': "btn-sm py-0 px-1 text-muted",
-          onClick: ()=>{onSortObjectsByType()},
-        }, ["按类型排序"], "light"),
       ];
       return div({'class': "d-inline-flex gap-1 mx-2"}, btns);
     });

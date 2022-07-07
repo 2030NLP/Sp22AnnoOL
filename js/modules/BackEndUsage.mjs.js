@@ -226,15 +226,17 @@ class BackEndUsage {
     let lastEID = this?.data?.newThings?.lastEID ?? null;
     // 【寻找首条】
     // 参考 【队列排序】
-    let btn =
-      this.data.tasks.find(btn => btn.commented&&!btn.checked)  // 首条尚未处理的有批示的
-      ?? this.data.tasks.find(btn => btn.rejectedTP==3&&!btn.checked)  // 首条尚未处理的未通过的
-      ?? this.data.tasks.find(btn => !btn.done)
-      ?? this.data.tasks.find(btn => btn.rejectedTP==3);
-    if (btn) {
-      await this.goIdx(btn.idx);
-      return;
-    }
+    if (!this.playMode) {
+      let btn =
+        this.data.tasks.find(btn => btn.commented&&!btn.checked)  // 首条尚未处理的有批示的
+        ?? this.data.tasks.find(btn => btn.rejectedTP==3&&!btn.checked)  // 首条尚未处理的未通过的
+        ?? this.data.tasks.find(btn => !btn.done)
+        ?? this.data.tasks.find(btn => btn.rejectedTP==3);
+      if (btn) {
+        await this.goIdx(btn.idx);
+        return;
+      };
+    };
     await this.goIdx(0);
   }
 
@@ -698,6 +700,96 @@ class BackEndUsage {
 
 
   async getWorkloadOfReviewerOf(userId) {
+    try {
+      // console.log(this);
+      let resp = await this.backEnd.getWorkloadOfReviewer(userId);
+      if (errorHappened(resp?.data?.err)) {
+        console.log(resp);
+        return null;
+      };
+
+      // console.log(resp?.data?.data);
+      let data = resp?.data?.data;
+
+      let reviewed_annos = data.reviewed_annos;
+      let name = data.user_name;
+
+      // return data;
+
+      let apples = [];
+      for (let anno of reviewed_annos) {
+        let task = anno?.task_wrap?.[0];
+        let apple = Object.assign({}, task);
+        let 初审者 = anno?.content?._ctrl?.timeLog?.find?.(it=>it[0]=="check")?.[2];
+        apple.审核类型 = 初审者?.name==name||初审者?.id==userId ? "初审" : "复审";
+
+        let 审核次数 = 0;
+        let 不连续审核次数 = 0;
+        let lastIsCheck = false;
+        let lastCheckerName = "";
+        for (let it of (anno?.content?._ctrl?.timeLog??[])) {
+          if (it[0] === "check") {
+            if (it?.[2]?.name==name||it?.[2]?.id==userId) {
+              审核次数++;
+              if (!lastIsCheck) {
+                不连续审核次数++;
+              };
+              lastIsCheck = true;
+            };
+            lastCheckerName = it[2]?.name;
+          } else {
+            lastIsCheck = false;
+          };
+        };
+        apple.复审次数 = 审核次数 - (apple.审核类型=="初审"?1:0);
+        apple.不连续复审次数 = 不连续审核次数 - (apple.审核类型=="初审"?1:0);
+
+        apples.push(apple);
+      };
+
+      let dict = {};
+
+      for (let apple of apples) {
+        let clue = apple.审核类型;
+
+        if (dict["总体情况"]==null) {dict["总体情况"]={detail: {}}};
+        dict.总体情况.detail[clue] = (dict.总体情况.detail[clue]??0)+1;
+        dict.总体情况["level"] = 0;
+
+        let topic = apple.topic;
+        if (dict[topic]==null) {dict[topic]={detail: {}}};
+        dict[topic].detail[clue] = (dict[topic].detail[clue]??0)+1;
+        dict[topic]["level"] = 1;
+
+        let batchName = apple.batchName;
+        if (dict[batchName]==null) {dict[batchName]={detail: {}}};
+        dict[batchName].detail[clue] = (dict[batchName].detail[clue]??0)+1;
+        dict[batchName]["level"] = 2;
+
+        if (clue=="复审") {
+          dict.总体情况.detail["复审次数"] = (dict.总体情况.detail["复审次数"]??0)+apple.复审次数;
+          dict.总体情况.detail["不连续复审次数"] = (dict.总体情况.detail["不连续复审次数"]??0)+apple.不连续复审次数;
+          dict[topic].detail["复审次数"] = (dict[topic].detail["复审次数"]??0)+apple.复审次数;
+          dict[topic].detail["不连续复审次数"] = (dict[topic].detail["不连续复审次数"]??0)+apple.不连续复审次数;
+          dict[batchName].detail["复审次数"] = (dict[batchName].detail["复审次数"]??0)+apple.复审次数;
+          dict[batchName].detail["不连续复审次数"] = (dict[batchName].detail["不连续复审次数"]??0)+apple.不连续复审次数;
+        };
+      };
+
+      let dictList = Object.entries(dict);
+
+      dictList = this.lo.sortBy(dictList, [it=>it[1]?.level, it=>it[0]]);
+
+      return {list: dictList, name};
+
+    } catch (error) {
+      console.log(error);
+      return null;
+    };
+  }
+
+
+  async __getWorkloadOfReviewerOf(userId) {
     try {
       // console.log(this);
       let resp = await this.backEnd.getWorkloadOfReviewer(userId);

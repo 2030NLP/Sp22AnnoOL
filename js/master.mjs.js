@@ -1130,8 +1130,29 @@ const RootComponent = {
           let task = anno?.task_wrap?.[0];
           let apple = Object.assign({}, task);
           let 初审者 = anno?.content?._ctrl?.timeLog?.find?.(it=>it[0]=="check")?.[2];
-          apple.审核类型 =
-            初审者?.name==name||初审者?.id==userId ? "初审" : "复审";
+          apple.审核类型 = 初审者?.name==name||初审者?.id==userId ? "初审" : "复审";
+
+          let 审核次数 = 0;
+          let 不连续审核次数 = 0;
+          let lastIsCheck = false;
+          let lastCheckerName = "";
+          for (let it of (anno?.content?._ctrl?.timeLog??[])) {
+            if (it[0] === "check") {
+              if (it?.[2]?.name==name||it?.[2]?.id==userId) {
+                审核次数++;
+                if (!lastIsCheck) {
+                  不连续审核次数++;
+                };
+                lastIsCheck = true;
+              };
+              lastCheckerName = it[2]?.name;
+            } else {
+              lastIsCheck = false;
+            };
+          };
+          apple.复审次数 = 审核次数 - (apple.审核类型=="初审"?1:0);
+          apple.不连续复审次数 = 不连续审核次数 - (apple.审核类型=="初审"?1:0);
+
           apples.push(apple);
         };
 
@@ -1139,6 +1160,7 @@ const RootComponent = {
 
         for (let apple of apples) {
           let clue = apple.审核类型;
+
           if (dict["总体情况"]==null) {dict["总体情况"]={detail: {}}};
           dict.总体情况.detail[clue] = (dict.总体情况.detail[clue]??0)+1;
           dict.总体情况["level"] = 0;
@@ -1152,6 +1174,15 @@ const RootComponent = {
           if (dict[batchName]==null) {dict[batchName]={detail: {}}};
           dict[batchName].detail[clue] = (dict[batchName].detail[clue]??0)+1;
           dict[batchName]["level"] = 2;
+
+          if (clue=="复审") {
+            dict.总体情况.detail["复审次数"] = (dict.总体情况.detail["复审次数"]??0)+apple.复审次数;
+            dict.总体情况.detail["不连续复审次数"] = (dict.总体情况.detail["不连续复审次数"]??0)+apple.不连续复审次数;
+            dict[topic].detail["复审次数"] = (dict[topic].detail["复审次数"]??0)+apple.复审次数;
+            dict[topic].detail["不连续复审次数"] = (dict[topic].detail["不连续复审次数"]??0)+apple.不连续复审次数;
+            dict[batchName].detail["复审次数"] = (dict[batchName].detail["复审次数"]??0)+apple.复审次数;
+            dict[batchName].detail["不连续复审次数"] = (dict[batchName].detail["不连续复审次数"]??0)+apple.不连续复审次数;
+          };
         };
 
         let dictList = Object.entries(dict);

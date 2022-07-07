@@ -102,9 +102,9 @@ const UserListControl = {
                 },
               }, [
                 h("option", { 'value': "全部", }, ["【在岗情况】"]),
-                h("option", { 'value': "在岗", }, ["在岗"]),
+                h("option", { 'value': "在岗", 'selected': true, }, ["在岗"]),
                 h("option", { 'value': "退出", }, ["退出"]),
-                h("option", { 'value': "全部", 'selected': true, }, ["全部(在岗+退出)"]),
+                h("option", { 'value': "全部", }, ["全部(在岗+退出)"]),
               ]),
             ]),
 

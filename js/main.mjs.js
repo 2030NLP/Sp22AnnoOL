@@ -158,6 +158,8 @@ const RootComponent = {
         targetIdx: 0,
         showOrigin: false,
         //
+        developing: DEVELOPING,
+        //
       },
       play: {
         playMode: false,
@@ -198,7 +200,7 @@ const RootComponent = {
         },
         't3-dev': {
           playMode: true,
-          playToken: "afeff97c-065a-4e38-99d8-3d1a24b2df22",
+          playToken: "7a0a4de0-f39a-402a-a2e4-dea30d95046d",
         },
         't1': {
           playMode: true,
