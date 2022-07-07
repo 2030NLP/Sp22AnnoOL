@@ -2,6 +2,8 @@
 
 
 
+    .text-blue {color: var(--bs-blue);}
+    .text-red {color: var(--bs-red);}
     .text-pink {color: var(--bs-pink);}
     .text-indigo {color: var(--bs-indigo);}
     .text-purple {color: var(--bs-purple);}

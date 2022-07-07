@@ -210,7 +210,10 @@ export default {
 
     const objectFaceLine = (obj) => {
       const that = btn({
-        'class': "btn-sm",
+        'class': [
+          "d-flex flex-wrap gap-1 flew-row",
+          "btn-sm"
+        ],
         onClick: ()=>{
           if (localData?.highlighted_obj_id==(obj?._id??obj?.id)) {
             localData.highlighted_obj_id=-1;
@@ -223,7 +226,7 @@ export default {
           console.log([objIdxes(obj), average(objIdxes(obj))]);
         },
       }, [
-        muted(obj?._id??obj?.id),
+        span({'class': ["opacity-50 text-blue"]}, obj?._id??obj?.id),
         objectFace(obj, reactiveCMR),
       ], "light");
       return that;

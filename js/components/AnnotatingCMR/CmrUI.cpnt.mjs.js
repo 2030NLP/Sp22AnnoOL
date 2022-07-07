@@ -961,11 +961,15 @@ const AllObjectsPanel = {
         'class': "__ratio __ratio-21x9 border rounded overflow-auto",
         'style': "min-height: 1.5em; max-height: 20em;"
       }, div({'class': "p-1"}, [
-        div({'class': "d-flex flex-wrap gap-1"}, props['objectWraps']?.length ? [
+        div({'class': "d-inline-flex flex-wrap gap-1"}, props['objectWraps']?.length ? [
           ...(props['objectWraps']??[])
             .map((objWrap, idx) => btn({
               'key': `${idx}-${objWrap?.data?._id??objWrap?.data?.id}`,
-              'class': ["btn-sm", {"opacity-50": objWrap?.data?.type=="文本"&&!objWrap['show']}],
+              'class': [
+                "d-flex flex-wrap gap-1 flew-row",
+                "btn-sm",
+                {"opacity-50": objWrap?.data?.type=="文本"&&!objWrap['show']},
+              ],
               // 'title': JSON.stringify(objWrap?.data, null, 2),
               onClick: ()=>{
                 let x = objWrap['show']
@@ -973,10 +977,10 @@ const AllObjectsPanel = {
                   :(ctx.emit("show-object-wrap", objWrap));
               },
             }, [
-              muted(objWrap?.data?._id??objWrap?.data?.id),
+              span({'class': ["opacity-75 text-blue"]}, objWrap?.data?._id??objWrap?.data?.id),
               // span({'class': "text-muted pe-2"}, objWrap?.data?._id??objWrap?.data?.id??"_"),
               objWrap?.['typeDef']?.['icon-bi']?.length ? [
-                span({'class': "px-2"}, bi(objWrap?.['typeDef']?.['icon-bi'])),
+                span({'class': ["opacity-75 text-blue", "px-2"]}, bi(objWrap?.['typeDef']?.['icon-bi'])),
               ] : null,
               objectFace(objWrap.data, reactiveCMR),
             ], objWrap['show']?"outline-primary":"light")),
