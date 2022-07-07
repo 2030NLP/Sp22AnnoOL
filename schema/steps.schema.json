@@ -1,12 +1,12 @@
 {
   "name": "SpaCE2022",
-  "version": "220706v1",
+  "version": "220707v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
     "第2期R": "220603v1",
-    "精标": "220706v1"
+    "精标": "220707v1"
   },
   "using": "精标",
 
@@ -78,6 +78,8 @@
                   {"name": "Ds_Vl", "nameFace": "距离1", "ctrls": ["MB_SPANS"], "required": false},
                   {"name": "Ds_Dc", "nameFace": "距离2", "ctrls": [{"type": "单个标签", "config": {"set": "距离限定符"}}], "required": false},
 
+                  {"name": "F", "nameFace": "事实性F", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false},
+
                   {"_name": "P", "nameFace": "空间信息P", "ctrls": [
                     {
                       "type": "多个对象",
@@ -93,7 +95,6 @@
 
                   {"name": "_1", "gap": true},
                   {"__name": "TrV", "nameFace": "命题真值", "ctrls": [{"type": "单个标签", "config": {"set": "命题真伪性"}}], "default": {"type": "单个标签", "value": {"domain": "命题真伪性", "face": "Neg"}}, "required": false},
-                  {"name": "F", "nameFace": "事实性F", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false},
 
                   {"name": "E", "nameFace": "事件E", "ctrls": ["MB_SPANS"], "required": true},
                   {"__name": "E_obj", "nameFace": "事件对象", "ctrls": [{"type": "多个对象", "config": {
