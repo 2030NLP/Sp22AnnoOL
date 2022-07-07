@@ -631,7 +631,7 @@ class BackEndUsage {
         return null;
       };
 
-      // console.log(resp?.data?.data);
+      console.log(resp?.data?.data);
 
       const 求标签不连续出现次数 = (labels, label) => {
         let num = 0;
@@ -708,7 +708,7 @@ class BackEndUsage {
         return null;
       };
 
-      // console.log(resp?.data?.data);
+      console.log(resp?.data?.data);
       let data = resp?.data?.data;
 
       let reviewed_annos = data.reviewed_annos;
@@ -721,7 +721,7 @@ class BackEndUsage {
         let task = anno?.task_wrap?.[0];
         let apple = Object.assign({}, task);
         let 初审者 = anno?.content?._ctrl?.timeLog?.find?.(it=>it[0]=="check")?.[2];
-        apple.审核类型 = 初审者?.name==name||初审者?.id==userId ? "初审" : "复审";
+        apple.审核类型 = 初审者?.name==name||初审者?.id==userId ? "初审" : "纯复审";
 
         let 审核次数 = 0;
         let 不连续审核次数 = 0;
@@ -766,14 +766,14 @@ class BackEndUsage {
         dict[batchName].detail[clue] = (dict[batchName].detail[clue]??0)+1;
         dict[batchName]["level"] = 2;
 
-        if (clue=="复审") {
+        // if (clue=="纯复审") {
           dict.总体情况.detail["复审次数"] = (dict.总体情况.detail["复审次数"]??0)+apple.复审次数;
           dict.总体情况.detail["不连续复审次数"] = (dict.总体情况.detail["不连续复审次数"]??0)+apple.不连续复审次数;
           dict[topic].detail["复审次数"] = (dict[topic].detail["复审次数"]??0)+apple.复审次数;
           dict[topic].detail["不连续复审次数"] = (dict[topic].detail["不连续复审次数"]??0)+apple.不连续复审次数;
           dict[batchName].detail["复审次数"] = (dict[batchName].detail["复审次数"]??0)+apple.复审次数;
           dict[batchName].detail["不连续复审次数"] = (dict[batchName].detail["不连续复审次数"]??0)+apple.不连续复审次数;
-        };
+        // };
       };
 
       let dictList = Object.entries(dict);

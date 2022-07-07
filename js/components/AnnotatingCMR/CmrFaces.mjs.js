@@ -342,7 +342,7 @@ export const faceFnObjSTEP = (object, reactiveCMR) => {
     含有_S_字段: {value: false, message: "❗️ 缺少空间实体"},
     含有_P_信息: {value: false, message: "❗️ 缺少空间信息"},
     异常_Pl_介词: {value: false, message: "⚠️ 处所不应以介词开头"},
-    异常_E_把被: {value: false, message: "⚠️ 事件不应以“把被”等开头"},
+    异常_XX_把被: {value: false, message: "⚠️ 片段不应以“把/被/的”等开头"},
     异常_E_来去: {value: false, message: "⚠️ 事件不应以“来去”结尾"},
     标点问题: {value: false, message: "❗️ 首尾有异常标点"},
   };
@@ -361,9 +361,9 @@ export const faceFnObjSTEP = (object, reactiveCMR) => {
           异常字典.异常_Pl_介词.value = true;
         };
       };
-      if (slot.name=="E") {
+      if (!["S"].includes(slot.name)&&["MB_SPANS"].includes(object?.[slot.name]?.type)) {
         if ((object?.[slot.name]?.value??[])?.find?.(it=>把被列表.includes(it?.texts?.[0]?.[0]))) {
-          异常字典.异常_E_把被.value = true;
+          异常字典.异常_XX_把被.value = true;
         };
       };
       if (slot.name=="E") {
@@ -395,8 +395,8 @@ export const faceFnObjSTEP = (object, reactiveCMR) => {
   if (异常字典.异常_Pl_介词.value) {
     frags.push(textOrange(异常字典.异常_Pl_介词.message, {'class': "fw-bold"}));
   };
-  if (异常字典.异常_E_把被.value) {
-    frags.push(textOrange(异常字典.异常_E_把被.message, {'class': "fw-bold"}));
+  if (异常字典.异常_XX_把被.value) {
+    frags.push(textOrange(异常字典.异常_XX_把被.message, {'class': "fw-bold"}));
   };
   if (异常字典.异常_E_来去.value) {
     frags.push(textOrange(异常字典.异常_E_来去.message, {'class': "fw-bold"}));
