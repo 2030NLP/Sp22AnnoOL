@@ -1,12 +1,12 @@
 {
   "name": "SpaCE2022",
-  "version": "220707v1",
+  "version": "220708v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
     "第2期R": "220603v1",
-    "精标": "220707v1"
+    "精标": "220708v1"
   },
   "using": "精标",
 
@@ -111,7 +111,7 @@
 
               {
                 "name": "propSet_E",
-                "__addDisabled": true,
+                "addDisabled": true,
                 "nameFace": "事件角色信息标注",
                 "icon-bi": "film",
                 "slots": [
