@@ -142,6 +142,14 @@ const idxesToTokens = (idxes, allTokens) => {
   return idxes.map(idx => allTokens[idx]?.to ?? allTokens[idx] ?? {});
 };
 
+const idxesToPOSes = (idxes, allTokens) => {
+  idxes = idxes??[];
+  if (!allTokens?.length) {
+    return [];
+  };
+  return idxes.map(idx => allTokens[idx]?.pos ?? "_");
+};
+
 const idxesToText = (idxes, allTokens) => {
   let _tokens = idxesToTokens(idxes, allTokens);
   let result = _tokens.map(it => it.word).join("");

@@ -88,12 +88,52 @@ export default {
   component: {},
   setup(props, ctx) {
 
+
+    const idxesToBlocks = (idxes) => {
+      let blocks = [];
+      let tmp = [];
+      let last = -999;
+      for (let idx of idxes) {
+        if (idx != last+1) {
+          blocks.push(tmp);
+          tmp = [];
+        };
+        tmp.push(idx);
+        last = idx;
+      };
+      blocks.push(tmp);
+      blocks = blocks.filter(it=>it.length);
+      return blocks;
+    };
+    const idxesToTokens = (idxes) => {
+      idxes = idxes??[];
+      let allTokens = props?.tokens ?? [];
+      if (!allTokens?.length) {
+        return [];
+      };
+      return idxes.map(idx => allTokens[idx]?.to ?? allTokens[idx] ?? {});
+    };
+    const idxesToPOSes = (idxes) => {
+      idxes = idxes??[];
+      let allTokens = props?.tokens ?? [];
+      if (!allTokens?.length) {
+        return [];
+      };
+      return idxes.map(idx => allTokens[idx]?.pos ?? "_");
+    };
+    const idxesToText = (idxes) => {
+      let _tokens = idxesToTokens(idxes);
+      let result = _tokens.map(it => it.word).join("");
+      return result;
+    };
+
     const localData = reactive({
       'viewMode': "清单模式",
       'roleMap': {},
       'highlighted_idxes': [],
       'annotated_idxes': [],
       'highlighted_obj_id': -1,
+      '错误清单': [],
     });
 
     const reactiveCMR = reactive(new CMR);
@@ -102,21 +142,32 @@ export default {
 
     const allIdxes = computed(() => v(objects).map(obj=>objIdxes(obj)).flat(Infinity));
 
-    const init = () => {
+    const cmr_init = () => {
       reactiveCMR.initDefinition(props?.['definition']);
       const existedObjects = v(objects);
       reactiveCMR.initData({'objects': existedObjects});
     };
-    onMounted(()=>{
-      init();
+    const init = () => {
+      cmr_init();
       localData.annotated_idxes = v(allIdxes);
       onSortObjectsByType();
+    };
+    onMounted(()=>{
+      init();
     });
     watch(()=>props?.annotation, ()=>{
       init();
-      localData.annotated_idxes = v(allIdxes);
-      onSortObjectsByType();
     });
+
+
+
+    const 检查错误 = () => {
+      for (let obj of reactiveCMR.objects) {};
+    };
+    const 错误提示区 = computed(() => {
+      return div({'class': ["border rounded my-2 py-1 px-2"]}, ["cuowutishiqu"]);
+    });
+
 
 
     const completionText = computed(()=>{
@@ -143,7 +194,6 @@ export default {
       }, "无需检查完成与否");
       return txt;
     });
-
 
 
 
@@ -239,6 +289,8 @@ export default {
       }, [objectFaceLine(obj)]));
     });
 
+
+
     const onSortObjects = () => {
       reactiveCMR.sortObjectsByType();
       reactiveCMR.objects.sort(按原文顺序排序函数);
@@ -268,10 +320,13 @@ export default {
       return div({'class': "d-inline-flex gap-1 mx-2"}, btns);
     });
 
+
+
     return () => div({'class': "cmr-display text-wrap text-break"}, [
       div({'class': ["mb-2"]}, [
         v(completionText),
         v(排序按钮组),
+        // v(错误提示区),
       ]),
       v(文本区),
       div({'class': ["my-1", {"d-none": localData?.viewMode!="清单模式"}]}, [

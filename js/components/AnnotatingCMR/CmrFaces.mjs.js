@@ -350,6 +350,7 @@ export const faceFnObjSTEP = (object, reactiveCMR) => {
   let 介词列表 = ["从", "由", "经", "往", "向", "朝", "到", "至"];
   let 来去列表 = ["来", "去"];
   let 把被列表 = ["把", "被", "将", "的"];
+  let 时体列表 = ["了", "着"];
 
   for (let slot of slots) {
     if (slot.name in object && object?.[slot.name]?.value!=null) {
@@ -411,6 +412,16 @@ export const faceFnObjSTEP = (object, reactiveCMR) => {
       frags.push(textDanger("❗️ 时间缺少参照事件", {'class': "fw-bold"}));
     };
   };
+  if (object?.["T_Rf"]?.value?.length) {
+    if (!["之前", "之后", "之时", "之间"].includes(object?.["T_Rg"]?.value?.face)) {
+      frags.push(textDanger("❗️ 参照时间与参照事件不协调", {'class': "fw-bold"}));
+    };
+  };
+  // if (["说话时", "过去", "将来"].includes(object?.["T_Rg"]?.value?.face)) {
+  //   if (object?.["T_Rf"]?.value?.length) {
+  //     frags.push(textDanger("❗️ 参照时间与参照事件不协调", {'class': "fw-bold"}));
+  //   };
+  // };
   if ("之间" == (object?.["T_Rg"]?.value?.face)) {
     if ((object?.["T_Rf"]?.value?.length??0)<2) {
       frags.push(textDanger("❗️ 时间参照事件数量不足", {'class': "fw-bold"}));

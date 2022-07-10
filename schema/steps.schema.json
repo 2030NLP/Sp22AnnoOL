@@ -48,7 +48,8 @@
               ["实体虚实性", ["虚", "实"]],
               ["命题真伪性", ["Negative", "Positve"]],
               ["时间限定符", ["说话时", "之前", "之后", "之时", "之间", "过去", "将来"]],
-              ["距离限定符", ["远", "近", "变远", "变近"]]
+              ["距离限定符", ["远", "近", "变远", "变近"]],
+              ["特殊情况", ["无空间义", "空间义很少", "句义复杂标注困难"]]
             ],
 
             "object_types": [
@@ -111,7 +112,7 @@
 
               {
                 "name": "propSet_E",
-                "addDisabled": true,
+                "--addDisabled": true,
                 "nameFace": "事件角色信息标注",
                 "icon-bi": "film",
                 "slots": [
@@ -181,6 +182,15 @@
                     ],
                     "required": true},
                   {"name": "F", "nameFace": "同指事实性", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false}
+                ]
+              },
+
+              {
+                "__name": "special_Situation",
+                "nameFace": "特殊情况标注",
+                "icon-bi": "exclamation-circle",
+                "slots": [
+                  {"name": "Label", "nameFace": "情况", "ctrls": [{"type": "单个标签", "config": {"set": "特殊情况"}}], "--default": {"type": "单个标签", "value": {"domain": "特殊情况", "face": "无空间义"}}, "required": true}
                 ]
               }
 
