@@ -117,6 +117,7 @@ export default {
         return ({
           idx: idx,
           word: token?.to?.word ?? token?.word,
+          seg: token?.seg ?? "_",
           // role: localData?.roleMap?.[idx],
           spatial: v(所有空间义高亮的Idxes).includes?.(idx),
           annotated: v(allIdxes)?.includes?.(idx),
@@ -163,6 +164,20 @@ export default {
         if (!iibb.length) {return false;};
         return iiaa[0]==iibb[0] ? (average(iiaa)-average(iibb)) : (iiaa[0]-iibb[0]);
       },
+      获取field的Idxes: (field) => {
+        // console.log("执行 获取field的Idxes");
+        let idxes = [];
+        const fn_map = {
+          "MB_SPANS": (list)=>{return list.map(it=>it.idxeses).flat(Infinity);},
+        };
+        if (field?.value!=null) {
+          if (field?.type in fn_map) {
+            let new_idxes = fn_map[field?.type](field?.value)??[];
+            idxes = [...idxes, ...new_idxes];
+          };
+        };
+        return idxes;
+      },
       获取obj的Idxes: (obj) => {
         // console.log("执行 获取obj的Idxes");
         let idxes = [];
@@ -172,10 +187,10 @@ export default {
         };
         for (let slot of slots) {
           if (slot.name in obj && obj?.[slot.name]?.value!=null) {
-            if (obj?.[slot.name]?.type in fn_map) {
-              let new_idxes = fn_map[obj?.[slot.name]?.type](obj?.[slot.name]?.value)??[];
-              idxes = [...idxes, ...new_idxes];
-            };
+            let new_idxes = _methods.获取field的Idxes(obj?.[slot.name]);
+            idxes = [...idxes, ...new_idxes];
+
+            // 处理事件信息中的idx范围 是一个很特殊的特例
             if (slot.name=="SPE_obj" && obj.type=="propSet_E") {
               const spe_obj = reactiveCMR.get(obj?.SPE_obj?.value);
               if (spe_obj) {
@@ -186,6 +201,27 @@ export default {
           };
         };
         return idxes;
+      },
+      获取obj中每个Idx的出现次数: (obj) => {
+        // console.log("执行 获取obj中每个Idx的出现次数");
+        let dict = {};
+        const slots = reactiveCMR?.typeDict?.[obj?.type]?.slots??[];
+        const fn_map = {
+          "MB_SPANS": (list)=>{return list.map(it=>it.idxeses).flat(Infinity);},
+        };
+        for (let slot of slots) {
+          if (slot.name in obj && obj?.[slot.name]?.value!=null) {
+            if (obj?.[slot.name]?.type in fn_map) {
+              let new_idxes = fn_map[obj?.[slot.name]?.type](obj?.[slot.name]?.value)??[];
+              for (let idx of new_idxes) {
+                if (!(idx in dict)) {dict[idx]=0;};
+                dict[idx]++;
+              };
+            };
+          };
+        };
+        // console.log(JSON.stringify(dict));
+        return dict;
       },
       idxesToTokens: (idxes) => {
         // console.log("执行 idxesToTokens");
@@ -226,8 +262,9 @@ export default {
       init: () => {
         // console.log("执行 init");
         _life_methods.cmr_init();
-        onSortObjectsByType();
+        onSortObjectsById();
         _checker_methods.检查错误();
+        onSortObjectsByType();
       },
     };
     onMounted(()=>{
@@ -245,6 +282,18 @@ export default {
     // 通用 生命周期 结束
 
 
+    const 首词白名单动词字典 = {
+      'Pl': "在",  // 处所
+      // 'Be': "",  // 起点
+      'Ed': "到",  // 终点
+      // 'Dr': "",  // 方向
+      // 'Or': "",  // 朝向
+      // 'PPl': "",  // 部件处所
+      // 'Pa': "",  // 部位
+      // 'Shp': "",  // 形状
+      // 'Pt': "",  // 路径
+      // 'Ds_Vl': "",  // 距离1
+    };
     const 首词报警介词字典 = {
       'Pl': "从、由、到、至、经、通、沿、顺、往、向、朝、距、离",  // 处所
       'Be': "到、至、经、通、沿、顺、往、向、朝、距、离",  // 起点
@@ -278,6 +327,8 @@ export default {
       '错误清单': [],
     });
     const _checker_methods = {
+
+
       检查漏掉的高亮词: () => {
         // console.log("执行 _checker_methods.检查漏掉的高亮词");
         let 漏掉的idxes = [];
@@ -295,6 +346,8 @@ export default {
           _checker_data.错误清单.push(it);
         };
       },
+
+
       记录错误: (style, text) => {
         const it = {
           'style': style ?? "info",
@@ -318,7 +371,7 @@ export default {
             );
           };
         };
-        // 检查以的字结尾
+        // 检查的字结尾
         if (list?.length && 要排除的字结尾的字段.includes(ky)) {
           const 结果 = list.find(it => ["的"].includes(it?.texts?.at?.(-1)?.at?.(-1)));
           if (结果) {
@@ -332,11 +385,16 @@ export default {
           let 结果;
           结果 = list.find(it => {
             const 首位idx = it?.idxeses?.[0]?.[0];
-            return _methods.idxesToPOSes([首位idx])?.[0]=="v";
+            const 首位text = it?.texts?.[0]?.[0];
+            let 白名单检查结果 = true;
+            if (ky in 首词白名单动词字典) {
+              白名单检查结果 = !首词白名单动词字典[ky].split("、").includes(首位text);
+            };
+            return _methods.idxesToPOSes([首位idx])?.[0]=="v" && 白名单检查结果;
           });
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以动词开头`
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以不合适的动词开头`
             );
           };
           结果 = list.find(it => {
@@ -354,7 +412,6 @@ export default {
           let 结果;
           结果 = list.find(it => {
             const 首位idx = it?.idxeses?.[0]?.[0];
-            // const 首位text = it?.texts?.[0]?.[0];
             return ["y", "u"].includes(_methods.idxesToPOSes([首位idx])?.[0]);
           });
           if (结果) {
@@ -450,12 +507,11 @@ export default {
                 );
               };
             };
-            // 检查方向S的首位介词
-            if (list?.length && ky=="S") {
+            // 检查方向S和事件E的首位介词
+            if (list?.length && ["S", "E"].includes(ky)) {
               let 结果;
               结果 = list.find(it => {
                 const 首位idx = it?.idxeses?.[0]?.[0];
-                // const 首位text = it?.texts?.[0]?.[0];
                 return _methods.idxesToPOSes([首位idx])?.[0]=="p";
               });
               if (结果) {
@@ -520,7 +576,6 @@ export default {
             // 检查同指为介词开头
             结果 = list.find(it => {
               const 首位idx = it?.idxeses?.[0]?.[0];
-              // const 首位text = it?.texts?.[0]?.[0];
               return ["p"].includes(_methods.idxesToPOSes([首位idx])?.[0]);
             });
             if (结果) {
@@ -544,12 +599,28 @@ export default {
 
 
       检查单条错误_特例: (obj) => {
-        _checker_methods.记录错误("info", `特殊情况：${obj?.Label?.value?.face??"未知情形"}`);
+        const idx_txt = `${obj._id??obj.id??"_"}`;
+        _checker_methods.记录错误("info", `[${idx_txt}] 特殊情况: ${obj?.Label?.value?.face??"未知情形"}`);
+      },
+
+
+      检查idx出现在多个字段: (obj) => {
+        const idx_txt = `${obj._id??obj.id??"_"}`;
+        const dict = _methods.获取obj中每个Idx的出现次数(obj);
+        const pairs = Object.entries(dict);
+        const 出现多次的idxes = pairs.filter(pair => pair[1]>1).map(pair => pair[0]);
+        if (出现多次的idxes.length) {
+          const those = 出现多次的idxes.map(idx=>`${_methods.idxesToText([idx])}(${idx})`).join(" ");
+          _checker_methods.记录错误("danger",
+            `[${idx_txt}]: 这些片段在多个字段中出现：${those}`
+          );
+        };
       },
 
 
       检查单条错误: (obj) => {
         // console.log("执行 _checker_methods.检查单条错误");
+        _checker_methods.检查idx出现在多个字段(obj);
         const map = {
           'propSet_Sp': _checker_methods.检查单条错误_STEP,
           'propSet_E': _checker_methods.检查单条错误_事件,
