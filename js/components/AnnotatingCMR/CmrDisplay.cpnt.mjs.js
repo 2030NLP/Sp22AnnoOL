@@ -451,6 +451,7 @@ export default {
           "border rounded",
           "bg-opacity-25",
           `bg-danger border-danger`,
+          "fw-bold",
           // `bg-${it.style} border-${it.style}`,
           "small",
         ],
