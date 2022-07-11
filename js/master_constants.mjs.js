@@ -1,5 +1,5 @@
 // 基本信息 变量
-export const APP_VERSION = "22-0711-0945";
+export const APP_VERSION = "22-0711-1000";
 
 // 开发环境 和 生产环境 的 控制变量
 export const DEVELOPING = location?.hostname=="2030nlp.github.io" ? 0 : 1;

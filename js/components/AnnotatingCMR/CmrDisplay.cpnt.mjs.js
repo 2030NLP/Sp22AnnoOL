@@ -450,7 +450,8 @@ export default {
           "py-0 px-1 my-1 me-2",
           "border rounded",
           "bg-opacity-25",
-          `bg-${it.style} border-${it.style}`,
+          `bg-danger border-danger`,
+          // `bg-${it.style} border-${it.style}`,
           "small",
         ],
       }, [it.text])));
