@@ -1,6 +1,16 @@
 
 
 
+    .bg-pink {
+      /* --bs-bg-opacity: 1; */
+      --bs-pink-rgb: 214,51,132;
+      background-color: rgba(var(--bs-pink-rgb),var(--bs-bg-opacity)) !important;
+    }
+    .border-pink {
+      border-color: var(--bs-pink) !important;
+    }
+
+
 
     .text-blue {color: var(--bs-blue);}
     .text-red {color: var(--bs-red);}
@@ -375,8 +385,13 @@
       color: #666;
     }
 
+    .cmr-display .cmr-display-text .spatial {
+      border-bottom: 1px dotted var(--bs-pink);
+      color: var(--bs-pink);
+    }
+
     .cmr-display .cmr-display-text .annotated {
-      border-bottom: 1px solid var(--bs-blue);
+      border-bottom: 1px dotted var(--bs-blue);
       color: var(--bs-blue);
     }
 

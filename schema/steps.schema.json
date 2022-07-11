@@ -1,12 +1,12 @@
 {
   "name": "SpaCE2022",
-  "version": "220708v1",
+  "version": "220711v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
     "第2期R": "220603v1",
-    "精标": "220708v1"
+    "精标": "220711v1"
   },
   "using": "精标",
 
@@ -49,7 +49,7 @@
               ["命题真伪性", ["Negative", "Positve"]],
               ["时间限定符", ["说话时", "之前", "之后", "之时", "之间", "过去", "将来"]],
               ["距离限定符", ["远", "近", "变远", "变近"]],
-              ["特殊情况", ["无空间义", "空间义很少", "句义复杂标注困难"]]
+              ["特殊情况", ["无空间义", "空间义很少", "句义复杂标注困难", "内容有错误", "其他情况"]]
             ],
 
             "object_types": [
@@ -67,8 +67,12 @@
                   {"name": "Pa", "nameFace": "部位", "ctrls": ["MB_SPANS"], "required": false},
                   {"name": "Be", "nameFace": "起点", "ctrls": ["MB_SPANS"], "required": true},
                   {"name": "Ed", "nameFace": "终点", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "Dr", "nameFace": "方向", "ctrls": ["MB_SPANS"], "required": true},
-                  {"name": "Or", "nameFace": "朝向", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Dr", "nameFace": "方向",
+                    "desc": "指【运动或假想运动】的方向",
+                    "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Or", "nameFace": "朝向",
+                    "desc": "指【空间实体的典型面】的朝向",
+                    "ctrls": ["MB_SPANS"], "required": true},
 
                   {"name": "Pt", "nameFace": "路径", "ctrls": ["MB_SPANS"], "required": false},
                   {"__name": "Pt_Shp", "nameFace": "路径形状", "ctrls": ["MB_SPANS"], "required": false},
@@ -186,7 +190,7 @@
               },
 
               {
-                "__name": "special_Situation",
+                "name": "special_Situation",
                 "nameFace": "特殊情况标注",
                 "icon-bi": "exclamation-circle",
                 "slots": [
