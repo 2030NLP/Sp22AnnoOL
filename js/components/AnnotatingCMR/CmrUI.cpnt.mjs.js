@@ -90,7 +90,7 @@ import {
 } from './CmrEditors.mjs.js';
 
 
-Array.prototype.last = function() {return this[this.length-1]};
+const last_of = (array) => {return array[array.length-1]};
 const average = list => list.length ? (list.reduce(((aa, bb)=>aa+bb), 0) / list.length) : Infinity;
 
 

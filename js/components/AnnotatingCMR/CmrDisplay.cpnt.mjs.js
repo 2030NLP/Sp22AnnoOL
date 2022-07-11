@@ -77,7 +77,7 @@ import {
 } from './CmrFaces.mjs.js';
 
 
-Array.prototype.last = function() {return this[this.length-1]};
+const last_of = (array) => {return array[array.length-1]};
 const average = list => list.length ? (list.reduce(((aa, bb)=>aa+bb), 0) / list.length) : Infinity;
 
 
@@ -164,6 +164,19 @@ export default {
         if (!iibb.length) {return false;};
         return iiaa[0]==iibb[0] ? (average(iiaa)-average(iibb)) : (iiaa[0]-iibb[0]);
       },
+      获取field的Idxeses: (field) => {
+        // console.log("执行 获取field的Idxeses");
+        let idxeses = [];
+        const fn_map = {
+          "MB_SPANS": (list)=>{return list.map(it=>it.idxeses);},
+        };
+        if (field?.value!=null) {
+          if (field?.type in fn_map) {
+            idxeses = fn_map[field?.type](field?.value)??[];
+          };
+        };
+        return idxeses;
+      },
       获取field的Idxes: (field) => {
         // console.log("执行 获取field的Idxes");
         let idxes = [];
@@ -218,6 +231,17 @@ export default {
                 dict[idx]++;
               };
             };
+            // 处理事件信息中的idx范围 是一个很特殊的特例
+            if (slot.name=="SPE_obj" && obj.type=="propSet_E") {
+              const spe_obj = reactiveCMR.get(obj?.SPE_obj?.value);
+              if (spe_obj) {
+                let new_idxes = spe_obj?.E?.value?.[0]?.idxeses?.[0]??[];
+                for (let idx of new_idxes) {
+                  if (!(idx in dict)) {dict[idx]=0;};
+                  dict[idx]++;
+                };
+              };
+            };
           };
         };
         // console.log(JSON.stringify(dict));
@@ -246,6 +270,77 @@ export default {
           return [];
         };
         return idxes.map(idx => allTokens[idx]?.pos ?? "_");
+      },
+      tokensToWords: (tokens) => {
+        // console.log("执行 tokensToWords");
+        let words = [];
+        let template = {
+          text: "",
+          pos: "_",
+          idxes: [],
+        };
+        let nextWord = Object.assign({}, template);
+        const 中间的处理 = (token) => {
+          nextWord.text = `${nextWord.text}${token?.to?.word??token?.word??token?.from?.word??""}`;
+          nextWord.pos = token?.pos ?? "_";
+          if (token.idx!=null) {
+            nextWord.idxes.push(token.idx);
+          };
+        };
+        const 推词 = () => {
+          if (nextWord.text?.length) {
+            words.push(nextWord);
+          };
+        };
+        const 新词的处理 = (token) => {
+          推词();
+          nextWord = Object.assign({}, template);
+          中间的处理(token);
+        };
+        const fnMap = {
+          'B': 新词的处理,
+          'S': 新词的处理,
+          'M': 中间的处理,
+          'E': 中间的处理,
+        };
+        for (let token of tokens) {
+          if (token.seg in fnMap) {
+            fnMap[token.seg](token);
+          } else {
+            新词的处理(token);
+          };
+        };
+        推词();
+        return words;
+      },
+      idxesToWords: (idxes) => {
+        // console.log("执行 idxesToWords");
+        const tokens = _methods.idxesToTokens(idxes);
+        const words = _methods.tokensToWords(tokens);
+        return words;
+      },
+      idxesesToWords: (idxeses) => {
+        // console.log("执行 idxesesToWords");
+        let words = [];
+        for (const idxes of idxeses) {
+          words = [...words, ..._methods.idxesToWords(idxes)];
+        };
+        return words;
+      },
+      获取field中的Words: (field) => {
+        // console.log("执行 获取field中的Words");
+        return _methods.idxesesToWords(_methods.获取field的Idxeses(field));
+      },
+      获取两个idx之间的文本: (start, end) => {
+        // console.log("执行 获取两个idx之间的文本");
+        if (start > end) {
+          [start, end] = [end, start];
+        };
+        let idxes = [];
+        for (let idx=start; idx<=end; idx++) {
+          idxes.push(idx);
+        };
+        return _methods.idxesToText(idxes);
       },
     };
     // 通用 methods 结束
@@ -285,9 +380,9 @@ export default {
     const 首词白名单动词字典 = {
       'Pl': "在",  // 处所
       // 'Be': "",  // 起点
-      'Ed': "到",  // 终点
-      // 'Dr': "",  // 方向
-      // 'Or': "",  // 朝向
+      'Ed': "到、进",  // 终点
+      'Dr': "上、下、进、出、回、往、起，来、去、向",  // 方向
+      'Or': "朝",  // 朝向
       // 'PPl': "",  // 部件处所
       // 'Pa': "",  // 部位
       // 'Shp': "",  // 形状
@@ -307,13 +402,12 @@ export default {
       'Ds_Vl': "在、于、从、由、到、至、经、通、沿、顺、往、向、朝",  // 距离1
     };
     const 首尾不能是v的字段 = [
-      'Pl', 'Be', 'Ed', '--Dr', 'Or',
+      'Pl', 'Be', 'Ed', 'Dr', 'Or',
       'PPl', 'Pa',
       'Shp',
       'Pt',
       'Ds_Vl',
     ];
-    const 可以放在方向Dr开头的动词 = "上、下、进、出、回、往、起，来、去";
     const 要排除的字结尾的字段 = [
       'Pl', 'Be', 'Ed', 'Dr', 'Or',
       'PPl', 'Pa',
@@ -323,6 +417,20 @@ export default {
       'E',
       'argS', 'argT', 'argM',
     ];
+    const 距离之外的空间信息字段 = [
+      'Pl', 'Be', 'Ed', 'Dr', 'Or',
+      'PPl', 'Pa',
+      'Shp',
+      'Pt',
+    ];
+    const 要选取文本片段的空间信息字段 = [
+      'Pl', 'Be', 'Ed', 'Dr', 'Or',
+      'PPl', 'Pa',
+      'Shp',
+      'Pt',
+      'Ds_Vl',
+    ];
+    const 小句分隔符正则 = /[，。；：！？…,\.;:!\?]/;
     const _checker_data = reactive({
       '错误清单': [],
     });
@@ -362,6 +470,7 @@ export default {
         const slot_face = slot.nameFace??slot.name??"无名字段";
         const arg = obj[ky];
         const list = arg.value ?? [];
+
         // 检查着了过结尾
         if (list?.length) {
           const 结果 = list.find(it => ["着", "了", "过"].includes(it?.texts?.at?.(-1)?.at?.(-1)));
@@ -371,6 +480,7 @@ export default {
             );
           };
         };
+
         // 检查的字结尾
         if (list?.length && 要排除的字结尾的字段.includes(ky)) {
           const 结果 = list.find(it => ["的"].includes(it?.texts?.at?.(-1)?.at?.(-1)));
@@ -380,6 +490,7 @@ export default {
             );
           };
         };
+
         // 检查首尾动词
         if (list?.length && 首尾不能是v的字段.includes(ky)) {
           let 结果;
@@ -407,6 +518,7 @@ export default {
             );
           };
         };
+
         // 检查首位语气词助词
         if (list?.length) {
           let 结果;
@@ -420,6 +532,7 @@ export default {
             );
           };
         };
+
         // 检查末位介词副词
         if (list?.length) {
           let 结果;
@@ -433,32 +546,93 @@ export default {
             );
           };
         };
+
         // 检查末位数词代词
         // 需要词数大于1，注意不是直接算字符串长度
-        // TODO
-        // if (list?.length) {
-        //   let 结果;
-        //   结果 = list.find(it => {
-        //     const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
-        //     return ["m", "r"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
-        //   });
-        //   if (结果) {
-        //     _checker_methods.记录错误("warning",
-        //       `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以数词m或代词r结尾`
-        //     );
-        //   };
-        // };
+        const words = _methods.获取field中的Words(obj?.[ky]);
+        if (words.length>1) {
+          let 结果;
+          结果 = list.find(it => {
+            const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+            return ["m", "r"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
+          });
+          if (结果) {
+            _checker_methods.记录错误("warning",
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以数词m或代词r结尾`
+            );
+          };
+        };
+
+        // 检查并置片段的词性
+        if (list.length>1) {
+          const things = list.map(item => ({
+            text: (item.texts??[]).join(" "),
+            poses: Array.from(new Set(
+              _methods.idxesesToWords(item.idxeses).map(it=>it.pos)
+            ))??[],
+          }));
+          let error = false;
+          for (let ii in things) {
+            if (!error) {
+              let aa = things[ii];
+              let aa_poses_text = aa.poses.join("_");
+              for (let jj in things) {
+                if (ii!=jj && !error) {
+                  let bb = things[jj];
+                  if (bb.poses==undefined) {
+                    console.log(things);
+                    console.log([ii, jj, aa, bb]);
+                  };
+                  let bb_poses_text = bb.poses.join("_");
+                  if (aa_poses_text != bb_poses_text) {
+                    _checker_methods.记录错误("warning",
+                      `[${idx_txt}].${slot_face}: “${aa.text}”的词性(${aa_poses_text})和“${bb.text}”的词性(${bb_poses_text})有差异`
+                    );
+                    error = true;
+                  };
+                };
+              };
+            };
+          };
+        };
       },
 
 
       检查单条错误_STEP: (obj) => {
         const idx_txt = `${obj._id??obj.id??"_"}`;
+
+        // 根据 距离 字段 检查其他字段
+        if (obj?.['Ds_Vl']?.value?.length || obj?.['Ds_Dc']?.value?.face?.length) {
+          // S字段内 必须是 并置的两个语言成分
+          if (obj?.['S']?.value?.length!=2) {
+            _checker_methods.记录错误("danger",
+              `[${idx_txt}]: 距离字段需要2个并置的实体S`
+            );
+          };
+          // 不能 同时出现 距离之外的空间信息字段
+          const 异常字段 = 距离之外的空间信息字段.find(ky=>{
+            return ((obj?.[ky]?.value?.length??0)>0);
+          });
+          if (异常字段) {
+            _checker_methods.记录错误("danger",
+              `[${idx_txt}]: 距离字段不应该与其他空间信息一起填写，应该单独填写`
+            );
+          };
+        };
+
+        // 逐个字段检查
+        let 可用的空间信息字段 = [];
         const slots = reactiveCMR?.typeDict?.[obj?.type]?.slots??[];
         for (let slot of slots) {
           const ky = slot.name;
           const slot_face = slot.nameFace??slot.name??"无名字段";
+
           if (ky in obj && obj?.[ky]?.value!=null && ["MB_SPANS"].includes(obj?.[ky]?.type)) {
+
+            if (要选取文本片段的空间信息字段.includes(ky)) {可用的空间信息字段.push(ky);};
+
             _checker_methods.检查任意字段(obj, slot, ky);
+
             const arg = obj[ky];
             const list = arg.value ?? [];
 
@@ -474,6 +648,7 @@ export default {
                 );
               };
             };
+
             // 检查事件特例
             if (list?.length && ["E"].includes(ky)) {
               const 结果 = list.find(it => it?.texts?.find?.(text=>(text?.search?.(/直行|转弯|在|位于|居于|位居|地处|处于/)??-1)>=0));
@@ -483,6 +658,7 @@ export default {
                 );
               };
             };
+
             // 检查首位是字典中的介词
             if (ky in 首词报警介词字典 && list?.length) {
               const 检查列表 = 首词报警介词字典[ky].split("、");
@@ -493,20 +669,33 @@ export default {
                 );
               };
             };
-            // 检查方向Dr的首位动词
+
+            // 检查方向Dr的首尾动词  // 已经改为通用写法，这段不需要了，暂时留着备忘而已
             if (list?.length && ky=="Dr") {
-              let 结果;
-              结果 = list.find(it => {
-                const 首位idx = it?.idxeses?.[0]?.[0];
-                const 首位text = it?.texts?.[0]?.[0];
-                return _methods.idxesToPOSes([首位idx])?.[0]=="v" && !可以放在方向Dr开头的动词.includes(首位text);
-              });
-              if (结果) {
-                _checker_methods.记录错误("warning",
-                  `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以不合适的动词开头`
-                );
-              };
+              // let 结果;
+              // // 检查方向Dr的首位动词
+              // 结果 = list.find(it => {
+              //   const 首位idx = it?.idxeses?.[0]?.[0];
+              //   const 首位text = it?.texts?.[0]?.[0];
+              //   return _methods.idxesToPOSes([首位idx])?.[0]=="v" && !可以放在方向Dr开头的动词.includes(首位text);
+              // });
+              // if (结果) {
+              //   _checker_methods.记录错误("warning",
+              //     `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以不合适的动词开头`
+              //   );
+              // };
+              // // 检查方向Dr的末位动词
+              // 结果 = list.find(it => {
+              //   const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+              //   return _methods.idxesToPOSes([末位idx])?.[0]=="v";
+              // });
+              // if (结果) {
+              //   _checker_methods.记录错误("warning",
+              //     `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以动词结尾`
+              //   );
+              // };
             };
+
             // 检查方向S和事件E的首位介词
             if (list?.length && ["S", "E"].includes(ky)) {
               let 结果;
@@ -522,12 +711,59 @@ export default {
             };
           };
         };
+
+        // 检查 严重跨标点句
+        // S的开头id 和 P的结尾id之间包含逗号或句号 +
+        // P的开头id 和 E的结尾id之间包含逗号或句号 +
+        // S的开头id 和 E的结尾id之间包含逗号或句号
+        if (
+          obj?.["S"]?.value?.length &&
+          obj?.["E"]?.value?.length &&
+          可用的空间信息字段.length>0
+        ) {
+          const s_idxes = (obj?.["S"]?.value??[]).map( it=>(it.idxeses??[]) ).flat(Infinity);
+          const s_max = Math.max(...s_idxes);
+          const s_min = Math.min(...s_idxes);
+
+          const e_idxes = (obj?.["E"]?.value??[]).map( it=>(it.idxeses??[]) ).flat(Infinity);
+          const e_max = Math.max(...e_idxes);
+          const e_min = Math.min(...e_idxes);
+
+          const p_idxes = 可用的空间信息字段.map(
+            ky => (
+              (obj?.[ky]?.value??[]).map( it=>(it.idxeses??[]) )
+            )
+          ).flat(Infinity);
+          const p_max = Math.max(...p_idxes);
+          const p_min = Math.min(...p_idxes);
+
+          const fn = (aa_max, aa_min, bb_max, bb_min) => {
+            const max = Math.max(aa_max, bb_max);
+            const min = Math.min(aa_min, bb_min);
+            // 下一行的做法不是很精确，把两端的字符也加进来了，
+            // 但是因为这两端字符也不应该是标点符号，所以这种不精确的方法也就够用了。
+            const text = _methods.获取两个idx之间的文本(min, max);
+            // console.log(text);
+
+            return text.search(小句分隔符正则)>=0;
+          };
+
+          const test_S_P = fn(s_max, s_min, p_max, p_min);
+          const test_S_E = fn(s_max, s_min, e_max, e_min);
+          const test_P_E = fn(e_max, e_min, p_max, p_min);
+          if (test_S_P&&test_S_E&&test_P_E) {
+            _checker_methods.记录错误("warning",
+              `[${idx_txt}]: SPE三者之间都有断句标点 严重跨标点句`
+            );
+          };
+        };
       },
 
 
       检查单条错误_事件: (obj) => {
         const idx_txt = `${obj._id??obj.id??"_"}`;
         const slots = reactiveCMR?.typeDict?.[obj?.type]?.slots??[];
+
         for (let slot of slots) {
           const ky = slot.name;
           const slot_face = slot.nameFace??slot.name??"无名字段";
@@ -535,13 +771,26 @@ export default {
             _checker_methods.检查任意字段(obj, slot, ky);
             const arg = obj[ky];
             const list = arg.value ?? [];
+
+            // 检查 argS之外的字段填有并置成分
             if (ky!="argS" && list.length > 1) {
               _checker_methods.记录错误("warning",
                 `[${idx_txt}].${slot_face}: 含有并置成分`
               );
             };
+
+            // 检查 字段内为单个词，且 pos = v|d|p
+            const words = _methods.获取field中的Words(obj?.[ky]);
+            if (words.length==1 && ["v", "dv", "d", "p"].includes(words[0]?.pos)) {
+              const word = words[0];
+              _checker_methods.记录错误("warning",
+                `[${idx_txt}].${slot_face}: 含词性为 ${word.pos} 的词“${word.text}”`
+              );
+            };
+
           };
         };
+
         // 检查 arg0, arg1, arg2 同时为空
         if (!obj?.['arg0']?.value?.length && !obj?.['arg1']?.value?.length && !obj?.['arg2']?.value?.length) {
           _checker_methods.记录错误("danger",

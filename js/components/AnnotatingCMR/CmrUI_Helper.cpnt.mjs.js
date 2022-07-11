@@ -10,7 +10,7 @@ import { CMR, BS } from './Shadow.mjs.js';
 
 import CmrDisplay from './CmrDisplay.cpnt.mjs.js';
 
-Array.prototype.last = function() {return this[this.length-1]};
+const last_of = (array) => {return array[array.length-1]};
 
 
 // 🔯🔯🔯🔯🔯🔯

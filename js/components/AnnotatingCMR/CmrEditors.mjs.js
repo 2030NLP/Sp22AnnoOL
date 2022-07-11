@@ -76,7 +76,8 @@ import {
   objectFace,
 } from './CmrFaces.mjs.js';
 
-Array.prototype.last = function() {return this[this.length-1]};
+// Array.prototype.last = function() {return this[this.length-1]};
+const last_of = (array) => {return array[array.length-1]};
 
 
 const idxesToTokens = (idxes, allTokens) => {
@@ -653,7 +654,7 @@ export const EditorSingleBrokenSpan = {
             onClick: ()=>{
               localData['span']['value']['idxeses']?.push(selection?.array);
               ctx.emit("clear-selector");
-              localData['span']['value']['texts']?.push(idxesToText(localData['span']['value']['idxeses']?.last(), tokens));
+              localData['span']['value']['texts']?.push(idxesToText(last_of(localData['span']['value']['idxeses']), tokens));
             },
             'title': "将选中的文本追加到此处已有的文本之后",
           }, [bi("plus-lg"), " ", "追加"], "outline-primary"),
@@ -665,7 +666,7 @@ export const EditorSingleBrokenSpan = {
             onClick: ()=>{
               localData['span']['value']['idxeses'] = [selection?.array];
               ctx.emit("clear-selector");
-              localData['span']['value']['texts'] = [idxesToText(localData['span']['value']['idxeses']?.last(), tokens)];
+              localData['span']['value']['texts'] = [idxesToText(last_of(localData['span']['value']['idxeses']), tokens)];
             },
             'title': localData?.['span']?.['value']?.['texts']?.length ? "用选中的文本覆盖此处的文本" : "将选中的文本填入此处",
           }, [bi("box-arrow-in-down-right"), " ", localData?.['span']?.['value']?.['texts']?.length ? "覆盖" : "填入"], "outline-danger"),
