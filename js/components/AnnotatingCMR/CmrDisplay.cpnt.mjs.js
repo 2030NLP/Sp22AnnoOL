@@ -302,6 +302,8 @@ export default {
         };
         _checker_data.错误清单.push(it);
       },
+
+
       检查任意字段: (obj, slot, ky) => {
         const idx_txt = `${obj._id??obj.id??"_"}`;
         const slot_face = slot.nameFace??slot.name??"无名字段";
@@ -312,7 +314,7 @@ export default {
           const 结果 = list.find(it => ["着", "了", "过"].includes(it?.texts?.at?.(-1)?.at?.(-1)));
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: 以“${结果?.texts?.at?.(-1)?.at?.(-1)}”结尾，可能有误`
+              `[${idx_txt}].${slot_face}: 以“${结果?.texts?.at?.(-1)?.at?.(-1)}”结尾`
             );
           };
         };
@@ -321,7 +323,7 @@ export default {
           const 结果 = list.find(it => ["的"].includes(it?.texts?.at?.(-1)?.at?.(-1)));
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: 以“${结果?.texts?.at?.(-1)?.at?.(-1)}”结尾，可能有误`
+              `[${idx_txt}].${slot_face}: 以“${结果?.texts?.at?.(-1)?.at?.(-1)}”结尾`
             );
           };
         };
@@ -334,7 +336,7 @@ export default {
           });
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以动词开头，可能有误`
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以动词开头`
             );
           };
           结果 = list.find(it => {
@@ -343,10 +345,52 @@ export default {
           });
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以动词结尾，可能有误`
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以动词结尾`
             );
           };
         };
+        // 检查首位语气词助词
+        if (list?.length) {
+          let 结果;
+          结果 = list.find(it => {
+            const 首位idx = it?.idxeses?.[0]?.[0];
+            // const 首位text = it?.texts?.[0]?.[0];
+            return ["y", "u"].includes(_methods.idxesToPOSes([首位idx])?.[0]);
+          });
+          if (结果) {
+            _checker_methods.记录错误("warning",
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以语气词或助词开头`
+            );
+          };
+        };
+        // 检查末位介词副词
+        if (list?.length) {
+          let 结果;
+          结果 = list.find(it => {
+            const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+            return ["p", "d"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
+          });
+          if (结果) {
+            _checker_methods.记录错误("warning",
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以介词或副词结尾`
+            );
+          };
+        };
+        // 检查末位数词代词
+        // 需要词数大于1，注意不是直接算字符串长度
+        // TODO
+        // if (list?.length) {
+        //   let 结果;
+        //   结果 = list.find(it => {
+        //     const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+        //     return ["m", "r"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
+        //   });
+        //   if (结果) {
+        //     _checker_methods.记录错误("warning",
+        //       `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以数词m或代词r结尾`
+        //     );
+        //   };
+        // };
       },
 
 
@@ -378,7 +422,7 @@ export default {
               const 结果 = list.find(it => it?.texts?.find?.(text=>(text?.search?.(/直行|转弯|在|位于|居于|位居|地处|处于/)??-1)>=0));
               if (结果) {
                 _checker_methods.记录错误("warning",
-                  `[${idx_txt}].${slot_face}: 包含排除词，可能有误`
+                  `[${idx_txt}].${slot_face}: 包含排除词`
                 );
               };
             };
@@ -388,7 +432,7 @@ export default {
               const 结果 = list.find(it => 检查列表.includes(it?.texts?.[0]?.[0]));
               if (结果) {
                 _checker_methods.记录错误("warning",
-                  `[${idx_txt}].${slot_face}: 以“${结果?.texts?.[0]?.[0]}”开头，可能有误`
+                  `[${idx_txt}].${slot_face}: 以“${结果?.texts?.[0]?.[0]}”开头`
                 );
               };
             };
@@ -402,7 +446,21 @@ export default {
               });
               if (结果) {
                 _checker_methods.记录错误("warning",
-                  `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以不合适的动词开头，可能有误`
+                  `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以不合适的动词开头`
+                );
+              };
+            };
+            // 检查方向S的首位介词
+            if (list?.length && ky=="S") {
+              let 结果;
+              结果 = list.find(it => {
+                const 首位idx = it?.idxeses?.[0]?.[0];
+                // const 首位text = it?.texts?.[0]?.[0];
+                return _methods.idxesToPOSes([首位idx])?.[0]=="p";
+              });
+              if (结果) {
+                _checker_methods.记录错误("warning",
+                  `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以介词开头`
                 );
               };
             };
@@ -449,12 +507,35 @@ export default {
           const arg = obj[ky];
           const list = arg?.value ?? [];
 
-          // 检查同指为不连续文本的情形
+          // 检查同指
           if (list?.length && ["R"].includes(ky)) {
-            const 结果 = list.find(it => (it?.texts?.length??0) > 1);
+            // 检查同指为不连续文本的情形
+            let 结果;
+            结果 = list.find(it => (it?.texts?.length??0) > 1);
             if (结果) {
               _checker_methods.记录错误("pink",
                 `[${idx_txt}]: “${结果?.texts?.join?.(" ")}”为不连续文本`
+              );
+            };
+            // 检查同指为介词开头
+            结果 = list.find(it => {
+              const 首位idx = it?.idxeses?.[0]?.[0];
+              // const 首位text = it?.texts?.[0]?.[0];
+              return ["p"].includes(_methods.idxesToPOSes([首位idx])?.[0]);
+            });
+            if (结果) {
+              _checker_methods.记录错误("warning",
+                `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以介词开头`
+              );
+            };
+            // 检查同指为动词结尾
+            结果 = list.find(it => {
+              const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+              return ["v"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
+            });
+            if (结果) {
+              _checker_methods.记录错误("warning",
+                `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以动词结尾`
               );
             };
           };
