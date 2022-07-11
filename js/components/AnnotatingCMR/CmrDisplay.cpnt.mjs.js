@@ -257,6 +257,14 @@ export default {
       'Pt': "在、于、往、向、朝、距、离",  // 路径
       'Ds_Vl': "在、于、从、由、到、至、经、通、沿、顺、往、向、朝",  // 距离1
     };
+    const 首尾不能是v的字段 = [
+      'Pl', 'Be', 'Ed', '--Dr', 'Or',
+      'PPl', 'Pa',
+      'Shp',
+      'Pt',
+      'Ds_Vl',
+    ];
+    const 可以放在方向Dr开头的动词 = "上、下、进、出、回、往、起，来、去";
     const 要排除的字结尾的字段 = [
       'Pl', 'Be', 'Ed', 'Dr', 'Or',
       'PPl', 'Pa',
@@ -317,7 +325,18 @@ export default {
             );
           };
         };
+        // 检查首尾动词
+        if (list?.length && 首尾不能是v的字段.includes(ky)) {
+          const 结果 = list.find(it => ["的"].includes(it?.texts?.at?.(-1)?.at?.(-1)));
+          if (结果) {
+            _checker_methods.记录错误("warning",
+              `[${idx_txt}].${slot_face}: 以“${结果?.texts?.at?.(-1)?.at?.(-1)}”结尾，可能有误`
+            );
+          };
+        };
       },
+
+
       检查单条错误_STEP: (obj) => {
         const idx_txt = `${obj._id??obj.id??"_"}`;
         const slots = reactiveCMR?.typeDict?.[obj?.type]?.slots??[];
@@ -343,7 +362,7 @@ export default {
             };
             // 检查事件特例
             if (list?.length && ["E"].includes(ky)) {
-              const 结果 = list.find(it => it?.texts?.find?.(text=>(text?.search?.(/直行|转弯/)??-1)>=0));
+              const 结果 = list.find(it => it?.texts?.find?.(text=>(text?.search?.(/直行|转弯|在|位于|居于|位居|地处|处于/)??-1)>=0));
               if (结果) {
                 _checker_methods.记录错误("warning",
                   `[${idx_txt}].${slot_face}: 包含排除词，可能有误`
@@ -363,6 +382,8 @@ export default {
           };
         };
       },
+
+
       检查单条错误_事件: (obj) => {
         const idx_txt = `${obj._id??obj.id??"_"}`;
         const slots = reactiveCMR?.typeDict?.[obj?.type]?.slots??[];
@@ -387,6 +408,8 @@ export default {
           );
         };
       },
+
+
       检查单条错误_同指: (obj) => {
         const idx_txt = `${obj._id??obj.id??"_"}`;
         const slots = reactiveCMR?.typeDict?.[obj?.type]?.slots??[];
@@ -410,9 +433,13 @@ export default {
           };
         };
       },
+
+
       检查单条错误_特例: (obj) => {
         _checker_methods.记录错误("info", `特殊情况：${obj?.Label?.value?.face??"未知情形"}`);
       },
+
+
       检查单条错误: (obj) => {
         // console.log("执行 _checker_methods.检查单条错误");
         const map = {
