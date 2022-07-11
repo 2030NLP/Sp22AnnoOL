@@ -327,10 +327,23 @@ export default {
         };
         // 检查首尾动词
         if (list?.length && 首尾不能是v的字段.includes(ky)) {
-          const 结果 = list.find(it => ["的"].includes(it?.texts?.at?.(-1)?.at?.(-1)));
+          let 结果;
+          结果 = list.find(it => {
+            const 首位idx = it?.idxeses?.[0]?.[0];
+            return _methods.idxesToPOSes([首位idx])?.[0]=="v";
+          });
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: 以“${结果?.texts?.at?.(-1)?.at?.(-1)}”结尾，可能有误`
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以动词开头，可能有误`
+            );
+          };
+          结果 = list.find(it => {
+            const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+            return _methods.idxesToPOSes([末位idx])?.[0]=="v";
+          });
+          if (结果) {
+            _checker_methods.记录错误("warning",
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以动词结尾，可能有误`
             );
           };
         };
@@ -376,6 +389,20 @@ export default {
               if (结果) {
                 _checker_methods.记录错误("warning",
                   `[${idx_txt}].${slot_face}: 以“${结果?.texts?.[0]?.[0]}”开头，可能有误`
+                );
+              };
+            };
+            // 检查方向Dr的首位动词
+            if (list?.length && ky=="Dr") {
+              let 结果;
+              结果 = list.find(it => {
+                const 首位idx = it?.idxeses?.[0]?.[0];
+                const 首位text = it?.texts?.[0]?.[0];
+                return _methods.idxesToPOSes([首位idx])?.[0]=="v" && !可以放在方向Dr开头的动词.includes(首位text);
+              });
+              if (结果) {
+                _checker_methods.记录错误("warning",
+                  `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以不合适的动词开头，可能有误`
                 );
               };
             };
