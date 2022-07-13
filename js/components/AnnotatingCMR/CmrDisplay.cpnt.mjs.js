@@ -563,8 +563,8 @@ export default {
           };
         };
 
-        // 检查并置片段的词性
-        if (list.length>1) {
+        // 检查并置片段的词性（同指关系不用）
+        if (list.length>1 && slot.name!="R") {
           const things = list.map(item => ({
             text: (item.texts??[]).join(" "),
             poses: Array.from(new Set(

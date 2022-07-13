@@ -45,15 +45,12 @@ const TokenListP = {
             'right-space': true,
             'should-notice': token.word=='前'||token.word=='后',
           },
-          'title' : this.showtitle ? `idx: ${
-            token.idx
-          }\npos: ${
-            token.pos
-          }${
+          'title' : this.showtitle
+          ? `idx: ${token.idx??"_"}\npos: ${token.pos??"_"}\nseg: ${token.seg??"_"}${
             token?.to?.word?.length?'\norigin: '+token.word:''
           }${
             token?.from?.word?.length?'\nfrom: '+token.from.word:''
-          }` : token.idx,
+          }` : `idx: ${token.idx??"_"}\npos: ${token.pos??"_"}\nseg: ${token.seg??"_"}`,
           'data-title' : `idx: ${token.idx}\npos: ${token.pos}${token?.to?.word?.length?'\norigin: '+token.word:''}`,
           'data-idx' : token.idx,
           'data-pos' : token.pos,
