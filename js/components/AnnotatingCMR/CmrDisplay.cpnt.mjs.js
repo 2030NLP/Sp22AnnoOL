@@ -405,6 +405,7 @@ export default {
     // 通用 生命周期 结束
 
 
+    const 介词清单 = "从、由、到、至、经、通过、沿、顺着、过、向、朝、往、在、于、距离、距、离";
     const 首词白名单字典 = {
       'Pl': "在",  // 处所
       // 'Be': "",  // 起点
@@ -512,6 +513,21 @@ export default {
         const list = arg.value ?? [];
         const wordses = _methods.获取field中的Wordses(arg);
         const words = _methods.获取field中的Words(arg);
+
+        // 检查只有一个词且未介词的情况
+        if (list?.length) {
+          let 结果;
+          结果 = wordses.find(wordL => {
+            if (wordL.length>1) {return false;};
+            const word = wordL[0];
+            return word.pos=="p" || 介词清单.split("、").includes(word.text);
+          });
+          if (结果) {
+            _checker_methods.记录错误("warning",
+              `[${idx_txt}].${slot_face}: “${结果?.[0]?.text}”似乎只有介词`
+            );
+          };
+        }
 
         // 检查着了过结尾
         if (list?.length) {
