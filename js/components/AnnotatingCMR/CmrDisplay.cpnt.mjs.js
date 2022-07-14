@@ -164,18 +164,18 @@ export default {
         if (!iibb.length) {return false;};
         return iiaa[0]==iibb[0] ? (average(iiaa)-average(iibb)) : (iiaa[0]-iibb[0]);
       },
-      获取field的Idxeses: (field) => {
-        // console.log("执行 获取field的Idxeses");
-        let idxeses = [];
+      获取field的Idxeseses: (field) => {
+        // console.log("执行 获取field的Idxeseses");
+        let idxeseses = [];
         const fn_map = {
           "MB_SPANS": (list)=>{return list.map(it=>it.idxeses);},
         };
         if (field?.value!=null) {
           if (field?.type in fn_map) {
-            idxeses = fn_map[field?.type](field?.value)??[];
+            idxeseses = fn_map[field?.type](field?.value)??[];
           };
         };
-        return idxeses;
+        return idxeseses;
       },
       获取field的Idxes: (field) => {
         // console.log("执行 获取field的Idxes");
@@ -251,10 +251,13 @@ export default {
         // console.log("执行 idxesToTokens");
         idxes = idxes??[];
         let allTokens = props?.tokens ?? [];
+        // console.log("allTokens:");
+        // console.log(allTokens);
         if (!allTokens?.length) {
           return [];
         };
-        return idxes.map(idx => allTokens[idx]?.to ?? allTokens[idx] ?? {});
+        const tokens = idxes.map(idx => allTokens[idx]?.to ?? allTokens[idx] ?? {});
+        return tokens;
       },
       idxesToText: (idxes) => {
         // console.log("执行 idxesToText");
@@ -273,28 +276,42 @@ export default {
       },
       tokensToWords: (tokens) => {
         // console.log("执行 tokensToWords");
+        // console.log("tokens:");
+        // console.log(tokens);
         let words = [];
         let template = {
           text: "",
           pos: "_",
           idxes: [],
+          segs: [],
+          comp: true,
         };
-        let nextWord = Object.assign({}, template);
+        let comingWord = Object.assign({}, template);
         const 中间的处理 = (token) => {
-          nextWord.text = `${nextWord.text}${token?.to?.word??token?.word??token?.from?.word??""}`;
-          nextWord.pos = token?.pos ?? "_";
+          comingWord.text = `${comingWord.text}${token?.to?.word??token?.word??token?.from?.word??""}`;
+          comingWord.pos = token?.pos ?? "_";
           if (token.idx!=null) {
-            nextWord.idxes.push(token.idx);
+            comingWord.idxes.push(token.idx);
+          };
+          if (token.seg!=null && ["B", "S", "M", "E"].includes(token.seg)) {
+            comingWord.segs.push(token.seg);
           };
         };
         const 推词 = () => {
-          if (nextWord.text?.length) {
-            words.push(nextWord);
+          if (comingWord.text?.length) {
+            if (comingWord.segs?.length && (!["B", "S"].includes(comingWord.segs[0]) || !["E", "S"].includes(comingWord.segs[0]))) {
+              comingWord.comp = false;
+            } else {
+              comingWord.comp = true;
+            };
+            // console.log("comingWord:");
+            // console.log(comingWord);
+            words.push(comingWord);
           };
         };
         const 新词的处理 = (token) => {
           推词();
-          nextWord = Object.assign({}, template);
+          comingWord = Object.assign({}, template);
           中间的处理(token);
         };
         const fnMap = {
@@ -315,7 +332,11 @@ export default {
       },
       idxesToWords: (idxes) => {
         // console.log("执行 idxesToWords");
+        // console.log("idxes:");
+        // console.log(JSON.stringify(idxes));
         const tokens = _methods.idxesToTokens(idxes);
+        // console.log("tokens:");
+        // console.log(tokens);
         const words = _methods.tokensToWords(tokens);
         return words;
       },
@@ -329,7 +350,14 @@ export default {
       },
       获取field中的Words: (field) => {
         // console.log("执行 获取field中的Words");
-        return _methods.idxesesToWords(_methods.获取field的Idxeses(field));
+        return _methods.idxesesToWords(_methods.获取field的Idxeseses(field));
+      },
+      获取field中的Wordses: (field) => {
+        // console.log("执行 获取field中的Wordses");
+        const idxeseses = _methods.获取field的Idxeseses(field);
+        // console.log("idxeseses:");
+        // console.log(JSON.stringify(idxeseses));
+        return idxeseses.map(idxes=>_methods.idxesesToWords(idxes));
       },
       获取两个idx之间的文本: (start, end) => {
         // console.log("执行 获取两个idx之间的文本");
@@ -377,11 +405,23 @@ export default {
     // 通用 生命周期 结束
 
 
-    const 首词白名单动词字典 = {
+    const 首词白名单字典 = {
       'Pl': "在",  // 处所
       // 'Be': "",  // 起点
       'Ed': "到、进",  // 终点
-      'Dr': "上、下、进、出、回、往、起，来、去、向",  // 方向
+      'Dr': "上、下、进、出、回、往、起、来、去、向",  // 方向
+      'Or': "朝",  // 朝向
+      // 'PPl': "",  // 部件处所
+      // 'Pa': "",  // 部位
+      // 'Shp': "",  // 形状
+      // 'Pt': "",  // 路径
+      // 'Ds_Vl': "",  // 距离1
+    };
+    const 尾词白名单字典 = {
+      'Pl': "在、上、下、中、前、后、左、右",  // 处所
+      // 'Be': "",  // 起点
+      'Ed': "到、进",  // 终点
+      'Dr': "上、下、进、出、回、往、起、来、去、向",  // 方向
       'Or': "朝",  // 朝向
       // 'PPl': "",  // 部件处所
       // 'Pa': "",  // 部位
@@ -470,6 +510,8 @@ export default {
         const slot_face = slot.nameFace??slot.name??"无名字段";
         const arg = obj[ky];
         const list = arg.value ?? [];
+        const wordses = _methods.获取field中的Wordses(arg);
+        const words = _methods.获取field中的Words(arg);
 
         // 检查着了过结尾
         if (list?.length) {
@@ -491,30 +533,77 @@ export default {
           };
         };
 
-        // 检查首尾动词
+        // 检查首尾动词 旧版
+        if (false && list?.length && 首尾不能是v的字段.includes(ky)) {
+          // let 结果;
+          // 结果 = list.find(it => {
+          //   const 首位idx = it?.idxeses?.[0]?.[0];
+          //   const 首位text = it?.texts?.[0]?.[0];
+          //   let 白名单检查结果 = true;
+          //   if (ky in 首词白名单字典) {
+          //     白名单检查结果 = !首词白名单字典[ky].split("、").includes(首位text);
+          //   };
+          //   return _methods.idxesToPOSes([首位idx])?.[0]=="v" && 白名单检查结果;
+          // });
+          // if (结果) {
+          //   _checker_methods.记录错误("warning",
+          //     `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以不合适的动词开头`
+          //   );
+          // };
+          // if (words?.length > 1) {
+          //   结果 = list.find(it => {
+          //     const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+          //     const 末位text = it?.texts?.at?.(-1)?.at?.(-1);
+          //     let 白名单检查结果 = true;
+          //     if (ky in 尾词白名单字典) {
+          //       白名单检查结果 = !尾词白名单字典[ky].split("、").includes(末位text);
+          //     };
+          //     return _methods.idxesToPOSes([末位idx])?.[0]=="v" && 白名单检查结果;
+          //   });
+          //   if (结果) {
+          //     _checker_methods.记录错误("warning",
+          //       `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以动词结尾`
+          //     );
+          //   };
+          // };
+        };
+
+        // 检查首尾动词 新版
         if (list?.length && 首尾不能是v的字段.includes(ky)) {
+          // console.log(wordses);
+          // console.log(words);
+          // console.log(list);
           let 结果;
-          结果 = list.find(it => {
-            const 首位idx = it?.idxeses?.[0]?.[0];
-            const 首位text = it?.texts?.[0]?.[0];
-            let 白名单检查结果 = true;
-            if (ky in 首词白名单动词字典) {
-              白名单检查结果 = !首词白名单动词字典[ky].split("、").includes(首位text);
+          // 检查首词
+          结果 = wordses.find(wordL => {
+            if (!wordL?.comp) {return false;};
+            const 首词 = wordL?.[0];
+            let 不在白名单中 = true;
+            if (ky in 首词白名单字典) {
+              不在白名单中 = !首词白名单字典[ky].split("、").includes(首词.text?.[0]);
             };
-            return _methods.idxesToPOSes([首位idx])?.[0]=="v" && 白名单检查结果;
+            return 首词.pos=="v" && 不在白名单中;
           });
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以不合适的动词开头`
+              `[${idx_txt}].${slot_face}: “${结果?.[0]?.text}”似乎以不合适的动词开头`
             );
           };
-          结果 = list.find(it => {
-            const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
-            return _methods.idxesToPOSes([末位idx])?.[0]=="v";
+          // 检查尾词
+          结果 = wordses.find(wordL => {
+            if (!wordL?.comp) {return false;};
+            if ((wordL?.length??0)<=1) {return false;};
+            const 尾词 = wordL?.at?.(-1);
+            let 不在白名单中 = true;
+            if (ky in 尾词白名单字典) {
+              不在白名单中 = !尾词白名单字典[ky].split("、").includes(尾词.text?.at?.(-1));
+              console.log(尾词?.text, ky, 不在白名单中);
+            };
+            return 尾词.pos=="v" && 不在白名单中;
           });
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以动词结尾`
+              `[${idx_txt}].${slot_face}: “${结果?.at?.(-1)?.text}”似乎以动词结尾`
             );
           };
         };
@@ -533,38 +622,70 @@ export default {
           };
         };
 
-        // 检查末位介词副词
+        // 检查末位介词副词 旧版
+        if (false && list?.length) {
+          // let 结果;
+          // 结果 = list.find(it => {
+          //   const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+          //   return ["p", "d"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
+          // });
+          // if (结果) {
+          //   _checker_methods.记录错误("warning",
+          //     `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以介词或副词结尾`
+          //   );
+          // };
+        };
+
+        // 检查末位介词副词 新版
         if (list?.length) {
           let 结果;
-          结果 = list.find(it => {
-            const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
-            return ["p", "d"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
+          // 检查末位介词副词
+          结果 = wordses.find(wordL => {
+            if (!wordL?.comp) {return false;};
+            if ((wordL?.length??0)<=1) {return false;};
+            const 尾词 = wordL?.at?.(-1);
+            let 不在白名单中 = true;
+            if (ky in 尾词白名单字典) {
+              不在白名单中 = !尾词白名单字典[ky].split("、").includes(尾词.text?.at?.(-1));
+            };
+            return ["p", "d"].includes(尾词.pos) && 不在白名单中;
           });
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以介词或副词结尾`
+              `[${idx_txt}].${slot_face}: “${结果?.at?.(-1)?.text}”似乎以介词或副词结尾`
             );
           };
         };
 
         // 检查末位数词代词
         // 需要词数大于1，注意不是直接算字符串长度
-        const words = _methods.获取field中的Words(obj?.[ky]);
         if (words.length>1) {
           let 结果;
           结果 = list.find(it => {
             const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
-            return ["m", "r"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
+            return ["m"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
           });
           if (结果) {
             _checker_methods.记录错误("warning",
-              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以数词m或代词r结尾`
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以数词m结尾`
+            );
+          };
+        };
+        if (words.length>1 && !["S", "R"].includes(ky)) {
+          let 结果;
+          结果 = list.find(it => {
+            const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+            return ["r"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
+          });
+          if (结果) {
+            _checker_methods.记录错误("warning",
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以代词r结尾`
             );
           };
         };
 
         // 检查并置片段的词性（同指关系不用）
-        if (list.length>1 && slot.name!="R") {
+        if (list.length>1 && ky!="R") {
           const things = list.map(item => ({
             text: (item.texts??[]).join(" "),
             poses: Array.from(new Set(
