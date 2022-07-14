@@ -188,19 +188,19 @@ const RootComponent = {
       const map = {
         't1-dev': {
           playMode: true,
-          playToken: "4ae673de-da71-4a07-9b74-197cfa9f652f",
+          playToken: "e96a57f2-74a3-4878-9639-9e1fb31ef936",
         },
         't2-dev': {
           playMode: true,
-          playToken: "4ae673de-da71-4a07-9b74-197cfa9f652f",
+          playToken: "0261d48c-0b62-4041-a90d-599ddc0b93bf",
         },
         't2r-dev': {
           playMode: true,
-          playToken: "4ae673de-da71-4a07-9b74-197cfa9f652f",
+          playToken: "0261d48c-0b62-4041-a90d-599ddc0b93bf",
         },
         't3-dev': {
           playMode: true,
-          playToken: "7a0a4de0-f39a-402a-a2e4-dea30d95046d",
+          playToken: "062ebcce-953c-4cab-afd6-c465a9231790",
         },
         't1': {
           playMode: true,

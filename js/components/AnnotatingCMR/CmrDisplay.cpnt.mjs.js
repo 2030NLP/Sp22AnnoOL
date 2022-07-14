@@ -83,7 +83,7 @@ const average = list => list.length ? (list.reduce(((aa, bb)=>aa+bb), 0) / list.
 
 
 export default {
-  props: ['annotation', 'tokens', 'definition'],
+  props: ['annotation', 'tokens', 'definition', 'showTips'],
   emits: [],
   component: {},
   setup(props, ctx) {
@@ -1169,7 +1169,7 @@ export default {
           onClick: ()=>{onSortObjectsById()},
         }, ["按创建顺序排序"], "light"),
       ];
-      return div({'class': "d-inline-flex gap-1 mx-2"}, btns);
+      return div({'class': "d-inline-flex gap-1 me-2 my-2"}, btns);
     });
     // 排序按钮组 相关 结束
 
@@ -1178,17 +1178,17 @@ export default {
     return () => {
       // console.log("渲染函数 开始");
       const that = div({'class': "cmr-display text-wrap text-break"}, [
-        div({'class': ["mb-2"]}, [
+        props?.showTips ? div({'class': ["mb-2"]}, [
           完成状态文本(),
-          排序按钮组(),
-        ]),
+        ]) : null,
         div({'class': ["mb-2"]}, [
           文本区(),
         ]),
-        div({'class': ["mb-2"]}, [
+        props?.showTips ? div({'class': ["mb-2"]}, [
           错误提示区(),
-        ]),
+        ]) : null,
         div({'class': ["my-1", {"d-none": v(ref_viewMode)!="清单模式"}]}, [
+          div({}, 排序按钮组()),
           清单模式面板(),
         ]),
       ]);

@@ -269,7 +269,7 @@
 
         <div class="row mt-0 mb-2 __align-items-center" id="page-main-editor--main">
           <!-- 内容区 开始 -->
-          <div class="col col-12 col-lg-6 --col-xl-7 my-1">
+          <div class="col col-12 --col-lg-6 --col-xl-7 my-1" :class="play.playMode ? 'col-lg-12' : 'col-lg-6'">
             <div class="position-sticky top-0 start-0">
 
               <!-- 替换后文本区 开始 -->
@@ -328,7 +328,7 @@
               </div>
               <!-- 便捷选择操作区 结束 -->
               <!-- 参考信息区 开始 -->
-              <div class="row my-2">
+              <div class="row my-2" v-show="!play.playMode">
                 <div class="col col-12 col-lg-12">
                   <cmr-ui-helper
                     :spes="example?._spes"
@@ -369,7 +369,7 @@
         </div>
 
         <!-- 标注结果展示模块 开始 -->
-        <div class="row mt-2 mb-1 carded" id="annotations-area">
+        <div class="row mt-2 mb-1 carded" :class="{'border-0' : play?.playMode}" id="annotations-area">
           <div class="col col-12 my-1" v-show="example?.review?.accept!=null && !play.playMode">
             <span class="badge text-wrap my-1 me-2" :class="example?.review?.accept ? (example?.review?.checked ? 'bg-warning bg-opacity-25 text-dark' : 'bg-success text-light') : (example?.review?.checked ? 'bg-warning bg-opacity-25 text-dark' : 'bg-danger text-light')">
               <span v-show="example?.review?.reviewer">{{example?.review?.reviewer?.name??`审核员${example?.review?.reviewer?.id}`}}</span>
@@ -381,7 +381,7 @@
             <div class="text-muted">标注好的内容将显示在这里</div>
           </div>
           <div class="col col-12 my-1" v-show="example?.annotations?.length">
-            <div class="text-muted">标注结果：</div>
+            <div class="text-muted" :class="{'d-none' : play?.playMode}">标注结果：</div>
             <results-display
               class="col col-12 col-lg-12"
               :each-class="'rounded-pill my-1 me-2'"
@@ -391,6 +391,7 @@
               :show-sub="false"
               :show-index="false"
               :show-title-detail="false"
+              :show-tips="play?.playMode?false:true"
               :can-close="true"
               :wrap="true"
               @close="(annot)=>{win.console.log(annot);example.annotations.splice(annot._idx_to_delete,1);alertBox.pushAlert('别忘了保存', 'warning');}"
