@@ -165,6 +165,7 @@ const RootComponent = {
         playMode: false,
         playToken: "",
         playTask: "t2",
+        playTitle: "task2",
       },
       newThings: {
         theUser: {},
@@ -189,34 +190,42 @@ const RootComponent = {
         't1-dev': {
           playMode: true,
           playToken: "e96a57f2-74a3-4878-9639-9e1fb31ef936",
+          playTitle: "task1",
         },
         't2-dev': {
           playMode: true,
           playToken: "0261d48c-0b62-4041-a90d-599ddc0b93bf",
+          playTitle: "task2",
         },
         't2r-dev': {
           playMode: true,
           playToken: "0261d48c-0b62-4041-a90d-599ddc0b93bf",
+          playTitle: "task2",
         },
         't3-dev': {
           playMode: true,
           playToken: "062ebcce-953c-4cab-afd6-c465a9231790",
+          playTitle: "task3",
         },
         't1': {
           playMode: true,
           playToken: "e96a57f2-74a3-4878-9639-9e1fb31ef936",
+          playTitle: "task1",
         },
         't2': {
           playMode: true,
           playToken: "0261d48c-0b62-4041-a90d-599ddc0b93bf",
+          playTitle: "task2",
         },
         't2r': {
           playMode: true,
           playToken: "0261d48c-0b62-4041-a90d-599ddc0b93bf",
+          playTitle: "task2",
         },
         't3': {
           playMode: true,
           playToken: "062ebcce-953c-4cab-afd6-c465a9231790",
+          playTitle: "task3",
         },
       };
       if (key in map) {

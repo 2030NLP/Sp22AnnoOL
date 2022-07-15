@@ -13,7 +13,7 @@
   <!-- 使用HTML meta no-cache标签来禁用缓存 https://www.cnblogs.com/zdz8207/p/vue-meta-no-cache.html -->
   <!-- axios禁止请求缓存 https://blog.csdn.net/u010238381/article/details/84304968 -->
 
-  <title>空间关系理解数据标注 2022</title>
+  <title>SpaCE2022 标注示例</title>
 
   <link href="css/bootstrap_5.1.3_.min.css" rel="stylesheet">
   <link href="css/bootstrap-icons_1.8.2_.css" rel="stylesheet">
@@ -35,7 +35,7 @@
     <div class="page-cover" v-if="false">
       <div class="container pt-5 text-center">
         <div class="row">
-          <div><h2>空间关系理解数据标注 2022</h2></div>
+          <div><h2>SpaCE2022 标注示例</h2></div>
         </div>
         <div class="row">
           <div>
@@ -50,25 +50,25 @@
     <!-- navbar start -->
     <nav
       class="navbar navbar-expand-lg navbar-dark"
-      :class="play.playMode ? 'bg-primary' : ctrl.developing ? 'bg-success' : 'bg-dark'"
+      :class="play.playMode||true ? 'bg-primary' : ctrl.developing ? 'bg-success' : 'bg-dark'"
     >
       <div class="container">
         <a v-show="play.playMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">SpaCE2022 {{play?.playTitle}} 标注示例</a>
-        <a v-show="!play.playMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">空间关系理解数据标注 2022</a>
+        <a v-show="!play.playMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">SpaCE2022 标注示例</a>
         <button class="navbar-toggler" type="button" @click="newThings.navbar_collapse_show=!newThings.navbar_collapse_show">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" :class="{show: newThings.navbar_collapse_show}">
           <div class="navbar-nav">
-            <span v-show="!play.playMode" class="nav-link">#{{ctrl.currentWorkerId??""}} {{ctrl.currentWorker??""}}</span>
+            <!-- <span v-show="!play.playMode" class="nav-link">#{{ctrl.currentWorkerId??""}} {{ctrl.currentWorker??""}}</span>
             <template v-for="tag in (newThings?.theUser?.tags??[]).filter(it=>['A组', 'B组', 'C组', 'D组', 'cool'].includes(it))">
               <a class="nav-link" v-if="!play.playMode" _href="#" @click="()=>{}"><small>{{tag}}</small></a>
-            </template>
+            </template> -->
             <!-- <a class="nav-link" v-show="play.playMode">{{play?.playTitle}}</a> -->
-            <a class="nav-link" href="./menu" target="_blank" v-show="!play.playMode">文档</a>
-            <a class="nav-link" href="./menu" target="_blank" v-show="play.playMode">标注文档</a>
-            <a class="nav-link" href="https://2030nlp.github.io/SpaCE2022/" target="_blank" v-show="play.playMode">评测网站</a>
-            <a class="nav-link" @click="()=>{win.location.reload();}" v-show="play.playMode">返回</a>
+            <!-- <a class="nav-link" href="./menu" target="_blank" v-show="!play.playMode">文档</a> -->
+            <a class="nav-link" href="./menu" target="_blank">标注文档</a>
+            <a class="nav-link" href="https://2030nlp.github.io/SpaCE2022/" target="_blank">评测网站</a>
+            <a class="nav-link" @click="()=>{win.location.reload();}" v-show="play.playMode">返回目录</a>
             <template v-if="!play.playMode">
               <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
@@ -138,8 +138,8 @@
 
     <div class="container page my-4" id="page-setup" v-show="ctrl.currentPage=='setup'">
       <div class="container py-2">
-        <div class="row align-items-center">
-          <div class="col col-12 col-md-3 col-lg-4 my-2">
+        <!-- <div class="row align-items-center"> -->
+          <!-- <div class="col col-12 col-md-3 col-lg-4 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="text" v-model="ctrl.currentWorker" placeholder="请输入您的姓名">
               <label class="form-label">姓名</label>
@@ -150,39 +150,39 @@
               <input class="form-control form-control-sm" type="password" v-model="ctrl.currentWorkerSecret" placeholder="请输入您的密码">
               <label class="form-label">密码</label>
             </div>
-          </div>
+          </div> -->
           <!-- <div v-if="false" class="col col-12 col-md-3 col-lg-3 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="text" v-model="ctrl.currentWorkerTarget" placeholder="请输入您的标注目标">
               <label class="form-label">标注目标数量</label>
             </div>
           </div> -->
-        </div>
-        <div class="row align-items-center my-1" v-if="newThings?.topic?.length">
+        <!-- </div> -->
+        <!-- <div class="row align-items-center my-1" v-if="newThings?.topic?.length">
           <div class="col col-12">
             <div class="small text-muted">任务主题：{{newThings?.topic}}</div>
           </div>
-        </div>
+        </div> -->
         <div class="row align-items-center my-2">
           <div class="col col-12">
-            <button
+            <!-- <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{bEU.begin();newThings.begun=true;}"
               title="开始标注"
-            >开始标注</button>
-            <!-- <button
+            >开始标注</button> -->
+            <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{startPlay('t1');}"
               title="查看 task1 示例"
-            >查看 task1 示例</button> -->
-            <!-- <button
+            >查看 task1 示例</button>
+            <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{startPlay('t2r');}"
               title="查看 task2 示例"
-            >查看 task2 示例</button> -->
+            >查看 task2 示例</button>
             <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
