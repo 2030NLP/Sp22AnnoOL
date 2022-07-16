@@ -637,7 +637,15 @@ const RootComponent = {
       review.reviewedAt = dateString();
       content.review = review;
 
-      content?._ctrl?.timeLog?.push?.( ['check', JSON.parse(JSON.stringify(new Date())), review.reviewer] );
+      const 记录在时间信息里的内容 = {
+        id: review.reviewer.id,
+        name: review.reviewer.name,
+        detail: {
+          type: review.accept===true ? "accept" : review.accept===false ? "reject" : "unknown",
+        },
+      };
+
+      content?._ctrl?.timeLog?.push?.( ['check', JSON.parse(JSON.stringify(new Date())), 记录在时间信息里的内容] );
 
       let resp = await theBackEnd.updateAnno(user, task, entry, content, topic, entryVer);
       if (resp?.data?.code!=200) {

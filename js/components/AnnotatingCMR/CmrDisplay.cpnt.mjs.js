@@ -83,7 +83,7 @@ const average = list => list.length ? (list.reduce(((aa, bb)=>aa+bb), 0) / list.
 
 
 export default {
-  props: ['annotation', 'tokens', 'definition', 'showTips'],
+  props: ['annotation', 'tokens', 'definition', 'showTips', 'limitHeight'],
   emits: [],
   component: {},
   setup(props, ctx) {
@@ -405,12 +405,16 @@ export default {
     // 通用 生命周期 结束
 
 
+    const 否定字清单 = "不、非、无、没、否";
+    const 否定字正则 = /[不非无没否]/
+    const 事件E结尾黑名单 = "来、去、上、下、进、出、回、往、起、到";
+
     const 介词清单 = "从、由、到、至、经、通过、沿、顺着、过、向、朝、往、在、于、距离、距、离";
     const 首词白名单字典 = {
       'Pl': "在",  // 处所
       // 'Be': "",  // 起点
       'Ed': "到、进",  // 终点
-      'Dr': "上、下、进、出、回、往、起、来、去、向",  // 方向
+      'Dr': "上、下、进、入、出、回、往、起、来、去、向",  // 方向
       'Or': "朝",  // 朝向
       // 'PPl': "",  // 部件处所
       // 'Pa': "",  // 部位
@@ -419,11 +423,11 @@ export default {
       // 'Ds_Vl': "",  // 距离1
     };
     const 尾词白名单字典 = {
-      'Pl': "在、上、下、中、前、后、左、右",  // 处所
-      // 'Be': "",  // 起点
-      'Ed': "到、进",  // 终点
-      'Dr': "上、下、进、出、回、往、起、来、去、向",  // 方向
-      'Or': "朝",  // 朝向
+      'Pl': "上、下、里、外、中、前、后、左、右",  // 处所
+      'Be': "上、下、里、外、中、前、后、左、右",  // 起点
+      'Ed': "上、下、里、外、中、前、后、左、右",  // 终点
+      'Dr': "上、下、进、入、出、回、往、起、来、去、向",  // 方向
+      // 'Or': "朝",  // 朝向
       // 'PPl': "",  // 部件处所
       // 'Pa': "",  // 部位
       // 'Shp': "",  // 形状
@@ -528,6 +532,16 @@ export default {
             );
           };
         }
+
+        // 检查含有 否定字清单 中的字
+        if (list?.length) {
+          const 结果 = list.find(it => (it?.texts??[]).find(txt=>txt.search(否定字正则)>=0));
+          if (结果) {
+            _checker_methods.记录错误("warning",
+              `[${idx_txt}].${slot_face}: “${结果?.texts?.join(" ")}”含有否定义的字`
+            );
+          };
+        };
 
         // 检查着了过结尾
         if (list?.length) {
@@ -766,12 +780,36 @@ export default {
 
           if (ky in obj && obj?.[ky]?.value!=null && ["MB_SPANS"].includes(obj?.[ky]?.type)) {
 
-            if (要选取文本片段的空间信息字段.includes(ky)) {可用的空间信息字段.push(ky);};
-
-            _checker_methods.检查任意字段(obj, slot, ky);
-
             const arg = obj[ky];
             const list = arg.value ?? [];
+
+            if (要选取文本片段的空间信息字段.includes(ky)) {
+              可用的空间信息字段.push(ky);
+
+              // 检查左右邻接词是否高亮，高亮则报警
+              const 那些首部idxes = list.map(it=>it?.idxeses?.[0]?.[0]);
+              const 那些尾部idxes = list.map(it=>it?.idxeses?.at?.(-1)?.at?.(-1));
+
+              const 那些左邻idxes = 那些首部idxes.map(it=>(it-1));
+              const 那些右邻idxes = 那些尾部idxes.map(it=>(it+1));
+
+              // v(所有空间义高亮的Idxes)?.includes?.(idx)
+              const 左邻高亮idx = 那些左邻idxes.find(idx=>v(所有空间义高亮的Idxes)?.includes?.(idx));
+              const 右邻高亮idx = 那些右邻idxes.find(idx=>v(所有空间义高亮的Idxes)?.includes?.(idx));
+              if (左邻高亮idx!=null) {
+                _checker_methods.记录错误("warning",
+                  `[${idx_txt}].${slot_face}: 左邻高亮词“…${_methods.idxesToText([左邻高亮idx])}”`
+                );
+              };
+              if (右邻高亮idx!=null) {
+                _checker_methods.记录错误("warning",
+                  `[${idx_txt}].${slot_face}: 右邻高亮词“${_methods.idxesToText([右邻高亮idx])}…”`
+                );
+              };
+
+            };
+
+            _checker_methods.检查任意字段(obj, slot, ky);
 
             // 检查参照事件 附近字符
             if (list?.length && ["T_Rf"].includes(ky)) {
@@ -808,7 +846,7 @@ export default {
             };
 
             // 检查方向Dr的首尾动词  // 已经改为通用写法，这段不需要了，暂时留着备忘而已
-            if (list?.length && ky=="Dr") {
+            if (false && list?.length && ky=="Dr") {
               // let 结果;
               // // 检查方向Dr的首位动词
               // 结果 = list.find(it => {
@@ -843,6 +881,17 @@ export default {
               if (结果) {
                 _checker_methods.记录错误("warning",
                   `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以介词开头`
+                );
+              };
+            };
+
+            // 检查 事件E 最后一个字符是“来、去、上、下、进、出、回、往、起、到”
+            // 事件E结尾黑名单
+            if (list?.length && ["E"].includes(ky)) {
+              const 结果 = list.find(it => 事件E结尾黑名单.includes(it?.texts?.at?.(-1)?.at?.(-1)));
+              if (结果) {
+                _checker_methods.记录错误("warning",
+                  `[${idx_txt}].${slot_face}: 以“${结果?.texts?.at?.(-1)?.at?.(-1)}”结尾`
                 );
               };
             };
@@ -1032,7 +1081,7 @@ export default {
       // console.log("更新 错误提示区");
       return div({
         'class': [
-          "--border rounded my-2 py-1 --px-2",
+          "--border rounded my-1 py-1 --px-2",
           {"d-none": !_checker_data.错误清单?.length},
         ],
       }, _checker_data.错误清单.map((it, idx)=>div({
@@ -1127,6 +1176,8 @@ export default {
       return that;
     };
 
+    const limitHeight = ref(props.limitHeight);
+
     // render
     const 清单模式面板 = (() => {
       // console.log("更新 清单模式面板");
@@ -1134,8 +1185,15 @@ export default {
         'class': "me-2 my-1 d-inline-block",
         'key': idx,
       }, [单个标注结果元件(obj)]));
+      const wrap = div({
+        'class': [
+          "my-1 rounded",
+          // {"overflow-h-10em": props.limitHeight},
+          v(limitHeight) ? "overflow-h-10em px-2 py-1 border" : null,
+        ],
+      }, that);
       // console.log("更新 清单模式面板 应该结束了");
-      return that;
+      return wrap;
     });
 
 
@@ -1168,8 +1226,15 @@ export default {
           'class': "btn-sm py-0 px-1 text-muted",
           onClick: ()=>{onSortObjectsById()},
         }, ["按创建顺序排序"], "light"),
+        v(limitHeight) ? btn({
+          'class': "btn-sm py-0 px-1 text-muted",
+          onClick: ()=>{limitHeight.value=false},
+        }, ["展开"], "light") : btn({
+          'class': "btn-sm py-0 px-1 text-muted",
+          onClick: ()=>{limitHeight.value=true},
+        }, ["收起"], "light"),
       ];
-      return div({'class': "d-inline-flex gap-1 me-2 my-2"}, btns);
+      return div({'class': "d-inline-flex gap-1 me-2 my-1"}, btns);
     });
     // 排序按钮组 相关 结束
 
@@ -1184,13 +1249,13 @@ export default {
         div({'class': ["mb-2"]}, [
           文本区(),
         ]),
-        props?.showTips ? div({'class': ["mb-2"]}, [
+        div({'class': ["my-1", {"d-none": v(ref_viewMode)!="清单模式"}]}, [
+          清单模式面板(),
+          div({}, 排序按钮组()),
+        ]),
+        props?.showTips ? div({'class': ["my-1"]}, [
           错误提示区(),
         ]) : null,
-        div({'class': ["my-1", {"d-none": v(ref_viewMode)!="清单模式"}]}, [
-          div({}, 排序按钮组()),
-          清单模式面板(),
-        ]),
       ]);
       // console.log("渲染函数 即将 return");
       return that;

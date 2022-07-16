@@ -1,5 +1,9 @@
 
 
+    .overflow-h-10em {
+      overflow: auto;
+      max-height: 10em;
+    }
 
     .bg-pink {
       /* --bs-bg-opacity: 1; */
