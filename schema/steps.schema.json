@@ -1,12 +1,12 @@
 {
   "name": "SpaCE2022",
-  "version": "220712v1",
+  "version": "220715v1",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
     "第2期R": "220603v1",
-    "精标": "220712v1"
+    "精标": "220715v1"
   },
   "using": "精标",
 
@@ -194,7 +194,13 @@
                 "nameFace": "特殊情况标注",
                 "icon-bi": "exclamation-circle",
                 "slots": [
-                  {"name": "Label", "nameFace": "情况", "ctrls": [{"type": "单个标签", "config": {"set": "特殊情况"}}], "--default": {"type": "单个标签", "value": {"domain": "特殊情况", "face": "无空间义"}}, "required": true}
+                  {"name": "Label", "nameFace": "情况", "ctrls": [{"type": "单个标签", "config": {"set": "特殊情况"}}], "--default": {"type": "单个标签", "value": {"domain": "特殊情况", "face": "无空间义"}}, "required": true},
+                  {
+                    "name": "err_sec",
+                    "nameFace": "出错文本片段",
+                    "desc": "主要是原文有错的时候填写",
+                    "ctrls": ["MB_SPANS"],
+                    "required": false}
                 ]
               }
 
