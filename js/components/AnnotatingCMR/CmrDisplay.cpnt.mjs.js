@@ -83,7 +83,7 @@ const average = list => list.length ? (list.reduce(((aa, bb)=>aa+bb), 0) / list.
 
 
 export default {
-  props: ['annotation', 'tokens', 'definition', 'showTips', 'limitHeight'],
+  props: ['annotation', 'tokens', 'definition', 'showTips', 'showHistory', 'limitHeight'],
   emits: [],
   component: {},
   setup(props, ctx) {
@@ -150,7 +150,7 @@ export default {
         const list = ["快速", "迅速", "急速", "缓慢", "慢速", "低速", "快快", "慢慢", "缓缓", "到处", "处处", "四处", "随处", "一起", "一齐", "单独", "独自", "健步", "缓步", "大步", "小步", "单向", "双向", "当场", "就近", "当面", "正面", "中途", "顺路", "向", "到", "往", "自", "朝", "在", "距", "经", "从", "由", "沿", "沿着", "朝着", "向着", "对着", "顺着", "通过"];
         if (token.在临时词表中) {return true;};
         let word = token?.to?.word ?? token?.whole ?? token?.word;
-        if (word.length==1 && token.seg) {
+        if (word?.length==1 && token.seg) {
           return list.includes(word) && token.seg=="S";
         };
         return list.includes(word);
@@ -524,7 +524,7 @@ export default {
           结果 = wordses.find(wordL => {
             if (wordL.length>1) {return false;};
             const word = wordL[0];
-            return word.pos=="p" || 介词清单.split("、").includes(word.text);
+            return word?.pos=="p" || 介词清单.split("、").includes(word?.text);
           });
           if (结果) {
             _checker_methods.记录错误("warning",
@@ -970,7 +970,7 @@ export default {
             if (words.length==1 && ["v", "dv", "d", "p"].includes(words[0]?.pos)) {
               const word = words[0];
               _checker_methods.记录错误("warning",
-                `[${idx_txt}].${slot_face}: 含词性为 ${word.pos} 的词“${word.text}”`
+                `[${idx_txt}].${slot_face}: 含词性为 ${word?.pos} 的词“${word?.text}”`
               );
             };
 
@@ -1097,6 +1097,61 @@ export default {
           "small",
         ],
       }, [it.text])));
+    });
+
+    // render
+    const 修改记录区 = (() => {
+      // console.log("更新 错误提示区");
+      const history = props?.annotation?.data?.history??[];
+      // console.log(history);
+
+      const 修改清单 = history.map(it=>{
+        const 修改量文本 = Object.entries(it.ops??{}).filter(ix=>ix[1].length).map(ix=>`${ix[0]}${ix[1].length}`).join(" ");
+        const 修改者文本 = `${it?.user?.name??"<无名氏>"}`;
+        const 修改类型文本 = it?.user?.opRole ?? "编辑";
+        return {
+          修改者文本,
+          修改类型文本,
+          修改量文本,
+          uid: it?.user?.id,
+          detail: JSON.stringify(it.ops),
+          time: (new Date(it.time)).toLocaleString()};
+      }).filter(it=>it.修改量文本?.length).map(it=>span({
+        'class': [
+          "py-0 px-1 --my-1",
+          "border rounded",
+          "bg-opacity-25",
+          `bg-light border-light`,
+          "text-muted",
+          "small",
+        ],
+        'title': [it.uid, it.time, it.修改类型文本, it.detail],
+      }, [[it.修改者文本, it.修改量文本].join(" ")]));
+
+      return div({
+        'class': [
+          "--border rounded --my-1 py-0 --px-2",
+          {"d-none": !修改清单?.length},
+        ],
+      }, [
+        div({
+          'class': [
+            "d-inline-flex gap-1",
+            "my-1 me-2",
+            "text-muted",
+            "fw-bold",
+            "small",
+          ],
+        }, "修改记录："),
+        修改清单.map((it, idx)=>div({
+          'key': idx,
+          'class': [
+            "d-inline-flex gap-1",
+            // "d-flex gap-1",
+            "my-1 me-2",
+          ],
+        }, [it]))
+      ]);
     });
 
 
@@ -1245,6 +1300,9 @@ export default {
       const that = div({'class': "cmr-display text-wrap text-break"}, [
         props?.showTips ? div({'class': ["mb-2"]}, [
           完成状态文本(),
+        ]) : null,
+        props?.showHistory ? div({'class': ["my-1"]}, [
+          修改记录区(),
         ]) : null,
         div({'class': ["mb-2"]}, [
           文本区(),

@@ -49,25 +49,22 @@
 
     <!-- navbar start -->
     <nav
-      class="navbar navbar-expand-lg navbar-dark bg-opacity-100"
-      :class="inspecting.inspectingMode ? 'bg-purple' : play.playMode ? 'bg-primary' : ctrl.developing ? 'bg-success' : 'bg-dark'"
+      class="navbar navbar-expand-lg navbar-dark"
+      :class="play.playMode ? 'bg-primary' : ctrl.developing ? 'bg-success' : 'bg-dark'"
     >
       <div class="container">
         <a v-show="play.playMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">SpaCE2022 {{play?.playTitle}} 标注示例</a>
-        <a v-show="inspecting.inspectingMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">SpaCE2022 {{inspecting?.inspectingTitle}} 标注修订</a>
-        <a v-show="!play.playMode&&!inspecting.inspectingMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">空间关系理解数据标注 2022</a>
+        <a v-show="!play.playMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">空间关系理解数据标注 2022</a>
         <button class="navbar-toggler" type="button" @click="newThings.navbar_collapse_show=!newThings.navbar_collapse_show">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" :class="{show: newThings.navbar_collapse_show}">
           <div class="navbar-nav">
-            <span v-show="inspecting.inspectingMode" class="nav-link">#{{inspecting?.inspectingUser?.id??""}} {{inspecting?.inspectingUser?.name??""}} 正在修订</span>
             <span v-show="!play.playMode" class="nav-link">#{{ctrl.currentWorkerId??""}} {{ctrl.currentWorker??""}}</span>
             <template v-for="tag in (newThings?.theUser?.tags??[]).filter(it=>['A组', 'B组', 'C组', 'D组', 'cool'].includes(it))">
               <a class="nav-link" v-if="!play.playMode" _href="#" @click="()=>{}"><small>{{tag}}</small></a>
             </template>
             <!-- <a class="nav-link" v-show="play.playMode">{{play?.playTitle}}</a> -->
-            <a class="nav-link" v-show="isChecker()&&!inspecting.inspectingMode" @click="async()=>{await prepareInspection();}">审核与修订</a>
             <a class="nav-link" href="./menu" target="_blank" v-show="!play.playMode">文档</a>
             <a class="nav-link" href="./menu" target="_blank" v-show="play.playMode">标注文档</a>
             <a class="nav-link" href="https://2030nlp.github.io/SpaCE2022/" target="_blank" v-show="play.playMode">评测网站</a>
@@ -205,30 +202,6 @@
               title="所有任务完成后，可为自己设置新的标注目标，增加总任务量"
             >更新目标</button> -->
           </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- 选择要审核的学生 chooseStudent -->
-    <div class="container page my-4" id="page-chooseStudent" v-show="ctrl.currentPage=='chooseStudent'">
-      <div class="container py-2">
-        <div class="row align-items-center">
-          <div class="col col-12 my-2">
-            <p>请选择要审核的标注员</p>
-          </div>
-          <div class="col col-12 my-2">
-            <button
-              type="button"
-              v-for="user in inspecting.allUsers"
-              v-show="true"
-              class="btn btn-sm me-2 my-1"
-              :class="`btn-light`"
-              __:class="`btn-${taskBtn.valid?'info':taskBtn.dropped?'dark':taskBtn.skipped?'outline-primary':'outline-primary'}`"
-              @click="()=>{startInspector(user)}"
-            >#{{user.id??"_"}} {{user.name}}</button>
-          </div>
-          <!-- inspecting.allUsers -->
         </div>
       </div>
     </div>
@@ -381,7 +354,7 @@
           <!-- 功能区 开始 -->
           <div class="col col-12 col-lg-6 --col-xl-5 my-2" id="func-ctrl" v-show="!play.playMode">
             <annotator
-              :user="inspecting?.inspectingMode ? inspecting?.inspectingUser : {name: newThings?.theUser?.name, id: newThings?.theUser?.id, opRole: '标注'}"
+              :user="inspecting?.inspectingMode ? inspecting?.inspectingUser : {name: newThings?.theUser?.name, id: newThings?.theUser?.id}"
               :step="currentStep"
               :engine="'web'"
               :token-selector="tokenSelector"
@@ -403,25 +376,13 @@
 
         <!-- 标注结果展示模块 开始 -->
         <div class="row mt-2 mb-1 carded" :class="{'border-0' : play?.playMode}" id="annotations-area">
-
-          <!-- <div class="col col-12 my-1" v-show="example?.review?.accept!=null && !play.playMode">
-            <span class="badge text-wrap my-1 me-2" :class="example?.review?.accept ? (example?.review?.checked||example?.review?.revised ? 'bg-warning bg-opacity-25 text-dark' : 'bg-success text-light') : (example?.review?.checked||example?.review?.revised ? 'bg-warning bg-opacity-25 text-dark' : 'bg-danger text-light')">
+          <div class="col col-12 my-1" v-show="example?.review?.accept!=null && !play.playMode">
+            <span class="badge text-wrap my-1 me-2" :class="example?.review?.accept ? (example?.review?.checked ? 'bg-warning bg-opacity-25 text-dark' : 'bg-success text-light') : (example?.review?.checked ? 'bg-warning bg-opacity-25 text-dark' : 'bg-danger text-light')">
               <span v-show="example?.review?.reviewer">{{example?.review?.reviewer?.name??`审核员${example?.review?.reviewer?.id}`}}</span>
-              <span>{{example?.review?.accept ? '审核通过' : '审核未通过'}}</span>
+              <span>{{example?.review?.accept ? (example?.review?.checked ? '等待复审' : '审核通过') : (example?.review?.checked ? '等待复审' : '审核未通过，请修改！')}}</span>
               <span v-show="example?.review?.comment">（{{example?.review?.comment}}）</span>
-              <span class="ms-1" v-show="example?.review?.revised">{{example?.review?.reviser?.name??`修订员${example?.review?.reviser?.id}`}}有所修订</span>
-              <span class="ms-1" v-show="example?.review?.checked">等待复审</span>
             </span>
-          </div> -->
-
-          <anno-review
-            class="col col-12 my-1"
-            v-show="inspecting?.inspectingMode || (example?.review?.accept!=null && !play.playMode)"
-            :old-review="example?.review"
-            :can-edit="inspecting?.inspectingMode"
-            @submit-review="(data)=>{saveReview(data);}"
-          ></anno-review>
-
+          </div>
           <div class="col col-12 my-1" v-show="!example?.annotations?.length">
             <div class="text-muted">标注好的内容将显示在这里</div>
           </div>
@@ -437,7 +398,6 @@
               :show-index="false"
               :show-title-detail="false"
               :show-tips="play?.playMode?false:true"
-              :show-history="true||inspecting?.inspectingMode"
               :can-close="true"
               :wrap="true"
               @close="(annot)=>{win.console.log(annot);example.annotations.splice(annot._idx_to_delete,1);alertBox.pushAlert('别忘了保存', 'warning');}"

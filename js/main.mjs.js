@@ -155,7 +155,7 @@ const RootComponent = {
         donePct: "10%",
         //
         currentIdx: 0,
-        targetIdx: 0,
+        targetIdx: 1,
         showOrigin: false,
         //
         developing: DEVELOPING,
@@ -166,6 +166,17 @@ const RootComponent = {
         playToken: "",
         playTask: "t2",
         playTitle: "task2",
+      },
+      inspecting: {
+        inspectingMode: false,
+        inspectingToken: "",
+        inspectingTask: "t3",
+        inspectingTitle: "task3",
+        inspectingUser: {
+          name: "",
+          id: "",
+        },
+        allUsers: [],
       },
       newThings: {
         theUser: {},
@@ -238,6 +249,67 @@ const RootComponent = {
       };
     };
 
+    const prepareInspection = async () => {
+      appData.ctrl.currentPage='chooseStudent';
+      appData.inspecting.allUsers = await bEU.getAllUsersList();
+    };
+
+    const startInspector = (student) => {
+      const studentToken = student.token ?? "";
+      const titleMap = {
+        't1': "task1",
+        't2': "task2",
+        't2r': "task2",
+        't3': "task3",
+        't4': "task3",
+      };
+      appData.inspecting = {
+        inspectingMode: true,
+        inspectingToken: studentToken,
+        inspectingTask: student?.currTask,
+        inspectingTitle: titleMap[student?.currTask],
+        inspectingUser: {
+          name: appData?.newThings?.theUser?.name,
+          id: appData?.newThings?.theUser?.id,
+          opRole: "修订",
+        },
+      };
+      bEU.inspectingMode = true;
+      theBackEnd.inspectingMode = true;
+      theBackEnd.token = appData.inspecting.inspectingToken;
+      bEU.begin();
+      appData.newThings.begun=true;
+    };
+
+
+
+
+    const saveReview = (reviewItem) => {
+      if (!appData.inspecting?.inspectingMode) {
+        alertBox_pushAlert(`当前不是审核模式，无法保存审核意见`, "danger");
+        return;
+      };
+      reviewItem.reviewer = appData.inspecting?.inspectingUser;
+
+      exampleWrap.example.review = reviewItem;
+
+      bEU.saveForReview();
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // 启动时 加载缓存的 应用信息 及 用户信息
     onMounted(() => {
       let storedVersion = store.get(`${APP_NAME}:version`);
@@ -255,7 +327,9 @@ const RootComponent = {
       appData.ctrl.currentWorkerTarget = stored?.target;
       appData.ctrl.currentWorkerTaskType = stored?.taskType;
       appData.ctrl.currentWorkerTaskCount = stored?.taskCount;
+
       if (appData.play.playMode) {return};
+      if (appData.inspecting.inspectingMode) {return};
       appData.newThings.lastEID = store.get(`${APP_NAME}:lastEID`);
       appData.newThings.theUser = store.get(`${APP_NAME}:theUser`);
     });
@@ -288,6 +362,12 @@ const RootComponent = {
     watch(()=>appData.play, () => {
       if (appData.play?.playMode) {
         theBackEnd.token = appData.play?.playToken;
+      };
+    });
+
+    watch(()=>appData.inspecting, () => {
+      if (appData.inspecting?.inspectingMode) {
+        theBackEnd.token = appData.inspecting?.inspectingToken;
       };
     });
 
@@ -432,6 +512,9 @@ const RootComponent = {
 
 
     const isChecker = () => (appData?.newThings?.theUser?.role??[]).includes('checker')
+    ||(appData?.newThings?.theUser?.role??[]).includes('inspector')
+    ||(appData?.newThings?.theUser?.role??[]).includes('super-inspector')
+    ||(appData?.newThings?.theUser?.role??[]).includes('superInspector')
     ||(appData?.newThings?.theUser?.role??[]).includes('manager')
     ||(appData?.newThings?.theUser?.role??[]).includes('admin');
 
@@ -507,6 +590,9 @@ const RootComponent = {
       reactive,
       //
       startPlay,
+      startInspector,
+      prepareInspection,
+      saveReview,
       //
     };
   },
@@ -524,6 +610,9 @@ the_app.component('functional-area', FunctionalArea);
 
 import TheAnnotator from './components/TheAnnotator.cpnt.mjs.js';
 the_app.component('annotator', TheAnnotator);
+
+import AnnoReview from './components/AnnoReview.cpnt.mjs.js';
+the_app.component('anno-review', AnnoReview);
 
 import ResultsDisplay from './components/Annotator/ResultsDisplay.cpnt.mjs.js';
 the_app.component('results-display', ResultsDisplay);

@@ -1164,7 +1164,7 @@ const FinalButtonGroup = {
 // 🔯🔯🔯🔯🔯🔯
 // 整个组件
 export default {
-  props: ['tokenSelector', 'selection', 'stepCtrl', 'alertBox', 'example', 'step', 'stepProps', 'go-prev', 'go-next'],
+  props: ['user', 'tokenSelector', 'selection', 'stepCtrl', 'alertBox', 'example', 'step', 'stepProps', 'go-prev', 'go-next'],
   emits: ['save', 'reset'],
   component: {
     AllObjectsPanel,
@@ -1183,18 +1183,102 @@ export default {
     provide('tokenSelector', props.tokenSelector);
     provide('selection', props.selection);
     provide('tokens', props?.example?.material?.tokenList??[]);
+
+
+    const 已保存的操作历史 = computed(()=>
+      props?.['example']?.['annotations']
+      ?.filter?.(it=>it.mode==props?.step?.mode)
+      ?.[0]?.['data']?.['history']
+      ??[]
+    );
+
+    const 已保存的对象清单 = computed(()=>
+      props?.['example']?.['annotations']
+      ?.filter?.(it=>it.mode==props?.step?.mode)
+      ?.[0]?.['data']?.['objects']
+      ??[]
+    );
+
     const init = () => {
       reactiveCMR.initDefinition(props?.['stepProps']?.['definition']);
-      const existedObjects =
-        props?.['example']?.['annotations']
-          ?.filter?.(it=>it.mode==props?.step?.mode)
-          ?.[0]?.['data']?.['objects']??[];
+      const existedObjects = v(已保存的对象清单);
       reactiveCMR.initData({'objects': existedObjects});
     };
+
+
+
+    const 计算数据修改情况 = () => {
+      const 键排序并序列化 = (obj) => {
+        const keys = Object.keys(obj).sort();
+        return JSON.stringify(Object.fromEntries(keys.map(ky=>[ky, obj[ky]])));
+      };
+
+      const oldObjs = v(已保存的对象清单).map(it=>Object.assign({}, it));
+      const newObjs = reactiveCMR.objects.map(it=>Object.assign({}, it));
+
+      const oldDict = Object.fromEntries(oldObjs.map((obj, idx)=>{
+        const id = `${obj._id}` ?? `${obj.id}` ?? `idx_${idx}`;
+        const string = 键排序并序列化(obj);
+        return [id, string];
+      }));
+
+      let operationMap = {};
+      for (let ky in oldDict) {
+        operationMap[ky] = "删";
+      };
+
+      for (let obj of newObjs) {
+        const id = `${obj._id}` ?? `${obj.id}` ?? `idx_${idx}`;
+        const string = 键排序并序列化(obj);
+        if (!(id in operationMap)) {
+          operationMap[id] = "增";
+          continue;
+        };
+        if (oldDict[id]!=string) {
+          operationMap[id] = "改";
+          continue;
+        };
+        if (oldDict[id]==string) {
+          operationMap[id] = "无";
+          continue;
+        };
+      };
+
+      let 操作Dict = {
+        增: [],
+        改: [],
+        删: [],
+      };
+      for (let [id, 操作] of Object.entries(operationMap)) {
+        if (操作!="无") {
+          操作Dict[操作].push(id);
+        };
+      };
+
+      return 操作Dict;
+    };
+
+
 
     const makeOutputData = () => {
       const data = {
         'objects': JSON.parse(JSON.stringify(reactiveCMR.objects)),
+      };
+      return data;
+    };
+
+    const makeOutputDataWithHistory = () => {
+      const 修改情况 = 计算数据修改情况();
+      console.log(修改情况);
+      let history = JSON.parse(JSON.stringify(v(已保存的操作历史)));
+      let new_item = {ops: 修改情况, time: JSON.parse(JSON.stringify(new Date()))};
+      if (props?.user?.id!=null||props?.user?.name!=null) {
+        new_item.user = props.user;
+      };
+      history.push(new_item);
+      const data = {
+        'objects': JSON.parse(JSON.stringify(reactiveCMR.objects)),
+        'history': history,
       };
       return data;
     };
@@ -1207,7 +1291,7 @@ export default {
         const data = {
           'needCompletion': true,
           'completed': false,
-          'data': makeOutputData(),
+          'data': makeOutputDataWithHistory(),
         };
         ctx.emit('save', data);
       },
@@ -1215,7 +1299,7 @@ export default {
         const data = {
           'needCompletion': true,
           'completed': true,
-          'data': makeOutputData(),
+          'data': makeOutputDataWithHistory(),
         };
         ctx.emit('save', data);
       },

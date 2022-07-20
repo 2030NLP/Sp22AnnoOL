@@ -121,10 +121,10 @@ const AnnoCard = {
                 'title': JSON.stringify(this.anno?.content?.review),
                 'class': ["badge text-wrap my-1 me-2",
                   this.anno?.content?.review?.accept
-                    ?(this.anno?.content?.review?.checked
+                    ?(this.anno?.content?.review?.checked||this.anno?.content?.review?.revised
                       ?'bg-warning border border-warning bg-opacity-25 text-success'
                       :'bg-light border border-success text-success')
-                    :(this.anno?.content?.review?.checked
+                    :(this.anno?.content?.review?.checked||this.anno?.content?.review?.revised
                       ?'bg-warning border border-warning bg-opacity-25 text-danger'
                       :'bg-light border border-danger text-danger')
                 ],
@@ -136,6 +136,7 @@ const AnnoCard = {
                 this.anno?.content?.review?.accept
                   ?(this.anno?.content?.review?.checked?`标注者有所修改`:null)
                   :(this.anno?.content?.review?.checked?`标注者已处理`:'标注者尚未处理'),
+                this.anno?.content?.review?.revised?` ${this.anno?.content?.review?.reviser?.name??""}有所修订`:null,
               ],
             ),
           ] : [
@@ -166,6 +167,7 @@ const AnnoCard = {
           showIndex: true,
           showTitleDetail: true,
           showTips: true,
+          showHistory: true,
           limitHeight: true,
           wrap: true,
           canClose: false,

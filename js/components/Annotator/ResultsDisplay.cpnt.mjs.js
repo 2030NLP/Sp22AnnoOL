@@ -16,7 +16,7 @@ import CmrDisplay from '../AnnotatingCMR/CmrDisplay.cpnt.mjs.js';
 // ></results-display>
 
 export default {
-  props: ["showTips", "limitHeight", "eachClass", "stepProps", "tokens", "annotations", "showSub", "showIndex", "showTitleDetail", "canClose", "wrap"],
+  props: ["showTips", "showHistory", "limitHeight", "eachClass", "stepProps", "tokens", "annotations", "showSub", "showIndex", "showTitleDetail", "canClose", "wrap"],
   emits: ["close"],
   component: {
     BsBadge,
@@ -179,6 +179,7 @@ export default {
         'tokens': props.tokens,
         'definition': props.stepProps?.definition,
         'showTips': props.showTips,
+        'showHistory': props.showHistory,
         'limitHeight': props.limitHeight,
       }));
       return result;

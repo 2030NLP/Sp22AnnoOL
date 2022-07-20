@@ -231,7 +231,7 @@ class Sp22FN {
 
     let totalDur = 0;
     for (let pair of box) {
-      if (pair[0].length&&pair[1].length) {
+      if (pair?.[0]?.length&&pair?.[1]?.length) {
         let delta = (new Date(pair[1])) - (new Date(pair[0]));
         totalDur += delta;
       };
@@ -239,7 +239,7 @@ class Sp22FN {
 
     let pureTotalDur = 0;
     for (let pair of pureBox) {
-      if (pair[0].length&&pair[1].length) {
+      if (pair?.[0]?.length&&pair?.[1]?.length) {
         let delta = (new Date(pair[1])) - (new Date(pair[0]));
         pureTotalDur += delta;
       };

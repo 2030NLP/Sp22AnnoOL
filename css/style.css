@@ -5,6 +5,11 @@
       max-height: 10em;
     }
 
+    .bg-purple {
+      /* --bs-bg-opacity: 1; */
+      --bs-purple-rgb: 111,66,193;
+      background-color: rgba(var(--bs-purple-rgb),var(--bs-bg-opacity)) !important;
+    }
     .bg-pink {
       /* --bs-bg-opacity: 1; */
       --bs-pink-rgb: 214,51,132;

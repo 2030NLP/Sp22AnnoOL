@@ -97,6 +97,7 @@ class BackEndUsage {
     this.checkDB = checkDB;
 
     this.playMode = false;
+    this.inspectingMode = false;
 
     // console.log(this);
   }
@@ -111,7 +112,7 @@ class BackEndUsage {
   }
 
   saveStore() {
-    if (this.playMode) {return};
+    if (this.playMode||this.inspectingMode) {return};
 
     this.storeTool.set(`${this.appName}:version`, this.appVersion);
     // let worker = this.data.ctrl.currentWorker;
@@ -196,12 +197,14 @@ class BackEndUsage {
         if (!this.ewp.example._ctrl?.timeLog?.length) {
           this.ewp.example._ctrl.timeLog = [];
         }
-        this.ewp.example._ctrl.timeLog.push( ['in', JSON.parse(JSON.stringify(new Date()))] );
+        const symbol_in = this.inspectingMode ? 'reviser_in' : 'in';
+        this.ewp.example._ctrl.timeLog.push( [symbol_in, JSON.parse(JSON.stringify(new Date()))] );
+        // TODO 区分 审核进入 的工作量计算？
 
         //
         this.data.ctrl.currentPage = 'anno';
         this.data.newThings.lastEID = thing?.entry?.id;
-        if (!this.playMode) {
+        if (!this.playMode&&!this.inspectingMode) {
           this.storeTool.set(`${this.appName}:lastEID`, this.data.newThings.lastEID);
         };
 
@@ -214,7 +217,19 @@ class BackEndUsage {
     };
   }
 
+  async beginInspection() {
+    try {
+      await this.connect();
+      await this.updateSchema();
+    } catch (error) {
+      this.pushAlert(`发生错误，请联系管理员处理（${error}）`, "danger", 60000*60*24, error);
+      return;
+    };
+    this.data.ctrl.currentPage = 'chooseStudent';
+  }
+
   async begin() {
+    this.data.ctrl.currentPage = 'anno';
     try {
       await this.connect();
       await this.updateSchema();
@@ -228,8 +243,8 @@ class BackEndUsage {
     // 参考 【队列排序】
     if (!this.playMode) {
       let btn =
-        this.data.tasks.find(btn => btn.commented&&!btn.checked)  // 首条尚未处理的有批示的
-        ?? this.data.tasks.find(btn => btn.rejectedTP==3&&!btn.checked)  // 首条尚未处理的未通过的
+        this.data.tasks.find(btn => btn.commented&&!btn.checked&&!btn.revised)  // 首条尚未处理的有批示的
+        ?? this.data.tasks.find(btn => btn.rejectedTP==3&&!btn.checked&&!btn.revised)  // 首条尚未处理的未通过的
         ?? this.data.tasks.find(btn => !btn.done)
         ?? this.data.tasks.find(btn => btn.rejectedTP==3);
       if (btn) {
@@ -395,6 +410,7 @@ class BackEndUsage {
             : 1,
           commented: (anno?.content?.review?.comment?.length??0)>0,
           checked: anno?.content?.review?.checked,
+          revised: anno?.content?.review?.revised,
           valid: anno && !anno?.dropped && !anno?.skipped ? true : false,
           dropped: anno?.dropped ? true : false,
           skipped: anno?.skipped ? true : false,
@@ -407,6 +423,7 @@ class BackEndUsage {
       task_btn_list = this.lo.sortBy(task_btn_list, [
         (it=>!it.done),
         (it=>!it.checked),
+        (it=>!it.revised),
         (it=>it.rejectedTP),
         (it=>it.commented),
         (it=>it.batchName),
@@ -449,13 +466,132 @@ class BackEndUsage {
     this.data.ctrl.currentWorkerQuitted = user?.quitted;
     this.data.newThings.theUser = user;
 
-    if (this.playMode) {return;};
+    if (this.playMode||this.inspectingMode) {return;};
 
     this.storeTool.set(`${this.appName}:it`, it);
     this.storeTool.set(`${this.appName}:theUser`, user);
   }
 
 
+  _annoLogsTimeCompute(logs) {
+    // const logs = anno?.content?._ctrl?.timeLog ?? [];
+    logs = logs ?? [];
+
+    let box = [];
+    let pureBox = [];
+
+    let pureStop = false;
+    for (let log of logs) {
+      if (log[0]=="check") {
+        pureStop = true;
+      };
+      if (log[0]=="in") {
+        box.push([log[1], null]);
+        if (!pureStop) {
+          pureBox.push([log[1], null]);
+        };
+      };
+      if (log[0]=="out" && box.length) {
+        if (box.at(-1)[1]==null) {
+          box.at(-1)[1] = log[1];
+          if (!pureStop) {
+            pureBox.at(-1)[1] = log[1];
+          };
+        };
+      };
+    };
+
+    let totalDur = 0;
+    for (let pair of box) {
+      console.log(pair);
+      if (pair[0]?.length&&pair[1]?.length) {
+        let delta = (new Date(pair[1])) - (new Date(pair[0]));
+        totalDur += delta;
+      };
+    };
+
+    let pureTotalDur = 0;
+    for (let pair of pureBox) {
+      if (pair[0]?.length&&pair[1]?.length) {
+        let delta = (new Date(pair[1])) - (new Date(pair[0]));
+        pureTotalDur += delta;
+      };
+    };
+
+    let firstDur = (new Date(box[0][1])) - (new Date(box[0][0]));
+    let stride = (new Date(box.at(-1)[1])) - (new Date(box[0][0]));
+    let pureStride = (new Date(pureBox.at(-1)[1])) - (new Date(pureBox[0][0]));
+    let lastAt = box.at(-1)[1];
+    let pureLastAt = pureBox.at(-1)[1];
+    return {firstDur, totalDur, pureTotalDur, stride, pureStride, lastAt, pureLastAt, detail: box};
+  }
+
+
+  async saveForReview() {
+    if (!this.inspectingMode) {
+      this.pushAlert(`非审核模式，无法保存审核意见`, 'info', 2600);
+      return;
+    };
+    if (this.ewp.example?.review==null||this.ewp.example?.review?.accept==null) {
+      this.pushAlert(`没有审核意见，无法提交`, 'info', 2600);
+      return;
+    };
+
+    try {
+
+      //
+      const review = this.ewp.example.review;
+      review.reviewer = {
+        name: this?.data?.inspecting?.inspectingUser?.name,
+        id: this?.data?.inspecting?.inspectingUser?.id,
+      };
+
+      //
+      console.log(this.ewp.example?._ctrl?.timeLog);
+      if (!this.ewp.example._ctrl?.timeLog?.length) {
+        this.ewp.example._ctrl.timeLog = [];
+      }
+
+      review.annoAt = this._annoLogsTimeCompute(this.ewp.example?._ctrl?.timeLog)?.lastAt;  // TODO 这个有点奇怪
+      review.reviewedAt = dateString();
+
+      this.ewp.example._ctrl.timeLog.push( ['check', JSON.parse(JSON.stringify(new Date())), {
+        name: this?.data?.inspecting?.inspectingUser?.name,
+        id: this?.data?.inspecting?.inspectingUser?.id,
+        detail: {
+          type: review?.accept===true ? "accept" : review?.accept===false ? "reject" : "unknown",
+        },
+      }] );
+
+      //
+      let anno_wrap = {
+        'annotations': this.ewp.example?.annotations,
+        '_ctrl': this.ewp.example?._ctrl,
+        'review': review,
+      };
+
+      if (!anno_wrap?.annotations?.length) {
+        this.pushAlert(`【操作取消】没有标注内容，无法提交`, 'danger');
+        return false;
+      };
+
+      let task_id = this.ewp.example?._info?.task_id;
+      let entry_id = this.ewp.example?._info?.entry_id;
+      let entryVer = this.ewp.example?._info?.entry_ver;
+      let topic = this.ewp.example?._info?.topic;
+
+      let resp = await this.backEnd.updateAnno(this.data.ctrl.currentWorkerId, task_id, entry_id, anno_wrap, topic, entryVer);
+      if (resp?.data?.code!=200) {
+        this.pushAlert(`【发生错误】${resp?.data?.msg}`, 'danger', null, resp);
+        return false;
+      };
+      this.pushAlert(`已保存`, 'success', 500);
+      return true;
+    } catch (error) {
+      this.pushAlert(error, 'danger');
+      return false;
+    };
+  }
 
   async save(content) {
     if (this.playMode) {
@@ -472,7 +608,9 @@ class BackEndUsage {
       if (!this.ewp.example._ctrl?.timeLog?.length) {
         this.ewp.example._ctrl.timeLog = [];
       }
-      this.ewp.example._ctrl.timeLog.push( ['out', JSON.parse(JSON.stringify(new Date()))] );
+      const symbol_out = this.inspectingMode ? 'reviser_out' : 'out';
+      this.ewp.example._ctrl.timeLog.push( [symbol_out, JSON.parse(JSON.stringify(new Date()))] );
+      // TODO 区分 审核离开 的工作量计算？
 
       let task_id = content?._info?.task_id;
       let entry_id = content?._info?.entry_id;
@@ -483,26 +621,39 @@ class BackEndUsage {
         'annotations': this.ewp.example?.annotations,
         '_ctrl': this.ewp.example?._ctrl,
       };
-      if (this.ewp.example?.review) {
-        let review = this.ewp.example.review??{};
-        review.checked = true;
-        review.checkedAt = dateString();
-        anno_wrap['review'] = review;
+      if (!this.inspectingMode) {
+        if (this.ewp.example?.review) {
+          let review = this.ewp.example.review??{};
+          review.checked = true;
+          review.checkedAt = dateString();
+          anno_wrap['review'] = review;
+        };
+      } else {
+        if (this.ewp.example?.review) {
+          let review = this.ewp.example.review??{};
+          review.reviser = this?.data?.inspecting?.inspectingUser;
+          review.revised = true;
+          review.revisedAt = dateString();
+          anno_wrap['review'] = review;
+        };
       };
 
       if (!anno_wrap?.annotations?.length) {
         this.pushAlert(`【操作取消】没有标注内容，无需保存`, 'secondary');
         return false;
-      }
+      };
+
       if (anno_wrap.annotations.filter(anno => anno.isDropping).length) {
         anno_wrap.isDropping = true;
       };
+
       let resp = await this.backEnd.updateAnno(this.data.ctrl.currentWorkerId, task_id, entry_id, anno_wrap, topic, entryVer);
       if (resp?.data?.code!=200) {
         this.pushAlert(`【发生错误】${resp?.data?.msg}`, 'danger', null, resp);
         return false;
       };
       this.pushAlert(`已保存`, 'success', 500);
+
       if (!anno_wrap.isDropping) {
         this.data.tasks[content?._info?.btn_idx].valid = true;
         this.data.tasks[content?._info?.btn_idx].dropped = false;
@@ -519,6 +670,7 @@ class BackEndUsage {
       };
       this.data.tasks[content?._info?.btn_idx].done = done;
       this.updateProgress();
+
       return true;
     } catch (error) {
       this.pushAlert(error, 'danger');
@@ -840,6 +992,25 @@ class BackEndUsage {
       dictList = this.lo.sortBy(dictList, [it=>it[1]?.level, it=>it[0]]);
 
       return {list: dictList, name};
+
+    } catch (error) {
+      console.log(error);
+      return null;
+    };
+  }
+
+  async getAllUsersList () {
+    try {
+      // console.log(this);
+      let resp = await this.backEnd.getUsersAll();
+      if (errorHappened(resp?.data?.err)) {
+        console.log(resp);
+        return null;
+      };
+
+      let data = resp?.data?.data;
+      console.log(data);
+      return data;
 
     } catch (error) {
       console.log(error);

@@ -600,7 +600,7 @@ const RootComponent = {
 
       let totalDur = 0;
       for (let pair of box) {
-        if (pair[0].length&&pair[1].length) {
+        if (pair[0]?.length&&pair[1]?.length) {
           let delta = (new Date(pair[1])) - (new Date(pair[0]));
           totalDur += delta;
         };
@@ -608,7 +608,7 @@ const RootComponent = {
 
       let pureTotalDur = 0;
       for (let pair of pureBox) {
-        if (pair[0].length&&pair[1].length) {
+        if (pair[0]?.length&&pair[1]?.length) {
           let delta = (new Date(pair[1])) - (new Date(pair[0]));
           pureTotalDur += delta;
         };
@@ -633,7 +633,7 @@ const RootComponent = {
       if (!anno._timeInfo.lastAt) {
         anno._timeInfo = _annoTimeCompute(anno);
       };
-      review.annoAt = anno._timeInfo.lastAt;
+      review.annoAt = anno._timeInfo.lastAt;  // TODO 这个有点奇怪
       review.reviewedAt = dateString();
       content.review = review;
 
@@ -713,8 +713,17 @@ const RootComponent = {
       let batch = anno?.batch;
       let accepted = anno?.content?.review?.accept;
       let checked = anno?.content?.review?.checked;
+      let revised = anno?.content?.review?.revised;
+      let uncompleted = !!(anno?.content?.annotations??[]).find(annot=>annot.needCompletion&&!annot.completed);
       let polygraph = anno?.polygraph;
+
+      if (uncompleted===true) {
+        return -200;
+      };
       if (checked===true && accepted===false) {
+        return -120;
+      };
+      if (revised===true && accepted===false) {
         return -100;
       };
       if (accepted===false) {
