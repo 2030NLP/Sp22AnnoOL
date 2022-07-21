@@ -519,6 +519,11 @@ const RootComponent = {
     ||(appData?.newThings?.theUser?.role??[]).includes('admin');
 
 
+    const isManager = () => (appData?.newThings?.theUser?.role??[]).includes('boss')
+    ||(appData?.newThings?.theUser?.role??[]).includes('manager')
+    ||(appData?.newThings?.theUser?.role??[]).includes('admin');
+
+
 
 
     const setTask = async (topicLabel) => {
@@ -583,6 +588,7 @@ const RootComponent = {
       topic_regulation,
       //
       isChecker,
+      isManager,
       //
       setTask,
       //

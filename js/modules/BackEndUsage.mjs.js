@@ -1029,9 +1029,9 @@ class BackEndUsage {
 
       const me = data.find(it=>it.name==this?.data?.newThings?.theUser?.name);
       // console.log(me);
-      if ((me?.role??[]).includes("admin") || (me?.role??[]).includes("manager")) {
-        return data;
-      };
+      // if ((me?.role??[]).includes("admin") || (me?.role??[]).includes("manager")) {
+      //   return data;
+      // };
 
       let 表resp = await this.backEnd.getVar("审核负责表");
       if (errorHappened(表resp?.data?.err)) {
@@ -1039,7 +1039,17 @@ class BackEndUsage {
         return null;
       };
       let 表 = 表resp?.data?.data ?? {};
-      const names = (表[me?.name]??"").split(/[,，;；、\| \s\r\n]+/);
+      const names = (表[me?.name]??"");//.split(/[,，;；、\| \s\r\n]+/);
+
+      if ((me?.role??[]).includes("admin") || (me?.role??[]).includes("manager")) {
+        const sortFn = (uu) => {
+          if (names.includes(uu.name)) {return names.indexOf(uu.name)};
+          return Infinity;
+        };
+        data = data.sort((aa,bb)=>sortFn(aa)-sortFn(bb));
+        return data;
+      };
+
       data = data.filter(it=>names.includes(it.name));
       return data;
 
