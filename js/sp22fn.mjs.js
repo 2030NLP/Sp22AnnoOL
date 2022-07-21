@@ -245,6 +245,16 @@ class Sp22FN {
       };
     };
 
+    if ((!box.length)||(box?.[0]?.[0]==null)||(box?.[0]?.[1]==null)) {
+      box = [];
+      box.push([JSON.parse(JSON.stringify(new Date(0))), JSON.parse(JSON.stringify(new Date(1)))]);
+    };
+
+    if ((!pureBox.length)||(pureBox?.[0]?.[0]==null)||(pureBox?.[0]?.[1]==null)) {
+      pureBox = [];
+      pureBox.push([JSON.parse(JSON.stringify(new Date(0))), JSON.parse(JSON.stringify(new Date(1)))]);
+    };
+
     let firstDur = (new Date(box[0][1])) - (new Date(box[0][0]));
     let stride = (new Date(box.at(-1)[1])) - (new Date(box[0][0]));
     let pureStride = (new Date(pureBox.at(-1)[1])) - (new Date(pureBox[0][0]));
