@@ -1009,7 +1009,38 @@ class BackEndUsage {
       };
 
       let data = resp?.data?.data;
-      console.log(data);
+      return data;
+
+    } catch (error) {
+      console.log(error);
+      return null;
+    };
+  }
+
+  async getMyUsersList () {
+    try {
+      // console.log(this);
+      let resp = await this.backEnd.getUsersAll();
+      if (errorHappened(resp?.data?.err)) {
+        console.log(resp);
+        return null;
+      };
+      let data = resp?.data?.data;
+
+      const me = data.find(it=>it.name==this?.data?.newThings?.theUser?.name);
+      // console.log(me);
+      if ((me?.role??[]).includes("admin") || (me?.role??[]).includes("manager")) {
+        return data;
+      };
+
+      let 表resp = await this.backEnd.getVar("审核负责表");
+      if (errorHappened(表resp?.data?.err)) {
+        console.log(表resp);
+        return null;
+      };
+      let 表 = 表resp?.data?.data ?? {};
+      const names = (表[me?.name]??"").split(/[,，;；、\| \s\r\n]+/);
+      data = data.filter(it=>names.includes(it.name));
       return data;
 
     } catch (error) {

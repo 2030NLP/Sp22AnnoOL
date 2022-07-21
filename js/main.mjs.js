@@ -251,7 +251,7 @@ const RootComponent = {
 
     const prepareInspection = async () => {
       appData.ctrl.currentPage='chooseStudent';
-      appData.inspecting.allUsers = await bEU.getAllUsersList();
+      appData.inspecting.allUsers = await bEU.getMyUsersList();
     };
 
     const startInspector = (student) => {
