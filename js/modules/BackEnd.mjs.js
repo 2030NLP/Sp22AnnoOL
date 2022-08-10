@@ -118,6 +118,14 @@ class BackEnd {
     return response;
   }
 
+  async getEvalTeams() {
+    let response = await this.request({
+      method: "get",
+      url: `/eval-register`,
+    });
+    return response;
+  }
+
   async getUsersAll() {
     let response = await this.request({
       method: "get",
