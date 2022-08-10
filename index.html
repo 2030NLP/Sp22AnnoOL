@@ -67,20 +67,20 @@
               <a class="nav-link" v-if="!play.playMode" _href="#" @click="()=>{}"><small>{{tag}}</small></a>
             </template>
             <!-- <a class="nav-link" v-show="play.playMode">{{play?.playTitle}}</a> -->
-            <a class="nav-link" v-show="isChecker()&&!inspecting.inspectingMode" @click="async()=>{await prepareInspection();}">审核与修订</a>
+            <!-- <a class="nav-link" v-show="isChecker()&&!inspecting.inspectingMode" @click="async()=>{await prepareInspection();}">审核与修订</a> -->
             <a class="nav-link" href="./menu" target="_blank" v-show="!play.playMode">文档</a>
             <a class="nav-link" href="./menu" target="_blank" v-show="play.playMode">标注文档</a>
             <a class="nav-link" href="https://2030nlp.github.io/SpaCE2022/" target="_blank" v-show="play.playMode">评测网站</a>
             <a class="nav-link" @click="()=>{win.location.reload();}" v-show="play.playMode">返回</a>
             <template v-if="!play.playMode">
-              <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
-                v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
-                :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
-              >切换到 task1</a>
               <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t2')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
               >切换到 旧版task2</a> -->
+              <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
+                v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
+                :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
+              >切换到 task1</a>
               <a class="nav-link" _href="#" @click="()=>{setTask('t2r')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
@@ -88,7 +88,7 @@
               <a class="nav-link" _href="#" @click="()=>{setTask('t4')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t4'"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t4'"
-              >切换到 task3 (精标)</a>
+              >切换到 task3 (精标)</a> -->
               <!-- <a class="nav-link" _href="#" @click="()=>{}"
                 v-if="isChecker()"
                 :if="isChecker()"
@@ -142,7 +142,7 @@
     <div class="container page my-4" id="page-setup" v-show="ctrl.currentPage=='setup'">
       <div class="container py-2">
         <div class="row align-items-center">
-          <div class="col col-12 col-md-3 col-lg-4 my-2">
+          <!-- <div class="col col-12 col-md-3 col-lg-4 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="text" v-model="ctrl.currentWorker" placeholder="请输入您的姓名">
               <label class="form-label">姓名</label>
@@ -153,7 +153,7 @@
               <input class="form-control form-control-sm" type="password" v-model="ctrl.currentWorkerSecret" placeholder="请输入您的密码">
               <label class="form-label">密码</label>
             </div>
-          </div>
+          </div> -->
           <!-- <div v-if="false" class="col col-12 col-md-3 col-lg-3 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="text" v-model="ctrl.currentWorkerTarget" placeholder="请输入您的标注目标">
