@@ -1,12 +1,14 @@
 {
   "name": "SpaCE2022",
-  "version": "220721v1",
+  "version": "20220825",
   "versions": {
     "清洗": "220330",
     "第1期": "220421",
     "第2期": "220525v1",
     "第2期R": "220603v1",
-    "精标": "220721v1"
+    "精标": "220721v1",
+    "测试1":"20220824",
+    "测试2":"20220825"
   },
   "using": "精标",
 
@@ -494,7 +496,159 @@
 
 
 
-
+"测试2": {
+  "startStep": "start",
+  "endStep": "end",
+  "steps": {
+    "end": {
+      "ref": "end",
+      "name": "标注结果",
+      "mode": "finalResult",
+      "props": {
+        "instruction": "",
+        "canReset": true,
+        "resetBtn": {
+          "text": "清空并重新标注",
+          "go": "start",
+          "style": "outline-danger"
+        },
+        "cancelBtn": {
+          "text": "增加标注",
+          "go": "start",
+          "style": "outline-primary"
+        },
+        "nextBtn": {
+          "text": "下一条",
+          "style": "outline-primary"
+        }
+      }
+    },
+    "start": {
+      "ref": "start",
+      "name": "开始",
+      "mode": "selectValue",
+      "props": {
+        "instruction": "这段话符合下述哪些/哪种情形？",
+        "optionBtns": [
+          {
+            "text": "并无异常",
+            "data": {
+              "label": "ExceptionNotFound",
+              "desc": "这段话不存在异常"
+            },
+            "go": "end",
+            "style": "outline-primary"
+          },
+          {
+            "text": "存在异常",
+            "style": "outline-danger",
+            "go": "makeReason"
+          }
+        ]
+      }
+    },
+    "makeReason": {
+      "ref": "makeReason",
+      "name": "处理异常归因",
+      "mode": "SpaCE2022_Eval2",
+      "props": {
+        "strings": {
+          "instruction": "这段话存在的问题是：",
+          "selectInstruction": "请在文中选择文本",
+          "insertInstruction": "将选中的文本填入此处"
+        },
+        "data": {
+          "hidden": true,
+          "items": []
+        },
+        "options": [
+          {
+            "text": "搭配不当",
+            "style": "outline-danger",
+            "actualMode": "doubleSpans",
+            "data": {
+              "parentMode": "SpaCE2022_Eval2",
+              "actualMode": "doubleSpans",
+              "displayMode": "multiSpans",
+              "label": "ReasonImproperCollocation",
+              "desc": "搭配不当",
+              "tokenarrays": [],
+              "names": []
+            },
+            "minimal": 2,
+            "slots": [
+              {"type": "select", "placeholder": "text1"},
+              {"type": "solid-text", "value": "与"},
+              {"type": "select", "placeholder": "text2"},
+              {"type": "solid-text", "value": "搭配不当"}]
+          },
+          {
+            "text": "语义冲突",
+            "style": "outline-danger",
+            "actualMode": "doubleSpans",
+            "data": {
+              "parentMode": "SpaCE2022_Eval2",
+              "actualMode": "doubleSpans",
+              "displayMode": "multiSpans",
+              "label": "ReasonSemanticConflict",
+              "desc": "语义冲突",
+              "tokenarrays": [],
+              "names": []
+            },
+            "minimal": 4,
+            "针对性处理": ["语义冲突数量限制", "检查P是否为纯方位词", "P, E 词类检查"],
+            "slots": [
+              {"type": "select", "placeholder": "S1"},
+              {"type": "select", "placeholder": "P1"},
+              {"type": "select", "placeholder": "E1"},
+              {"type": "solid-text", "value": "与"},
+              {"type": "select", "placeholder": "S2"},
+              {"type": "select", "placeholder": "P2"},
+              {"type": "select", "placeholder": "E2"},
+              {"type": "solid-text", "value": "语义冲突"}]
+          },
+          {
+            "text": "与常识或背景信息不符",
+            "style": "outline-danger",
+            "actualMode": "spanWithComment",
+            "data": {
+              "parentMode": "SpaCE2022_Eval2",
+              "actualMode": "spanWithComment",
+              "displayMode": "multiSpans",
+              "label": "ReasonAgainstCommenSense",
+              "desc": "与常识或背景信息不符",
+              "tokenarrays": [],
+              "names": []
+            },
+            "minimal": 2,
+            "针对性处理": ["检查P是否为纯方位词", "P, E 词类检查"],
+            "slots": [
+              {"type": "select", "placeholder": "S"},
+              {"type": "select", "placeholder": "P"},
+              {"type": "select", "placeholder": "E"},
+              {"type": "solid-text", "value": "不符合常识或背景信息"}]
+          }
+        ],
+        "okBtn": {
+          "text": "完成",
+          "go": "end",
+          "style": "outline-success"
+        },
+        "resetBtn": {
+          "text": "重置",
+          "style": "outline-danger"
+        },
+        "cancelBtn": {
+          "text": "取消",
+          "go": "start",
+          "style": "outline-dark"
+        }
+      }
+    }
+  }
+},
+ 
+     
 
 
 
@@ -1160,6 +1314,66 @@
       }
     }
   },
+
+"测试1": {
+    "startStep": "start",
+    "endStep": "end",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "标注已完成。",
+          "canReset": true,
+          "resetBtn": {
+            "text": "清空并重新标注",
+            "go": "start",
+            "style": "outline-danger"
+          },
+          "nextBtn": {
+            "text": "下一条",
+            "style": "outline-primary"
+          },
+          "__cancelBtn": {
+            "text": "返回并补充标注",
+            "go": "start",
+            "style": "outline-secondary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "评估材料的空间关系",
+        "mode": "selectValue",
+        "props": {
+          "instruction": "从空间语义理解的角度看，这段话是否正常？ ",
+          "optionBtns": [
+            {
+              "text": "正常",
+              "data": {
+                "label": "fine",
+                "desc": "这段话正常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            },
+            
+            {
+              "text": "异常",
+              "data": {
+                "label": "bad",
+                "desc": "这段话异常"
+              },
+              "go": "end",
+              "style": "outline-primary"
+            }
+          ]
+        }
+      }
+    }
+  },
+
   "清洗": {
     "startStep": "start",
     "endStep": "end",
