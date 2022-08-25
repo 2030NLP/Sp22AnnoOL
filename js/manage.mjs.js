@@ -131,6 +131,8 @@ const RootComponent = {
     const ll2 = ['t2', '第2期', '同义性', '2'];
     const ll3 = ['t3', '第3期', '归因', '3', 'reason'];
     const ll4 = ['t4', '第4期', '精标', '4', 'detail'];
+    const ll5 = ['Eval1', '测试1'];
+    const ll6 = ['Eval2', '测试2'];
 
     // 处理 topic 历史遗留混乱 用于 Task task.topic
     const topic_regulation = (topic) => {
@@ -148,6 +150,12 @@ const RootComponent = {
       };
       if (ll4.includes(topic)) {
         return '精标';
+      };
+      if (ll5.includes(topic)) {
+        return '测试1';
+      };
+      if (ll6.includes(topic)) {
+        return '测试2';
       };
       return topic;
     }
@@ -169,6 +177,12 @@ const RootComponent = {
       if (ll4.includes(topic)) {
         return 't4';
       };
+      if (ll4.includes(topic)) {
+        return 'Eval1';
+      };
+      if (ll6.includes(topic)) {
+        return 'Eval2';
+      };
       return topic;
     }
 
@@ -188,6 +202,12 @@ const RootComponent = {
       };
       if (ll4.includes(topic)) {
         return ll4;
+      };
+      if (ll5.includes(topic)) {
+        return ll5;
+      };
+      if (ll6.includes(topic)) {
+        return ll6;
       };
       return [topic];
     }
@@ -747,6 +767,8 @@ const RootComponent = {
       {value: "第2期", desc: "第2期"},
       {value: "归因", desc: "归因"},
       {value: "精标", desc: "精标"},
+      {value: "测试1", desc: "测试1"},
+      {value: "测试2", desc: "测试2"},
     ];
 
     const assignData = reactive({

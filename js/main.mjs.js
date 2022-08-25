@@ -41,14 +41,14 @@ import {
 // import { timeString, foolCopy } from './util.mjs.js';
 import Sp22FN from './sp22fn.mjs.js';
 
-import BaseSaver from './modules/BaseSaver.mjs.js';
-import TheReader from './modules/TheReader.mjs.js';
-import AlertBox from './modules/AlertBox.mjs.js';
-import TokenSelector from './modules/TokenSelector.mjs.js';
-import StepControl from './modules/StepControl.mjs.js';
-import BackEnd from './modules/BackEnd.mjs.js';
-import BackEndUsage from './modules/BackEndUsage.mjs.js';
-import IoControl from './modules/IoControl.mjs.js';
+import BaseSaver from './modules/BaseSaver.mjs.js'; //文件保存
+import TheReader from './modules/TheReader.mjs.js'; //文件读取
+import AlertBox from './modules/AlertBox.mjs.js'; //消息提示功能
+import TokenSelector from './modules/TokenSelector.mjs.js'; //文本选取功能
+import StepControl from './modules/StepControl.mjs.js'; //标注流程控制模块
+import BackEnd from './modules/BackEnd.mjs.js'; //后端接口功能模块
+import BackEndUsage from './modules/BackEndUsage.mjs.js'; //后端具体用法，网络版核心功能模块
+import IoControl from './modules/IoControl.mjs.js'; //本地文件读写控制，离线版核心功能模块
 
 import axios from './modules_lib/axios_0.26.1_.mjs.js';
 import ClipboardJS from './modules_lib/clipboard_2.0.10_.mjs.js';
@@ -262,6 +262,8 @@ const RootComponent = {
         't2r': "task2",
         't3': "task3",
         't4': "task3",
+        "Eval1":"测试1",
+        "Eval2":"测试2",
       };
       appData.inspecting = {
         inspectingMode: true,
