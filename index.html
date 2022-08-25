@@ -13,7 +13,7 @@
   <!-- 使用HTML meta no-cache标签来禁用缓存 https://www.cnblogs.com/zdz8207/p/vue-meta-no-cache.html -->
   <!-- axios禁止请求缓存 https://blog.csdn.net/u010238381/article/details/84304968 -->
 
-  <title>空间关系理解数据标注 2022</title>
+  <title>SpaCE2022空间关系理解人类测试</title>
 
   <link href="css/bootstrap_5.1.3_.min.css" rel="stylesheet">
   <link href="css/bootstrap-icons_1.8.2_.css" rel="stylesheet">
@@ -35,7 +35,7 @@
     <div class="page-cover" v-if="false">
       <div class="container pt-5 text-center">
         <div class="row">
-          <div><h2>空间关系理解数据标注 2022</h2></div>
+          <div><h2>SpaCE2022空间关系理解人类测试</h2></div>
         </div>
         <div class="row">
           <div>
@@ -43,7 +43,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div>  
 
 
 
@@ -55,7 +55,7 @@
       <div class="container">
         <a v-show="play.playMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">SpaCE2022 {{play?.playTitle}} 标注示例</a>
         <a v-show="inspecting.inspectingMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">SpaCE2022 {{inspecting?.inspectingTitle}} 标注修订</a>
-        <a v-show="!play.playMode&&!inspecting.inspectingMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">空间关系理解数据标注 2022</a>
+        <a v-show="!play.playMode&&!inspecting.inspectingMode" class="navbar-brand" :title="`版本：${APP_VERSION}`" _href="#">SpaCE2022空间关系理解人类测试</a>
         <button class="navbar-toggler" type="button" @click="newThings.navbar_collapse_show=!newThings.navbar_collapse_show">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -68,24 +68,33 @@
             </template>
             <!-- <a class="nav-link" v-show="play.playMode">{{play?.playTitle}}</a> -->
             <!-- <a class="nav-link" v-show="isChecker()&&!inspecting.inspectingMode" @click="async()=>{await prepareInspection();}">审核与修订</a> -->
-            <a class="nav-link" href="./menu" target="_blank" v-show="!play.playMode">文档</a>
-            <a class="nav-link" href="./menu" target="_blank" v-show="play.playMode">标注文档</a>
+            <a class="nav-link" href="https://2030nlp.github.io/Sp22AnnoOL/menu" target="_blank" v-show="!play.playMode">查看标注文档</a>
+            <!-- <a class="nav-link" href="./menu" target="_blank" v-show="!play.playMode">文档</a>
+            <a class="nav-link" href="./menu" target="_blank" v-show="play.playMode">标注文档</a> -->
             <a class="nav-link" href="https://2030nlp.github.io/SpaCE2022/" target="_blank" v-show="play.playMode">评测网站</a>
             <a class="nav-link" @click="()=>{win.location.reload();}" v-show="play.playMode">返回</a>
             <template v-if="!play.playMode">
+              <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
+                v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
+                :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
+              >切换到 task1</a> -->
+               <a class="nav-link" _href="#" @click="()=>{setTask('Eval1')}"
+                v-if="newThings.begun && newThings?.theUser?.currTask!='Eval1'"
+                :if="newThings.begun && newThings?.theUser?.currTask!='Eval1'"
+              >切换到 测试1</a>
+               <a class="nav-link" _href="#" @click="()=>{setTask('Eval2')}"
+                v-if="newThings.begun && newThings?.theUser?.currTask!='Eval2'"
+                :if="newThings.begun && newThings?.theUser?.currTask!='Eval2'"
+              >切换到 测试2</a>
               <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t2')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
               >切换到 旧版task2</a> -->
-              <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
-                v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
-                :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
-              >切换到 task1</a>
-              <a class="nav-link" _href="#" @click="()=>{setTask('t2r')}"
+             <!--  <a class="nav-link" _href="#" @click="()=>{setTask('t2r')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
-              >切换到 task2</a>
-              <a class="nav-link" _href="#" @click="()=>{setTask('t4')}"
+              >切换到 task2</a> -->
+              <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t4')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t4'"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t4'"
               >切换到 task3 (精标)</a> -->
@@ -117,14 +126,14 @@
               :class="ctrl.currentPage=='setup'?'btn-primary':'btn-outline-primary'"
               @click="ctrl.currentPage='setup'"
             >准备</button>
-            <!-- <button
+            <button
               type="button"
               name="nav_list"
               id="nav_list"
               class="btn btn-sm me-2"
               :class="ctrl.currentPage=='list'?'btn-primary':'btn-outline-primary'"
               @click="ctrl.currentPage='list'"
-            >清单</button> -->
+            >清单</button>
             <button
               type="button"
               name="nav_anno"
@@ -142,7 +151,7 @@
     <div class="container page my-4" id="page-setup" v-show="ctrl.currentPage=='setup'">
       <div class="container py-2">
         <div class="row align-items-center">
-          <!-- <div class="col col-12 col-md-3 col-lg-4 my-2">
+          <div class="col col-12 col-md-3 col-lg-4 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="text" v-model="ctrl.currentWorker" placeholder="请输入您的姓名">
               <label class="form-label">姓名</label>
@@ -153,13 +162,13 @@
               <input class="form-control form-control-sm" type="password" v-model="ctrl.currentWorkerSecret" placeholder="请输入您的密码">
               <label class="form-label">密码</label>
             </div>
-          </div> -->
-          <!-- <div v-if="false" class="col col-12 col-md-3 col-lg-3 my-2">
+          </div>
+          <div v-if="false" class="col col-12 col-md-3 col-lg-3 my-2">
             <div class="form-floating">
               <input class="form-control form-control-sm" type="text" v-model="ctrl.currentWorkerTarget" placeholder="请输入您的标注目标">
               <label class="form-label">标注目标数量</label>
             </div>
-          </div> -->
+          </div>
         </div>
         <div class="row align-items-center my-1" v-if="newThings?.topic?.length">
           <div class="col col-12">
@@ -171,39 +180,33 @@
             <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
-              @click="()=>{}"
-              title="标注工作已经告一段落，谢谢"
-            >标注工作已经告一段落，谢谢</button>
-            <!-- <button
-              type="button"
-              class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{bEU.begin();newThings.begun=true;}"
               title="开始标注"
-            >开始标注</button> -->
+            >开始标注</button>
             <!-- <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{startPlay('t1');}"
               title="查看 task1 示例"
-            >查看 task1 示例</button> -->
-            <!-- <button
+            >查看 task1 示例</button>
+            <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{startPlay('t2r');}"
               title="查看 task2 示例"
             >查看 task2 示例</button> -->
-            <button
+            <!-- <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{startPlay('t3');}"
               title="查看 task3 示例"
-            >查看 task3 示例</button>
-            <!-- <button
+            >查看 task3 示例</button> -->
+            <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
               @click="()=>{bEU.connect()}"
               title="每次刷新页面后需「同步信息」并获取任务列表"
-            >同步信息</button> -->
+            >同步信息</button>
             <!-- <button
               type="button"
               class="btn btn-sm me-2 my-1 btn-outline-primary"
@@ -235,7 +238,7 @@
               __:class="`btn-${taskBtn.valid?'info':taskBtn.dropped?'dark':taskBtn.skipped?'outline-primary':'outline-primary'}`"
               @click="()=>{startInspector(user)}"
             >#{{user.id??"_"}} {{user.name}}</button>
-          </div>
+          </div> 
           <!-- inspecting.allUsers -->
         </div>
       </div>
@@ -412,7 +415,7 @@
         <!-- 标注结果展示模块 开始 -->
         <div class="row mt-2 mb-1 carded" :class="{'border-0' : play?.playMode}" id="annotations-area">
 
-          <!-- <div class="col col-12 my-1" v-show="example?.review?.accept!=null && !play.playMode">
+          <div class="col col-12 my-1" v-show="example?.review?.accept!=null && !play.playMode">
             <span class="badge text-wrap my-1 me-2" :class="example?.review?.accept ? (example?.review?.checked||example?.review?.revised ? 'bg-warning bg-opacity-25 text-dark' : 'bg-success text-light') : (example?.review?.checked||example?.review?.revised ? 'bg-warning bg-opacity-25 text-dark' : 'bg-danger text-light')">
               <span v-show="example?.review?.reviewer">{{example?.review?.reviewer?.name??`审核员${example?.review?.reviewer?.id}`}}</span>
               <span>{{example?.review?.accept ? '审核通过' : '审核未通过'}}</span>
@@ -420,7 +423,7 @@
               <span class="ms-1" v-show="example?.review?.revised">{{example?.review?.reviser?.name??`修订员${example?.review?.reviser?.id}`}}有所修订</span>
               <span class="ms-1" v-show="example?.review?.checked">等待复审</span>
             </span>
-          </div> -->
+          </div>
 
           <anno-review
             class="col col-12 my-1"
@@ -646,25 +649,25 @@
   <!-- bodywrap end -->
 
   <!-- scripts start -->
-  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.10/clipboard.min.js"></script> -->
+ <!--  <script src="https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.10/clipboard.min.js"></script>
 
-  <!-- <script type="text/javascript" src="lib/clipboard_2.0.10_.min.js"></script>
+  <script type="text/javascript" src="lib/clipboard_2.0.10_.min.js"></script>
   <script type="text/javascript" src="lib/store_2.0.9_.legacy.min.js"></script>
   <script type="text/javascript" src="lib/vue_3.2.26_.global.prod.min.js"></script>
   <script type="text/javascript" src="lib/axios_0.25.0_.min.js"></script>
-  <script type="text/javascript" src="lib/FileSaver.js"></script> -->
+  <script type="text/javascript" src="lib/FileSaver.js"></script>
 
-  <!-- <script type="text/javascript" src="js/components/BaseAlert.js"></script>
+  <script type="text/javascript" src="js/components/BaseAlert.js"></script>
   <script type="text/javascript" src="js/components/BaseSaver.js"></script>
   <script type="text/javascript" src="js/components/BaseReader.js"></script>
   <script type="text/javascript" src="js/components/TheReader.js"></script>
-  <script type="text/javascript" src="js/components/TheSteps.js"></script> -->
+  <script type="text/javascript" src="js/components/TheSteps.js"></script>
 
-  <!-- <script type="text/javascript" src="js/components/TheSelector.js"></script> -->
+  <script type="text/javascript" src="js/components/TheSelector.js"></script>
 
-  <!-- <script type="text/javascript" src="js/util.js"></script>
-  <script type="text/javascript" src="js/main.js"></script> -->
-
+  <script type="text/javascript" src="js/util.js"></script>
+  <script type="text/javascript" src="js/main.js"></script>
+ -->
   <!-- <script type="module" src="js/util.mjs.js"></script> -->
   <script type="module" src="js/main.mjs.js"></script>
 
