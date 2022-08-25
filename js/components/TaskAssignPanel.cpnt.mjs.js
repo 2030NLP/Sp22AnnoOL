@@ -47,6 +47,8 @@ const TaskAssignPanel = {
       {value: "第2期R", desc: "第2期R"},
       {value: "归因", desc: "归因"},
       {value: "精标", desc: "精标"},
+      {value: "测试1", desc: "测试1"},
+      {value: "测试2", desc: "测试2"},
     ];
 
     const assignData = reactive({
