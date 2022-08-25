@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
+  <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+  <META HTTP-EQUIV="Expires" CONTENT="0">
+
+  <title>Sp22Anno HumanDashboard</title>
+
+  <link href="css/bootstrap_5.1.3_.min.css" rel="stylesheet">
+
+  <link href="css/style.css" rel="stylesheet">
+
+  <style type="text/css">
+  </style>
+
+</head>
+
+<body>
+
+  <div class="bodywrap" id="bodywrap">
+
+    <div class="page-cover" v-if="false">
+      <div class="container pt-5 text-center">
+        <div class="row">
+          <div><h2>Sp22空间关系理解人类测试管理界面 (开发中)</h2></div>
+        </div>
+        <div class="row">
+          <div>
+            <p>正在加载，请稍候……</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- navbar start -->
+    <nav
+      class="navbar navbar-expand-lg navbar-dark"
+      :class="ctrl.developing ? 'bg-success' : 'bg-dark'"
+    >
+      <div class="container">
+        <a class="navbar-brand" :title="`版本：${APP_VERSION}`" href="#">空间关系理解数据标注 2022 管理面板 (开发中)</a>
+      </div>
+    </nav>
+    <!-- navbar end -->
+
+
+    <div class="container page my-4 py-2">
+
+      <!-- <div class="border border-1 border-danger py-2">
+        <bs-badge
+          :can-close="true"
+          @close="()=>{win.console.log('close----')}"
+        >哈哈哈</bs-badge>
+      </div> -->
+
+      <login-panel
+        :user="ctrl.currentUser"
+        @update-user="(info)=>{Object.assign(ctrl.currentUser, info)}"
+        @connect="async()=>{await connect();}"
+        @disconnect="async()=>{await disconnect();}"
+        :connected="ctrl.connected"
+      ></login-panel>
+
+      <data-panel
+        v-if="ctrl.connected&&!ctrl.started"
+        :db="spDB"
+        :me="ctrl.currentUser"
+        :timedict="ctrl.lastTimeDict"
+        @load-cache="async ()=>{ctrl.started=false; await loadCacheDB()}"
+        @fix-data="async()=>{ctrl.started=false; await spDB.fix(); await saveDB();}"
+        @sync-all="async ()=>{ctrl.started=false; await sync()}"
+        @export="async (listName)=>{await win.console.log(spDB[listName]);}"
+
+        @sync-entries="async ()=>{ctrl.started=false; await syncEntryInfo()}"
+        @sync-tasks="async ()=>{ctrl.started=false; await syncTask()}"
+        @sync-annos="async ()=>{ctrl.started=false; await syncAnno()}"
+        @sync-users="async ()=>{ctrl.started=false; await syncUser()}"
+      ></data-panel>
+
+      <div class="container">
+
+        <div class="row align-items-center my-2">
+
+          <div
+            class="col col-12"
+            v-show="ctrl.connected&&!ctrl.started"
+            v-if="ctrl.currentUser?.role?.includes?.('manager')"
+          >
+            <button
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="'btn-outline-dark'"
+              @click="exportDB"
+              title="将整个数据库导出为json文件（需要先刷新数据库到本地，否则数据可能不完整；其中Entry表可使用离线版）"
+            >导出数据库（需要先刷新数据库到本地）</button>
+            <a
+              class="btn btn-sm me-2 my-1"
+              :class="'btn-outline-dark'"
+              href="https://github.com/2030NLP/sp22scripts/blob/main/SpaCE2022_DB.spec.md"
+              target="_blank"
+            >查看数据格式说明</a>
+          </div>
+          <div
+            class="col col-12"
+            v-show="ctrl.connected&&!ctrl.started"
+            v-if="ctrl.currentUser?.role?.includes?.('manager')"
+          >
+            <a
+              class="btn btn-sm me-2 my-1"
+              :class="'btn-outline-dark'"
+              href="./memos"
+              target="_blank"
+            >打开留言板</a>
+          </div>
+          <div class="col col-12">
+            <button
+              v-if="spDB.completelyExtended && spDB.allDictsBuilt && spDB.isNotEmpty"
+              v-show="ctrl.connected&&!ctrl.started"
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="`btn-info`"
+              @click="async()=>{ctrl.started=true;}"
+              title="开始工作"
+            >开始工作</button>
+            <button
+              v-if="spDB.completelyExtended && spDB.allDictsBuilt && spDB.isNotEmpty"
+              v-show="ctrl.connected&&ctrl.started"
+              type="button"
+              class="btn btn-sm me-2 my-1"
+              :class="`btn-info`"
+              @click="async()=>{ctrl.started=false;}"
+              title="管理数据"
+            >管理数据</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container page my-4"
+      v-if="ctrl.started"
+    >
+      <div class="container py-2">
+        <div class="row mt-2 mb-4">
+          <div class="col">
+            <ul class="nav nav-tabs">
+              <li class="nav-item" v-show="isManager(ctrl.currentUser)">
+                <a class="nav-link" :class="ctrl.tab == TABS.overview ? 'active' : ''" href="#" @click="goTab('overview')">总体进度</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" :class="ctrl.tab == TABS.userProgress ? 'active' : ''" href="#" @click="goTab('userProgress')">用户进度</a>
+              </li>
+              <li class="nav-item" v-show="isManager(ctrl.currentUser)">
+                <a class="nav-link" :class="ctrl.tab == TABS.finder ? 'active' : ''" href="#" @click="goTab('finder')">检索</a>
+              </li>
+              <li class="nav-item" v-show="isMaster(ctrl.currentUser)">
+                <a class="nav-link" :class="ctrl.tab == TABS.taskAssign ? 'active' : ''" href="#" @click="goTab('taskAssign')">分配任务</a>
+              </li>
+              <!-- <li class="nav-item">
+                <a class="nav-link" :class="ctrl.tab == TABS.functions ? 'active' : ''" href="#" @click="goTab('functions')">更多功能</a>
+              </li>-->
+              <li class="nav-item"> 
+                <a class="nav-link" :class="ctrl.tab == TABS.taskAssign ? 'active' : ''" href="#" @click="goTab('taskAssign')">分配任务</a>
+              </li> 
+            </ul>
+          </div>
+        </div>
+
+
+        <statistic-panel
+          :show="ctrl.tab == TABS.overview && isManager(ctrl.currentUser)"
+          :functions="Sp22FN"
+          :db="spDB"
+        ></statistic-panel>
+
+
+        <user-list-panel
+          :show="ctrl.tab == TABS.userProgress"
+          :functions="Sp22FN"
+          :settings="ctrl"
+          :db="spDB"
+          :me="ctrl.currentUser"
+          @click-add-user-btn="modalBox_open('user-importer')"
+          @click-user-detail-btn="(user)=>{modalBox_open('user-detail', user);}"
+          @click-user-progress-btn="(user)=>{sortUserAnnos(user);modalBox_open('user-progress', user);}"
+        ></user-list-panel>
+
+
+        <finder-panel
+          :show="ctrl.tab == TABS.finder && isManager(ctrl.currentUser)"
+          :functions="Sp22FN"
+          :db="spDB"
+        ></finder-panel>
+
+
+        <task-assign-panel
+          :show="ctrl.tab == TABS.taskAssign && isMaster(ctrl.currentUser)"
+          v-show="ctrl.tab == TABS.taskAssign && isMaster(ctrl.currentUser)"
+          :functions="Sp22FN"
+          :db="spDB"
+          :settings="ctrl"
+          :frg="frg"
+          :alert-box="alertBox"
+          :modal-box="modalBox"
+          :backend="theBackEnd"
+          :saver="theSaver"
+          :app-info="{name: APP_NAME, version: APP_VERSION}"
+        ></task-assign-panel>
+
+
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- Modal -->
+    <div class="modal-wrap" style="display: block;" ref="modal_wrap">
+      <div class="modal" v-show="modalBox.data.show" :class="{show: modalBox.data.show}">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+
+
+
+          <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['entry-detail']">
+            <div class="modal-body" v-for="entry in [modalBox.data?.kwargs]">
+              <div class="row align-items-center my-2">
+
+                <div class="col-12">
+                  <h4 class="mt-2">语料详情</h4>
+                </div>
+
+                <div class="col-12">
+                  <h5 class="mt-2">基本信息</h5>
+                </div>
+
+                <div class="col-12">
+                  <entry-card
+                    :entry="entry"
+                    :db="spDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-entry="(value)=>{updateOneEntry(value)}"
+                  ></entry-card>
+                </div>
+
+                <div class="col-12">
+                  <h5 class="mt-2">更多信息</h5>
+                </div>
+
+                <div class="col-12">
+                  <div v-show="entry.originId">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">原句编号: {{entry.originId}}</span>
+                  </div>
+                  <div v-show="entry.version">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">版本: {{entry.version}}</span>
+                  </div>
+                  <div v-show="entry.deleted">
+                    <span class="badge bg-danger text-light text-wrap my-1 me-2">已删除</span>
+                  </div>
+                  <div v-show="entry.info">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">更多信息: {{entry.info}}</span>
+                  </div>
+                  <!-- <div v-show="Object.keys(entry.results).length">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">参考信息: {{entry.results}}</span>
+                  </div> -->
+                </div>
+
+                <div class="col-12">
+                  <h5 class="mt-2">已提交的标注</h5>
+                </div>
+
+                <div class="col-12" v-for="anno_id in entry.allAnnos">
+                  <div class="card my-1" v-for="anno in [spDB.anno(anno_id)]" :key="anno.id">
+                    <div class="col-12">
+                      <anno-card
+                        :anno="anno"
+                        :db="spDB"
+                        :definition="ctrl.精标定义"
+                        @submit-review="(value)=>{saveAnnoReview(...value)}"
+                        @open-modal="(value)=>{modalBox_open(...value)}"
+                        @update-anno="(value)=>{updateOneAnno(value)}"
+                      ></anno-card>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <h5 class="mt-2">关联的任务</h5>
+                </div>
+
+                <div class="col-12" v-for="task_id in entry.allTasks">
+                  <task-card
+                    v-for="task in [spDB.task(task_id)]"
+                    :task="task"
+                    :db="spDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                  ></task-card>
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}" v-show="modalBox.data.history.length>1">关闭全部 ({{modalBox.data.history.length}})</button>
+            </div>
+          </div>
+
+
+
+          <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['anno-detail']">
+            <div class="modal-body" v-for="anno in [modalBox.data?.kwargs]">
+              <div class="row align-items-center my-2">
+
+                <div class="col-12">
+                  <h4>标注详情</h4>
+                </div>
+
+                <div class="col-12" v-for="entry in [spDB.entry(anno.entry)]">
+                  <entry-card
+                    :entry="entry"
+                    :db="spDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-entry="(value)=>{updateOneEntry(value)}"
+                  ></entry-card>
+                </div>
+
+                <div class="col-12">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                  >anno-{{anno?.topic}}-#{{anno?.id}}-{{spDB.user(anno?.user)?.name}}</button>
+                  <div v-for="annot in anno.content?.annotations??[]">
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{annot}}</span>
+                  </div>
+                  <div>
+                    <span>Schema：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?.content?._ctrl?.schema}}</span>
+                  </div>
+                  <div v-if="anno?._timeInfo">
+                    <span>首次操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.firstDur/1000}}s</span><br/>
+                    <span>累计操作次数：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.detail?.length}}次</span><br/>
+                    <span>审核前最后提交时间：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{(new Date(anno?._timeInfo?.pureLastAt)).toLocaleString()}}</span><br/>
+                    <span>审核前累计操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.pureTotalDur/1000}}s</span><br/>
+                    <span>审核前累计时长跨度：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.pureStride/1000}}s</span><br/>
+                    <span>最后提交时间：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{(new Date(anno?._timeInfo?.lastAt)).toLocaleString()}}</span><br/>
+                    <span>累计操作时长：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.totalDur/1000}}s</span><br/>
+                    <span>累计时长跨度：</span><span class="badge bg-light text-dark text-wrap my-1 me-2">{{anno?._timeInfo?.stride/1000}}s</span>
+                  </div>
+                  <task-card
+                    v-for="task in [spDB.task(anno.task)]"
+                    :task="task"
+                    :db="spDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                  ></task-card>
+                  <button
+                    v-for="user in [spDB.user(anno.user)]"
+                    type="button"
+                    class="btn btn-sm btn-outline-dark my-1 me-2"
+                    @click="modalBox_open('user-progress', user)"
+                  >user#{{user?.id}} {{user?.name}}</button>
+                </div>
+
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}" v-show="modalBox.data.history.length>1">关闭全部 ({{modalBox.data.history.length}})</button>
+            </div>
+          </div>
+
+
+
+          <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['task-detail']">
+            <div class="modal-body" v-for="task in [modalBox.data?.kwargs]">
+              <div class="row align-items-center my-2">
+
+                <div class="col-12">
+                  <h4>任务详情</h4>
+                </div>
+
+                <div class="col-12">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-light my-1 me-2"
+                  >task#{{task?.id}}</button>
+                  <div>
+                    <span class="badge bg-light text-dark text-wrap my-1 me-2">{{task}}</span>
+                  </div>
+                </div>
+
+                <div class="col-12" v-for="entry in [spDB.entry(task.entry)]">
+                  <entry-card
+                    :entry="entry"
+                    :db="spDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-entry="(value)=>{updateOneEntry(value)}"
+                  ></entry-card>
+                </div>
+
+                <div class="col-12">
+                  <h5>已提交的标注（{{task.submitters?.length}}）</h5>
+                  <div class="card my-1" v-for="user_id in task.submitters">
+                    <div class="col-12" v-for="anno_id in [spDB.getAnnoByUserAndTask(user_id, task.id)]">
+                      <anno-card
+                        v-for="anno in [spDB.anno(anno_id)]"
+                        :anno="anno"
+                        :db="spDB"
+                        :definition="ctrl.精标定义"
+                        :key="anno.id"
+                        @submit-review="(value)=>{saveAnnoReview(...value)}"
+                        @open-modal="(value)=>{modalBox_open(...value)}"
+                        @update-anno="(value)=>{updateOneAnno(value)}"
+                      ></anno-card>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <h5>分配给{{task.to?.length}}人</h5>
+                  <template v-for="user_id in task.to">
+                    <button
+                      v-for="user in [spDB.user(user_id)]"
+                      type="button"
+                      class="btn btn-sm btn-outline-dark my-1 me-2"
+                      @click="modalBox_open('user-progress', user)"
+                    >user#{{user?.id}} {{user?.name}}</button>
+                  </template>
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide();}">关闭</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}" v-show="modalBox.data.history.length>1">关闭全部 ({{modalBox.data.history.length}})</button>
+            </div>
+          </div>
+
+
+          <template
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-editor']"
+          >
+            <user-editor
+              :db="spDB"
+              :box="modalBox"
+              :user="modalBox.data?.kwargs"
+              @check-error-on-save="alertBox.pushAlert('存在错误，请检查！', 'warning')"
+              @save="(value)=>{saveUpdatedUser(modalBox.data?.kwargs, value)}"
+            ></user-editor>
+          </template>
+
+
+          <template
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-tags-editor']"
+          >
+            <user-tags-editor
+              :db="spDB"
+              :box="modalBox"
+              :user="modalBox.data?.kwargs"
+              @check-error-on-save="alertBox.pushAlert('存在错误，请检查！', 'warning')"
+              @save="(value)=>{saveUpdatedUser(modalBox.data?.kwargs, value)}"
+            ></user-tags-editor>
+          </template>
+
+
+          <template
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-importer']"
+          >
+            <user-importer
+              :db="spDB"
+              :box="modalBox"
+              @check-error-on-save="(value)=>{alertBox.pushAlert('存在错误，请检查！', 'warning', null, value)}"
+              @save="async(value)=>{ctrl.started=false; let messages = await makeNewUsers(value); let resultText='执行结果：\n'+messages.join('\n'); modalBox_open('confirm', {desc: resultText, action: ()=>{}, closetext: '关闭', confirmtext: '知道了'} );}"
+            ></user-importer>
+          </template>
+
+
+          <template
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-detail']"
+          ><modal-content
+            :box="modalBox"
+            v-for="user in [modalBox.data?.kwargs]"
+            :key="user.id"
+          >
+
+            <div class="container">
+              <div class="row align-items-center my-2">
+                <div class="col-12">
+                  <h5>{{user.name}}
+                    <span v-for="role in user.role" class="badge rounded-pill bg-primary mx-1">{{role}}</span>
+                    <span v-if="user.quitted" class="badge rounded-pill bg-danger mx-2">已退出</span>
+                  </h5>
+                </div>
+              </div>
+              <div class="row align-items-center my-2">
+                <div class="col-12">
+                  <p>编号：{{user.id}}</p>
+                  <p>分组：{{user.currTaskGroup}}</p>
+                  <p>组长：{{spDB.user(user.manager)?.name}}</p>
+                  <p>当前任务类型：{{Sp22FN.topic_regulation(user.currTask)}}</p>
+                  <p>机构缩写：{{user?.info?.inst_abbr}}</p>
+                  <p>机构：{{user?.info?.institution}}</p>
+                  <p>电话：{{user?.info?.phone}}</p>
+                  <p>邮箱：{{user?.info?.email}}</p>
+                  <p>微信：{{user?.info?.wechat}}</p>
+                  <p>其他：{{user?.info?.other}}</p>
+                </div>
+              </div>
+              <div class="row align-items-center my-2">
+                <div class="col-12">
+                  <button
+                    type="button"
+                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                    :title="`编辑 ${user.name} 的标签`"
+                    @click="modalBox_open('user-tags-editor', user)"
+                  >编辑标签</button>
+                  <button
+                    type="button"
+                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                    :title="`编辑 ${user.name} 的资料`"
+                    @click="modalBox_open('user-editor', user)"
+                  >编辑资料</button>
+                  <button
+                    v-if="!(user.role??[]).includes('admin')"
+                    type="button"
+                    class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
+                    :title="`点击拷贝 ${user.name} 的密码`"
+                    :data-clipboard-text="`#${user.id} ${user.name} 的密码是： ${user.token}`"
+                  >拷贝密码</button>
+                  <button
+                    v-if="(user.role??[]).includes('admin')"
+                    type="button"
+                    class="btn btn-sm me-2 my-1 btn-outline-secondary btn-copy-token"
+                    :title="`点击拷贝 ${user.name} 的密码`"
+                    :data-clipboard-text="`不能拷贝管理员的密码`"
+                  >拷贝密码</button>
+                  <button
+                    type="button"
+                    v-if="!user.quitted"
+                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                    :title="`给 ${user.name} 添加“已退出”标记`"
+                    __on:click="modalBox_open('user-set-quitted', user)"
+                    @click="modalBox_open('confirm', {desc: `确定要将用户 ${user?.name} 标记为“已退出”吗？`, action: (()=>{setAsQuitted(user);}),})"
+                  >标记退出</button>
+                  <button
+                    type="button"
+                    v-if="user.quitted"
+                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                    :title="`为 ${user.name} 移除“已退出”标记`"
+                    __on:click="modalBox_open('user-unset-quitted', user)"
+                    @click="modalBox_open('confirm', {desc: `确定要去除用户 ${user?.name} 的“已退出”标记吗？`, action: (()=>{setNotQuitted(user);}),})"
+                  >不再退出</button>
+                  <button
+                    type="button"
+                    v-if="(!user?.role?.includes?.('inspector'))&&(!user?.role?.includes?.('super-inspector'))"
+                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                    :title="`将 ${user.name} 设置为审核员（inspector）`"
+                    @click="modalBox_open('confirm', {desc: `确定要将 ${user.name} 设置为审核员吗？`, action: (()=>{setAsInspector(user);}),})"
+                  >设为审核员</button>
+                  <button
+                    type="button"
+                    v-if="(user?.role?.includes?.('inspector'))||(user?.role?.includes?.('super-inspector'))"
+                    class="btn btn-sm me-2 my-1 btn-outline-secondary"
+                    :title="`将 ${user.name} 的审核员（inspector）身份撤除`"
+                    @click="modalBox_open('confirm', {desc: `确定要将 ${user.name} 的审核员身份撤除吗？`, action: (()=>{setNotInspector(user);}),})"
+                  >撤除审核员</button>
+                </div>
+              </div>
+            </div>
+
+            <template #footer>
+              <button type="button" class="btn btn-sm btn-outline-dark me-2" @click="modalBox_open('user-progress', user)">标注进度</button>
+            </template>
+          </modal-content></template>
+
+          <div class="modal-content" v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['user-progress']">
+            <div class="modal-header" v-for="user in [modalBox.data?.kwargs]">
+              <div class="container">
+                <div class="row align-items-center my-2">
+                  <div class="col-6 col-sm-6 col-md-3 my-1">
+                    <h5>{{user.name}}</h5>
+                  </div>
+
+                  <!-- <div class="col-6 col-sm-6 col-md-3 my-1">
+                    <span v-for="sum in [inspectionSum(user)]"
+                      class="badge me-1"
+                      :class="sum?.passRatio>=0.9 ? 'bg-success text-light' : sum?.passRatio>=0.8 ? 'bg-light text-success border border-1 border-success' : sum?.passRatio==null ? 'bg-light text-dark' : sum?.passRatio<=0.6 ? 'bg-danger text-light' : 'bg-light text-danger border border-1 border-danger'"
+                    >通过率： {{sum.passRatio?.toFixed?.(3)??'null'}} = {{sum.true??0}}/{{sum.sum??0}}</span>
+                  </div>
+                  <div class="col-12 col-sm-12 col-md-6 my-2">
+                    <div class="progress" :class="{'bg-success bg-opacity-25': userProgress(user).done}" title="标注进度">
+                      <div
+                        class="progress-bar bg-success"
+                        role="progressbar"
+                        :style="`width: ${userProgress(user).pct};`"
+                        :aria-valuenow="userProgress(user).mn"
+                        :aria-valuemax="userProgress(user).bg"
+                        aria-valuemin="0"
+                      >{{ userProgress(user).cDoneLen }}/{{ userProgress(user).cDueLen }}</div>
+                    </div>
+                  </div> -->
+
+                  <div class="col-12">
+                    <div class="input-group input-group-sm my-2">
+                      <label class="input-group-text">任务</label>
+                      <select
+                       class="form-select form-select-sm"
+                       v-model="ctrl.userAnnoFilter.topic"
+                      >
+                        <option v-for="topic in spDB.topics()" :value="topic">{{topic}}</option>
+                        <option value="【empty】">【empty】</option>
+                        <option value="【all】">【all】</option>
+                      </select>
+                      <label class="input-group-text">批次</label>
+                      <select
+                       class="form-select form-select-sm"
+                       v-model="ctrl.userAnnoFilter.batchName"
+                      >
+                        <option v-for="batchName in spDB.batchNames()" :value="batchName">{{batchName}}</option>
+                        <option value="【empty】">【empty】</option>
+                        <option value="【all】">【all】</option>
+                      </select>
+                      <button type="button" class="btn btn-sm btn-outline-secondary" @click="()=>{sortUserAnnos(user);}">排序</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-body" v-for="user in [modalBox.data?.kwargs]">
+              <div
+                class="row align-items-center my-3 border border-secondary border-2 rounded"
+                v-for="anno in userAnnos.list"
+                __v-for="anno in lo.sortBy(user.allAnnos.map(it=>spDB.anno(it)), [annoSortFn, it=>(-it.batch)])"
+                :key="anno.id"
+                v-show="[anno.topic, '【all】'].includes(ctrl.userAnnoFilter.topic)&&[anno.batchName??'【empty】', '【all】'].includes(ctrl.userAnnoFilter.batchName??'【empty】')">
+
+                <div class="col-12">
+                  <task-card
+                    v-for="task in [spDB.task(anno.task)]"
+                    :task="task"
+                    :db="spDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                  ></task-card>
+                </div>
+
+                <div class="col-12" v-for="entry in [spDB.entry(anno.entry)]">
+                  <entry-card
+                    :entry="entry"
+                    :db="spDB"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-entry="(value)=>{updateOneEntry(value)}"
+                  ></entry-card>
+                </div>
+
+                <div class="col-12">
+                  <anno-card
+                    :anno="anno"
+                    :db="spDB"
+                    :definition="ctrl.精标定义"
+                    @submit-review="(value)=>{saveAnnoReview(...value)}"
+                    @open-modal="(value)=>{modalBox_open(...value)}"
+                    @update-anno="(value)=>{updateOneAnno(value)}"
+                  ></anno-card>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="modal-footer" v-for="user in [modalBox.data?.kwargs]">
+              <button
+                v-if="ctrl.currentUser?.role?.includes?.('manager')"
+                type="button" class="btn btn-sm btn-outline-dark me-2" @click="modalBox_open('user-detail', user)"
+              >用户资料</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hide()}">关闭</button>
+              <button type="button" class="btn btn-sm btn-secondary" @click="()=>{modalBox.hideTotal();}" v-show="modalBox.data.history.length>1">关闭全部 ({{modalBox.data.history.length}})</button>
+            </div>
+          </div>
+
+
+
+
+
+
+
+
+
+          <modal-content
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['default']"
+            :box="modalBox"
+          >
+            <div class="row align-items-center my-2">
+              <div class="col-12">
+                <p>😄</p>
+              </div>
+            </div>
+          </modal-content>
+
+          <modal-content
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['confirm']"
+            :box="modalBox"
+            :needconfirm="true"
+            @confirm="()=>{modalBox.data?.kwargs?.action?.();modalBox.hide();}"
+            :closetext="modalBox.data?.kwargs.closetext??'取消'"
+            :confirmtext="modalBox.data?.kwargs.confirmtext"
+            :confirmstyle="modalBox.data?.kwargs.confirmstyle"
+          >
+            <div class="row align-items-center my-2">
+              <div class="col-12">
+                <p class="pre-wrap">{{ modalBox.data?.kwargs?.desc }}</p>
+              </div>
+            </div>
+          </modal-content>
+
+          <modal-content
+            v-if="MODAL_THEMES[modalBox.data.theme] == MODAL_THEMES['upload-entries']"
+            :box="modalBox"
+          >
+            <form class="row align-items-center my-2" name="file-form" id="filePicker">
+              <div class="col-md-8 my-2">
+                <input
+                  type="file"
+                  class="form-control form-control-sm"
+                  name="file-input"
+                  id="file-input"
+                  accept=".json, .txt"
+                />
+              </div>
+              <div class="btn-group btn-group-sm col-md-4 my-2">
+                <button
+                  type="button"
+                  name="do_import"
+                  id="do_import"
+                  @click="onImportEntryTable"
+                  class="btn btn-primary"
+                >导入</button>
+              </div>
+            </form>
+          </modal-content>
+
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Alert -->
+    <div class="alert-wrap" style="display: block;" ref="alert_wrap">
+      <transition name="fade" v-for="alert in alertBox.data.alerts">
+        <div v-show="alert?.show" class="alert alert-dismissible" :class="'alert-'+(alert?.type ?? 'info')">
+          <button type="button" class="btn-close" @click="alertBox.removeAlert(alert?.idx)"></button>
+          <div>{{alert?.content}}</div>
+        </div>
+      </transition>
+    </div>
+
+  </div>
+  <!-- bodywrap end -->
+
+  <script type="module" src="js/master.mjs.js"></script>
+</body>
+
+</html>
