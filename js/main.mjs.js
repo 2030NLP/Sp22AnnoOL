@@ -264,6 +264,8 @@ const RootComponent = {
         't4': "task3",
         "Eval1":"测试1",
         "Eval2":"测试2",
+        "r1":"修订t1",
+        "r2":"修订t2",
       };
       appData.inspecting = {
         inspectingMode: true,
