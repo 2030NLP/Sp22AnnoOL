@@ -789,6 +789,8 @@ const RootComponent = {
       {value: "精标", desc: "精标"},
       {value: "测试1", desc: "测试1"},
       {value: "测试2", desc: "测试2"},
+      {value: "修订t1", desc: "修订t1"},
+      {value: "修订t2", desc: "修订t2"},
     ];
 
     const assignData = reactive({
