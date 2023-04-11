@@ -8,12 +8,366 @@
     "第2期R": "220603v1",
     "精标": "220721v1",
     "测试1":"20220824",
-    "测试2":"20220825"
+    "测试2":"20220825",
+    "修订t1":"20230417",
+    "修订t2":"20230411"
   },
   "using": "精标",
+  
+  
+  
+  "修订t1": {
+  "startStep": "start",
+  "endStep": "end",
+  "steps": {
+    "end": {
+      "ref": "end",
+      "name": "标注结果",
+      "mode": "finalResult",
+      "props": {
+        "instruction": "",
+        "canReset": true,
+        "resetBtn": {
+          "text": "清空并重新标注",
+          "go": "start",
+          "style": "outline-danger"
+        },
+        "cancelBtn": {
+          "text": "增加标注",
+          "go": "start",
+          "style": "outline-primary"
+        },
+        "nextBtn": {
+          "text": "下一条",
+          "style": "outline-primary"
+        }
+      }
+    },
+    "start": {
+      "ref": "start",
+      "name": "开始",
+      "mode": "selectValue",
+      "props": {
+        "instruction": "这段话符合下述哪些/哪种情形？",
+        "optionBtns": [
+          {
+            "text": "并无异常",
+            "data": {
+              "label": "ExceptionNotFound",
+              "desc": "这段话不存在异常"
+            },
+            "go": "end",
+            "style": "outline-primary"
+          },
+          {
+            "text": "存在异常",
+            "style": "outline-danger",
+            "go": "makeReason"
+          }
+        ]
+      }
+    },
+    "makeReason": {
+      "ref": "makeReason",
+      "name": "处理异常归因",
+      "mode": "SpaCE2023_Revise1",
+      "props": {
+        "strings": {
+          "instruction": "这段话存在的问题是：",
+          "selectInstruction": "请在文中选择文本",
+          "insertInstruction": "将选中的文本填入此处"
+        },
+        "data": {
+          "hidden": true,
+          "items": []
+        },
+        "options": [
+          {
+            "text": "搭配不当",
+            "style": "outline-danger",
+            "actualMode": "doubleSpans",
+            "data": {
+              "parentMode": "SpaCE2023_Revise1",
+              "actualMode": "doubleSpans",
+              "displayMode": "multiSpans",
+              "label": "ReasonImproperCollocation",
+              "desc": "搭配不当",
+              "tokenarrays": [],
+              "names": []
+            },
+            "minimal": 2,
+            "slots": [
+              {"type": "select", "placeholder": "text1"},
+              {"type": "solid-text", "value": "与"},
+              {"type": "select", "placeholder": "text2"},
+              {"type": "solid-text", "value": "搭配不当"}]
+          },
+          {
+            "text": "语义冲突",
+            "style": "outline-danger",
+            "actualMode": "doubleSpans",
+            "data": {
+              "parentMode": "SpaCE2023_Revise1",
+              "actualMode": "doubleSpans",
+              "displayMode": "multiSpans",
+              "label": "ReasonSemanticConflict",
+              "desc": "语义冲突",
+              "tokenarrays": [],
+              "names": []
+            },
+            "minimal": 4,
+            "针对性处理": ["语义冲突数量限制", "检查P是否为纯方位词", "P, E 词类检查"],
+            "slots": [
+              {"type": "select", "placeholder": "S1"},
+              {"type": "select", "placeholder": "P1"},
+              {"type": "select", "placeholder": "E1"},
+              {"type": "solid-text", "value": "与"},
+              {"type": "select", "placeholder": "S2"},
+              {"type": "select", "placeholder": "P2"},
+              {"type": "select", "placeholder": "E2"},
+              {"type": "solid-text", "value": "语义冲突"}]
+          },
+          {
+            "text": "与常识或背景信息不符",
+            "style": "outline-danger",
+            "actualMode": "spanWithComment",
+            "data": {
+              "parentMode": "SpaCE2023_Revise1",
+              "actualMode": "spanWithComment",
+              "displayMode": "multiSpans",
+              "label": "ReasonAgainstCommenSense",
+              "desc": "与常识或背景信息不符",
+              "tokenarrays": [],
+              "names": []
+            },
+            "minimal": 2,
+            "针对性处理": ["检查P是否为纯方位词", "P, E 词类检查"],
+            "slots": [
+              {"type": "select", "placeholder": "S"},
+              {"type": "select", "placeholder": "P"},
+              {"type": "select", "placeholder": "E"},
+              {"type": "solid-text", "value": "不符合常识或背景信息"}]
+          }
+        ],
+        "okBtn": {
+          "text": "完成",
+          "go": "end",
+          "style": "outline-success"
+        },
+        "resetBtn": {
+          "text": "重置",
+          "style": "outline-danger"
+        },
+        "cancelBtn": {
+          "text": "取消",
+          "go": "start",
+          "style": "outline-dark"
+        }
+      }
+    }
+  }
+},
+  
+  
 
+ "修订t2": {
+    "startStep": "start",
+    "endStep": "start",
+    "steps": {
+      "end": {
+        "ref": "end",
+        "name": "标注结果",
+        "mode": "finalResult",
+        "props": {
+          "instruction": "",
+          "continueBtn": {
+            "text": "继续完善标注",
+            "go": "start",
+            "style": "outline-primary"
+          }
+        }
+      },
+      "start": {
+        "ref": "start",
+        "name": "开始",
+        "mode": "CSpaceBank",
+        "props": {
+          "go": "end",
+          "strings": {},
+          "data": {},
 
+          "definition": {
 
+            "namespace": "CSpaceBank",
+
+            "label_sets": [
+              ["实体虚实性", ["虚", "实"]],
+              ["命题真伪性", ["Negative", "Positve"]],
+              ["时间限定符", ["说话时", "之前", "之后", "之时", "之间", "过去", "将来"]],
+              ["距离限定符", ["远", "近", "变远", "变近"]],
+              ["特殊情况", ["无空间义", "空间义很少", "句义复杂标注困难", "内容有错误", "语料在示例中出现过", "其他情况"]]
+            ],
+
+            "object_types": [
+
+              {
+                "name": "propSet_Sp",
+                "nameFace": "S-T-E-P 整体信息标注",
+                "icon-bi": "boxes",
+                "slots": [
+                  {"name": "S", "nameFace": "实体S", "desc": "空间实体……", "ctrls": ["MB_SPANS"], "required": true},
+
+                  {"name": "_0", "gap": true},
+                  {"name": "Pl", "nameFace": "处所", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "PPl", "nameFace": "部件处所", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Pa", "nameFace": "部位", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Be", "nameFace": "起点", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Ed", "nameFace": "终点", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Dr", "nameFace": "方向",
+                    "desc": "指【运动或假想运动】的方向",
+                    "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "Or", "nameFace": "朝向",
+                    "desc": "指【空间实体的典型面】的朝向",
+                    "ctrls": ["MB_SPANS"], "required": true},
+
+                  {"name": "Pt", "nameFace": "路径", "ctrls": ["MB_SPANS"], "required": false},
+                  {"__name": "Pt_Shp", "nameFace": "路径形状", "ctrls": ["MB_SPANS"], "required": false},
+                  {"__name": "Shp_Rf", "nameFace": "构形参照", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Shp", "nameFace": "形状", "ctrls": ["MB_SPANS"], "required": false},
+
+                  {"__name": "Ds_Tg", "nameFace": "距离参照", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Ds_Vl", "nameFace": "距离1", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "Ds_Dc", "nameFace": "距离2", "ctrls": [{"type": "单个标签", "config": {"set": "距离限定符"}}], "required": false},
+
+                  {"name": "F", "nameFace": "事实性F", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false},
+
+                  {"_name": "P", "nameFace": "空间信息P", "ctrls": [
+                    {
+                      "type": "多个对象",
+                      "config": {
+                        "filter": [
+                          {
+                            "type": "propSet_P"
+                          }
+                        ]
+                      }
+                    }
+                  ], "required": true},
+
+                  {"name": "_1", "gap": true},
+                  {"__name": "TrV", "nameFace": "命题真值", "ctrls": [{"type": "单个标签", "config": {"set": "命题真伪性"}}], "default": {"type": "单个标签", "value": {"domain": "命题真伪性", "face": "Neg"}}, "required": false},
+
+                  {"name": "E", "nameFace": "事件E", "ctrls": ["MB_SPANS"], "required": true},
+                  {"__name": "E_obj", "nameFace": "事件对象", "ctrls": [{"type": "多个对象", "config": {
+                    "filter": [
+                        {"type": "propSet_E"}]
+                    }} ], "required": true},
+
+                  {"name": "_2", "gap": true},
+                  {"name": "T_wd", "nameFace": "原文时间", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "T_Rf", "nameFace": "参照事件", "ctrls": ["MB_SPANS"], "required": false},
+                  {"name": "T_Rg", "nameFace": "参照时间", "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}], "--default": {"type": "单个标签", "value": {"domain": "时间限定符", "face": "说话时"}}, "required": false}
+                ]
+              },
+
+              {
+                "name": "propSet_E",
+                "--addDisabled": true,
+                "nameFace": "事件角色信息标注",
+                "icon-bi": "film",
+                "slots": [
+                  {"__name": "E", "nameFace": "事件谓词", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "SPE_obj", "nameFace": "谓词来源", "ctrls": [{"type": "单个对象", "config": {
+                    "filter": [
+                        {"type": "propSet_Sp"}]
+                    }} ], "required": true},
+                  {
+                    "name": "arg0",
+                    "desc": "核心角色1：主体。对应论旨角色：施事（共同施事）、当事（间接当事）。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "arg1",
+                    "desc": "核心角色2：客体。对应论旨角色：受事、系事、结果、对象、内容。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "arg2",
+                    "desc": "核心角色3：受益/受损者。对应论旨角色：与事。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "arg3",
+                    "desc": "外围角色1：伴随者（准外围）。对应论旨角色：工具、材料、方式。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "argM",
+                    "desc": "外围角色2：环境成分（真外围）。对应论旨角色：事量、范围、原因、目的。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "argS",
+                    "desc": "外围角色3：空间角色。对应论旨角色：起点、终点、路径、方向、处所。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "argT",
+                    "desc": "外围角色4：时间角色。对应论旨角色：起始、结束、时点、时段。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true}
+                ]
+              },
+
+              {
+                "name": "propSet_S",
+                "nameFace": "同指关系标注",
+                "icon-bi": "diagram-3",
+                "slots": [
+                  {"__name": "SPE_obj", "nameFace": "同指片段来源", "ctrls": [{"type": "多个对象", "config": {
+                    "filter": [
+                        {"type": "propSet_Sp"}]
+                    }} ], "required": true},
+                  {
+                    "name": "R",
+                    "nameFace": "同指片段",
+                    "desc": "只需标注有P信息的空间实体的同指关系。\n有同指关系的空间实体，共享STEP信息。\n同指关系标注，以指代词和指称词的同指为主。",
+                    "ctrls": [
+                      {
+                        "type": "MB_SPANS",
+                        "config": {
+                          "joint": ", "
+                        }
+                      }
+                    ],
+                    "required": true},
+                  {"name": "F", "nameFace": "同指事实性", "ctrls": ["布尔值"], "default": {"type": "布尔值", "value": false}, "required": false}
+                ]
+              },
+
+              {
+                "name": "special_Situation",
+                "nameFace": "特殊情况标注",
+                "icon-bi": "exclamation-circle",
+                "slots": [
+                  {"name": "Label", "nameFace": "情况", "ctrls": [{"type": "单个标签", "config": {"set": "特殊情况"}}], "--default": {"type": "单个标签", "value": {"domain": "特殊情况", "face": "无空间义"}}, "required": true},
+                  {
+                    "name": "err_sec",
+                    "nameFace": "出错文本片段",
+                    "desc": "主要是原文有错的时候填写",
+                    "ctrls": ["MB_SPANS"],
+                    "required": false}
+                ]
+              }
+
+            ]
+
+          }
+
+        }
+      }
+    }
+  },
 
 
   "精标": {
