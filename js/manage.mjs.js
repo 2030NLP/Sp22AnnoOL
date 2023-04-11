@@ -133,6 +133,8 @@ const RootComponent = {
     const ll4 = ['t4', '第4期', '精标', '4', 'detail'];
     const ll5 = ['Eval1', '测试1'];
     const ll6 = ['Eval2', '测试2'];
+    const ll7 = ['r1', 'sp23-1', '修订t1'];
+    const ll8 = ['r2', 'sp23-2', '修订t2'];
 
     // 处理 topic 历史遗留混乱 用于 Task task.topic
     const topic_regulation = (topic) => {
@@ -156,6 +158,12 @@ const RootComponent = {
       };
       if (ll6.includes(topic)) {
         return '测试2';
+      };
+      if (ll7.includes(topic)) {
+        return '修订t1';
+      };
+      if (ll8.includes(topic)) {
+        return '修订t2';
       };
       return topic;
     }
@@ -183,6 +191,12 @@ const RootComponent = {
       if (ll6.includes(topic)) {
         return 'Eval2';
       };
+      if (ll7.includes(topic)) {
+        return 'r1';
+      };
+      if (ll8.includes(topic)) {
+        return 'r2';
+      };
       return topic;
     }
 
@@ -208,6 +222,12 @@ const RootComponent = {
       };
       if (ll6.includes(topic)) {
         return ll6;
+      };
+      if (ll7.includes(topic)) {
+        return ll7;
+      };
+      if (ll8.includes(topic)) {
+        return ll8;
       };
       return [topic];
     }
