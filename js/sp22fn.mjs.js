@@ -272,6 +272,8 @@ class Sp22FN {
     ll4: ['t4', 'task4', '第4期', '精标', '4', 'detail'],
     ll5: ['Eval1', '测试1'],
     ll6: ['Eval2', '测试2'],
+    ll7: ['r1', 'sp23-1', '修订t1'],
+    ll8: ['r2', 'sp23-2', '修订t2'],
   };
 
   // 处理 topic 历史遗留混乱 用于 Task task.topic
@@ -299,6 +301,12 @@ class Sp22FN {
     };
     if (Sp22FN.lls.ll6.includes(topic)) {
       return '测试2';
+    };
+    if (Sp22FN.lls.ll7.includes(topic)) {
+      return '修订t1';
+    };
+    if (Sp22FN.lls.ll8.includes(topic)) {
+      return '修订t2';
     };
     return topic;
   }
@@ -329,6 +337,12 @@ class Sp22FN {
     if (Sp22FN.lls.ll6.includes(topic)) {
       return 'Eval2';
     };
+    if (Sp22FN.lls.ll7.includes(topic)) {
+      return 'r1';
+    };
+    if (Sp22FN.lls.ll8.includes(topic)) {
+      return 'r2';
+    };
     return topic;
   }
 
@@ -357,6 +371,12 @@ class Sp22FN {
     };
     if (Sp22FN.lls.ll6.includes(topic)) {
       return Sp22FN.lls.ll6;
+    };
+    if (Sp22FN.lls.ll7.includes(topic)) {
+      return Sp22FN.lls.ll7;
+    };
+    if (Sp22FN.lls.ll8.includes(topic)) {
+      return Sp22FN.lls.ll8;
     };
     return [topic];
   }
