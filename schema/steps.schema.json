@@ -269,6 +269,55 @@
                   {"name": "T_Rg", "nameFace": "参照时间", "ctrls": [{"type": "单个标签", "config": {"set": "时间限定符"}}], "--default": {"type": "单个标签", "value": {"domain": "时间限定符", "face": "说话时"}}, "required": false}
                 ]
               },
+              
+              {
+                "name": "propSet_E",
+                "--addDisabled": true,
+                "nameFace": "事件角色信息标注",
+                "icon-bi": "film",
+                "slots": [
+                  {"__name": "E", "nameFace": "事件谓词", "ctrls": ["MB_SPANS"], "required": true},
+                  {"name": "SPE_obj", "nameFace": "谓词来源", "ctrls": [{"type": "单个对象", "config": {
+                    "filter": [
+                        {"type": "propSet_Sp"}]
+                    }} ], "required": true},
+                  {
+                    "name": "arg0",
+                    "desc": "核心角色1：主体。对应论旨角色：施事（共同施事）、当事（间接当事）。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "arg1",
+                    "desc": "核心角色2：客体。对应论旨角色：受事、系事、结果、对象、内容。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "arg2",
+                    "desc": "核心角色3：受益/受损者。对应论旨角色：与事。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "arg3",
+                    "desc": "外围角色1：伴随者（准外围）。对应论旨角色：工具、材料、方式。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "argM",
+                    "desc": "外围角色2：环境成分（真外围）。对应论旨角色：事量、范围、原因、目的。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "argS",
+                    "desc": "外围角色3：空间角色。对应论旨角色：起点、终点、路径、方向、处所。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true},
+                  {
+                    "name": "argT",
+                    "desc": "外围角色4：时间角色。对应论旨角色：起始、结束、时点、时段。",
+                    "ctrls": ["MB_SPANS"],
+                    "required": true}
+                ]
+              },
 
               {
                 "name": "propSet_S",
