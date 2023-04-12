@@ -73,22 +73,26 @@
             <a class="nav-link" href="https://2030nlp.github.io/SpaCE2022/" target="_blank" v-show="play.playMode">评测网站</a>
             <a class="nav-link" @click="()=>{win.location.reload();}" v-show="play.playMode">返回</a>
             <template v-if="!play.playMode">
-              <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
+              <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t1')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t1'"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t1'"
-              >切换到 task1</a>
+              >切换到 task1</a> -->
               <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t2')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t2' && isChecker()"
               >切换到 旧版task2</a> -->
-              <a class="nav-link" _href="#" @click="()=>{setTask('t2r')}"
+              <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t2r')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t2r'"
-              >切换到 task2</a>
-              <a class="nav-link" _href="#" @click="()=>{setTask('t4')}"
+              >切换到 task2</a> -->
+              <!-- <a class="nav-link" _href="#" @click="()=>{setTask('t4')}"
                 v-if="newThings.begun && newThings?.theUser?.currTask!='t4'"
                 :if="newThings.begun && newThings?.theUser?.currTask!='t4'"
-              >切换到 task3 (精标)</a>
+              >切换到 task3 (精标)</a> -->
+              <a class="nav-link" _href="#" @click="()=>{setTask('r2')}"
+                v-if="newThings.begun && newThings?.theUser?.currTask!='r2'"
+                :if="newThings.begun && newThings?.theUser?.currTask!='r2'"
+              >切换到 task2 (精标)</a>
               <!-- <a class="nav-link" _href="#" @click="()=>{}"
                 v-if="isChecker()"
                 :if="isChecker()"
