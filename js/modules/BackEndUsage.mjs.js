@@ -1049,7 +1049,7 @@ class BackEndUsage {
       //   return data;
       // };
 
-      let 表resp = await this.backEnd.getVar("sp23修订负责表");
+      let 表resp = await this.backEnd.getVar("sp23标注审核负责表");
       if (errorHappened(表resp?.data?.err)) {
         console.log(表resp);
         return null;
