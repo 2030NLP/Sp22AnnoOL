@@ -10,9 +10,10 @@
     "测试1":"20220824",
     "测试2":"20220825",
     "修订t1":"20230417",
-    "修订t2":"20230411"
+    "修订t2":"20230411",
+    "识别测试":"20230628"
   },
-  "using": "精标",
+  "using": "识别测试",
   
   
   
@@ -859,7 +860,115 @@
 
 
 
-
+"识别测试": {
+  "startStep": "start",
+  "endStep": "end",
+  "steps": {
+    "end": {
+      "ref": "end",
+      "name": "标注结果",
+      "mode": "finalResult",
+      "props": {
+        "instruction": "",
+        "canReset": true,
+        "resetBtn": {
+          "text": "清空并重新标注",
+          "go": "start",
+          "style": "outline-danger"
+        },
+        "cancelBtn": {
+          "text": "增加标注",
+          "go": "start",
+          "style": "outline-primary"
+        },
+        "nextBtn": {
+          "text": "下一条",
+          "style": "outline-primary"
+        }
+      }
+    },
+    "start": {
+      "ref": "start",
+      "name": "开始",
+      "mode": "selectValue",
+      "props": {
+        "instruction": "这段话符合下述哪些/哪种情形？",
+        "optionBtns": [
+          {
+            "text": "并无异常",
+            "data": {
+              "label": "ExceptionNotFound",
+              "desc": "这段话不存在异常"
+            },
+            "go": "end",
+            "style": "outline-primary"
+          },
+          {
+            "text": "存在异常",
+            "style": "outline-danger",
+            "go": "makeReason"
+          }
+        ]
+      }
+    },
+    "makeReason": {
+      "ref": "makeReason",
+      "name": "识别异常文本",
+      "mode": "SpaCE2023_Task1",
+      "props": {
+        "strings": {
+          "instruction": "这段话存在的问题是：",
+          "selectInstruction": "请在文中选择文本",
+          "insertInstruction": "将选中的文本填入此处"
+        },
+        "data": {
+          "hidden": true,
+          "items": []
+        },
+        "options": [
+          {
+            "text": "语义冲突",
+            "style": "outline-danger",
+            "actualMode": "doubleSpans",
+            "data": {
+              "parentMode": "SpaCE2023_Task1",
+              "actualMode": "doubleSpans",
+              "displayMode": "multiSpans",
+              "label": "ReasonSemanticConflict",
+              "desc": "语义冲突",
+              "tokenarrays": [],
+              "names": []
+            },
+            "minimal": 1,
+            "针对性处理": ["语义冲突数量限制", "检查P是否为纯方位词", "P, E 词类检查"],
+            "slots": [
+              {"type": "select", "placeholder": "S1"},
+              {"type": "select", "placeholder": "P1"},
+              {"type": "select", "placeholder": "E1"},
+              {"type": "solid-text", "value": "与"},
+              {"type": "select", "placeholder": "S2"},
+              {"type": "select", "placeholder": "P2"},
+              {"type": "select", "placeholder": "E2"}]
+          }
+        ],
+        "okBtn": {
+          "text": "完成",
+          "go": "end",
+          "style": "outline-success"
+        },
+        "resetBtn": {
+          "text": "重置",
+          "style": "outline-danger"
+        },
+        "cancelBtn": {
+          "text": "取消",
+          "go": "start",
+          "style": "outline-dark"
+        }
+      }
+    }
+  }
+},
 
 
 
