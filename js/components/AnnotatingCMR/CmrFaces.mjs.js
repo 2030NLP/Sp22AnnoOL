@@ -342,7 +342,7 @@ export const faceFnObjSTEP = (object, reactiveCMR) => {
   let 异常字典 = {
     含有_S_字段: {value: false, message: "❗️ 缺少空间实体"},
     含有_P_信息: {value: false, message: "❗️ 缺少空间信息"},
-    异常_Pl_介词: {value: false, message: "⚠️ 处所不应以介词开头"},
+    异常_Pl_介词: {value: false, message: "⚠️ 处所不应以该介词开头"},
     异常_XX_把被: {value: false, message: "⚠️ 片段不应以“把/被/的”等开头"},
     异常_E_来去: {value: false, message: "⚠️ 事件不应以“来去”结尾"},
     标点问题: {value: false, message: "❗️ 首尾有异常标点"},
@@ -351,7 +351,7 @@ export const faceFnObjSTEP = (object, reactiveCMR) => {
   let 介词列表 = ["从", "由", "经", "往", "向", "朝", "到", "至"];
   let 来去列表 = ["来", "去"];
   let 把被列表 = ["把", "被", "将", "的"];
-  let 时体列表 = ["了", "着"];
+  // let 时体列表 = ["了", "着"];
 
   for (let slot of slots) {
     if (slot.name in object && object?.[slot.name]?.value!=null) {
