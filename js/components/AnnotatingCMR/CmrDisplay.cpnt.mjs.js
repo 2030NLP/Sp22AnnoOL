@@ -544,14 +544,14 @@ export default {
         };
 
         // 检查着了过结尾
-        if (list?.length) {
+        /* if (list?.length) {
           const 结果 = list.find(it => ["着", "了", "过"].includes(it?.texts?.at?.(-1)?.at?.(-1)));
           if (结果) {
             _checker_methods.记录错误("warning",
               `[${idx_txt}].${slot_face}: 以“${结果?.texts?.at?.(-1)?.at?.(-1)}”结尾`
             );
           };
-        };
+        }; */
 
         // 检查的字结尾
         if (list?.length && 要排除的字结尾的字段.includes(ky)) {
@@ -826,7 +826,8 @@ export default {
 
             // 检查事件特例
             if (list?.length && ["E"].includes(ky)) {
-              const 结果 = list.find(it => it?.texts?.find?.(text=>(text?.search?.(/直行|转弯|在|位于|居于|位居|地处|处于/)??-1)>=0));
+              // const 结果 = list.find(it => it?.texts?.find?.(text=>(text?.search?.(/直行|转弯|在|位于|居于|位居|地处|处于/)??-1)>=0));
+              const 结果 = list.find(it => it?.texts?.find?.(text=>(text?.search?.(/直行|转弯|通过/)??-1)>=0));
               if (结果) {
                 _checker_methods.记录错误("warning",
                   `[${idx_txt}].${slot_face}: 包含排除词`
@@ -902,7 +903,7 @@ export default {
         // S的开头id 和 P的结尾id之间包含逗号或句号 +
         // P的开头id 和 E的结尾id之间包含逗号或句号 +
         // S的开头id 和 E的结尾id之间包含逗号或句号
-        if (
+        /* if (
           obj?.["S"]?.value?.length &&
           obj?.["E"]?.value?.length &&
           可用的空间信息字段.length>0
@@ -942,7 +943,7 @@ export default {
               `[${idx_txt}]: SPE三者之间都有断句标点 严重跨标点句`
             );
           };
-        };
+        }; */
       },
 
 
@@ -1039,7 +1040,7 @@ export default {
       },
 
 
-      检查idx出现在多个字段: (obj) => {
+      /* 检查idx出现在多个字段: (obj) => {
         const idx_txt = `${obj._id??obj.id??"_"}`;
         const dict = _methods.获取obj中每个Idx的出现次数(obj);
         const pairs = Object.entries(dict);
@@ -1050,7 +1051,7 @@ export default {
             `[${idx_txt}]: 这些片段在多个字段中出现：${those}`
           );
         };
-      },
+      }, */
 
 
       检查单条错误: (obj) => {
