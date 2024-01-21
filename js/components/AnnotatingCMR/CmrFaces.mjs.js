@@ -335,6 +335,36 @@ export const faceFnObj事件角色 = (object, reactiveCMR) => {
   return labelSpan(frags, {'class': "gap-2 border-0"});
 };
 
+export const faceFnObj普通实体 = (object, reactiveCMR) => {
+  let frags = [];
+  const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
+
+  let 异常字典 = {
+    标点问题: {value: false, message: "❗️ 首尾有异常标点"},
+  };
+
+  if ("OS" in object && object?.["OS"]?.value!=null) {
+    frags.push(labelSpan([opacity75(muted("普通实体")), dataFace(object["OS"], reactiveCMR, joint)], {
+      'class': "border-0",
+    }));
+    if ((object?.["OS"]?.value?.length??0)>0) {
+      含有_正常的_OS_字段 = true;
+    };
+    if ((object?.["OS"]?.value??[])?.find?.(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(last_of(it?.texts?.[0])))) {
+      异常字典.标点问题.value = true;
+    };
+  };
+
+  if (异常字典.标点问题.value) {
+    frags.push(textDanger(异常字典.标点问题.message, {'class': "fw-bold"}));
+  };
+
+  if (!含有_正常的_OS_字段) {
+    frags.push(textDanger("❗️ 尚未标注普通实体", {'class': "fw-bold"}));
+  };
+  return labelSpan(frags, {'class': "gap-2 border-0"});
+};
+
 export const faceFnObjSTEP = (object, reactiveCMR) => {
   let frags = [];
   const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
@@ -451,6 +481,7 @@ export const objectTypeFaceFnMap = {
   'propSet_Sp': (boy, reactiveCMR)=>faceFnObjSTEP(boy, reactiveCMR),
   'propSet_E': (boy, reactiveCMR)=>faceFnObj事件角色(boy, reactiveCMR),
   'propSet_S': (boy, reactiveCMR)=>faceFnObj共指关系(boy, reactiveCMR),
+  'propSet_OS': (boy, reactiveCMR)=>faceFnObj普通实体(boy, reactiveCMR),
   // '特征命题': (boy, reactiveCMR)=>faceFnObj特征命题(boy, reactiveCMR),
 };
 
