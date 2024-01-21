@@ -337,6 +337,7 @@ export const faceFnObj事件角色 = (object, reactiveCMR) => {
 
 export const faceFnObj普通实体 = (object, reactiveCMR) => {
   let frags = [];
+  let joint = textTeal(", ");
   const slots = reactiveCMR?.typeDict?.[object?.type]?.slots??[];
 
   let 异常字典 = {
