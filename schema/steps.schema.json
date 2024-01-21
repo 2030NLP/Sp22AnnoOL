@@ -586,7 +586,7 @@
                 "slots": [
                   {
                     "name": "OS",
-                    "nameFace": "普通实体片段",
+                    "nameFace": "普通实体",
                     "desc": "标注除了空间实体以外的其他实体。",
                     "ctrls": [
                       {
