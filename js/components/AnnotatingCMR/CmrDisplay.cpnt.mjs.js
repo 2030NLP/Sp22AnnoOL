@@ -1033,6 +1033,45 @@ export default {
         };
       },
 
+      检查单条错误_实体: (obj) => {
+        const idx_txt = `${obj._id??obj.id??"_"}`;
+        const slots = reactiveCMR?.typeDict?.[obj?.type]?.slots??[];
+        for (let slot of slots) {
+          const ky = slot.name;
+          const slot_face = slot.nameFace??slot.name??"无名字段";
+          if (ky in obj && obj?.[ky]?.value!=null && ["MB_SPANS"].includes(obj?.[ky]?.type)) {
+            _checker_methods.检查任意字段(obj, slot, ky);
+          };
+          const arg = obj[ky];
+          const list = arg?.value ?? [];
+
+          // 检查普通实体
+          if (list?.length && ["R"].includes(ky)) {
+            let 结果;
+            // 检查同指为介词开头
+            结果 = list.find(it => {
+              const 首位idx = it?.idxeses?.[0]?.[0];
+              return ["p"].includes(_methods.idxesToPOSes([首位idx])?.[0]);
+            });
+            if (结果) {
+              _checker_methods.记录错误("warning",
+                `[${idx_txt}].${slot_face}: “${结果?.texts?.[0]}”似乎以介词开头`
+              );
+            };
+            // 检查同指为动词结尾
+            结果 = list.find(it => {
+              const 末位idx = it?.idxeses?.at?.(-1)?.at?.(-1);
+              return ["v"].includes(_methods.idxesToPOSes([末位idx])?.[0]);
+            });
+            if (结果) {
+              _checker_methods.记录错误("warning",
+                `[${idx_txt}].${slot_face}: “${结果?.texts?.at?.(-1)}”似乎以动词结尾`
+              );
+            };
+          };
+        };
+      },
+
 
       检查单条错误_特例: (obj) => {
         const idx_txt = `${obj._id??obj.id??"_"}`;
@@ -1061,6 +1100,7 @@ export default {
           'propSet_Sp': _checker_methods.检查单条错误_STEP,
           'propSet_E': _checker_methods.检查单条错误_事件,
           'propSet_S': _checker_methods.检查单条错误_同指,
+          'propSet_OS': _checker_methods.检查单条错误_实体,
           'special_Situation': _checker_methods.检查单条错误_特例,
         };
         if (obj.type in map) {
