@@ -347,9 +347,6 @@ export const faceFnObj普通实体 = (object, reactiveCMR) => {
     frags.push(labelSpan([opacity75(muted("普通实体")), dataFace(object["OS"], reactiveCMR, joint)], {
       'class': "border-0",
     }));
-    if ((object?.["OS"]?.value?.length??0)>0) {
-      含有_正常的_OS_字段 = true;
-    };
     if ((object?.["OS"]?.value??[])?.find?.(it=>标点列表.includes(it?.texts?.[0]?.[0])||标点列表.includes(last_of(it?.texts?.[0])))) {
       异常字典.标点问题.value = true;
     };
@@ -359,9 +356,6 @@ export const faceFnObj普通实体 = (object, reactiveCMR) => {
     frags.push(textDanger(异常字典.标点问题.message, {'class': "fw-bold"}));
   };
 
-  if (!含有_正常的_OS_字段) {
-    frags.push(textDanger("❗️ 尚未标注普通实体", {'class': "fw-bold"}));
-  };
   return labelSpan(frags, {'class': "gap-2 border-0"});
 };
 
