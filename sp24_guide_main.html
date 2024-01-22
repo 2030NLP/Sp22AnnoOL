@@ -1,0 +1,517 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+
+<style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; --title-bar-height:20px; }
+.mac-os-11 { --title-bar-height:28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, h5 { white-space: pre-wrap; }
+body { margin: 0px; padding: 0px; height: auto; inset: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+thead, tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-fences-adv-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+svg { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; border-color: transparent !important; padding-top: 0px !important; padding-bottom: 0px !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+  #write > p:nth-child(1) { margin-top: 0px; }
+  .typora-export-show-outline .typora-export-sidebar { display: none; }
+  figure { overflow-x: visible; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.reversefootnote { font-family: ui-monospace, sans-serif; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.6; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+.md-expand mark .md-meta { opacity: 0.3 !important; }
+mark .md-meta { color: rgb(0, 0, 0); }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-fences.md-fences-math { font-size: 1em; }
+.md-fences-advanced:not(.md-focus) { padding: 0px; white-space: nowrap; border: 0px; }
+.md-fences-advanced:not(.md-focus) { background: inherit; }
+.typora-export-show-outline .typora-export-content { max-width: 1440px; margin: auto; display: flex; flex-direction: row; }
+.typora-export-sidebar { width: 300px; font-size: 0.8rem; margin-top: 80px; margin-right: 18px; }
+.typora-export-show-outline #write { --webkit-flex:2; flex: 2 1 0%; }
+.typora-export-sidebar .outline-content { position: fixed; top: 0px; max-height: 100%; overflow: hidden auto; padding-bottom: 30px; padding-top: 60px; width: 300px; }
+@media screen and (max-width: 1024px) {
+  .typora-export-sidebar, .typora-export-sidebar .outline-content { width: 240px; }
+}
+@media screen and (max-width: 800px) {
+  .typora-export-sidebar { display: none; }
+}
+.outline-content li, .outline-content ul { margin-left: 0px; margin-right: 0px; padding-left: 0px; padding-right: 0px; list-style: none; overflow-wrap: anywhere; }
+.outline-content ul { margin-top: 0px; margin-bottom: 0px; }
+.outline-content strong { font-weight: 400; }
+.outline-expander { width: 1rem; height: 1.42857rem; position: relative; display: table-cell; vertical-align: middle; cursor: pointer; padding-left: 4px; }
+.outline-expander::before { content: ""; position: relative; font-family: Ionicons; display: inline-block; font-size: 8px; vertical-align: middle; }
+.outline-item { padding-top: 3px; padding-bottom: 3px; cursor: pointer; }
+.outline-expander:hover::before { content: ""; }
+.outline-h1 > .outline-item { padding-left: 0px; }
+.outline-h2 > .outline-item { padding-left: 1em; }
+.outline-h3 > .outline-item { padding-left: 2em; }
+.outline-h4 > .outline-item { padding-left: 3em; }
+.outline-h5 > .outline-item { padding-left: 4em; }
+.outline-h6 > .outline-item { padding-left: 5em; }
+.outline-label { cursor: pointer; display: table-cell; vertical-align: middle; text-decoration: none; color: inherit; }
+.outline-label:hover { text-decoration: underline; }
+.outline-item:hover { border-color: rgb(245, 245, 245); background-color: var(--item-hover-bg-color); }
+.outline-item:hover { margin-left: -28px; margin-right: -28px; border-left: 28px solid transparent; border-right: 28px solid transparent; }
+.outline-item-single .outline-expander::before, .outline-item-single .outline-expander:hover::before { display: none; }
+.outline-item-open > .outline-item > .outline-expander::before { content: ""; }
+.outline-children { display: none; }
+.info-panel-tab-wrapper { display: none; }
+.outline-item-open > .outline-children { display: block; }
+.typora-export .outline-item { padding-top: 1px; padding-bottom: 1px; }
+.typora-export .outline-item:hover { margin-right: -8px; border-right: 8px solid transparent; }
+.typora-export .outline-expander::before { content: "+"; font-family: inherit; top: -1px; }
+.typora-export .outline-expander:hover::before, .typora-export .outline-item-open > .outline-item > .outline-expander::before { content: "−"; }
+.typora-export-collapse-outline .outline-children { display: none; }
+.typora-export-collapse-outline .outline-item-open > .outline-children, .typora-export-no-collapse-outline .outline-children { display: block; }
+.typora-export-no-collapse-outline .outline-expander::before { content: "" !important; }
+.typora-export-show-outline .outline-item-active > .outline-item .outline-label { font-weight: 700; }
+.md-inline-math-container mjx-container { zoom: 0.95; }
+mjx-container { break-inside: avoid; }
+
+
+html {
+	font-size: 19px;
+}
+
+html, body {
+	margin: auto;
+	background: #fefefe;
+	-webkit-font-smoothing: antialiased;
+}
+body {
+	font-family: "Vollkorn", Palatino, Times;
+	color: #333;
+	line-height: 1.4;
+	text-align: justify;
+}
+
+#write {
+	max-width: 960px;
+	margin: 0 auto;
+	margin-bottom: 2em;
+	line-height: 1.53;
+	padding-top: 40px;
+}
+
+@media only screen and (min-width: 1400px) {
+	#write {
+		max-width: 1100px;
+	}
+}
+
+@media print {
+	html {
+		font-size: 13px;
+	}
+}
+
+/* Typography
+-------------------------------------------------------- */
+
+#write>h1:first-child,
+h1 {
+	margin-top: 1.6em;
+	font-weight: normal;
+}
+
+h1 {
+	font-size:3em;
+}
+
+h2 {
+	margin-top:2em;
+	font-weight: normal;
+}
+
+h3 {
+	font-weight: normal;
+	font-style: italic;
+	margin-top: 3em;
+}
+
+h1, 
+h2, 
+h3{
+	text-align: center;
+}
+
+h2:after{
+	border-bottom: 1px solid #2f2f2f;
+    content: '';
+    width: 100px;
+    display: block;
+    margin: 0 auto;
+    height: 1px;
+}
+
+h1+h2, h2+h3 {
+	margin-top: 0.83em;
+}
+
+p,
+.mathjax-block {
+	margin-top: 0;
+	-webkit-hypens: auto;
+	-moz-hypens: auto;
+	hyphens: auto;
+}
+ul {
+	list-style: square;
+	padding-left: 1.2em;
+}
+ol {
+	padding-left: 1.2em;
+}
+blockquote {
+	margin-left: 1em;
+	padding-left: 1em;
+	border-left: 1px solid #ddd;
+}
+code,
+pre {
+	font-family: "Consolas", "Menlo", "Monaco", monospace, serif;
+	font-size: .9em;
+	background: white;
+}
+.md-fences{
+	margin-left: 1em;
+	padding-left: 1em;
+	border: 1px solid #ddd;
+	padding-bottom: 8px;
+	padding-top: 6px;
+	margin-bottom: 1.5em;
+}
+
+a {
+	color: #2484c1;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+a img {
+	border: none;
+}
+h1 a,
+h1 a:hover {
+	color: #333;
+	text-decoration: none;
+}
+hr {
+	color: #ddd;
+	height: 1px;
+	margin: 2em 0;
+	border-top: solid 1px #ddd;
+	border-bottom: none;
+	border-left: 0;
+	border-right: 0;
+}
+.ty-table-edit {
+	background: #ededed;
+    padding-top: 4px;
+}
+table {
+	margin-bottom: 1.333333rem
+}
+thead {
+    background-color: #f8f8f8;
+}
+table th,
+table td {
+	padding: 8px;
+	line-height: 1.333333rem;
+	vertical-align: top;
+	border: 1px solid #dfe2e5;
+}
+table tr {
+    border: 1px solid #dfe2e5;
+}
+table th {
+	font-weight: bold
+}
+table thead th {
+	vertical-align: bottom
+}
+table caption+thead tr:first-child th,
+table caption+thead tr:first-child td,
+table colgroup+thead tr:first-child th,
+table colgroup+thead tr:first-child td,
+table thead:first-child tr:first-child th,
+table thead:first-child tr:first-child td {
+	border-top: 0
+}
+table tbody+tbody {
+	border-top: 2px solid #ddd
+}
+
+.task-list{
+	padding:0;
+}
+
+.md-task-list-item {
+	padding-left: 1.6rem;
+}
+
+.md-task-list-item > input:before {
+	content: '\221A';
+	display: inline-block;
+	width: 1.33333333rem;
+  	height: 1.6rem;
+	vertical-align: middle;
+	text-align: center;
+	color: #ddd;
+	background-color: #fefefe;
+}
+
+.md-task-list-item > input:checked:before,
+.md-task-list-item > input[checked]:before{
+	color: inherit;
+}
+.md-tag {
+	color: inherit;
+	font: inherit;
+}
+#write pre.md-meta-block {
+	min-height: 35px;
+	padding: 0.5em 1em;
+}
+#write pre.md-meta-block {
+	white-space: pre;
+	background: #f8f8f8;
+	border: 0px;
+	color: #999;
+	
+	width: 100vw;
+	max-width: calc(100% + 60px);
+	margin-left: -30px;
+	border-left: 30px #f8f8f8 solid;
+	border-right: 30px #f8f8f8 solid;
+
+	margin-bottom: 2em;
+	margin-top: -1.3333333333333rem;
+	padding-top: 26px;
+	padding-bottom: 10px;
+	line-height: 1.8em;
+	font-size: 0.9em;
+	font-size: 0.76em;
+	padding-left: 0;
+}
+.md-img-error.md-image>.md-meta{
+	vertical-align: bottom;
+}
+#write>h5.md-focus:before {
+	top: 2px;
+}
+
+.md-toc {
+	margin-top: 40px;
+}
+
+.md-toc-content {
+	padding-bottom: 20px;
+}
+
+.outline-expander:before {
+	color: inherit;
+	font-size: 14px;
+	top: auto;
+	content: "\f0da";
+	font-family: FontAwesome;
+}
+
+.outline-expander:hover:before,
+.outline-item-open>.outline-item>.outline-expander:before {
+  	content: "\f0d7";
+}
+
+/** source code mode */
+#typora-source {
+	font-family: Courier, monospace;
+    color: #6A6A6A;
+}
+
+.html-for-mac #typora-sidebar {
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+
+.cm-s-typora-default .cm-header, 
+.cm-s-typora-default .cm-property,
+.CodeMirror.cm-s-typora-default div.CodeMirror-cursor {
+	color: #428bca;
+}
+
+.cm-s-typora-default .cm-atom, .cm-s-typora-default .cm-number {
+	color: #777777;
+}
+
+.typora-node .file-list-item-parent-loc, 
+.typora-node .file-list-item-time, 
+.typora-node .file-list-item-summary {
+	font-family: arial, sans-serif;
+}
+
+.md-task-list-item>input {
+    margin-left: -1.3em;
+    margin-top: calc(1rem - 12px);
+}
+
+.md-mathjax-midline {
+	background: #fafafa;
+}
+
+.md-fences .code-tooltip {
+	bottom: -2em !important;
+}
+
+.dropdown-menu .divider {
+	border-color: #e5e5e5;
+}
+
+
+</style><title>sp24_guide_main</title>
+</head>
+<body class='typora-export os-windows'><div class='typora-export-content'>
+<div id='write'  class=''><h3 id='centerspace2024中文空间语义信息标注工作指南center'><center><span>SpaCE2024中文空间语义信息标注工作指南V2.0</span></center></h3><center>欢迎大家参与本次数据标注工作！</center><p><span>阅读说明：</span><mark><strong><span>黄色高亮</span></strong><span>的部分</span></mark><span>是标注时需要特别注意的事项，</span><u><strong><span>下划线</span></strong><span>的部分</span></u><span>是有别于SpaCE2022~2023的表述。</span></p><p><span>【</span><strong><span>V2.0版本更新说明</span></strong><span>】</span></p><blockquote><p><span>1.</span><strong><span>更正错误：</span></strong></p><ul><li><p><span>拼接改为并置。</span></p><ul><li><p><span>2.1节空间实体S的标注中，对于并列结构，如果P信息相同，则将并列结构内的实体以</span><strong><span>并置</span></strong><span>的方式填入S。</span></p></li><li><p><span>参照时间是“V1和V2之间”时，V1和V2以</span><strong><span>并置</span></strong><span>的方式填入参照事件文本框。</span></p></li></ul></li><li><p><span>更正操作面板的按钮介绍说明。</span></p></li></ul><p><strong><span>2.新增内容：</span></strong></p><ul><li><p><mark><strong><span>普通实体标注</span></strong><span>。详见第2.4节。</span></mark></p></li><li><p><mark><strong><span>操作视频</span></strong><span>。详见第6节“操作说明”。</span></mark></p></li><li><p><span>“部位”和“距离”的标注规定。详见第2.2节注意事项。</span></p></li><li><p><span>参照时间的参照事件选择。详见第4节注意事项。</span></p></li><li><p><span>不需要分析机构、行政区划等专有名词名称的空间信息。详见示例13。</span></p></li><li><p><span>身体动作文本的标注。详见示例14。</span></p></li></ul></blockquote><hr /><h4 id='1--任务简介a-name任务简介a'><span>1  任务简介</span><a name="任务简介"></a></h4><p><span>课题组通过计算机程序收集了大量自然文本语料，主要是专业领域的文本（如交通事故类语料），少量普通日常语言文本。语料已进行了自动分词和词性标注，其中跟</span><strong><span>空间信息</span></strong><span>相关的</span><font color="dc3545"><strong><span>方位词</span></strong></font><span>、</span><font color="e39128"><strong><span>趋向动词</span></strong></font><span>、</span><font color="11ab21"><strong><span>处所词</span></strong></font><span>、</span><font color="8847ff"><strong><span>介词</span></strong></font><span>和</span><font color="4297c1"><strong><span>副词</span></strong></font><span>已在标注页面上进行了分色高亮显示。</span></p><ul><li><p><strong><span>标注任务</span></strong><span>：</span>
+<span>标注句中空间实体，空间实体的方位信息，与空间实体方位信息有关的事件（含时间）信息。</span></p></li><li><p><strong><span>标注对象</span></strong><span>：</span>
+<span>（1）空间信息，即句中的</span><strong><span>空间实体（S）</span></strong><span>及其</span><strong><span>空间方位信息（P）</span></strong><span>，包括空间实体的</span><strong><span>静态方位</span></strong><span>信息和</span><strong><span>动态方位</span></strong><span>信息；</span>
+<span>（2）影响空间实体空间信息的</span><strong><span>事件信息（E）</span></strong><span>，说明空间信息发生的方式、目的、原因；</span>
+<span>（3）跟空间实体空间信息和事件信息相关的</span><strong><span>时间信息（T）</span></strong><span>； </span></p><ul><li><p><span>人们可以针对这些信息发问。典型的问题如下：</span></p><p><span>（1）</span><strong><span>某物</span></strong><span>（或某人）在</span><strong><span>何处</span></strong><span>？</span></p><p><span>（2）</span><strong><span>某物</span></strong><span>（或某人）</span><strong><span>某时</span></strong><span>在</span><strong><span>何处</span></strong><span>？ </span></p><p><span>（3）</span><strong><span>谁</span></strong><span>使得</span><strong><span>某物</span></strong><span>（或某人）某时在</span><strong><span>某处</span></strong><span>？以及</span><strong><span>如何</span></strong><span>使得某物（或某人）</span><strong><span>某时</span></strong><span>在</span><strong><span>某处</span></strong><span>？ </span></p></li></ul></li><li><p><strong><span>标注流程</span></strong><span>：</span></p><p><span>（1）</span><strong><span>通读整段；</span></strong></p><p><span>（2）确认</span><strong><span>有空间信息的标点句</span></strong><span>（以下简称“SS句”）；</span></p><p><span>（3）选取SS句中的空间实体（S），</span><strong><span>全部S</span></strong><span>都应标注（详见</span><a href='#S信息'><span>第2.1节</span></a><span>）；</span></p><p><span>（4）选取空间实体S的空间方位信息（P），S的</span><strong><span>全部P信息</span></strong><span>都应标注（详见</span><a href='#P信息'><span>第2.2节</span></a><span>）；</span></p><p><span>（5）选取与空间实体方位信息有关的</span><strong><span>事件信息（E）</span></strong><span>（详见</span><a href='#E介绍'><span>第3.1节</span></a><span>）；</span></p><p><span>（6）选取与S、P、E相关的</span><strong><span>时间信息（T）</span></strong><span>（详见</span><a href='#T信息'><span>第4节</span></a><span>）；</span></p><p><span>（7）对E做进一步</span><strong><span>事件角色信息标注</span></strong><span>（详见</span><a href='#E角色'><span>第3.2节</span></a><span>）；</span></p><p><span>（8）标注</span><strong><span>假S-P信息（F）</span></strong><span>（详见</span><a href='#F信息'><span>第5节</span></a><span>）</span></p><p><span>（9）文本中跟S、P相关实体的</span><strong><span>同指关系标注（R）</span></strong><span>（详见</span><a href='#R信息'><span>第2.3节</span></a><span>）</span></p><p><span>（10）选取没有在S、P中出现的</span><strong><span>普通实体</span></strong><span>（详见</span><a href='#G信息'><span>第2.4节</span></a><span>）</span></p></li></ul><p><span>为方便记忆和称说，本文档将S、T、E、P空间语义四要素信息标注概括为</span><strong><span>STEP信息标注</span></strong><span>。其中，</span><strong><span>S-P空间信息</span></strong><span>是标注的核心，是必备要素。从标注顺序的角度讲，上述要素关系如下：</span></p><blockquote><p><span>P依附于S（先定S，再定P）；</span></p><p><span>E依附于S、P（先定S、P，再定E）；</span></p><p><span>T依附于S、P，E（先定S、P、E，再定T）；</span></p><p><span>F依附于S、P，用于标记S-P不发生（在S、P标完后，再标注F）；</span></p><p><span>R依附于S、P，用于标记文本中指称相同的实体成分（在S、P、E、T标完后，再标注R）。</span></p></blockquote><hr /><h4 id='2--空间信息标注a-names-p信息a'><span>2  空间信息标注</span><a name="S-P信息"></a></h4><h5 id='21-空间实体s的标注a-names信息a'><span>2.1 空间实体S的标注</span><a name="S信息"></a></h5><ul><li><p><mark><strong><span>一个实体是空间实体，当且仅当句中描述了该实体的空间方位信息。</span></strong></mark></p><ul><li><p><span>例如：</span></p><p><font style="font-family:楷体"><span>例(1)  </span><strong><span>阿Q</span></strong><span>站在大树旁。</span></font></p><p><font style="font-family:楷体"><span>例(2)  </span><font style="font-family:楷体"><span>我从冰箱里拿出</span><strong><span>酒精</span></strong><span>。</span></font></font></p><ul><li><p><span>例(1)中有两个表示实体的词：“阿Q”和“大树”，其中“在大树旁”说明了“阿Q”的空间方位信息。所以”阿Q“是空间实体。而“大树”的空间方位信息在句中是缺失的，这句话并不关注“大树”的空间方位。</span></p></li><li><p><span>例(2)中有三个表示实体的词：“我”、“冰箱”和“酒精”，其中“酒精”的空间方位信息很清楚，是“从冰箱里”，而“我”和“冰箱”的空间方位信息是缺失的，因此例(2)中“酒精”是空间实体，“我”和“冰箱”不是空间实体。</span></p></li></ul></li></ul></li><li><p><span>典型的S是</span><strong><span>现实物理空间</span></strong><span>中的实体。此外，也包括</span><strong><span>信息空间</span></strong><span>中的实体，</span><strong><span>虚拟认知空间</span></strong><span>中的实体。如果没有针对句中实体的空间信息发问的动机，则该实体不是S。</span></p><ul><li><p><span>例如：</span></p><p><font style="font-family:楷体"><span>例(3)  </span><strong><span>照片上</span></strong><span>那只</span><strong><span>狗</span></strong><span>被拴</span><strong><span>在一根柱子上</span></strong><span>。</span></font></p><ul><li><p><span>例(3)是一个信息空间。“狗”在信息空间“照片”中，也属于需要描写其P信息的空间实体S。</span></p></li></ul><p><font style="font-family:楷体"><span>例(4)  护士的话</span><strong><span>似一幢楼塌下来压在我们头上</span></strong><span>，把我们全压垮了。</span><strong><span>我们似乎走进了一条长长的黑地道</span></strong><span>，不知所措。</span></font></p><ul><li><p><span>例(4)的场景具有修辞色彩。其中的“一幢楼”,“我们”都是S，有相关P信息。</span></p></li></ul><p><font style="font-family:楷体"><span>例(5)  史婆婆道：“你</span><strong><span>要是</span></strong><span>伤了我徒儿性命，我这就</span><strong><span>上碧螺山去</span></strong><span>，一辈子也不出来了。”</span></font></p><ul><li><p><span>例(5)是虚拟条件句，空间实体“我”的空间信息“上碧螺山去”尚未发生，将来条件得到满足时可能发生。</span></p></li></ul><p><font style="font-family:楷体"><span>例(6)  </span><strong><span>周冠仁</span></strong><span>从事法医工作十几年来，养成了一</span><strong><span>出家门</span></strong><span>就将一切抛</span><strong><span>在脑后</span></strong><span>的性格。</span></font></p><ul><li><p><span>例(6)中“周冠仁”</span><strong><span>不是S</span></strong><span>，因为无法以此句信息为基础，提出有关该实体的空间方位信息问题。</span></p></li></ul></li></ul></li><li><p><span>选取</span><strong><span>S的具体内容时，</span></strong><span>所选取字符片段能区别于句中其他实体即可，</span><u><strong><span>允许</span></strong><span>选取修饰成分</span></u><span>。</span></p></li><li><p><u><strong><span>S缺省时，应尽可能找回</span></strong><span>。</span></u></p><ul><li><p><span>例如：</span></p><p><font style="font-family:楷体"><span>例(7)  妈妈买了些苹果，回家的路上遇到邻居王奶奶，就顺手从袋子里拿了</span><strong><span>几个</span></strong><span>给她。</span></font></p><ul><li><p><span>例(7)的空间实体在句子中以数量单位“几个”的形式出现，标注时应该补全实体，以</span><strong><span>“几个苹果”作为S</span></strong><span>（参见</span><a href='#拼接与并置'><span>拼接操作</span></a><span>）。</span></p></li></ul></li></ul></li><li><p><span>对于</span><strong><span>并列结构</span></strong><span>中的多个空间实体：</span></p><ul><li><p><span>如果</span><strong><span>P信息相同</span></strong><span>，则</span><strong><span>把并列结构内的实体分别以并置的方式填入S</span></strong><span>（参见</span><a href='#拼接与并置'><span>并置操作</span></a><span>）。</span></p></li><li><p><span>如果</span><strong><span>P信息不同</span></strong><span>，则</span><strong><span>看作不同的空间实体，处理为多个S</span></strong><span>，即分别标注多条STEP信息。</span></p></li></ul></li></ul><h5 id='22-空间方位信息p的标注a-namep信息a'><span>2.2 空间方位信息P的标注</span><a name="P信息"></a></h5><ul><li><p><mark><strong><span>S必须有空间方位P</span></strong></mark><span>。P的标注包括多个具体项目，必须根据句中实际信息的情况</span><strong><span>细分标注</span></strong><span>。下表是P信息的细化信息项（特征），以及取值的表达形式（用词语组合模式来表示）和具体含义的说明。</span></p></li></ul><center>表1：P信息标签集</center><p><img src="./upload/spatial_features.PNG" referrerpolicy="no-referrer" alt="spatial_features"></p><ul><li><p><strong><span>关于表1的说明：</span></strong></p><p><span>（1）表中“介词、方位词、趋向动词”等是沿用一般《现代汉语》教科书中定义的汉语词类名称。“</span><strong><span>处所词</span></strong><span>”指有处所语义的词语，比如“北京、图书馆、人群、太空、未名湖、郊外、四处”等等，处所词能跟“在、到、从”等有空间方位表达功能的介词组合，能跟“上、下、左、右、前、后、里、外”等方位词组合。</span></p><p><span>（2）“</span><strong><span>部件处所</span></strong><span>”特征，专门针对一个空间实体作为一个更大空间实体的部件，描述其空间方位。关于一个空间实体的位置信息，有两个描述视角，一个是以空间实体周围的外部物体为参照物时的空间信息，也就是表中第1项空间特征</span><strong><span>“处所”</span></strong><span>的含义，例如：“鼻子在嘴的上方”，其中“鼻子”的处所信息是“在嘴的上方”；另一个视角是以整体为参照物来描述其中部件的方位，例如：“鼻子在脸的中间”，以整体“脸”为参照物来描述“鼻子”的方位，就需要标注“部件处所：在脸的中间”。</span><a href='sp24_example.html#示例10'><span>参见示例10</span></a><span>。</span></p><p><span>（3）“</span><strong><span>部位</span></strong><span>”特征，指从一个空间实体看其内部组成部分的位置。典型的场景是交通工具的不同部位的描述。一般是交通工具发生碰撞事件时，指明具体的碰撞位置。例如“货车</span><strong><span>右前部</span></strong><span>” “小轿车</span><strong><span>左后部</span></strong><span>”等。</span><a href='sp24_example.html#示例12'><span>参见示例12</span></a><span>。</span></p><ul><li><p><span>描述</span><strong><span>人体动作</span></strong><span>时，也经常会涉及到</span><strong><span>“部位”信息</span></strong><span>。例如：</span></p><p><font style="font-family:楷体"><span>例(8)  </span><strong><span>她</span></strong><span>回到那死者旁边，</span><strong><span>两手抄在死者的腋窝下</span></strong><span>。</span></font></p><ul><li><p><span>例(8)后半部分的空间方位信息标注，需要借助“部位”特征来完成：</span></p><figure class='table-figure'><table><thead><tr><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th></tr></thead><tbody><tr><td><span>她</span></td><td>&nbsp;</td><td><span>抄</span></td><td><span>[</span><strong><span>部位</span></strong><span>:两手，处所:在死者的腋窝下]</span></td></tr></tbody></table></figure></li></ul></li><li><p><span>这条STEP信息中，“处所”是指“部位:两手”所在的位置，而不是指“实体:她”所在的位置，即：</span><strong><span>在有“部位”的STEP信息中，其他P信息小项的直接语义联系都指向“部位”</span></strong><span>，跟“实体”的联系是间接的。</span></p></li></ul><p><span>（4）“</span><strong><span>朝向</span></strong><span>”特征，涉及到空间实体自身的特性，只有空间实体的不同侧面功能不同时，才有描述“朝向”的需要。比如：一块自然界的石头没有朝向；而一个由石头雕刻而成的人体石雕则有朝向。因为人体作为一个立体实体，其</span><strong><span>不同侧面是有不同功能的</span></strong><span>；表达一个空间实体的“朝向”一般有两种方式：一种是</span><strong><span>借助方向表达</span></strong><span>，比如“床头朝东”；另一种是</span><strong><span>借助另一个空间实体来表达</span></strong><span>，比如“背对着镜子”。两种表达通常都需要加介词（形式标记）。“朝向”特征，既适用于静态空间实体，也适用于动态空间实体。前者没有“方向”特征，后者则既有“朝向”特征，也同时有“方向”特征。比如，假设甲和乙面对面站立，甲面朝南，乙面朝北，甲以后退方式离开乙，那么，以乙的观察视角来描述甲的空间方位信息，就是甲的位移“方向”为北，甲的自身“朝向”为南。</span></p><p><span>（5）“</span><strong><span>路径</span></strong><span>”特征，包括实际位移和静态的路线（相当于想象的位移）。“路径”值有3种可能性：</span></p><p><span>     ① 用</span><strong><span>形状表达路径</span></strong><span>，如“之字形”。此时，“路径”字段用来描述</span><strong><span>位移空间</span></strong><span>中实体S的路径；</span></p><p><span>     ② 用有“通路”、“通道”功能的</span><strong><span>处所词表达路径</span></strong><span>，如“河西走廊、101国道、G6高速”。 此时，“路径”字段用来描述</span><strong><span>位移空间</span></strong><span>中实体S的路径；</span></p><p><span>     ③ 用位移过程中经过的多个</span><strong><span>空间实体组成的列表表达路径</span></strong><span>，如&lt;北大东门，中关村北站，清华西门&gt;。多个实体组成的路径，可以通过“并置”操作填入“路径”字段（</span><a href='#拼接与并置'><span>参见并置操作</span></a><span>）。此时，“路径”字段用来描述空间实体S的路径节点构成情况，即</span><strong><span>S本身就是一个路径</span></strong><span>。</span></p><ul><li><p><strong><span>注意</span></strong><span>：一条路径有起点，有终点，但路径的“起点”和“终点”，不能填入“起点”和“终点”字段（表1中的第4、5项信息）。如果S有“起点”和“终点”信息，表示S是一个移动的空间实体，“起点”和“终点”是对S位移状态的描述。路径的“起点”和“终点”，只能放在“路径”字段中描述。比如，“北京地铁4号线从安河桥北到天宫院，全长50公里”，空间实体S为“北京地铁4号线”，</span><strong><span>路径</span></strong><span>为&lt;</span><strong><span>从安河桥北</span></strong><span>，</span><strong><span>到天宫院</span></strong><span>&gt;。</span></p></li></ul><p><span>（6）“</span><strong><span>形状</span></strong><span>”特征，可以起到帮助空间实体定位的作用。例如：“一个花圃是圆环形的，花圃中每隔4米放置一个花盆”，句中这些花盆之间的相对位置关系，就需要借助花圃的形状“圆环形”来说明。“形状”特征有两种使用场景：</span></p><p><span>     ① </span><strong><span>单个</span></strong><span>空间实体的形状，如“花圃”；</span></p><p><span>     ② </span><strong><span>多个</span></strong><span>空间实体构成的形状，如“公司总部的大楼</span><strong><span>A座、B座和C座</span></strong><span>，排成了一个品字形”。这些空间实体</span><strong><span>以并置方式填入S</span></strong><span>（</span><a href='#拼接与并置'><span>参见并置操作</span></a><span>）</span></p><p><span>（7）“</span><strong><span>距离</span></strong><span>”特征是二元关系型特征，</span><strong><span>涉及到两个空间实体</span></strong><span>。两个空间实体</span><strong><span>以并置方式填入S</span></strong><span>（</span><a href='#拼接与并置'><span>参见并置操作</span></a><span>）。距离的取值有两种情况：</span><u><span>一是</span><strong><span>定量描述</span></strong><span>，通常是“数词+单位词”的形式（如“两百米”），填入“距离1”字段</span></u><span>；二是与“远、近”相关的</span><strong><span>定性描述</span></strong><span>，此时</span><strong><span>选择“远、近、变远、变近”四个系统预定义关键字</span></strong><span>填入“距离2”字段（</span><a href='#添加字段'><span>参见“添加字段”操作说明</span></a><span>）。</span></p></li><li><p><u><span>如果P信息的</span><strong><span>参照物缺省</span></strong><span>：</span></u></p><ul><li><p><u><strong><span>参照物</span></strong><span>在句子的其他位置</span><strong><span>出现</span></strong><span>时，</span><strong><span>补出</span></strong><span>参照物。</span></u><span>例如：</span></p><p><font style="font-family:楷体"><span>例(9)  他得意地从被窝里拿出一只</span><strong><span>碗</span></strong><span>来，</span><strong><span>里面</span></strong><span>放着两个包子。</span></font></p><ul><li><p><span>例(9)第二个SS句的方位信息是“里面”，缺少参照物。参照物是“碗”，出现在了第一个SS句。因此，空间实体“包子”的P信息</span><strong><span>必须</span></strong><span>补出参照物，标注为“</span><strong><span>碗里面</span></strong><span>”。</span></p></li></ul></li><li><p><u><span>句子中出现的参照物不唯一时，以</span><strong><span>并置</span></strong><span>的方式填入多个P信息。</span></u><span>例如：</span></p><p><font style="font-family:楷体"><span>例(10) </span><strong><span>宋钢</span></strong><span>在</span><strong><span>家门口</span></strong><span>站了一个多小时，他眼睛转到了</span><strong><span>对面</span></strong><span>的点心店。</span></font></p><ul><li><p><span>例(10)第二个SS句的方位信息是“对面”，缺少参照物。参照物既可以是“宋钢”，也可以是“家门口”，并不唯一。在标注空间实体“点心店”的P信息时，把“</span><strong><span>宋钢对面</span></strong><span>”和“</span><strong><span>家门口对面</span></strong><span>”以并置的方式填入</span><strong><span>一个文本框</span></strong><span>。</span></p></li></ul></li><li><p><u><strong><span>参照物</span></strong><span>在句子中</span><strong><span>没有出现</span></strong><span>，</span><strong><span>不需要</span></strong><span>补出参照物。</span></u><span>例如：</span></p><p><font style="font-family:楷体"><span>例(11)  爸爸把我从床头打到床角，</span><strong><span>外面</span></strong><span>的雨声混合着我的哭声。</span></font></p><ul><li><p><span>例(11)没有出现能确定“雨声”方位信息的参照物，所以空间实体“雨声”的P信息标注为“</span><strong><span>外面</span></strong><span>”即可。</span></p></li></ul></li></ul></li></ul><p><strong><span>注意事项：</span></strong></p><ul><li><p><mark><strong><span>P信息要包含起空间方位信息指示作用的介词</span></strong></mark><span>。比如“他站在大树旁”和“他站到大树旁”，不能只选取“大树旁”，而应该选取“</span><strong><span>在</span></strong><span>大树旁”和“</span><strong><span>到</span></strong><span>大树旁”，分别表示处所和终点。</span><u><a href='#形式标记表'><span>附录1</span></a><span>列举了起空间方位信息指示作用的介词和趋向动词。</span></u></p></li><li><p><mark><strong><span>不起指示作用的介词不应被选取</span></strong></mark><span>。例如：</span></p><p><font style="font-family:楷体"><span>例(12) </span><strong><span>从</span></strong><span>厨房架子上挂着的篮子里拿两个西红柿。</span></font></p><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>篮子</span></td><td>&nbsp;</td><td><span>挂</span></td><td><span>[处所:厨房架子上]</span></td></tr><tr><td><span>2</span></td><td><span>西红柿</span></td><td>&nbsp;</td><td><span>拿</span></td><td><span>[起点:</span><strong><span>从</span></strong><span>篮子里]</span></td></tr></tbody></table></figure><ul><li><p><span>例(12)的介词“从”虽然在文本中距离“厨房架子上”更近，但它所指示的是起点信息，而非处所信息，所以空间实体“篮子”的处所信息不能选取介词“从”，而空间实体“西红柿”的起点信息必须选取介词“从”。</span></p></li></ul></li><li><p><u><strong><span>只有表示位移方向的趋向动词才填入“方向”信息</span></strong><span>。</span></u><span>比如“你们先下山，我等会赶</span><strong><span>上来</span></strong><span>”中的“上来”并不表示垂直向上的位移方向，而是“水平接近”的意思，所以不需要标注该趋向动词。</span></p></li><li><p><u><mark><strong><span>特殊规定：“部位”信息必须和其他P信息共现。“距离”信息不能和其他P信息共现。</span></strong></mark></u></p></li></ul><h5 id='23-实体同指关系标注a-namer信息a'><span>2.3 实体同指关系标注</span><a name="R信息"></a></h5><ul><li><p><span>空间实体S以及空间方位信息P中的实体在文本中可能是</span><strong><span>指称词</span></strong><span>形式表达（如姓名、机构名等专名），也可能是</span><strong><span>指代词</span></strong><span>形式表达（如人称代词“你、我、他”）。指称词和指代词之间有</span><strong><span>同指关系（co-reference）</span></strong><span>。</span></p></li><li><p><span>有同指关系的实体，共享STEP信息，所以标注S、P时不需要关注实体是指称词还是指代词。</span><strong><span>同指关系将单独标注，用“=”形式表示</span></strong><span>（</span><a href='#同指标注'><span>参见“同指标注操作”</span></a><span>）。例如：</span></p><p><font style="font-family:楷体"><span>例(13) </span><strong><span>小王</span></strong><span>走了出去，</span><strong><span>他</span></strong><span>默默地走到了草地上。</span></font></p><ul><li><p><span>例(13)的实体同时出现了指称词“小王”和指代词“他”。第一个SS句只出现了指称词，所以把“小王”标注为空间实体S。第二个SS句中只出现了指代词“他”，所以把“他”标注为空间实体S。最后进行同指关系标注：“小王=他”。</span></p></li></ul></li></ul><p><strong><span>注意事项：</span></strong></p><ul><li><p><mark><span>与S-P信息无关的实体不需要标注同指关系。</span></mark></p></li><li><p><span>默认</span><strong><span>同形即同指</span></strong><span>，不需要标注同形词语之间的同指关系。</span></p></li><li><p><span>如果两个词语同形却不同指，需要标注非同指关系，用“≠”形式表示（</span><a href='#同指标注'><span>参见“同指标注操作”</span></a><span>）。</span></p></li></ul><h5 id='24-普通实体标注a-nameg信息a'><span>2.4 普通实体标注</span><a name="G信息"></a></h5><ul><li><p><span>为了给机器提供更多的干扰，SpaCE2024要求标注文本中</span><strong><span>空间信息未被提及或并不被关注，也不提供空间方位信息的普通实体</span></strong><span>。以歧义格式“名词 + 在 + 处所词 + 动词词组”为例：</span></p><p><font style="font-family:楷体"><span>例(14) </span><strong><span>阿Q</span></strong><span>在</span><strong><span>舞台</span></strong><span>上演</span><strong><span>话剧</span></strong><span>。</span></font></p><p><font style="font-family:楷体"><span>例(15) </span><strong><span>阿Q</span></strong><span>在</span><strong><span>柜台</span></strong><span>上放了</span><strong><span>一吊钱</span></strong><span>。</span></font></p><ul><li><p><span>例(14)的实体“阿Q”是空间实体，实体“舞台”是处所信息“在舞台上”的一部分，而实体“话剧”没有物理载体，空间信息并不被关注。“话剧”应标注为普通实体。</span></p></li><li><p><span>例(15)的实体“一吊钱”是空间实体，“柜台”是处所信息“在柜台上”的一部分，而实体“阿Q”的空间信息并没有提及，不能认为“阿Q在柜台上”，这是不合常理的。“阿Q”应标注为普通实体。</span></p></li></ul></li><li><p><span>具体操作中，</span><strong><span>把不在S和P中出现的实体选中，标注为普通实体。</span></strong><a href='#普通实体'><span>参见“普通实体标注操作”</span></a><span>。</span></p></li></ul><hr /><h4 id='3--事件信息标注a-namee信息a'><span>3  事件信息标注</span><a name="E信息"></a></h4><h5 id='31-事件信息a-namee介绍a'><span>3.1 事件信息</span><a name="E介绍"></a></h5><ul><li><p><strong><span>事件E信息</span></strong><span>用来说明空间信息发生的方式、目的、原因。例如：</span></p><p><font style="font-family:楷体"><span>例(16a)  汤姆平常</span><strong><span>放</span></strong><span>在床头的泰迪熊不见了。</span></font></p><p><font style="font-family:楷体"><span>例(16b)  汤姆平常</span><strong><span>挂</span></strong><span>在床头的泰迪熊不见了。</span></font></p><p><font style="font-family:楷体"><span>例(16c)  汤姆平常</span><strong><span>藏</span></strong><span>在床头的泰迪熊不见了。</span></font></p><ul><li><p><span>上面三个句子的E信息分别为“放、挂、藏”，而S、P、T信息则没有区别。E信息的不同，可以表示空间信息的细微差异：</span></p></li></ul><blockquote><p><span>“放”意味着“泰迪熊”在床头表面区域，处于“跟床头接触”的空间关系中；</span></p><p><span>“挂”意味着“泰迪熊”在床头上方区域，处于“未跟床头接触”的空间关系中；</span></p><p><span>“藏”意味着“泰迪熊”在床头位置，但不在床头表面，而是被某个物体“遮盖”了，未暴露在人的视线中。</span></p></blockquote></li></ul><p><strong><span>注意事项：</span></strong></p><ul><li><p><u><span>谓词“在、位于、有、是”都可以填入E。</span></u></p></li><li><p><u><strong><span>如果选取不同的谓词不影响S-P信息的标注，则选取一个作为E即可</span></strong><span>，不需要标注多次。</span></u><span>比如“老王在里面又唱歌又跳舞，开心着呢！”，S-P信息“老王在里面”的E在“唱歌”和“跳舞”中选择一个即可。</span></p></li><li><p><u><strong><span>如果影响S-P信息的标注，则根据E的不同标注多次。</span></strong></u><span>比如“两个汉子把她摁跪在地上”，在“摁”事件中，“在地上”是终点，在“跪”事件中，“在地上”是处所，两个信息不完全等同，所以都要标注。</span><a href='sp24_example.html#示例5'><span>参见示例5。</span></a></p></li><li><p><u><span>一条STEP标注的P信息若有多个，</span><strong><span>必须都与E有关</span></strong><span>，否则应分为多条STEP标注</span></u><span>：</span></p><p><font style="font-family:楷体"><span>例(17)  桑桑从树林里钻了出来。</span></font></p><p><font style="font-family:楷体"><span>例(18)  桑桑钻到巷子里，再也不出来了。</span></font></p><figure class='table-figure'><table><thead><tr><th><span>例句</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>17</span></td><td><span>桑桑</span></td><td>&nbsp;</td><td><span>钻</span></td><td><span>[起点:从树林里，方向:出来]</span></td><td>&nbsp;</td></tr><tr><td><span>18</span></td><td><span>桑桑</span></td><td>&nbsp;</td><td><span>钻</span></td><td><span>[终点:到巷子里]</span></td><td>&nbsp;</td></tr><tr><td><span>18</span></td><td><span>桑桑</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[方向:出来]</span></td><td><span>false</span></td></tr></tbody></table></figure></li><li><p><span>例(17)是一条STEP标注含有两个P信息，因为两个P信息都与位移事件“钻”有关。例(18)则有两个事件，“出来”属于第二个事件的P信息，而与第一个事件“钻”无关，所以分为两条STEP标注。</span></p></li></ul><h5 id='32-事件角色标注a-namee角色a'><span>3.2 事件角色标注</span><a name="E角色"></a></h5><ul><li><p><span>围绕E信息进一步标注事件角色信息。所谓事件的语义角色，就是</span><strong><span>动词周围的名词性成分</span></strong><span>所起到的不同的语义功能。对这些名词性成分的不同语义功能的标注，有助于更全面地理解空间实体的空间方位信息之间的联系。</span></p></li><li><p><span>本课题设计了一个7类语义角色的标注体系（</span><a href='#论旨角色层级分类体系'><span>参考附录2</span></a><span>，进行了大幅简化）。角色名称参照</span><a href='https://en.wikipedia.org/wiki/PropBank'><span>命题语义标注语料库</span></a><span>（</span><a href='https://verbs.colorado.edu/~mpalmer/projects/ace.html'><span>Propbank</span></a><span>）的方式；角色含义参照北京大学计算语言学教育部重点实验室在国家973项目“面向三元空间的互联网中文信息处理理论与方法”（项目编号：2014CB340500）子课题4：“融合三元空间的中文语言知识与世界知识获取和组织”中所用的定义（</span><a href='#事件角色细分类'><span>参考附录3</span></a><span>）。</span></p></li></ul><center>表2：事件角色标签集</center><figure class='table-figure'><table><thead><tr><th><strong><span>序号</span></strong></th><th><strong><span>角色标记</span></strong></th><th><strong><span>对应论旨角色</span></strong></th><th><strong><span>含义</span></strong></th></tr></thead><tbody><tr><td><span>1</span></td><td><strong><span>arg0</span></strong></td><td><span>施事（共同施事）、当事（间接当事）</span></td><td><strong><span>核心</span></strong><span>角色1：主体</span></td></tr><tr><td><span>2</span></td><td><strong><span>arg1</span></strong></td><td><span>受事、系事、结果、对象、内容</span></td><td><strong><span>核心</span></strong><span>角色2：客体</span></td></tr><tr><td><span>3</span></td><td><strong><span>arg2</span></strong></td><td><span>与事</span></td><td><strong><span>核心</span></strong><span>角色3：受益/受损者</span></td></tr><tr><td><span>4</span></td><td><strong><span>arg3</span></strong></td><td><span>工具、材料、方式</span></td><td><strong><span>外围</span></strong><span>角色1：伴随者（准外围）</span></td></tr><tr><td><span>5</span></td><td><strong><span>argM</span></strong></td><td><span>事量、范围、原因、目的</span></td><td><strong><span>外围</span></strong><span>角色2：环境成分（真外围）</span></td></tr><tr><td><span>6</span></td><td><strong><span>argS</span></strong></td><td><span>起点、终点、路径、方向、处所</span></td><td><strong><span>外围</span></strong><span>角色3：空间角色</span></td></tr><tr><td><span>7</span></td><td><strong><span>argT</span></strong></td><td><span>起始、结束、时点、时段</span></td><td><strong><span>外围</span></strong><span>角色4：时间角色</span></td></tr></tbody></table></figure><ul><li><p><strong><span>关于表2的说明</span></strong><span>：</span></p><p><span>argM泛指修饰性的外围语义角色（Modifier）。argM比arg3更外围，跟事件核心动词的关系更松散。比如：用刀砍了两天树。“刀”是动词“砍”的工具角色，属于外围语义角色，但跟”两天‘这个事件时间量成分相比，“刀”跟“砍”的关系更紧密。因为“刀”能组合的动词范围比较小，“刀”跟如“等”“听课”之类的动词就没有组合关系，无法充当“工具”角色，而“两天”跟动词组合的范围就很大，可以“等两天、听两天课”，所以，如果针对“用刀砍了两天树”来标注语义角色，则“刀”标注为动词“砍”的arg3，而“两天”则标注为argM。</span></p></li></ul><p><strong><span>注意事项：</span></strong></p><ul><li><p><mark><span>并不是句中所有的谓词，都要标注其语义角色。仅需针对</span><strong><span>跟S、P有关的E事件</span></strong><span>，标注其角色信息。</span></mark></p></li><li><p><span>E如果是动词的</span><strong><span>离合用法</span></strong><span>，应将分离的成分（不连续字符）拼接成一个完整单位。</span></p><p><font style="font-family:楷体"><span>例(19)  他昨晚在宾馆</span><strong><span>洗</span></strong><span>了两次</span><strong><span>澡</span></strong><span>。</span></font></p><figure class='table-figure'><table><thead><tr><th><strong><span>E</span></strong></th><th><strong><span>arg0</span></strong></th><th><strong><span>arg1</span></strong></th><th><strong><span>arg2</span></strong></th><th><strong><span>arg3</span></strong></th><th><strong><span>argM</span></strong></th><th><strong><span>argS</span></strong></th><th><strong><span>argT</span></strong></th></tr></thead><tbody><tr><td><span>洗澡</span></td><td><span>他</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td><span>两次</span></td><td><span>在宾馆</span></td><td><span>昨晚</span></td></tr></tbody></table></figure><ul><li><p><span>例(19)中“洗澡”是动词离合用法：“洗”和“澡”不连续出现，但却是一个整体单位（一个动词），标注时直接把两个字符拼接起来。</span></p></li><li><p><span>事件角色中argS的值是“在宾馆”，必须填入句中起空间方位指示作用的介词或趋向动词。</span></p></li></ul></li><li><p><strong><span>所有角色都是与当前E谓词相关的成分，不应标注与E无关的其他成分</span></strong><span>。</span></p><p><font style="font-family:楷体"><span>例(20) 吴仲荣掏出办公室的钥匙，放到桌上，他缓缓地站起来，向门口</span><strong><span>走</span></strong><span>去。</span></font></p><figure class='table-figure'><table><thead><tr><th><strong><span>E</span></strong></th><th><strong><span>arg0</span></strong></th><th><strong><span>arg1</span></strong></th><th><strong><span>arg2</span></strong></th><th><strong><span>arg3</span></strong></th><th><strong><span>argM</span></strong></th><th><strong><span>argS</span></strong></th><th><strong><span>argT</span></strong></th></tr></thead><tbody><tr><td><span>走</span></td><td><span>他</span></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td><span>向门口去</span></td><td>&nbsp;</td></tr></tbody></table></figure><ul><li><p><span>例(20)中“办公室” “钥匙” “桌上”等，都跟当前“走”这个动作行为无关，因此不能标注在 arg0 到 argT这些角色中。</span></p></li><li><p><u><span>多个相同的方位信息填入argS时，以拼接方式填入，如“向门口”和“去”都是方向信息。多个不同的方位信息填入argS时，以并置的方式填入。</span></u></p></li></ul></li></ul><hr /><h4 id='4--时间信息标注a-namet信息a'><span>4  </span><strong><span>时间信息标注</span></strong><a name="T信息"></a></h4><ul><li><p><span>时间信息（T）分为两类：</span></p><ul><li><p><strong><span>时值时间</span></strong><span>：指句中</span><strong><span>表达时间义的表达</span></strong><span>所负载的时间信息。</span></p></li><li><p><strong><span>参照时间</span></strong><span>：指未在句中明示的时间信息。具体又分两种参照方式：</span></p><ul><li><p><strong><span>说话时间</span></strong><span>：说出一句话的时间，一般理解为“</span><strong><span>现在</span></strong><span>”。参照说话时间可以表达虚拟情境，例如“如果他在北京的话，这个问题就好解决了”，可以指“他在北京”这一空间信息，对应</span><strong><span>过去</span></strong><span>某个时间，或者</span><strong><span>将来</span></strong><span>某个时间。</span></p></li><li><p><strong><span>事件时间</span></strong><span>：句中每个事件自身都自带有T信息。如上面例(16)中“放、挂、藏”的时间。可以用代表事件的动词</span><u><span>或动词词组</span></u><span>（记作V）来定位其时间。标注时用“V</span><strong><span>之时</span></strong><span>” “V</span><strong><span>之前</span></strong><span>” “V</span><strong><span>之后</span></strong><span>”等指称不同的时间。如动词“放”可以指称的时间包括：“放之时” “放之前” “放之后” 等等。</span></p></li></ul></li></ul></li><li><p><span>时间信息标注，是以P信息为基准，描述每个P信息伴随的T信息。如果一句话标注了多个P信息，则每个P信息都应考虑标注对应的T信息。T信息在标注界面上分为</span><a href='#数据层级'><span>3个字段</span></a><span>来描述：</span><strong><span>原文时间，参照事件，参照时间</span></strong><span>。</span></p><ul><li><p><span>“原文时间”指</span><strong><span>从原文中选取时间义表达来表示时间信息</span></strong><span>，属于T信息中的“时值时间”。</span></p></li><li><p><span>“参照时间”包括两种：一种是</span><strong><span>参照说话的时间</span></strong><span>，一种是</span><strong><span>参照事件的时间</span></strong><span>。</span></p><ul><li><p><span>如果是参照说话的时间，则T信息从标注界面上“参照时间”字段对应的下拉菜单中选取，有3个系统关键字可供选择：</span><strong><span>“说话时”、 “过去”、 “将来”</span></strong><span> 。</span></p></li><li><p><span>如果是参照事件的时间，则T信息需要分两步填写：</span></p><ul><li><p><span>先在“参照事件”字段文本框中填入描述时间信息需参照的</span><strong><span>事件。</span></strong></p></li><li><p><span>再在“参照时间”字段下拉菜单中选取具体的时间值：</span><strong><span>“之前”、“之后”、“之时”、“之间”</span></strong><span>。</span></p></li></ul></li></ul></li></ul></li></ul><center>表3：T信息标签集</center><figure class='table-figure'><table><thead><tr><th><strong><span>序号</span></strong></th><th><strong><span>类型</span></strong></th><th><strong><span>时间字段</span></strong></th><th><strong><span>时间值</span></strong></th><th><strong><span>示例 / 说明</span></strong></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>时值时间</span></td><td><span>原文时间</span></td><td><span>时间义词语</span></td><td><span>上午、13：15，2022年6月25日，儿童节，夏至</span></td></tr><tr><td><span>2</span></td><td><span>说话时间</span></td><td><span>参照时间</span></td><td><strong><span>说话时</span></strong></td><td><span>参考语境说话人时间信息，“说话时”为系统关键字</span></td></tr><tr><td><span>3</span></td><td><span>说话时间</span></td><td><span>参照时间</span></td><td><strong><span>过去</span></strong></td><td><span>参考语境说话人时间信息，“过去”为系统关键字</span></td></tr><tr><td><span>4</span></td><td><span>说话时间</span></td><td><span>参照时间</span></td><td><strong><span>将来</span></strong></td><td><span>参考语境说话人时间信息，“将来”为系统关键字</span></td></tr><tr><td><span>5</span></td><td><span>事件时间</span></td><td><span>参照事件+参照时间</span></td><td><span>V</span><strong><span>之前</span></strong></td><td><span>参考事件V的时间信息，V是句中动词</span><u><span>或动词词组</span></u></td></tr><tr><td><span>6</span></td><td><span>事件时间</span></td><td><span>参照事件+参照时间</span></td><td><span>V</span><strong><span>之后</span></strong></td><td><span>参考事件V的时间信息，V是句中动词</span><u><span>或动词词组</span></u></td></tr><tr><td><span>7</span></td><td><span>事件时间</span></td><td><span>参照事件+参照时间</span></td><td><span>V</span><strong><span>之时</span></strong></td><td><span>参考事件V的时间信息，V是句中动词</span><u><span>或动词词组</span></u></td></tr><tr><td><span>8</span></td><td><span>事件时间</span></td><td><span>参照事件+参照时间</span></td><td><strong><span>V1和V2之间</span></strong></td><td><span>参考事件V1和V2的时间信息，V1和V2是句中动词</span><u><span>或动词词组</span></u></td></tr></tbody></table></figure><p><strong><span>注意事项：</span></strong></p><ul><li><p><span>标注优先级：时值时间 &gt; 参照时间。</span></p></li><li><p><mark><span>若</span><strong><span>原文就有</span></strong><span>“现在、过去、将来”等时间词语、“…之后/之前/的时候”等事件时间表达，那么T信息类型仍</span><strong><span>优先归属“时值时间”</span></strong><span>，需从句中选取字符填入“原文时间”字段。</span></mark></p></li><li><p><span>为简化标注操作，约定：</span></p><blockquote><p><span>（1）T为空时，代表时间信息未知、或不受关注；当T信息中填值时，表示该信息值得强调。</span></p><p><span>（2）如果已填写E信息，同时T信息为空，则代表T是“E中所填动词V之时”。</span></p></blockquote></li><li><u><p><span>参照事件限定在发生时间距离目标S-P-E信息较近的事件，不选择距离较远的事件。只有在以该事件为参照的情况下，S-P信息的时间才是可确定的，那么该事件才作为参照事件。</span></p></u></li><p><font style="font-family:楷体"><span>例(21) 李兰紧紧地</span><span><strong>抱着他</strong></span><span>，直到李光头和宋钢在外面的屋子里大声喊叫，李兰才</span><span><strong>松开了她的手</strong></span><span>，宋凡平问她为什么哭了？她害羞地扭过头去，</span><span><strong>打开屋门</strong></span><span>匆匆走了出来。</span></font></p><ul><li><p><span>例(21)要确定“李光头和宋钢在外面的屋子里喊叫”的T信息，距离较近的有“抱”事件和“松开”事件，但“抱”、“喊叫”、“松开”这三个事件的发生时间没有明显的线性前后关系，不能确定“喊叫”的时间是在“抱之时”、“抱之后”，或是“松开之时”、“松开之后”，所以“抱”事件和“松开”事件不能作为参照事件，该条标注没有T信息。</span></p></li><li><p><span>例(21)有明显时间线性关系的是“扭头”、“打开屋门”、“走出来”三个事件，“扭头”发生在“打开屋门”之前，“走出来”发生在“扭头”之后，所以“打开屋门”可以作为参照事件确定“她扭过头来”和“她走出来”的T信息。</span></p></li></ul><li><p><u><span>参照时间是“V1和V2之间”时，V1和V2以并置的方式填入参照事件文本框。</span></u></p></li><li><p><u><strong><span>条件句、祈使句中尚未实现的空间信息视为可能在将来发生的空间信息</span></strong><span>，与被否定的空间信息（详见</span><a href='#F信息'><span>第5节</span></a><span>）有所区别。</span></u><span>T信息选择</span><mark><span>表“将来”的时间表达，或者预定义字段“将来”或“V之后”</span></mark><span>。例(5)条件句的标注：</span></p><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>我</span></td><td><span>伤了徒儿性命之后</span></td><td>&nbsp;</td><td><span>[终点:碧螺山，方向:上去]</span></td><td>&nbsp;</td></tr><tr><td><span>2</span></td><td><span>我</span></td><td><span>一辈子</span></td><td>&nbsp;</td><td><span>[方向:出来]</span></td><td><span>false</span></td></tr></tbody></table></figure><p><span>这是一种近似的时间标注。例(5)的SS1是一个“要是...就”引导的条件句：在条件“伤了我徒儿性命”成立时，“我上碧螺山去”的空间信息发生，所以标注中把“伤了徒儿性命”作为时间的参照事件，表示在“伤了徒儿性命之后”，S-P信息发生。</span></p></li></ul><hr /><h4 id='5-空间信息否定标注a-namef信息a'><span>5 </span><strong><span>空间信息否定标注</span></strong><a name="F信息"></a></h4><ul><li><p><span>关于S、P信息标注的说明，均</span><strong><span>以肯定S-P空间信息在文本中的真实性为前提条件</span></strong><span>。如果文本中对</span><strong><span>S-P空间信息</span></strong><span>做出了</span><strong><span>否定性陈述</span></strong><span>，或者可以推理出S-P空间信息为假，则标注</span><strong><span>F信息</span></strong><span>（Facticity），取值为false。</span></p><p><font style="font-family:楷体"><span>例(22)  桑桑钻到了玉米地里，直至天黑也</span><strong><span>没有</span></strong><span>回家。母亲对我说：“不准去喊他，就让他死在外面！”</span></font></p><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>桑桑</span></td><td>&nbsp;</td><td><span>钻</span></td><td><span>[终点:到了玉米地里]</span></td><td>&nbsp;</td></tr><tr><td><span>2</span></td><td><span>桑桑</span></td><td><span>直至天黑</span></td><td>&nbsp;</td><td><span>[方向:回，终点:家]</span></td><td><span>false</span></td></tr><tr><td><span>3</span></td><td><span>桑桑</span></td><td>&nbsp;</td><td><span>死</span></td><td><span>[处所:在家外面]</span></td><td>&nbsp;</td></tr></tbody></table></figure><ul><li><p><span>例(22)有3条STEP标注：</span></p><ul><li><p><span>第1条标注的空间信息为真，不需要标注F信息，默认F值为空。</span></p></li><li><p><span>第2条标注对应“没有回家”，根据否定词“没有”，可知空间信息“回家”不发生，所以F值为false。</span></p></li><li><p><span>第3条标注对应“让他死在外面”，是一个虚拟句，不过S-P空间信息“桑桑在外面”发生了，所以不需要标注F，即</span><mark><strong><span>F信息只关心S-P空间信息的真假，而不关心其他信息的真假。</span></strong></mark></p></li></ul></li></ul></li></ul><p><strong><span>注意事项：</span></strong></p><ul><li><p><mark><span>否定词语</span><strong><span>不</span></strong><span>填入P和E</span></mark><span>，文本对空间信息作出的否定性陈述用F表示。比如“钥匙不在桌子上”的标注中，E为“在”，不选取否定词“不”。</span></p></li><li><p><u><span>运用比喻、拟人、夸张等修辞手法的句子（例4的SS1）以及想象句（例4的SS2）</span><strong><span>需要标记F</span></strong><span>。</span></u></p></li><li><p><u><span>其他情形下，没有否定性陈述，但</span><mark><span>可以推理得出的F信息</span><strong><span>必须配合T信息一起标注</span></strong><span>。</span></mark></u><span>例如：</span></p><p><font style="font-family:楷体"><span>例(23) 爸爸把我放在桌子上的钥匙拿走了。</span></font></p><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>钥匙</span></td><td><span>拿走之前</span></td><td><span>放</span></td><td><span>[处所:在桌子上]</span></td><td>&nbsp;</td></tr><tr><td><span>2</span></td><td><span>钥匙</span></td><td><span>拿走之后</span></td><td><span>放</span></td><td><span>[处所:在桌子上]</span></td><td><span>false</span></td></tr><tr><td><del><span>3</span></del></td><td><del><span>钥匙</span></del></td><td>&nbsp;</td><td><del><span>放</span></del></td><td><del><span>[处所:在桌子上]</span></del></td><td><del><span>false</span></del></td></tr></tbody></table></figure><ul><li><p><span>例(23)虽然没有否定性陈述，但从“拿走了”可以推理出“钥匙不在桌子上”的信息。</span><strong><span>要确定“钥匙”的空间方位，T信息必须强调</span></strong><span>：第3条标注没有T信息，表示“放之时，钥匙不在桌子上”，是一个错误的标注（删除线部分）。</span></p></li><li><p><span>以“拿走”作为时间的参照事件，可以得出第1条标注，表示“拿走之前，钥匙在桌子上”；以及第2条标注，表示“拿走之后，钥匙不在桌子上”。为简化操作，</span><strong><span>两条标注都正确，但只需要选择其中一种标注方法</span></strong><span>，因为两条标注的S-P信息“钥匙在桌子上”和参照事件“拿走”是完全一致的。</span></p></li></ul></li></ul><hr /><h4 id='6--操作说明a-name操作说明a'><span>6  </span><strong><span>操作说明</span></strong><a name="操作说明"></a></h4><ul><li><p><strong><span>操作界面：</span></strong></p><blockquote><p><span>（1）</span><strong><span>操作面板</span></strong><span>：操作界面左侧是语料文本显示区，右侧是操作面板。面板初始界面上有5个“新增×××”</span><strong><span>导航按钮</span></strong><span>（下图红色框所示），分别点击后，会对应显现出</span><strong><span>5个信息标注区</span></strong><span>：</span></p><p><img src="./upload/sp24_task3_UI.png" referrerpolicy="no-referrer" alt="task3_UI_buttons"></p><ul><li><p><span>S-T-E-P整体信息标注区（逐条标注文本中的S、T、E、P信息）</span></p></li><li><p><span>事件角色信息标注区（标注E的arg0、arg1、arg2、arg3、argM、argS、argT角色）</span></p></li><li><p><span>同指关系标注区（标注异形同指、同形异指的空间实体）</span></p></li><li><p><span>普通实体标注区（标注不在S和P中的实体）</span></p></li><li><p><span>特殊情况标注区（标记无空间义、错别字等情况）</span></p></li></ul><p><span>（2）</span><strong><span>标注显示</span></strong><span>：在5个“新增……”按钮的上方，有标注内容实时显示区（图中“暂无内容”所在文本框区域）</span></p><p><span>（3）</span><strong><span>内容排序</span></strong><span>：在标注显示区下方，有3个</span><strong><span>排序按钮</span></strong><span>，分别可以对标注结果按照3个标注排序，包括：</span></p><ul><li><p><span>按照词语在原文中的顺序排序</span></p></li><li><p><span>按照标注时创建条目的顺序排序</span></p></li><li><p><span>按照“STEP整体信息、事件角色、同指关系、普通实体”4个组排序。</span></p></li></ul><p><span>（4）</span><strong><span>数据层级</span></strong><span>：由大到小顺序：记录（record） → 字段（field）→ 值（value）</span><a name="数据层级"></a></p><p><img src="./upload/STEP.PNG" referrerpolicy="no-referrer" alt="STEP"></p><ul><li><p><strong><span>记录</span></strong><span>（record）：上面框图的全部信息，代表“S-T-E-P”一条数据记录，在框图左上角的“S-T-E-P整体信息标注 [2]”，表示这是第2条记录。</span></p></li><li><p><strong><span>字段</span></strong><span>（field）：框图内从上往下用短线分隔了4个区，分别对应S、P、E、T信息标注区，最后有一行“添加字段”，用于增加不太常用的字段。在框图中显示的“实体S” “处所” “起点” “终点” “方向“ ”朝向“ ”事件E“ ”原文时间“ ”参照事件“ ”参照时间“ 等，都是同一条记录的不同字段名称，每个字段占一行。</span></p></li><li><p><strong><span>值</span></strong><span>（value）：字段名称后对应的文本框中，就填写字段的值。标注时，主要就是从语料文本中选取合适的文本片段，作为各字段的信息值，填入文本框中。</span></p></li></ul></blockquote></li><li><p><strong><span>操作顺序：</span></strong></p><blockquote><p><strong><span>第一步</span></strong><span>：在S-T-E-P整体信息标注区</span></p><ul><li><p><span>a：标注</span><strong><span>S信息</span></strong><span>，在语料原文中选取空间实体文本片段，填入</span><strong><span>“实体S”对应的文本框</span></strong><span>。</span></p></li><li><p><span>b：标注</span><strong><span>P信息</span></strong><span>，选取合适词语填入</span><strong><span>空间特征（处所、起点…）对应的文本框</span></strong><span>。</span></p></li><li><p><span>c：标注</span><strong><span>E信息</span></strong><span>，选取S-P对应的动词，填入</span><strong><span>“事件E”对应的文本框</span></strong><span>。</span></p></li><li><p><span>d：标注</span><strong><span>T信息</span></strong><span>：</span></p><ul><li><p><span>如果原文中有时值时间，从文本中选取词语，填入</span><strong><span>“原文时间”对应的文本框</span></strong><span>。</span></p></li><li><p><span>如果原文中没有时值时间，参考时间为</span><strong><span>说话时间</span></strong><span>，则</span><strong><span>从“参照时间”下拉菜单</span></strong><span>中选取“说话时”、“过去”或“将来”填入。</span></p></li><li><p><span>如果参考时间为原文中的事件，则先从文本中选取动词，填入</span><strong><span>“参照事件”对应的文本框</span></strong><span>，然后</span><strong><span>在“参照时间”下拉菜单</span></strong><span>中选取合适的参照时间值“之前”、“之后”、“之间”、“之时等。</span></p></li></ul></li><li><p><span>e：标注</span><strong><span>F信息</span></strong><span>：若当前S-P信息为假，在</span><strong><span>“添加字段”下拉菜单选取“事实性”</span></strong><span>，添加</span><strong><span>false标记</span></strong><span>。</span></p></li></ul><p><strong><span>第二步</span></strong><span>：在事件角色信息标注区，选取当前S、P所在标点句内的事件语义角色，填入</span><strong><span>角色对应文本框</span></strong><span>。</span></p><ul><li><p><span>事件谓词E要填入“谓词来源”字段，该字段的下拉菜单中列出了已经填写的全部STEP记录，谓词E从中选择一条填入。</span></p></li></ul><p><strong><span>第三步</span></strong><a name="同指操作"></a><span>：在同指关系标注区，选取文本中</span><strong><span>异形同指</span></strong><span>或</span><strong><span>同形异指</span></strong><span>的实体成分，填入</span><strong><span>“同指片段”对应文本框</span></strong><span>：</span></p><ul><li><p><span>异形同指：选取两个不同形式的文本片段（记作A和B），以“并置”方式填入文本框。同指关系标注为“A = B”。</span></p><ul><li><p><span>一种特殊的情形表示为“A=BC”，其中</span><strong><span>A 是集合总称性成分</span></strong><span>，通常是复数性指代词，比如“他们” “他们俩”；</span><strong><span>B、C是集合的成员性成分</span></strong><span>，比如“阿Q 小D”。同指关系为：他们俩 = 阿Q 小D。操作时，先以并置的方式填入A和B，再拼接B和C。</span></p></li></ul></li><li><p><span>同形异指：选取两个相同形式的文本片段（记作A），以“并置”方式填入文本框，然后在“添加字段”下拉菜单中，选取“同指事实性”，标记为false。同指关系标注为“A ≠ A”</span></p></li></ul><p><strong><span>第四步</span></strong><a name="普通实体"></a><span>：在普通实体标注区，选取文本中</span><strong><span>不在S或P中的实体成分</span></strong><span>，并置填入“普通实体”对应文本框。</span></p></blockquote></li><li><p><strong><span>添加字段</span></strong><a name="添加字段"></a><span>：</span></p></li></ul><blockquote><ul><li><p><span>为使标注区域版式简洁，其中P区域没有把表1中P信息的10个小项全部列出，而是预置了其中比较常见的5项：处所、起点、终点、方向、朝向。另外5项，出现频次相对较低，如果需要标注，可以通过</span><strong><span>“*添加字段”</span></strong><span>的方式，添加到S-T-E-P整体信息标注区，然后再填写相应信息。</span></p></li><li><p><span>F信息的出现频次也较低，如果需要标注，也通过“添加字段”方式，添加到S-T-E-P整体信息标注区。添加时在下拉菜单中选择“事实性”，添加后程序自动为F信息项赋值为false。</span></p></li><li><p><span>“</span><strong><span>距离</span></strong><span>”取值有两种情况：</span></p><ul><li><p><span>如果原文中有关于两个空间实体距离的定量描述，则通过“添加字段”的方式，选择“</span><strong><span>距离1</span></strong><span>”字段，填入相应文字内容。</span></p></li><li><p><u><span>如果原文中是定性描述，或者原文中没有，但距离信息可以推知，则通过“添加字段”的方式，选择“</span></u><strong><span>距离2</span></strong><span>”字段，从下拉菜单中选择“远、近、变远、变近”中的一个来描述距离。</span></p></li></ul></li></ul></blockquote><ul><li><p><strong><span>操作视频：</span></strong></p><iframe src="https://player.bilibili.com/player.html?aid=581547785&bvid=BV1d64y1A7hz&cid=1415258900&p=1&autoplay=0" width="300" height="500" scrolling="no" border="10" frameborder="no" framespacing="no" allowfullscreen="true"> </iframe></li><li><p><strong><span>操作要点：</span></strong></p><blockquote><p><strong><span>要点1</span></strong><span>：</span><strong><span>拷</span></strong><span>贝、粘</span><strong><span>贴</span></strong><span>、修</span><strong><span>改</span></strong><span>、</span><strong><span>删</span></strong><span>除、</span><strong><span>存</span></strong><span>储 —— 这5个基本操作均为鼠标点选操作。</span></p><p><strong><span>要点2</span></strong><span>：“删除”功能针对不同层级的数据，操作有所不同：</span></p><ul><li><p><span>点</span><strong><span>“删除”</span></strong><span>（在“克隆”的右侧）：表示删除当前记录（record），即删除整个信息标注区。</span></p></li><li><p><span>点</span><strong><span>“删”</span></strong><span>：表示删除当前字段（field），即删除字段名称及其同一行文本框。</span></p></li><li><p><span>点 </span><strong><span>×</span></strong><span> </span><strong><span>号</span></strong><span>：表示删除当前值（value），即删除一个文本片段。</span></p></li><li><p><span>点击3个信息标注区右上角的 × 号，表示</span><strong><span>关闭当前标注区</span></strong><span>，不是删除。</span></p></li></ul><p><mark><strong><span>要点3：保存！！！</span></strong></mark></p><ul><li><p><span>保存字段值：点击</span><strong><span>“存”</span></strong><span>，表示保存每个字段的值。</span></p></li><li><p><span>保存记录：点击</span><strong><span>“保存”</span></strong><span>（在“克隆”的左侧），表示保存当前数据记录（全部字段及字段值）：点击“保存”相当于自动点击了全部的“存”（即自动保存记录中每个字段和字段值）。</span></p></li><li><p><font color="dc3545"><strong><span>如果没有点击“存”，也没有点击“保存”，填入内容将不会被记录！！！</span></strong></font></p></li></ul><p><strong><span>要点4</span></strong><span>：</span><strong><span>新增</span></strong><span>与克隆。</span></p><ul><li><p><span>需要为一个新的S标注STEP信息时，点击“</span><strong><span>新增</span></strong><span>”按钮，新增一条记录。</span></p></li><li><p><span>需要为一个现有的S添加更多P信息时，点击“</span><strong><span>+</span></strong><span>”按钮，添加一个字段。</span></p></li><li><p><span>需要复制当前的记录时，点击“克隆”按钮，新增一条同样内容的STEP记录。</span></p></li></ul><p><mark><strong><span>要点5</span></strong><span>：</span><strong><span>拼接</span></strong><span>与</span><strong><span>并置</span></strong><span>。</span></mark><a name="拼接与并置"></a></p><p><img src="./upload/coordinate.PNG" referrerpolicy="no-referrer" alt="coordinate"></p><ul><li><p><strong><span>拼接</span></strong><span>：点击</span><strong><span>⊕加号</span></strong><span>，把当前拷贝字符串与文本框中原有字符串进行拼接，合并为</span><strong><span>一个单位</span></strong><span>。</span></p><ul><li><p><span>如果在原文中选取词语“姐姐”后，点击</span><strong><span>⊕加号</span></strong><span>，就是跟文本框中已有的“阿曾”</span><strong><span>拼接</span></strong><span>，成为“阿曾姐姐”，仍然是一个S。</span></p></li></ul></li><li><p><strong><span>并置</span></strong><span>：点击“</span><strong><span>填入</span></strong><span>”，把当前拷贝字符串与文本框中原有字符串并置，使文本框内容为</span><strong><span>两个并列单位</span></strong><span>。</span></p><ul><li><p><span>如果在原文中选取词语“姐姐”后，点击“</span><strong><span>填入</span></strong><span>”，就是跟文本框中已有的“阿曾”</span><strong><span>并置</span></strong><span>，这时候实体S相当于有两个，一个是“阿曾”，另一个是“姐姐”，表示“阿曾和姐姐”。</span></p></li></ul></li></ul></blockquote></li></ul><p><mark><strong><span>注意事项：</span></strong></mark></p><ul><li><p><strong><span>标注过程中，应经常点击“</span><font color="dc3545"><span>暂存</span></font><span>”按钮，保存已标内容。</span></strong></p></li><li><p><strong><span>完成一段语料全部信息标注后，应点击“</span><font color="dc3545"><span>完成</span></font><span>”按钮，再进行“下一条”语料的标注。</span></strong></p></li><li><p><font color="dc3545"><strong><span>如果没有点击“暂存”或“保存”就点击“下一条”或“上一条”，将导致当前标注内容丢失！！！</span></strong></font></p></li></ul><hr /><h4 id='附录a-name附录a'><strong><span>附录</span></strong><a name="附录"></a></h4><h5 id='附录1指示空间方位信息的形式标记a-name形式标记表a'><span>附录1：指示空间方位信息的形式标记</span><a name="形式标记表"></a></h5><figure class='table-figure'><table><thead><tr><th><span>形式标记</span></th><th><span>指示的P信息</span></th></tr></thead><tbody><tr><td><span>在；于</span></td><td><span>处所；部件处所</span></td></tr><tr><td><span>从；由；自</span></td><td><span>起点</span></td></tr><tr><td><span>到；至；在</span></td><td><span>终点</span></td></tr><tr><td><span>经；过；沿；从；顺着；通过</span></td><td><span>路径</span></td></tr><tr><td><span>向；朝；往</span></td><td><span>方向</span></td></tr><tr><td><span>上；下；进；出；回；往；起；来；去</span><br /><span>上来；上去；下来；下去；进来；进去；出来；出去；回来；回去；起来</span></td><td><span>方向</span></td></tr><tr><td><span>向；朝；对着</span></td><td><span>朝向</span></td></tr><tr><td><span>距；离；距离</span></td><td><span>距离</span></td></tr></tbody></table></figure><h5 id='附录2一个论旨角色层级分类体系a-name论旨角色层级分类体系a'><span>附录2：一个论旨角色层级分类体系</span><a name="论旨角色层级分类体系"></a></h5><p><img src="./upload/theta_roles.png" referrerpolicy="no-referrer" alt="theta_roles"></p><h5 id='附录3事件角色细粒度分类a-name事件角色细分类a'><span>附录3：事件角色细粒度分类</span><a name="事件角色细分类"></a></h5><p><span>下表是28个论旨角色的含义说明及示例（黄色高亮成分即为对应语义角色在当前句中的示例，方框中是谓词）。</span></p><p><img src="./upload/theta_roles_table.png" referrerpolicy="no-referrer" alt="theta_roles_table"></p><ul><li><p><span>Tips</span></p><ul><li><p><span>标注工具仅支持电脑端chrome、firefox浏览器。</span></p></li><li><p><span>如有任何问题，请联系组长。</span></p></li></ul></li></ul><br/><p><font style="font-family:微软雅黑"><font size="2"><span>文档最近更新时间：2024-01-22</span></font></font></p><p><font style="font-family:微软雅黑"><font size="2"><span>北京大学SpaCE2024评测任务课题组</span></font></font></p><p><font style="font-family:微软雅黑"><font size="2"><span>本项目得到国家科技创新2030“新一代人工智能”重大项目——“以自然语言为核心的语义理解理论、模型与方法”（项目号：2020AAA0106701）支持。</span></font></font></p><p>&nbsp;</p></div></div>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+
+<style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; --title-bar-height:20px; }
+.mac-os-11 { --title-bar-height:28px; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4, h5 { white-space: pre-wrap; }
+body { margin: 0px; padding: 0px; height: auto; inset: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 36px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+.typora-export .task-list-item input { pointer-events: none; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; image-orientation: from-image; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px; }
+thead, tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-fences-adv-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+svg { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li blockquote { margin: 1rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; border-color: transparent !important; padding-top: 0px !important; padding-bottom: 0px !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  .typora-export #write { break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+  .is-mac table { break-inside: avoid; }
+  #write > p:nth-child(1) { margin-top: 0px; }
+  .typora-export-show-outline .typora-export-sidebar { display: none; }
+  figure { overflow-x: visible; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+.MathJax_ref { fill: currentcolor; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.reversefootnote { font-family: ui-monospace, sans-serif; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.6; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+.md-expand mark .md-meta { opacity: 0.3 !important; }
+mark .md-meta { color: rgb(0, 0, 0); }
+@media print {
+  .typora-export h1, .typora-export h2, .typora-export h3, .typora-export h4, .typora-export h5, .typora-export h6 { break-inside: avoid; }
+}
+.md-diagram-panel .messageText { stroke: none !important; }
+.md-diagram-panel .start-state { fill: var(--node-fill); }
+.md-diagram-panel .edgeLabel rect { opacity: 1 !important; }
+.md-fences.md-fences-math { font-size: 1em; }
+.md-fences-advanced:not(.md-focus) { padding: 0px; white-space: nowrap; border: 0px; }
+.md-fences-advanced:not(.md-focus) { background: inherit; }
+.typora-export-show-outline .typora-export-content { max-width: 1440px; margin: auto; display: flex; flex-direction: row; }
+.typora-export-sidebar { width: 300px; font-size: 0.8rem; margin-top: 80px; margin-right: 18px; }
+.typora-export-show-outline #write { --webkit-flex:2; flex: 2 1 0%; }
+.typora-export-sidebar .outline-content { position: fixed; top: 0px; max-height: 100%; overflow: hidden auto; padding-bottom: 30px; padding-top: 60px; width: 300px; }
+@media screen and (max-width: 1024px) {
+  .typora-export-sidebar, .typora-export-sidebar .outline-content { width: 240px; }
+}
+@media screen and (max-width: 800px) {
+  .typora-export-sidebar { display: none; }
+}
+.outline-content li, .outline-content ul { margin-left: 0px; margin-right: 0px; padding-left: 0px; padding-right: 0px; list-style: none; overflow-wrap: anywhere; }
+.outline-content ul { margin-top: 0px; margin-bottom: 0px; }
+.outline-content strong { font-weight: 400; }
+.outline-expander { width: 1rem; height: 1.42857rem; position: relative; display: table-cell; vertical-align: middle; cursor: pointer; padding-left: 4px; }
+.outline-expander::before { content: ""; position: relative; font-family: Ionicons; display: inline-block; font-size: 8px; vertical-align: middle; }
+.outline-item { padding-top: 3px; padding-bottom: 3px; cursor: pointer; }
+.outline-expander:hover::before { content: ""; }
+.outline-h1 > .outline-item { padding-left: 0px; }
+.outline-h2 > .outline-item { padding-left: 1em; }
+.outline-h3 > .outline-item { padding-left: 2em; }
+.outline-h4 > .outline-item { padding-left: 3em; }
+.outline-h5 > .outline-item { padding-left: 4em; }
+.outline-h6 > .outline-item { padding-left: 5em; }
+.outline-label { cursor: pointer; display: table-cell; vertical-align: middle; text-decoration: none; color: inherit; }
+.outline-label:hover { text-decoration: underline; }
+.outline-item:hover { border-color: rgb(245, 245, 245); background-color: var(--item-hover-bg-color); }
+.outline-item:hover { margin-left: -28px; margin-right: -28px; border-left: 28px solid transparent; border-right: 28px solid transparent; }
+.outline-item-single .outline-expander::before, .outline-item-single .outline-expander:hover::before { display: none; }
+.outline-item-open > .outline-item > .outline-expander::before { content: ""; }
+.outline-children { display: none; }
+.info-panel-tab-wrapper { display: none; }
+.outline-item-open > .outline-children { display: block; }
+.typora-export .outline-item { padding-top: 1px; padding-bottom: 1px; }
+.typora-export .outline-item:hover { margin-right: -8px; border-right: 8px solid transparent; }
+.typora-export .outline-expander::before { content: "+"; font-family: inherit; top: -1px; }
+.typora-export .outline-expander:hover::before, .typora-export .outline-item-open > .outline-item > .outline-expander::before { content: "−"; }
+.typora-export-collapse-outline .outline-children { display: none; }
+.typora-export-collapse-outline .outline-item-open > .outline-children, .typora-export-no-collapse-outline .outline-children { display: block; }
+.typora-export-no-collapse-outline .outline-expander::before { content: "" !important; }
+.typora-export-show-outline .outline-item-active > .outline-item .outline-label { font-weight: 700; }
+.md-inline-math-container mjx-container { zoom: 0.95; }
+mjx-container { break-inside: avoid; }
+
+
+html {
+	font-size: 19px;
+}
+
+html, body {
+	margin: auto;
+	background: #fefefe;
+	-webkit-font-smoothing: antialiased;
+}
+body {
+	font-family: "Vollkorn", Palatino, Times;
+	color: #333;
+	line-height: 1.4;
+	text-align: justify;
+}
+
+#write {
+	max-width: 960px;
+	margin: 0 auto;
+	margin-bottom: 2em;
+	line-height: 1.53;
+	padding-top: 40px;
+}
+
+@media only screen and (min-width: 1400px) {
+	#write {
+		max-width: 1100px;
+	}
+}
+
+@media print {
+	html {
+		font-size: 13px;
+	}
+}
+
+/* Typography
+-------------------------------------------------------- */
+
+#write>h1:first-child,
+h1 {
+	margin-top: 1.6em;
+	font-weight: normal;
+}
+
+h1 {
+	font-size:3em;
+}
+
+h2 {
+	margin-top:2em;
+	font-weight: normal;
+}
+
+h3 {
+	font-weight: normal;
+	font-style: italic;
+	margin-top: 3em;
+}
+
+h1, 
+h2, 
+h3{
+	text-align: center;
+}
+
+h2:after{
+	border-bottom: 1px solid #2f2f2f;
+    content: '';
+    width: 100px;
+    display: block;
+    margin: 0 auto;
+    height: 1px;
+}
+
+h1+h2, h2+h3 {
+	margin-top: 0.83em;
+}
+
+p,
+.mathjax-block {
+	margin-top: 0;
+	-webkit-hypens: auto;
+	-moz-hypens: auto;
+	hyphens: auto;
+}
+ul {
+	list-style: square;
+	padding-left: 1.2em;
+}
+ol {
+	padding-left: 1.2em;
+}
+blockquote {
+	margin-left: 1em;
+	padding-left: 1em;
+	border-left: 1px solid #ddd;
+}
+code,
+pre {
+	font-family: "Consolas", "Menlo", "Monaco", monospace, serif;
+	font-size: .9em;
+	background: white;
+}
+.md-fences{
+	margin-left: 1em;
+	padding-left: 1em;
+	border: 1px solid #ddd;
+	padding-bottom: 8px;
+	padding-top: 6px;
+	margin-bottom: 1.5em;
+}
+
+a {
+	color: #2484c1;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+a img {
+	border: none;
+}
+h1 a,
+h1 a:hover {
+	color: #333;
+	text-decoration: none;
+}
+hr {
+	color: #ddd;
+	height: 1px;
+	margin: 2em 0;
+	border-top: solid 1px #ddd;
+	border-bottom: none;
+	border-left: 0;
+	border-right: 0;
+}
+.ty-table-edit {
+	background: #ededed;
+    padding-top: 4px;
+}
+table {
+	margin-bottom: 1.333333rem
+}
+table th,
+table td {
+	padding: 8px;
+	line-height: 1.333333rem;
+	vertical-align: top;
+	border-top: 1px solid #ddd
+}
+table th {
+	font-weight: bold
+}
+table thead th {
+	vertical-align: bottom
+}
+table caption+thead tr:first-child th,
+table caption+thead tr:first-child td,
+table colgroup+thead tr:first-child th,
+table colgroup+thead tr:first-child td,
+table thead:first-child tr:first-child th,
+table thead:first-child tr:first-child td {
+	border-top: 0
+}
+table tbody+tbody {
+	border-top: 2px solid #ddd
+}
+
+.task-list{
+	padding:0;
+}
+
+.md-task-list-item {
+	padding-left: 1.6rem;
+}
+
+.md-task-list-item > input:before {
+	content: '\221A';
+	display: inline-block;
+	width: 1.33333333rem;
+  	height: 1.6rem;
+	vertical-align: middle;
+	text-align: center;
+	color: #ddd;
+	background-color: #fefefe;
+}
+
+.md-task-list-item > input:checked:before,
+.md-task-list-item > input[checked]:before{
+	color: inherit;
+}
+.md-tag {
+	color: inherit;
+	font: inherit;
+}
+#write pre.md-meta-block {
+	min-height: 35px;
+	padding: 0.5em 1em;
+}
+#write pre.md-meta-block {
+	white-space: pre;
+	background: #f8f8f8;
+	border: 0px;
+	color: #999;
+	
+	width: 100vw;
+	max-width: calc(100% + 60px);
+	margin-left: -30px;
+	border-left: 30px #f8f8f8 solid;
+	border-right: 30px #f8f8f8 solid;
+
+	margin-bottom: 2em;
+	margin-top: -1.3333333333333rem;
+	padding-top: 26px;
+	padding-bottom: 10px;
+	line-height: 1.8em;
+	font-size: 0.9em;
+	font-size: 0.76em;
+	padding-left: 0;
+}
+.md-img-error.md-image>.md-meta{
+	vertical-align: bottom;
+}
+#write>h5.md-focus:before {
+	top: 2px;
+}
+
+.md-toc {
+	margin-top: 40px;
+}
+
+.md-toc-content {
+	padding-bottom: 20px;
+}
+
+.outline-expander:before {
+	color: inherit;
+	font-size: 14px;
+	top: auto;
+	content: "\f0da";
+	font-family: FontAwesome;
+}
+
+.outline-expander:hover:before,
+.outline-item-open>.outline-item>.outline-expander:before {
+  	content: "\f0d7";
+}
+
+/** source code mode */
+#typora-source {
+	font-family: Courier, monospace;
+    color: #6A6A6A;
+}
+
+.html-for-mac #typora-sidebar {
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+
+.cm-s-typora-default .cm-header, 
+.cm-s-typora-default .cm-property,
+.CodeMirror.cm-s-typora-default div.CodeMirror-cursor {
+	color: #428bca;
+}
+
+.cm-s-typora-default .cm-atom, .cm-s-typora-default .cm-number {
+	color: #777777;
+}
+
+.typora-node .file-list-item-parent-loc, 
+.typora-node .file-list-item-time, 
+.typora-node .file-list-item-summary {
+	font-family: arial, sans-serif;
+}
+
+.md-task-list-item>input {
+    margin-left: -1.3em;
+    margin-top: calc(1rem - 12px);
+}
+
+.md-mathjax-midline {
+	background: #fafafa;
+}
+
+.md-fences .code-tooltip {
+	bottom: -2em !important;
+}
+
+.dropdown-menu .divider {
+	border-color: #e5e5e5;
+}
+
+
+</style><title>sp24_example</title>
+</head>
+<body class='typora-export os-windows'><div class='typora-export-content'>
+<div id='write'  class=''><h3 id='centerspace2024中文空间语义信息标注工作指南center'><center><span>SpaCE2024中文空间语义信息标注工作指南</span></center></h3><center>标注示例</center><hr /><p><strong><span>注意事项：</span></strong></p><ul><li><p><span>（1）一段话中的空间方位信息应该全部标注；</span></p></li><li><p><span>（2）空间方位信息标注的先后顺序与在原文中出现的先后顺序保持一致；</span></p></li><li><p><span>（3）一段话中相同的空间方位信息，只标注一次，在原文中第一次出现该空间方位信息时标注。</span></p></li><li><p><span>（4）</span><u><span>标点句缺少S和P时，鼓励跨句选取字符补充。</span></u></p></li><li><p><span>（5）只有S和P中的实体需要标注同指关系。 </span></p></li></ul><p>&nbsp;</p><h6 id='示例1'><span>示例1</span></h6><p><font style="font-family:楷体"><span>“这个就是我从水里捞出来的美国人手上戴着的戒指，上面刻着他的名字。”塞科高高地举起戒指说，“上面的名字是，”他一边看一边念出上面刻着的字：“约翰·罗伯森·邓纳姆。”</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1：这个就是我从水里捞出来的美国人手上戴着的戒指</span></p></li><li><p><span>SS2：上面刻着他的名字</span></p></li><li><p><span>SS3：塞科高高地举起戒指说</span></p></li><li><p><span>SS4：“上面的名字是，”他一边看一边念出上面的刻着的字：“约翰·罗伯森·邓纳姆。”</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>美国人</span></td><td>&nbsp;</td><td><span>捞 </span><span>[</span><span>arg0:我, arg1:美国人, argS:从水里;出来</span><span>]</span></td><td><span>[</span><span>起点:从水里，方向:出来</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><del><span>2</span></del></td><td><del><span>戒指</span></del></td><td>&nbsp;</td><td><del><span>捞 </span><span>[</span><span>arg0:我, arg1:戒指, argS:从水里;出来</span><span>]</span></del></td><td><del><span>[</span><span>起点:从水里，方向:出来</span><span>]</span></del></td><td>&nbsp;</td></tr><tr><td><span>3</span></td><td><span>戒指</span></td><td>&nbsp;</td><td><span>戴 </span><span>[</span><span>arg0:美国人, arg1:戒指, argS:手上</span><span>]</span></td><td><span>[</span><span>处所:美国人手上</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>“捞”是一个动态的位移义相关的事件；“戴”是个静态空间义事件。标注“捞”的事件语义角色时，</span><u><span>与它关联的两个P信息以并置的方式填入argS</span></u><span>（表格中用;区分）。</span></p><p><span>这个句子有歧义，仅根据当前上下文，无法判断“捞”的是“美国人”，还是“戒指”。</span></p><p><span>第1条标注，是把“捞”的对象解释为“美国人”；第2条标注，是把“捞”的对象解释为“戒指”。</span></p><p><span>两种解释相比较来说，“捞“的对象是”美国人”这种解释可能更自然一些。因此上表中把第2条标注加了删除线。在实际标注中，按照“我从水里捞出美国人” “美国人手上戴着戒指”的语义理解，分别做第1条STEP信息标注和第3条STEP信息标注。</span></p></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>4</span></td><td><span>他的名字</span></td><td>&nbsp;</td><td><span>刻 </span><span>[</span><span>arg1:名字, argS:上面</span><span>]</span></td><td><span>[</span><span>处所: 戒指上面</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>SS2的方位信息只有方位词“上面”，标注P信息时需要补出参照物：“戒指”（参见</span><a href='sp24_guide_main.html#P信息'><span>参照物缺省标注</span></a><span>）。</span></p><p><u><span>E角色标注则只标注当前标点句所含的信息，不需要补出没有的信息，所以argS是“上面”。</span></u></p></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>5</span></td><td><span>戒指</span></td><td>&nbsp;</td><td><span>举 </span><span>[</span><span>arg0: 塞科, arg1: 戒指</span><span>]</span></td><td><span>[</span><span>处所:塞科手上</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>这条标注属于隐性空间标注。从“塞科举着戒指”可以简单地推理得出“戒指在塞科手上”，但SS3中字面上无“手上”信息，所以</span><u><span>在SS1选取字符“手上”，与“塞科”</span><strong><span>拼接</span></strong><span>得到P信息“塞科手上”</span></u><span>（参见</span><a href='sp24_guide_main.html#拼接与并置'><span>拼接操作</span></a><span>）。</span></p></blockquote></li><li><p><span>SS4</span></p><blockquote><p><span>SS4表达的空间信息跟SS2基本一样。像这样的段中</span><mark><span>空间信息重复出现的情况，只需在第一次出现时标注，后面标点句中不再重复标注。</span></mark></p></blockquote></li></ul><p><span>（3）</span><u><span>标注实体的同指关系</span></u><span>（参见</span><a href='sp24_guide_main.html#同指操作'><span>同指标注操作</span></a><span>）</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>同指关系标注</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>美国人 = 他 = 约翰·罗伯森·邓纳姆</span></td></tr><tr><td><span>2</span></td><td><span>名字 = 字 = 约翰·罗伯森·邓纳姆</span></td></tr><tr><td><span>3</span></td><td><span>塞科 = 他 = 我</span></td></tr><tr><td><span>4</span></td><td><span>他 ≠ 他</span></td></tr></tbody></table></figure><p><span>STEP标注中，仅有S-P中的实体需要标注同指关系：美国人、戒指、名字、塞科。</span></p><p><span>“戒指”在文中只有默认的同形同指关系，不需要专门标注。</span></p><p><span>第1条至第3条标注是异形同指关系，第4条标注是同形异指关系，文中的两个“他”，一个指称“美国人”，一个指称“塞科”。</span></p></blockquote><p><strong><span>注意</span></strong><span>：</span></p><ul><li><p><span>例1划分出4个标点句（SS1，SS2，SS3，SS4），是为后续标注STEP信息打草稿，方便逐句定位S。</span></p></li><li><p><span>在实际标注系统中，操作并不包含划分4个标点句，只需要在操作界面中填写上面表格中的各项信息。</span></p></li></ul><p>&nbsp;</p><h6 id='示例2'><span>示例2 </span></h6><p><font style="font-family:楷体"><span>当我们到达医院时，一大群人已围在外面。地下室里，一条长廊通向手术室。我们在远处发现了外婆，妈妈和继父连忙跑上前去，我和哥哥走在旁边，互相搀扶着，极力使自己镇静下来。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1：当我们到达医院时</span></p></li><li><p><span>SS2：一大群人已围在外面</span></p></li><li><p><span>SS3：地下室里，一条长廊通向手术室</span></p></li><li><p><span>SS4：我们在远处发现了外婆</span></p></li><li><p><span>SS5：妈妈和继父连忙跑上前去</span></p></li><li><p><span>SS6：我和哥哥走在旁边，互相搀扶着</span></p></li></ul><p><strong><span>注意</span></strong><span>：</span></p><ul><li><p><span>有的逗号主要是为了韵律停顿，并不是因为语法结构原因而添加的逗号。为使空间信息相对完整，有时可将逗号包含在标点句内，比如SS3和SS6。这类标点句的特点是，把逗号删除，句子结构完全正常，读起来也很自然。</span></p></li><li><p><span>此段最后一个小句“极力使自己镇静下来”无空间方位信息，不需考虑STEP信息标注，因此不列出。</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>我们</span></td><td>&nbsp;</td><td><span>到达 </span><span>[</span><span>arg0:我们, argS:医院]</span></td><td><span>[</span><span>终点: 医院</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>2</span></td><td><span>一大群人</span></td><td><span>当我们到达医院时</span></td><td><span>围 </span><span>[</span><span>arg0: 一大群人, argS: 在外面</span><span>]</span></td><td><span>[</span><span>处所: 在医院外面</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>S中若填写“人”，则所指不清楚。填写“一大群人”，可以区别原文中的“我们” “我和哥哥”等等。</span></p><p><span>填写空间实体信息时，以语义有指别度为原则，即填入的成分要避免指称歧解。</span></p><p><span>P中“处所”取值为“在医院外面”，字面上这一句的处所信息是“在外面”，但根据上文可知，更为具体的处所信息是“在医院外面”，因此，标注操作时，需要从SS1中选取“医院”这个片段，插入到SS2的两个片段“在”和“外面”之间，拼接成更大的片段“在医院外面”，作为“处所”字段的取值。</span></p></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>3</span></td><td><span>地下室</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 医院</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>4</span></td><td><span>长廊</span></td><td>&nbsp;</td><td><span>通 </span><span>[</span><span>arg0: 长廊, argS: 向手术室</span><span>]</span></td><td><span>[</span><strong><span>路径:</span><span>&lt;</span><span>手术室&gt;</span></strong><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>5</span></td><td><span>长廊</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 地下室里]</span></td><td>&nbsp;</td></tr><tr><td><span>6</span></td><td><span>手术室</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 地下室里</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>“地下室的处所是医院”属于隐性空间标注。SS3字面上没有“医院”，根据上下文信息可以推出地下室在医院。</span></p><p><span>SS3句中，“长廊”自身的处所是在“地下室”。同时它起到了“路径”功能，即沿着“长廊”，可以“通向手术室”。不过，SS3句没有给出这条“路径”上的其他节点信息，只能将仅有的一个空间实体“手术室”作为节点填入“路径”中。</span></p><p><u><span>“长廊”在SS3有两个P信息，处所信息“地下室里”与事件“通”无关，所以分为了第4条标注和第5条标注。</span></u></p></blockquote></li><li><p><span>SS4</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>7</span></td><td><span>外婆</span></td><td>&nbsp;</td><td><span>发现 </span><span>[</span><span>arg0:我们, arg1:外婆</span><span>]</span></td><td><span>[</span><span>处所: 地下室里</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>8</span></td><td><span>我们</span></td><td>&nbsp;</td><td><span>发现 </span><span>[</span><span>arg0:我们, arg1:外婆</span><span>]</span></td><td><span>[</span><span>处所: 地下室里</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>9</span></td><td><span>外婆;我们</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>距离: 远</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>SS4句中“在远处”这个空间信息，用“距离”标注比较合适，因为“远处”表达了外婆和我们之间的距离远的信息，而外婆和我们各自的处所信息，只能从上下文推知，是在“地下室里”，并不清楚具体在地下室的什么位置。</span></p><p><span>标注界面上，“外婆”和“我们”以</span><strong><span>并置</span></strong><span>的方式（表格里用;表示）填入空间实体文本框。</span><strong><span>需注意的是，“距离: 远” 中的特征值“远”，是系统关键字，不是原文中的字符“远处”中的“远”。</span></strong><span>标注界面上填入“距离2”字段。另有“距离1”字段填写文本中对距离的定量描述。（参见</span><a href='sp24_guide_main.html#添加字段'><span>添加字段操作</span></a><span>）</span></p></blockquote></li><li><p><span>SS5</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>10</span></td><td><span>妈妈;继父</span></td><td>&nbsp;</td><td><span>跑 </span><span>[</span><span>arg0: 妈妈和继父, argS: 上前去</span><span>]</span></td><td><span>[</span><span>方向:上前去，终点:外婆</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>11</span></td><td><span>妈妈和继父;外婆</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>距离:变近</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>“妈妈和继父”是位移空间实体，移动的方向是“上前去”，目标是到达外婆所在的位置，因此“方向”特征标记为“上前去“，”终点“特征标记为”外婆”。同时“妈妈和继父”跟“外婆”的距离是在缩短，因此，“距离”特征的取值是“变近”，这也是系统预定义的关键字，不是原文中的字符。</span></p></blockquote></li><li><p><span>SS6</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>12</span></td><td><span>我和哥哥</span></td><td>&nbsp;</td><td><span>走 </span><span>[</span><span>arg0: 我;哥哥, argS: 在旁边</span><span>]</span></td><td><span>[</span><span>处所:在妈妈和继父旁边</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>SS6中的“我和哥哥”，以及SS5中的“妈妈和继父”，都不是单个的空间实体，但作为一个整体单位填入空间实体文本框。</span></p><p><span>从事理角度讲，妈妈和继父之间，我和哥哥之间，也有空间方位关系（比如距离关系），但这些空间方位信息不是原文字面上显式表达的，因此不做标注。</span></p></blockquote></li></ul><p><span>（3）</span><u><span>标注实体的同指关系</span></u></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>同指关系标注</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>我们 = 妈妈 继父 我 哥哥</span></td></tr></tbody></table></figure><p><span>标注集合性成分和成员性成分的同指关系时，成员性成分</span><strong><span>拼接</span></strong><span>成一个大单位，如“妈妈 继父 我 哥哥”（参见</span><a href='sp24_guide_main.html#同指操作'><span>同指标注操作</span></a><span>）</span></p></blockquote><p>&nbsp;</p><h6 id='示例3'><span>示例3</span></h6><p><font style="font-family:楷体"><span>正在山上对着白云唱歌的薄平看到远远的山坡上走来的王实味，慌忙躲进一个山洞里，王实味满山遍野中找呀，喊呀，一直折腾到天黑，薄平就是不出来。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 正在山上对着白云唱歌的薄平看到远远的山坡上走来的王实味</span></p></li><li><p><span>SS2： 慌忙躲进一个山洞里</span></p></li><li><p><span>SS3： 王实味满山遍野中找呀，喊呀</span></p></li><li><p><span>SS4： 一直折腾到天黑，薄平就是不出来</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>薄平</span></td><td>&nbsp;</td><td><span>唱歌 </span><span>[</span><span>arg0: 薄平, argS:在山上;对着白云</span><span>]</span></td><td><span>[</span><span>处所: 在山上, 朝向: 对着白云</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>2</span></td><td><span>王实味</span></td><td>&nbsp;</td><td><span>走 </span><span>[</span><span>arg0:王实味, argS:山坡上;来</span><span>]</span></td><td><span>[</span><span>处所: 山坡上, 方向: 来</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>3</span></td><td><span>薄平;王实味</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>距离: 变近</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>4</span></td><td><span>薄平;山坡</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[距离: 远]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>5</span></td><td><span>薄平</span></td><td><span>看到王实味之后</span></td><td><span>躲 </span><span>[</span><span>arg0:薄平, argS: 进;一个山洞里</span><span>]</span></td><td><span>[</span><span>方向: 进, 终点: 一个山洞里</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>6</span></td><td><span>王实味</span></td><td>&nbsp;</td><td><span>找 </span><span>[</span><span>arg0: 王实味, arg1: 薄平, argS: 满山遍野中</span><span>]</span></td><td><span>[</span><span>处所: 满山遍野中</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><u><span>SS2还有动词“喊”与“找”并列，但S-P信息是完全一样的，不重复标注。</span></u></p></blockquote></li><li><p><span>SS4</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>7</span></td><td><span>薄平</span></td><td><span>一直到天黑</span></td><td>&nbsp;</td><td><span>[</span><span>起点: 山洞里, 方向: 出来</span><span>]</span></td><td><span>false</span></td></tr></tbody></table></figure><p><span>句中对“出来”这一方向信息做了否定陈述：“不出来”，所以需要标注F信息。</span><strong><span>在标注界面上，F信息在”添加字段“的下拉菜单中选取”事实性“进行标注</span></strong><span>。</span></p><p><span>起点信息“山洞里”是根据上下文推理出的信息，可标可不标。</span></p></blockquote></li></ul><p>&nbsp;</p><h6 id='示例4'><span>示例4</span></h6><p><font style="font-family:楷体"><span>她知道这意味着什么，她转过头，注视着几米开外那支瞄向她的枪口。枪口下的刺刀在残阳的照射下闪着寒光。猛然间刺刀上抖动起来，她看到枪身后那个带着稚容的枪手，正恐惧不安地看着她。她缓缓地回过头，朝着脚下带着潮气的泥土，深深地吸了一口气，慢慢闭上了眼睛。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 她转过头，注视着几米开外那支瞄向她的枪口</span></p></li><li><p><span>SS2： 枪口下的刺刀在残阳的照射下闪着寒光</span></p></li><li><p><span>SS3： 她看到枪身后那个带着稚容的枪手，正恐惧不安地看着她</span></p></li><li><p><span>SS4： 她缓缓地回过头，朝着脚下带着潮气的泥土，深深地吸了一口气，慢慢闭上了眼睛</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>她</span></td><td><span>转头之后</span></td><td><span>注视 </span><span>[</span><span>arg0: 她, arg1: 枪口</span><span>]</span></td><td><span>[</span><span>朝向:枪口</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>2</span></td><td><span>枪口</span></td><td>&nbsp;</td><td><span>瞄 </span><span>[</span><span>arg0:枪口, arg1:她</span><span>]</span></td><td><span>[</span><span>朝向:向她</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>3</span></td><td><span>她;枪口</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>距离: 几米</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>4</span></td><td><span>刺刀</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 枪口下</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>5</span></td><td><span>枪手</span></td><td>&nbsp;</td><td><span>看 </span><span>[</span><span>arg0:枪手, arg1:她, argS:枪身后</span><span>]</span></td><td><span>[</span><span>处所: 枪身后, 朝向: 她</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>6</span></td><td><span>她</span></td><td>&nbsp;</td><td><span>看 </span><span>[</span><span>arg0:她, arg1:枪手</span><span>]</span></td><td><span>[</span><span>朝向: 枪手</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS4</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>7</span></td><td><span>她</span></td><td><span>回头之后</span></td><td>&nbsp;</td><td><span>[</span><span>朝向: 泥土</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>8</span></td><td><span>泥土</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 她脚下</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li></ul><p><span>（3）</span><u><span>标注普通实体</span></u></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>普通实体</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>头，残阳，寒光，潮气，气，眼睛</span></td></tr></tbody></table></figure></blockquote><p>&nbsp;</p><h6 id='示例5'><span>示例5</span></h6><p><font style="font-family:楷体"><span>村边，一条干枯的河床上，几个新堆起的小土包一字排开。阿曾和几个刑事犯一起被押到土包前。她身后的两个汉子狠劲地把她摁跪在地上。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 村边，一条干枯的河床上，几个新堆起的小土包一字排开</span></p></li><li><p><span>SS2： 阿曾和几个刑事犯一起被押到土包前</span></p></li><li><p><span>SS3： 她身后的两个汉子狠劲地把她摁跪在地上</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>河</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 村边</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>2</span></td><td><span>几个小土包</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 河床上, 形状: 一字排开</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>第二条标注选择空间实体时不能遗漏“几个”，因为只有多个实体才能形成“一字排开”的形状，所以空间实体必须是“几个小土包”。</span></p></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>3</span></td><td><span>阿曾;几个刑事犯</span></td><td>&nbsp;</td><td><span>押 </span><span>[</span><span>arg1: 阿曾和几个刑事犯, argS: 到土包前</span><span>]</span></td><td><span>[</span><span>终点: 到土包前</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>4</span></td><td><span>两个汉子</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 她身后</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>5</span></td><td><span>她</span></td><td>&nbsp;</td><td><span>摁 </span><span>[</span><span>arg0: 两个汉子, arg1: 她</span><span>]</span></td><td><span>[</span><span>终点: 在地上</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>6</span></td><td><span>她</span></td><td>&nbsp;</td><td><span>跪 </span><span>[</span><span>arg0: 她</span><span>]</span></td><td><span>[</span><span>处所: 在地上</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>此句中“她”的空间方位信息都是“在地上”，但在“摁”事件中，“在地上”是终点，在“跪”事件中，“在地上”是处所。第5条和第6条标注对此做了区分。</span></p></blockquote></li></ul><p><span>（3）</span><u><span>标注实体的同指关系</span></u></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>同指关系标注</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>她 = 阿曾</span></td></tr></tbody></table></figure></blockquote><p>&nbsp;</p><h6 id='示例6'><span>示例6</span></h6><p><font style="font-family:楷体"><span>北山顶上巨石皑皑，罗列在荒榛野草的中间，像是满山的绵羊。风很大，吹得人对面说话都听不真。东北一带全是高山，大丰山就紧依在后边。天晴的时候，西边可以看见太平府，南边可以看见金陵，现在都隐没在云雾里。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 北山顶上巨石皑皑</span></p></li><li><p><span>SS2： 罗列在荒榛野草的中间</span></p></li><li><p><span>SS3： 像是满山的绵羊</span></p></li><li><p><span>SS4： 东北一带全是高山</span></p></li><li><p><span>SS5： 大丰山就紧依在后边</span></p></li><li><p><span>SS6： 天晴的时候，西边可以看见太平府</span></p></li><li><p><span>SS7： 南边可以看见金陵</span></p></li><li><p><span>SS8： 现在都隐没在云雾里</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>巨石</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 北山顶上</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>2</span></td><td><span>巨石</span></td><td>&nbsp;</td><td><span>罗列 </span><span>[</span><span>arg0: 巨石, argS: 在荒榛野草的中间</span><span>]</span></td><td><span>[</span><span>处所: 在荒榛野草的中间</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>3</span></td><td><span>荒榛野草</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 北山顶上</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>4</span></td><td><span>绵羊</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 满山</span><span>]</span></td><td><span>false</span></td></tr></tbody></table></figure><p><span>“像是满山的绵羊”是一个比喻场景，不是真实的空间信息，需要标注F信息。</span></p></blockquote></li><li><p><span>SS4</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>5</span></td><td><span>高山</span></td><td>&nbsp;</td><td><span>是 </span><span>[</span><span>arg0: 东北一带, arg1: 高山</span><span>]</span></td><td><span>[</span><span>处所: 北山东北一带</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>注意：“东北一带”是相对于“北山”而言的，因此，“高山”的位置是在“北山东北一带”</span></p></blockquote></li><li><p><span>SS5</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>6</span></td><td><span>大丰山</span></td><td>&nbsp;</td><td><span>依 </span><span>[</span><span>arg0: 大丰山, argS: 在后边</span><span>]</span></td><td><span>[</span><span>处所: 在北山后边</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>此句中 E ”依“ 的arg0和argS角色填写字面上的”大丰山“和”在后边“，空间方位信息P则需要填写”在北山后边“，即方位词“后边”需要补出具体的参照物。根据语境理解，可知参照物为句首的“北山”。</span></p></blockquote></li><li><p><span>SS6</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>7</span></td><td><span>太平府</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 北山西边</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>此句中的“西边”是相对于“北山”而言的，因此，“太平府”的位置是“北山西边”，</span><strong><span>句中谓词“可以看见”是从人的角度描述“太平府”的能见度，但并不影响“太平府”在“北山西边”的空间方位信息。为简化描述，此类信息不看作E信息，不填写</span></strong><span>。同理，句中的时间表达“天晴的时候”也不填入T信息，因为时间并不影响“太平府”在“北山西边”的空间方位信息。</span></p></blockquote></li><li><p><span>SS7</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>8</span></td><td><span>金陵</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 北山南边</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS8</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>9</span></td><td><span>大平府</span></td><td><span>现在</span></td><td><span>隐没 </span><span>[</span><span>argS: 在云雾里</span><span>]</span></td><td><span>[</span><span>处所: 在云雾里</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>10</span></td><td><span>金陵</span></td><td><span>现在</span></td><td><span>隐没 </span><span>[</span><span>argS: 在云雾里</span><span>]</span></td><td><span>[</span><span>处所: 在云雾里</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>此句中S未出现，从上文可知，“隐没在云雾里”的是大平府和金陵。句中出时间词“现在“需填入T中。</span></p></blockquote></li></ul><p>&nbsp;</p><h6 id='示例7'><span>示例7</span></h6><p><font style="font-family:楷体"><span>我俩就这样一个窗里，一个窗外地僵持着，一会儿，他执拗地近乎乞求地又动员我：“还是去吧，外面的夜色特别好，就去走一走。去吧，去吧！”</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 我俩就这样一个窗里，一个窗外地僵持着</span></p></li><li><p><span>SS2： 他执拗地近乎乞求地又动员我：“还是去吧，外面的夜色特别好，就去走一走。去吧，去吧 ！”</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>我</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 窗里</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>2</span></td><td><span>他</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 窗外</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>3</span></td><td><span>我</span></td><td><span>将来</span></td><td>&nbsp;</td><td><span>[</span><span>终点: 外面, 方向: 去</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>SS2句中是祈使句，其中的空间方位信息并未实现。T标注“将来”（预定义关键字），表示“我去外面”是将来之事。这是一种近似的时间信息标注方式。</span></p></blockquote></li></ul><p>&nbsp;</p><h6 id='示例8'><span>示例8</span></h6><p><font style="font-family:楷体"><span>平的单位在市郊，平去上班，单位是终点站。平下班回家，单位是起点站，平坐了几天车后，开始不满了。车到终点站，平要下车时，车下站满了要上车的人。车一停，这些人就往上挤，要挤上车去抢位子。这样便弄得车上的人下不去了。车上原本人多，只上不下，更挤。平常常被挤皱了衣服，踩脏了皮鞋。平这时便大叫：“先下后上，先下后上。”但平的声音很微弱，根本没人听平的。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 平的单位在市郊</span></p></li><li><p><span>SS2： 平去上班，单位是终点站。平下班回家，单位是起点站</span></p></li><li><p><span>SS3： 车到终点站，平要下车时，车下站满了要上车的人</span></p></li><li><p><span>SS4： 车一停，这些人就往上挤，要挤上车去抢位子</span></p></li><li><p><span>SS5： 这样便弄得车上的人下不去了</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>平的单位</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 在市郊</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>2</span></td><td><span>平</span></td><td>&nbsp;</td><td><span>上班 </span><span>[</span><span>arg0: 平, argS: 单位</span><span>]</span></td><td><span>[</span><span>起点: 家, 终点: 单位</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>3</span></td><td><span>平</span></td><td>&nbsp;</td><td><span>下班 </span><span>[</span><span>arg0:平, argS: 家</span><span>]</span></td><td><span>[</span><span>起点: 单位, 终点: 家</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>4</span></td><td><span>车</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 到终点站</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>5</span></td><td><span>要上车的人</span></td><td><span>平要下车时</span></td><td><span>站</span><span>[</span><span>arg0: 要上车的人, argS: 车下</span><span>]</span></td><td><span>[</span><span>处所: 终点站车下</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure><p><span>第5条标注：这句中时间义词语是“平要下车时”，从文本中选取这个片段填入T中。</span></p></blockquote></li><li><p><span>SS4</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>6</span></td><td><span>这些人</span></td><td><span>车一停</span></td><td><span>挤 </span><span>[</span><span>arg0: 这些人, argS: 往上</span><span>]</span></td><td><span>[</span><span>方向: 往车上</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS5</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>7</span></td><td><span>车上的人</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>起点: 车上, 方向: 下去</span><span>]</span></td><td><span>false</span></td></tr></tbody></table></figure></blockquote></li></ul><p><span>（3）</span><u><span>标注普通实体</span></u></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>普通实体</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>衣服，皮鞋，声音</span></td></tr></tbody></table></figure></blockquote><p>&nbsp;</p><h6 id='示例9'><span>示例9</span></h6><p><font style="font-family:楷体"><span>回到里屋，在镜子面前用梳子拢了拢头发，换了一件只有四五个补钉的蓝布小衫子，她提了这篮子豆角，里边还装了十个鸡蛋，往工作队走，半道遇见韩长脖。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 回到里屋</span></p></li><li><p><span>SS2： 在镜子面前用梳子拢了拢头发</span></p></li><li><p><span>SS3： 换了一件只有四五个补钉的蓝布小衫子</span></p></li><li><p><span>SS4： 她提了这篮子豆角，里边还装了十个鸡蛋</span></p></li><li><p><span>SS5： 往工作队走</span></p></li><li><p><span>SS6： 半道遇见韩长脖</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>她</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>终点: 到里屋，方向: 回</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>2</span></td><td><span>她</span></td><td>&nbsp;</td><td><span>拢头发 </span><span>[</span><span>arg0: 她, arg3: 梳子</span><span>]</span></td><td><span>[</span><span>处所：在镜子面前</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>3</span></td><td><span>四五个补钉</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 蓝布小衫子</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure><p><span>第3条STEP信息，可标可不标。这句并未凸显空间方位信息。</span></p></blockquote></li><li><p><span>SS4</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>4</span></td><td><span>豆角</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 篮子里边</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>5</span></td><td><span>鸡蛋</span></td><td>&nbsp;</td><td><span>装</span><span>[</span><span>arg1: 鸡蛋, argS: 篮子里边</span><span>]</span></td><td><span>[</span><span>处所: 篮子里边</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS5</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>6</span></td><td><span>她</span></td><td>&nbsp;</td><td><span>走 </span><span>[</span><span>arg0: 她, argS: 往工作队</span><span>]</span></td><td><strong><span>[</span><span>方向: 往工作队</span><span>]</span></strong></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure><p><span>SS5中“工作队”指的是“工作队（办公场所）”。“往工作队走”表示“她”的位移方向，这里需要注意的是，“工作队”不能标注为P中的“终点”信息，而应该标注为“方向”信息。“工作队”只是潜在的终点，但并不一定是此次位移的终点。</span></p></blockquote></li><li><p><span>SS6</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>8</span></td><td><span>她</span></td><td>&nbsp;</td><td><span>遇见</span><span>[</span><span>arg0: 她, arg1: 韩长脖</span><span>]</span></td><td><span>[</span><span>处所:半道</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure></blockquote></li></ul><p><span>（3）</span><u><span>标注普通实体</span></u></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>普通实体</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>梳子</span></td></tr></tbody></table></figure></blockquote><p><span> </span></p><h6 id='示例10'><span>示例10</span></h6><p><font style="font-family:楷体"><span>它的图案为正圆形，由三部分构成，即上方的太阳，下方的叶片和中心的蓓蕾，描绘一幅在明媚阳光照耀下作物茁壮生长的景象。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 它的图案为正圆形</span></p></li><li><p><span>SS2： 由三部分构成，即上方的太阳，下方的叶片和中心的蓓蕾</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>图案</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>形状: 正圆形</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>2</span></td><td><span>太阳</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><strong><span>部件处所: 图案上方</span></strong><span>, 处所: 蓓蕾上方</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>3</span></td><td><span>叶片</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><strong><span>部件处所: 图案下方</span></strong><span>, 处所: 蓓蕾下方</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>4</span></td><td><span>蓓蕾</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><strong><span>部件处所: 图案中心</span></strong><span>, 处所: 太阳下方;叶片上方</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure><p><span>由上下文可知，“太阳、叶片、蓓蕾”都是图案中的部件。“上方”、“下方”和“中心”描述的是</span><strong><span>部件在整体图案中的位置</span></strong><span>，所以标入</span><strong><span>部件处所</span></strong><span>。</span></p><p><strong><span>各部件之间也有可推理出的相对位置关系</span></strong><span>，标入</span><strong><span>处所</span></strong><span>。第4条标注中，“处所：太阳下方;叶片上方”，两个处所信息是</span><strong><span>并置</span></strong><span>关系（参见</span><a href='sp24_guide_main.html#拼接与并置'><span>“并置”操作说明</span></a><span>）。</span></p></blockquote></li></ul><p><span>（3）</span><u><span>标注普通实体</span></u></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>普通实体</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>阳光，作物，景象</span></td></tr></tbody></table></figure></blockquote><p>&nbsp;</p><h6 id='示例11'><span>示例11</span></h6><p><font style="font-family:楷体"><span>审询室是一间小小的房间，里边陈设简单，只有一张方桌，三条板凳，桌子上坐着两个人，一个是询问人，聂性初，穿了一身灰布人民装，看上去有四十上下年纪，其实不过三十刚出头，可是革命严峻的斗争在他的额头和眼角留下了痕迹，深深的皱纹和饱经风霜的皮肤就显得苍老了。他是法院刑庭的审判员，坐在他左边的青年是笔录人，叫马继平。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 审询室是一间小小的房间，里边陈设简单，只有一张方桌，三条板凳</span></p></li><li><p><span>SS2： 桌子上坐着两个人，一个是询问人，聂性初</span></p></li><li><p><span>SS3： 他是法院刑庭的审判员，坐在他左边的青年是笔录人，叫马继平</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>一张方桌;三条板凳</span></td><td>&nbsp;</td><td><span>有</span><span>[</span><span>arg0: 审讯室, arg1: 一张方桌;三条板凳</span><span>]</span></td><td><span>[</span><span>处所: 审询室里边</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure><p><span>为简便标注，多个实体共享一个P信息时，可以并置填入同一条标注的S文本框中。</span></p></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>3</span></td><td><span>两个人</span></td><td>&nbsp;</td><td><span>坐 </span><span>[</span><span>arg0:两个人, argS: 桌子上</span><span>]</span></td><td><span>[</span><span>处所: 桌子上</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>4</span></td><td><span>两个人</span></td><td>&nbsp;</td><td><span>坐 </span><span>[</span><span>arg0:两个人, argS: 板凳</span><span>]</span></td><td><span>[</span><span>处所: 板凳上</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>5</span></td><td><span>聂性初</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 桌子上</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure><p><span>SS2字面上是“桌子上坐着两个人”，但按常理，人不会坐在桌子上，而是桌子旁的板凳上坐着人，所以补充标注了第4条标注。</span></p></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>6</span></td><td><span>马继平</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所: 桌子上;聂性初左边;板凳上</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure><p><span>根据上下文可知，“马继平”的处所信息有3个，在上表中填入处所信息值时以;分开。在标注工具界面上，是以</span><strong><span>并置</span></strong><span>方式将“桌子上”、“聂性初左边”、“板凳上”这3个处所信息填入“处所”字段。</span></p></blockquote></li></ul><p><span>（3）</span><u><span>标注实体的同指关系</span></u></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>同指关系标注</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>方桌 = 桌子</span></td></tr><tr><td><span>2</span></td><td><span>两个人 = 聂性初 马继平</span></td></tr><tr><td><span>3</span></td><td><span>聂性初 = 他 = 审判员</span></td></tr><tr><td><span>4</span></td><td><span>马继平 = 青年 = 笔录人</span></td></tr></tbody></table></figure></blockquote><p><span>（4）</span><u><span>标注普通实体</span></u></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>普通实体</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>灰布人民装，额头，眼角，痕迹，皱纹，皮肤，法院刑庭</span></td></tr></tbody></table></figure></blockquote><p>&nbsp;</p><h6 id='示例12'><span>示例12 </span></h6><p><font style="font-family:楷体"><span>钱××驾驶农用三轮车，上乘赵××、刘××两人，由北向南行驶到上述地点时，适有李×驾驶切诺基小客车随后驶来，李×发现三轮车后，在制动向左打轮过程中，小客车的右前部与农用车的左后部相撞，小客车驾驶员李×受伤;农用车乘车人赵××受伤;驾驶员钱××受伤，送天坛医院抢救无效于当日死亡，两辆车损坏。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1： 钱××驾驶农用三轮车，上乘赵××、刘××两人</span></p></li><li><p><span>SS2： 由北向南行驶到上述地点时，适有李×驾驶切诺基小客车随后驶来</span></p></li><li><p><span>SS3： 李×发现三轮车后，在制动向左打轮过程中，小客车的右前部与农用车的左后部相撞</span></p></li><li><p><span>SS4： 驾驶员钱××受伤，送天坛医院抢救无效于当日死亡</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>钱××</span></td><td>&nbsp;</td><td><span>驾驶 </span><span>[</span><span>arg0:钱××, arg1:农用三轮车</span><span>]</span></td><td><span>[</span><span>处所:农用三轮车上</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>2</span></td><td><span>赵××;刘××</span></td><td>&nbsp;</td><td><span>乘 </span><span>[</span><span>arg0:赵××;刘××, arg1:农用三轮车</span><span>]</span></td><td><span>[</span><span>处所:农用三轮车上</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>3</span></td><td><span>农用三轮车</span></td><td>&nbsp;</td><td><span>行驶 </span><span>[</span><span>arg0:农用三轮车, argS:由北向南;到上述地点</span><span>]</span></td><td><span>[</span><span>方向:由北向南, 终点:到上述地点</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>4</span></td><td><span>李×</span></td><td>&nbsp;</td><td><span>驾驶 </span><span>[</span><span>arg0:李×, arg1:切诺基小客车</span><span>]</span></td><td><span>[</span><span>处所:切诺基小客车</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>5</span></td><td><span>切诺基小客车</span></td><td><span>农用三轮车由北向南行驶到上述地点时</span></td><td><span>驶 </span><span>[</span><span>arg0:切诺基小客车, argS:后;来</span><span>]</span></td><td><span>[</span><span>处所:农用三轮车后, 方向:</span><strong><span>由北向南来</span></strong><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>6</span></td><td><span>切诺基小客车</span></td><td><span>李×发现三轮车后</span></td><td><span>打轮 </span><span>[</span><span>arg0:切诺基小客车, argS:向左</span><span>]</span></td><td><span>[</span><span>方向: 向左</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>7</span></td><td><span>切诺基小客车</span></td><td><span>在制动向左打轮过程中</span></td><td><span>相撞 </span><span>[</span><span>arg0:切诺基小客车, arg1:农用车</span><span>]</span></td><td><span>[</span><strong><span>部位: 右前部</span></strong><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>8</span></td><td><span>农用车</span></td><td><span>在制动向左打轮过程中</span></td><td><span>相撞 </span><span>[</span><span>arg0:切诺基小客车, arg1:农用车</span><span>]</span></td><td><span>[</span><strong><span>部位: 左后部</span></strong><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure><p><span>第7条标注，P信息是“部位: 右前部”，表示这是“切诺基小客车”的内部部位信息，而不是“切诺基小客车”所处的外部位置信息。</span></p><p><span>第8条标注，P信息是“部位: 左后部”，表示这是“农用车”的内部部位信息，而不是“农用车”所处的外部位置信息。</span></p></blockquote></li><li><p><span>SS4</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th style='text-align: --- ;' ><span>F</span></th></tr></thead><tbody><tr><td><span>9</span></td><td><span>钱××</span></td><td><span>当日</span></td><td><span>送 </span><span>[</span><span>arg1:钱××, argS:天坛医院</span><span>]</span></td><td><span>[</span><span>终点:天坛医院</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr><tr><td><span>10</span></td><td><span>钱××</span></td><td><span>当日</span></td><td><span>死亡 </span><span>[</span><span>arg0:钱××</span><span>]</span></td><td><span>[</span><span>处所:天坛医院</span><span>]</span></td><td style='text-align: --- ;' >&nbsp;</td></tr></tbody></table></figure></blockquote></li></ul><p>&nbsp;</p><h6 id='示例13'><span>示例13 </span></h6><p><font style="font-family:楷体"><span>上海市青浦区人民检察院指控，2020年11月3日12时05分许，被告人南某甲驾驶牌号为皖L53XXX的轻型普通货车在上海市青浦区新丰支路由北向西倒车时，与站在路边的被害人钱某某发生碰撞，造成被害人钱某某受伤后经医院抢救无效死亡的道路交通事故。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1：上海市青浦区人民检察院指控</span></p></li><li><p><span>SS2：2020年11月3日12时05分许，被告人南某甲驾驶牌号为皖L53XXX的轻型普通货车在上海市青浦区新丰支路由北向西倒车</span></p></li><li><p><span>SS3：与站在路边的被害人钱某某发生碰撞</span></p></li><li><p><span>SS4：造成被害人钱某某受伤后经医院抢救无效死亡的道路交通事故</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><del><span>1</span></del></td><td><del><span>人民检察院</span></del></td><td>&nbsp;</td><td>&nbsp;</td><td><del><span>[</span><span>处所:青浦区</span><span>]</span></del></td><td>&nbsp;</td></tr><tr><td><del><span>2</span></del></td><td><del><span>青浦区</span></del></td><td>&nbsp;</td><td>&nbsp;</td><td><del><span>[</span><span>处所:上海市]</span></del></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote><p><span>为精简标注，不需要分析机构、行政区划等专有名词名称的空间信息。</span></p></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>3</span></td><td><span>南某甲</span></td><td><span>2020年11月3日12时05分许</span></td><td><span>驾驶 </span><span>[</span><span>arg0:南某甲, arg1:轻型普通货车</span><span>]</span></td><td><span>[</span><span>处所:轻型普通货车</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>4</span></td><td><span>轻型普通货车</span></td><td><span>2020年11月3日12时05分许</span></td><td><span>倒车 </span><span>[</span><span>arg0:轻型普通货车, argS:在上海市青浦区新丰支路;由北向西</span><span>]</span></td><td><span>[</span><span>处所:在上海市青浦区新丰支路, 方向:由北向西</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>5</span></td><td><span>新丰支路</span></td><td>&nbsp;</td><td>&nbsp;</td><td><span>[</span><span>处所:在上海市青浦区</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote><p><span>描述交通事故的过程中，除非有更为详细的时间表达，否则以交通事故的发生时间（2020年11月3日12时05分许）作为T信息。</span></p></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>6</span></td><td><span>钱某某</span></td><td><span>2020年11月3日12时05分许</span></td><td><span>站 </span><span>[</span><span>arg0:钱某某, argS:在路边</span><span>]</span></td><td><span>[</span><span>处所:在路边</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS4</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>7</span></td><td><span>钱某某</span></td><td><span>受伤后</span></td><td><span>死亡\ [arg1:钱某某, argS:医院</span><span>]</span></td><td><span>[</span><span>处所:医院</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li></ul><p>&nbsp;</p><h6 id='示例14'><span>示例14 </span></h6><p><font style="font-family:楷体"><span>练习者应保持背部挺直，腹部收紧，有节奏且连续地向左、向右快速小跳。保持重心稳定，双脚前脚掌着地后再次迅速跳起。控制节奏由慢变快，至最快速度，并尽可能保持几秒再减速。跳跃结束后可以继续向前跑动5~10米进行放松。</span></font></p><p><span>（1）识别内含空间方位信息的标点句：</span></p><ul><li><p><span>SS1：有节奏且连续地向左、向右快速小跳</span></p></li><li><p><span>SS2：双脚前脚掌着地后再次迅速跳起</span></p></li><li><p><span>SS3：跳跃结束后可以继续向前跑动5~10米进行放松</span></p></li></ul><p><span>（2）对每个SS，标注其中的S、T、E、P、F信息</span></p><ul><li><p><span>SS1</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>练习者</span></td><td>&nbsp;</td><td><span>跳 </span><span>[</span><span>arg0:练习者, argS:向左</span><span>]</span></td><td><span>[</span><span>方向:向左</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>2</span></td><td><span>练习者</span></td><td>&nbsp;</td><td><span>跳 </span><span>[</span><span>arg0:练习者, argS:向右</span><span>]</span></td><td><span>[</span><span>方向:向右]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS2</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>3</span></td><td><span>练习者</span></td><td><span>双脚前脚掌着地后</span></td><td><span>跳 </span><span>[</span><span>arg0:练习者, argS:起</span><span>]</span></td><td><span>[</span><span>方向:起</span><span>]</span></td><td>&nbsp;</td></tr><tr><td><span>4</span></td><td><span>双脚</span></td><td><span>再次迅速跳起之前</span></td><td><span>着 </span><span>[</span><span>arg0:双脚前脚掌, arg1:地</span><span>]</span></td><td><span>[</span><span>部位:前脚掌;处所:地</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li><li><p><span>SS3</span></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>S</span></th><th><span>T</span></th><th><span>E</span></th><th><span>P</span></th><th><span>F</span></th></tr></thead><tbody><tr><td><span>5</span></td><td><span>练习者</span></td><td><span>跳跃结束后</span></td><td><span>跑动 </span><span>[</span><span>arg0:练习者, argS:向前</span><span>]</span></td><td><span>[</span><span>方向:向前</span><span>]</span></td><td>&nbsp;</td></tr></tbody></table></figure></blockquote></li></ul><p><span>（3）</span><u><span>标注普通实体</span></u></p><blockquote><figure class='table-figure'><table><thead><tr><th><span>序号</span></th><th><span>同指关系标注</span></th></tr></thead><tbody><tr><td><span>1</span></td><td><span>背部，腹部，重心</span></td></tr></tbody></table></figure></blockquote><p>&nbsp;</p><p><span>文档最近更新时间：2024-01-22</span></p><p><span>北京大学SpaCE2024评测任务课题组</span></p><hr /><p><span>本项目得到国家科技创新2030“新一代人工智能”重大项目——“以自然语言为核心的语义理解理论、模型与方法”（项目号：2020AAA0106701）支持。</span></p></div></div>
+</body>
+</html>
