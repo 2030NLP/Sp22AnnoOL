@@ -10,8 +10,7 @@ if (DEVELOPING) {
 } else {
   console.log("PRODUCTION");
 };
-// const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
-const API_BASE_DEV_LOCAL = "http://127.0.0.1:8751";
+const API_BASE_DEV_LOCAL = "http://127.0.0.1:5000";
 const DEV_HOSTS = ["http://192.168.124.5:8888", "http://192.168.1.100:8888", "http://10.1.108.200:8888/", "http://10.0.55.176:8888/", "http://10.2.25.245:8888/"];
 const API_BASE_DEV = DEV_HOSTS[0];
 const API_BASE_PROD = "https://www.qinyuhang.cn";
